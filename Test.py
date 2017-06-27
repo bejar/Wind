@@ -24,6 +24,7 @@ import glob
 from Wind.Config import wind_data, wind_data_ext, wind_path
 from Wind.Maps.Util import MapThis
 import os
+import time
 
 __author__ = 'bejar'
 
@@ -132,16 +133,22 @@ def map_all():
 
 if __name__ == '__main__':
 
-    lds = [v for v in sorted(os.listdir(wind_data_ext)) if v[0] in '0123456789']
-    wfile = open(wind_path + '/Results/Coords.csv', 'w')
-    for ds in lds:
-        for f in explore_files(wind_data_ext, ds):
-            data = Dataset(f, 'r')
-            wfile.write('%f, %f, %s\n' % (data.latitude, data.longitude, f))
-        wfile.flush()
+    # lds = [v for v in sorted(os.listdir(wind_data_ext)) if v[0] in '0123456789']
+    # wfile = open(wind_path + '/Results/Coords.csv', 'w')
+    # for ds in lds:
+    #     for f in explore_files(wind_data_ext, ds):
+    #         data = Dataset(f, 'r')
+    #         wfile.write('%f, %f, %s\n' % (data.latitude, data.longitude, f))
+    #     wfile.flush()
+    # 
+    # wfile.close()
 
-    wfile.close()
-
-    # nc_fid = Dataset("/home/bejar/storage/Data/Wind/0/0.nc", 'r')
-
-    # print(nc_fid.longitude)
+    itime = time.time()
+    nc_fid = Dataset("/home/bejar/storage/Data/Wind/files/0/0.nc", 'r')
+    print(time.time() - itime)
+    print(type(nc_fid.variables['wind_speed']))
+    itime = time.time()
+    v = np.array(nc_fid.variables['wind_speed'])
+    print(time.time() - itime)
+    print(type(v))
+    print(v.shape)
