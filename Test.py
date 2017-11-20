@@ -101,8 +101,8 @@ def plot_something():
     end = 500
     data = []
     for i in range(2, 6):
-        nc_fid = Dataset("/home/bejar/storage/Data/Wind/0/%d.nc" % i, 'r')
-        data.append(nc_fid.variables['wind_direction'][beg:end])
+        nc_fid = Dataset("/home/bejar/storage/Data/Wind/files/0/%d.nc" % i, 'r')
+        data.append(nc_fid.variables['wind_speed'][beg:end])
     # nc_attrs, nc_dims, nc_vars = ncdump(nc_fid)
 
     fig = plt.figure(figsize=(10, 16), dpi=100)
@@ -132,6 +132,8 @@ def map_all():
         MapThis(lcoords, ds, lfnames)
 
 if __name__ == '__main__':
+    # nc_fid = Dataset("/home/bejar/storage/Data/Wind/files/0/0.nc", 'r')
+    # ncdump(nc_fid)
 
     # lds = [v for v in sorted(os.listdir(wind_data_ext)) if v[0] in '0123456789']
     # wfile = open(wind_path + '/Results/Coords.csv', 'w')
@@ -143,17 +145,54 @@ if __name__ == '__main__':
     # 
     # wfile.close()
 
-    itime = time.time()
-    nc_fid = Dataset("/home/bejar/storage/Data/Wind/files/0/0.nc", 'r')
-    print(time.time() - itime)
-    print(type(nc_fid.variables['wind_speed']))
-    itime = time.time()
-    # z = np.zeros((nc_fid.variables['wind_speed'].shape[0],2), dtype='float32')
+    # itime = time.time()
+    # nc_fid = Dataset("/home/bejar/storage/Data/Wind/files/0/0.nc", 'r')
+    # print(time.time() - itime)
+    # print(type(nc_fid.variables['wind_speed']))
+    # itime = time.time()
+    # # z = np.zeros((nc_fid.variables['wind_speed'].shape[0],2), dtype='float32')
+    #
+    # z = np.stack((np.array(nc_fid.variables['wind_speed']), np.array(nc_fid.variables['power'])), axis=1)
+    # # v = np.array(nc_fid.variables['wind_speed'])
+    # print(z.shape, z[0, 1])
+    # print(time.time() - itime)
+    # print(type(z))
+    # print(z)
+    # print(z.shape)
 
-    z = np.stack((np.array(nc_fid.variables['wind_speed']), np.array(nc_fid.variables['power'])), axis=1)
-    # v = np.array(nc_fid.variables['wind_speed'])
-    print(z.shape, z[0, 1])
-    print(time.time() - itime)
-    print(type(z))
-    print(z)
-    print(z.shape)
+
+    wfiles = ['90/45142', '90/45143','90/45229','90/45230']
+    vars = ['wind_speed', 'density', 'temperature', 'pressure']
+    mdata = {}
+    for wf in wfiles:
+        print "/home/bejar/storage/Data/Wind/files/%s.nc" % wf
+        nc_fid = Dataset("/home/bejar/storage/Data/Wind/files/%s.nc" % wf, 'r')
+        ldata = []
+        for v in vars:
+            data = nc_fid.variables[v]
+            print(data.shape)
+
+            end = data.shape[0]
+            step = 3
+            length = int(end/step)
+            print(length)
+            data30 = np.zeros((length))
+
+            for i in range(0, end, step):
+                data30[i/step] = np.sum(data[i: i+step])/step
+
+            ldata.append((data30))
+
+        data30 = np.stack(ldata, axis=1)
+
+        print(data30.shape)
+        mdata[wf.replace('/', '-')] = data30
+        # np.save('/home/bejar/wind%s.npy' % (wf.replace('/', '-')), data30)
+    print(mdata)
+    np.savez_compressed('/home/bejar/Wind.npz', **mdata)
+
+
+    # fig = plt.figure(figsize=(10, 16), dpi=100)
+    # axes = fig.add_subplot(1, 1, 1)
+    # axes.plot(range(length), data30)
+    # plt.show()
