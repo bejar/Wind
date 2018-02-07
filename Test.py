@@ -162,7 +162,7 @@ if __name__ == '__main__':
 
 
     wfiles = ['90/45142', '90/45143','90/45229','90/45230']
-    vars = ['wind_speed', 'density', 'temperature', 'pressure']
+    vars = ['wind_speed', 'density', 'pressure']
     mdata = {}
     for wf in wfiles:
         print "/home/bejar/storage/Data/Wind/files/%s.nc" % wf
@@ -173,7 +173,7 @@ if __name__ == '__main__':
             print(data.shape)
 
             end = data.shape[0]
-            step = 3
+            step = 12
             length = int(end/step)
             print(length)
             data30 = np.zeros((length))
@@ -189,7 +189,7 @@ if __name__ == '__main__':
         mdata[wf.replace('/', '-')] = data30
         # np.save('/home/bejar/wind%s.npy' % (wf.replace('/', '-')), data30)
     print(mdata)
-    np.savez_compressed('/home/bejar/Wind.npz', **mdata)
+    np.savez_compressed('/home/bejar/Wind60.npz', **mdata)
 
 
     # fig = plt.figure(figsize=(10, 16), dpi=100)

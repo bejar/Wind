@@ -1,0 +1,17 @@
+
+{
+  "datafile": "Wind15",
+  "datasize": 163648,
+  "testsize": 81824,
+  "dataset": 3,
+  "lag": 6,
+  "ahead": 1,
+  "neurons": 1024,
+  "drop": 0.0,
+  "nlayers": 2,
+  "activation": "relu",
+  "activation_r": "sigmoid",
+  "rnn": "LSTM",
+  "batch":  500,
+  "epochs": 25
+}
