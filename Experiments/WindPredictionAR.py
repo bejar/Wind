@@ -60,7 +60,6 @@ if __name__ == '__main__':
     npred = 100
     predictions = np.zeros((npred, plength))
 
-
     for i in range(npred):
         arima = ARIMA(test[i:i+tlength], order=(9, 1, 1))
         # arima = ARMA(test[i:i+tlength], order=(12, 0))
