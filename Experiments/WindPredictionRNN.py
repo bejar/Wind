@@ -70,7 +70,7 @@ def lagged_matrix(data, lag=1, ahead=0):
     lvect.append(data[lag + ahead:, :])
     return np.stack(lvect, axis=1)
 
-def dataset():
+def dataset(ahead):
     """
     Generates the dataset for training, test and validation
 
@@ -259,14 +259,13 @@ if __name__ == '__main__':
     lag = config['lag']
     sahead = config['ahead']
 
-    train_x, train_y, val_x, val_y, test_x, test_y = dataset()
 
 
     for ahead in range(1, sahead+1):
         print('-----------------------------------------------------------------------------')
         print('Steps Ahead = %d '%ahead)
 
-
+        train_x, train_y, val_x, val_y, test_x, test_y = dataset(ahead)
 
         ############################################
         # Model

@@ -42,7 +42,6 @@ if __name__ == '__main__':
             print(data.shape)
 
             end = data.shape[0]
-            step = 12
             length = int(end/step)
             print(length)
             data30 = np.zeros((length))

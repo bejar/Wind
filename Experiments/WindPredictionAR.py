@@ -54,7 +54,7 @@ if __name__ == '__main__':
     test = wind1[datasize:datasize+halftest, 0].reshape(-1, 1)
     print(test.shape)
 
-    tlength = 100
+    tlength = 400
     plength = 8
     # npred = test.shape[0] - tlength - plength
     npred = 100
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
 
     for i in range(npred):
-        arima = ARIMA(test[i:i+tlength], order=(12, 0, 0))
+        arima = ARIMA(test[i:i+tlength], order=(9, 1, 1))
         # arima = ARMA(test[i:i+tlength], order=(12, 0))
         # arima = AR(np.array(test[i:i+tlength]))
         res = arima.fit(disp=0)
