@@ -22,7 +22,8 @@ warnings.filterwarnings("ignore")
 import numpy as np
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
-from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.arima_model import ARIMA, ARMA
+from statsmodels.tsa.ar_model import AR
 import json
 import argparse
 from Wind.Util import load_config_file
@@ -40,17 +41,20 @@ if __name__ == '__main__':
 
     vars = {0: 'wind_speed', 1: 'air_density', 2: 'pressure'}
 
-    wind = np.load('../Data/Wind15.npz')
+    wind = np.load('../Data/Wind60.npz')
+
     datasize = config['datasize']
     testsize = config['testsize']
 
     wind1 = wind['90-45142']
+    print(wind1.shape)
     train = wind1[datasize:, 0].reshape(-1, 1)
 
     halftest = testsize/2
     test = wind1[datasize:datasize+halftest, 0].reshape(-1, 1)
+    print(test.shape)
 
-    tlength = 250
+    tlength = 100
     plength = 8
     # npred = test.shape[0] - tlength - plength
     npred = 100
@@ -58,7 +62,9 @@ if __name__ == '__main__':
 
 
     for i in range(npred):
-        arima = ARIMA(test[i:i+tlength], order=(12, 0, 0 ))
+        arima = ARIMA(test[i:i+tlength], order=(12, 0, 0))
+        # arima = ARMA(test[i:i+tlength], order=(12, 0))
+        # arima = AR(np.array(test[i:i+tlength]))
         res = arima.fit(disp=0)
         fore = res.forecast(steps=plength)[0]
         predictions[i] = fore

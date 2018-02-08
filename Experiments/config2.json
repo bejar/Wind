@@ -1,8 +1,8 @@
 
 {
   "datafile": "Wind15",
-  "datasize": 40912,
-  "testsize": 20456,
+  "datasize": 163648,
+  "testsize": 81824,
   "dataset": 3,
   "lag": 6,
   "ahead": 1,
