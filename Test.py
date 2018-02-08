@@ -25,6 +25,7 @@ from Wind.Config import wind_data, wind_data_ext, wind_path
 from Wind.Maps.Util import MapThis
 import os
 import time
+import datetime as dt
 
 __author__ = 'bejar'
 
@@ -132,8 +133,21 @@ def map_all():
         MapThis(lcoords, ds, lfnames)
 
 if __name__ == '__main__':
-    # nc_fid = Dataset("/home/bejar/storage/Data/Wind/files/0/0.nc", 'r')
-    # ncdump(nc_fid)
+    nc_fid = Dataset("/home/bejar/storage/Data/Wind/files/90/45142.nc", 'r')
+    print(ncdump(nc_fid))
+    nint = nc_fid.dimensions['time'].size
+    stime =  nc_fid.getncattr('start_time')
+    samp =  nc_fid.getncattr('sample_period')
+
+    v = np.array([(t.tm_hour * 60 + t.tm_min, t.tm_mon) for t in [time.gmtime(stime + (i * samp)) for i in range(0, 100, 12)]])
+
+    print time.gmtime(stime)
+    print samp
+    print np.array(v)
+
+
+
+
 
     # lds = [v for v in sorted(os.listdir(wind_data_ext)) if v[0] in '0123456789']
     # wfile = open(wind_path + '/Results/Coords.csv', 'w')
@@ -161,35 +175,35 @@ if __name__ == '__main__':
     # print(z.shape)
 
 
-    wfiles = ['90/45142', '90/45143','90/45229','90/45230']
-    vars = ['wind_speed', 'density', 'pressure']
-    mdata = {}
-    for wf in wfiles:
-        print "/home/bejar/storage/Data/Wind/files/%s.nc" % wf
-        nc_fid = Dataset("/home/bejar/storage/Data/Wind/files/%s.nc" % wf, 'r')
-        ldata = []
-        for v in vars:
-            data = nc_fid.variables[v]
-            print(data.shape)
-
-            end = data.shape[0]
-            step = 12
-            length = int(end/step)
-            print(length)
-            data30 = np.zeros((length))
-
-            for i in range(0, end, step):
-                data30[i/step] = np.sum(data[i: i+step])/step
-
-            ldata.append((data30))
-
-        data30 = np.stack(ldata, axis=1)
-
-        print(data30.shape)
-        mdata[wf.replace('/', '-')] = data30
-        # np.save('/home/bejar/wind%s.npy' % (wf.replace('/', '-')), data30)
-    print(mdata)
-    np.savez_compressed('/home/bejar/Wind60.npz', **mdata)
+    # wfiles = ['90/45142', '90/45143','90/45229','90/45230']
+    # vars = ['wind_speed', 'density', 'pressure']
+    # mdata = {}
+    # for wf in wfiles:
+    #     print "/home/bejar/storage/Data/Wind/files/%s.nc" % wf
+    #     nc_fid = Dataset("/home/bejar/storage/Data/Wind/files/%s.nc" % wf, 'r')
+    #     ldata = []
+    #     for v in vars:
+    #         data = nc_fid.variables[v]
+    #         print(data.shape)
+    #
+    #         end = data.shape[0]
+    #         step = 12
+    #         length = int(end/step)
+    #         print(length)
+    #         data30 = np.zeros((length))
+    #
+    #         for i in range(0, end, step):
+    #             data30[i/step] = np.sum(data[i: i+step])/step
+    #
+    #         ldata.append((data30))
+    #
+    #     data30 = np.stack(ldata, axis=1)
+    #
+    #     print(data30.shape)
+    #     mdata[wf.replace('/', '-')] = data30
+    #     # np.save('/home/bejar/wind%s.npy' % (wf.replace('/', '-')), data30)
+    # print(mdata)
+    # np.savez_compressed('/home/bejar/Wind60.npz', **mdata)
 
 
     # fig = plt.figure(figsize=(10, 16), dpi=100)
