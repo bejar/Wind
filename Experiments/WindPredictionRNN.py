@@ -23,6 +23,7 @@ from keras.layers import Dense, Activation
 from keras.layers import LSTM, GRU, CuDNNGRU, CuDNNLSTM, Bidirectional
 from keras.optimizers import RMSprop, SGD
 from keras.callbacks import TensorBoard, ModelCheckpoint
+from keras.regularizers import l1, l2
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score
@@ -181,7 +182,7 @@ def dataset(ahead):
     return train_x, train_y, val_x, val_y, test_x, test_y
 
 
-def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDNN=False, bidirectional=False):
+def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDNN=False, bidirectional=False, reg='l1', regw=0.1):
     """
     RNN architecture
 
@@ -189,15 +190,22 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
     """
 
     if CuDNN:
+        if reg == 'l1':
+            regularizer = l1(regw)
+        elif reg == 'l2':
+            regularizer = l2(regw)
+        else:
+            regularizer = None
+
         RNN = CuDNNLSTM if rnntype == 'LSTM' else CuDNNGRU
         model = Sequential()
         if nlayers == 1:
-            model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2])))
+            model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), recurrent_regularizer=regularizer))
         else:
-            model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), return_sequences=True))
+            model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), return_sequences=True, recurrent_regularizer=regularizer))
             for i in range(1, nlayers - 1):
-                model.add(RNN(neurons, return_sequences=True))
-            model.add(RNN(neurons))
+                model.add(RNN(neurons, return_sequences=True, recurrent_regularizer=regularizer))
+            model.add(RNN(neurons, recurrent_regularizer=regularizer))
         model.add(Dense(1))
     else:
         RNN = LSTM if rnntype == 'LSTM' else GRU
@@ -276,9 +284,11 @@ if __name__ == '__main__':
 
         activation = config['activation']
         activation_r = config['activation_r']
+        reg = config['reg']
+        regw = config['regw']
 
 
-        model = architecture(neurons, drop, nlayers, activation, activation_r, config['rnn'], config['CuDNN'])
+        model = architecture(neurons, drop, nlayers, activation, activation_r, config['rnn'], config['CuDNN'], reg, regw)
 
         print('lag: ', lag, 'Neurons: ', neurons, 'Layers: ', nlayers, activation, activation_r)
         print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)

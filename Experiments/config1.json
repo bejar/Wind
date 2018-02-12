@@ -7,6 +7,8 @@
   "lag": 6,
   "ahead": 1,
   "neurons": 1024,
+  "reg" : "l1",
+  "regw": 0.1,
   "drop": 0.0,
   "nlayers": 2,
   "activation": "relu",
