@@ -4,7 +4,7 @@
   "datasize": 40912,
   "testsize": 20456,
   "dataset": 3,
-  "lag": 6,
+  "lag": 3,
   "ahead": 1,
   "neurons": 1024,
   "k_reg" : "l1",
@@ -12,12 +12,13 @@
   "rec_reg" : "l1",
   "rec_regw": 0.1,
   "drop": 0.0,
-  "nlayers": 2,
+  "nlayers": 3,
   "activation": "relu",
   "activation_r": "sigmoid",
-  "CuDNN" : false,
+  "CuDNN" : true,
   "bidirectional": false,
-  "rnn": "LSTM",
-  "batch":  500,
-  "epochs": 25
+  "rnn": "GRU",
+  "batch":  2000,
+  "epochs": 25,
+  "optimizer": "adam"
 }

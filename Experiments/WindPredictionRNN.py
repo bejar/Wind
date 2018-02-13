@@ -28,7 +28,8 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL']='3'
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 
 import json
@@ -36,8 +37,6 @@ import argparse
 from time import time
 
 from Wind.Util import load_config_file
-
-
 
 __author__ = 'bejar'
 
@@ -70,6 +69,7 @@ def lagged_matrix(data, lag=1, ahead=0):
         lvect.append(data[i: -lag - ahead + i, :])
     lvect.append(data[lag + ahead:, :])
     return np.stack(lvect, axis=1)
+
 
 def dataset(ahead):
     """
@@ -203,20 +203,20 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
     else:
         k_regularizer = None
 
-
     if CuDNN:
-
 
         RNN = CuDNNLSTM if rnntype == 'LSTM' else CuDNNGRU
         model = Sequential()
         if nlayers == 1:
-            model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), recurrent_regularizer=rec_regularizer,
-                          kernel_regularizer=k_regularizer))
+            model.add(
+                RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), recurrent_regularizer=rec_regularizer,
+                    kernel_regularizer=k_regularizer))
         else:
             model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), return_sequences=True,
                           recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
             for i in range(1, nlayers - 1):
-                model.add(RNN(neurons, return_sequences=True, recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+                model.add(RNN(neurons, return_sequences=True, recurrent_regularizer=rec_regularizer,
+                              kernel_regularizer=k_regularizer))
             model.add(RNN(neurons, recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
         model.add(Dense(1))
     else:
@@ -224,19 +224,24 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
         model = Sequential()
         if bidirectional:
             if nlayers == 1:
-                model.add(Bidirectional(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
-                              recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                                            recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)))
+                model.add(
+                    Bidirectional(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
+                                      recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+                                      recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)))
             else:
-                model.add(Bidirectional(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
-                              recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                              return_sequences=True, recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)))
+                model.add(
+                    Bidirectional(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
+                                      recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+                                      return_sequences=True, recurrent_regularizer=rec_regularizer,
+                                      kernel_regularizer=k_regularizer)))
                 for i in range(1, nlayers - 1):
                     model.add(Bidirectional(RNN(neurons, recurrent_dropout=drop, implementation=impl,
-                                  activation=activation, recurrent_activation=activation_r, return_sequences=True,
-                                                recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)))
+                                                activation=activation, recurrent_activation=activation_r,
+                                                return_sequences=True,
+                                                recurrent_regularizer=rec_regularizer,
+                                                kernel_regularizer=k_regularizer)))
                 model.add(Bidirectional(RNN(neurons, recurrent_dropout=drop, activation=activation,
-                              recurrent_activation=activation_r, implementation=impl,
+                                            recurrent_activation=activation_r, implementation=impl,
                                             recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)))
 
         else:
@@ -247,7 +252,8 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
             else:
                 model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
                               recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                              return_sequences=True, recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+                              return_sequences=True, recurrent_regularizer=rec_regularizer,
+                              kernel_regularizer=k_regularizer))
                 for i in range(1, nlayers - 1):
                     model.add(RNN(neurons, recurrent_dropout=drop, implementation=impl,
                                   activation=activation, recurrent_activation=activation_r, return_sequences=True,
@@ -258,6 +264,7 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
         model.add(Dense(1))
 
     return model
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -285,11 +292,9 @@ if __name__ == '__main__':
     lag = config['lag']
     sahead = config['ahead']
 
-
-
-    for ahead in range(1, sahead+1):
+    for ahead in range(1, sahead + 1):
         print('-----------------------------------------------------------------------------')
-        print('Steps Ahead = %d '%ahead)
+        print('Steps Ahead = %d ' % ahead)
 
         train_x, train_y, val_x, val_y, test_x, test_y = dataset(ahead)
 
@@ -310,6 +315,8 @@ if __name__ == '__main__':
         model = architecture(neurons, drop, nlayers, activation, activation_r, config['rnn'], config['CuDNN'],
                              rec_reg, rec_regw, k_reg, k_regw)
 
+        print(model.summary())
+
         print('lag: ', lag, 'Neurons: ', neurons, 'Layers: ', nlayers, activation, activation_r)
         print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
         print()
@@ -320,7 +327,8 @@ if __name__ == '__main__':
         mcheck = ModelCheckpoint(filepath='./model.h5', monitor='val_loss', verbose=0, save_best_only=True,
                                  save_weights_only=False, mode='auto', period=1)
         # optimizer = RMSprop(lr=0.00001)
-        model.compile(loss='mean_squared_error', optimizer='adam')
+        optimizer = config['optimizer']
+        model.compile(loss='mean_squared_error', optimizer=optimizer)
 
         batch_size = config['batch']
         nepochs = config['epochs']
