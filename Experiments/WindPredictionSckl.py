@@ -224,7 +224,7 @@ if __name__ == '__main__':
         ############################################
         # Model
         # knnr = KNeighborsRegressor(n_neighbors=27, weights='distance', n_jobs=-1)
-        knnr = SVR(kernel='rbf', C=1.5, epsilon=0.1)
+        knnr = SVR(kernel='rbf', C=2, epsilon=0.1)
         knnr.fit(train_x, train_y)
         ############################################
         # Results
