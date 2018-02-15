@@ -106,6 +106,7 @@ def dataset(ahead):
 
         print('DATA Dim =', wind1.shape)
         # print(wind2.shape)
+        # print(wind1[:25,0])
 
         wind_train = wind1[:datasize, :]
         print('Train Dim =', wind_train.shape)
@@ -115,6 +116,8 @@ def dataset(ahead):
         else:
             train = lagged_matrix(wind_train, lag=lag, ahead=ahead)
 
+        # print(train[0:4,:,0])
+
         print('Train shape =', train.shape)
 
         train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
@@ -122,6 +125,9 @@ def dataset(ahead):
         if config['dataset'] == 0:
             train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1], 1))
         train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
+
+        # print(train_x[0:4,:,0])
+        # print(train_y[0:4,:,0])
 
         if config['dataset'] == 0:
             wind_test = wind1[datasize:datasize + testsize, 0].reshape(-1, 1)
@@ -451,3 +457,21 @@ if __name__ == '__main__':
     for i in range(1, ahead+1):
         print('R2 test= ', i, r2_score(test_y[:, i-1, 0], test_yp[:, i-1, 0]))
         print('R2 test persistence =', i, r2_score(test_y[i:, 0, 0], test_y[0:-i, 0, 0]))
+
+    fig = plt.figure()
+    plt.plot(val_y[1:201, 0, 0], color='r')
+    plt.plot(val_yp[1:201, 0, 0], color='b')
+    # plt.plot(val_y[:200, 0, 0], color='g')
+    plt.show()
+
+    fig = plt.figure()
+    plt.plot(val_y[7:207, 7, 0], color='r')
+    plt.plot(val_yp[7:207, 7, 0], color='b')
+    # plt.plot(val_y[:200, 7, 0], color='g')
+    plt.show()
+
+    fig = plt.figure()
+    plt.plot(val_y[11:211, 11, 0], color='r')
+    plt.plot(val_yp[11:211, 11, 0], color='b')
+    # plt.plot(val_y[:200, 11, 0], color='g')
+    plt.show()
