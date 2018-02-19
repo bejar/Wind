@@ -25,7 +25,6 @@ from keras.optimizers import RMSprop, SGD
 from keras.callbacks import TensorBoard, ModelCheckpoint
 from keras.regularizers import l1, l2
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score
 import os
 
@@ -39,145 +38,6 @@ from Wind.Util import load_config_file
 from Wind.Data import generate_dataset
 __author__ = 'bejar'
 
-def lagged_vector(data, lag=1, ahead=0):
-    """
-    Returns a matrix with columns that are the steps of the lagged time series
-    Last column is the value to predict
-    :param data:
-    :param lag:
-    :return:
-    """
-    lvect = []
-    for i in range(lag):
-        lvect.append(data[i: -lag - ahead + i])
-    lvect.append(data[lag + ahead:])
-    return np.stack(lvect, axis=1)
-
-
-def lagged_matrix(data, lag=1, ahead=0):
-    """
-    Returns a matrix with columns that are the steps of the lagged time series
-    Last column is the value to predict
-    :param data:
-    :param lag:
-    :return:
-    """
-    lvect = []
-    for i in range(lag):
-        lvect.append(data[i: -lag - ahead + i, :])
-    lvect.append(data[lag + ahead:, :])
-    return np.stack(lvect, axis=1)
-
-
-def dataset(ahead):
-    """
-    Generates the dataset for training, test and validation
-
-      0 = One site - wind
-      1 = One site - all variables
-      2 = All sites - wind
-      3 = All sites - all variables
-      4 = All sites - all variables stacked
-
-    :return:
-    """
-    scaler = StandardScaler()
-    if 0 <= config['dataset'] < 4:
-        if config['dataset'] == 0:  # only windspeed
-            wind1 = wind['90-45142']
-            wind1 = wind1[:, 0].reshape(-1, 1)
-        elif config['dataset'] == 1:  # One site all variables
-            wind1 = wind['90-45142']
-        elif config['dataset'] == 2:  # four sites windspeed
-            wind1 = np.vstack((wind['90-45142'][:, 0],
-                               wind['90-45143'][:, 0],
-                               wind['90-45229'][:, 0],
-                               wind['90-45230'][:, 0])
-                              ).T
-        elif config['dataset'] == 3:  # four sites all variables
-            wind1 = np.hstack((wind['90-45142'],
-                               wind['90-45143'],
-                               wind['90-45229'],
-                               wind['90-45230'])
-                              )
-
-        wind1 = scaler.fit_transform(wind1)
-
-        print('DATA Dim =', wind1.shape)
-        # print(wind2.shape)
-
-        wind_train = wind1[:datasize, :]
-        print('Train Dim =', wind_train.shape)
-
-        if config['dataset'] == 0:
-            train = lagged_vector(wind_train, lag=lag, ahead=ahead - 1, s2s=True)
-        else:
-            train = lagged_matrix(wind_train, lag=lag, ahead=ahead - 1, s2s=True)
-
-        train_x, train_y = train[:, :lag], train[:, -1, 0]
-
-        if config['dataset'] == 0:
-            train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1], 1))
-
-        if config['dataset'] == 0:
-            wind_test = wind1[datasize:datasize + testsize, 0].reshape(-1, 1)
-            test = lagged_vector(wind_test, lag=lag, ahead=ahead - 1, s2s=True)
-        else:
-            wind_test = wind1[datasize:datasize + testsize, :]
-            test = lagged_matrix(wind_test, lag=lag, ahead=ahead - 1, s2s=True)
-
-        half_test = int(test.shape[0] / 2)
-
-        val_x, val_y = test[:half_test, :lag], test[:half_test, -1, 0]
-        if config['dataset'] == 0:
-            val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1], 1))
-
-        test_x, test_y = test[half_test:, :lag], test[half_test:, -1, 0]
-        if config['dataset'] == 0:
-            test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1], 1))
-    elif config['dataset'] == 4:  # four sites all variables all sites stacked
-        wind1 = wind['90-45142']
-        wind2 = wind['90-45143']
-        wind3 = wind['90-45229']
-        wind4 = wind['90-45230']
-
-        scaler = StandardScaler()
-        wind1 = scaler.fit_transform(wind1)
-        wind2 = scaler.fit_transform(wind2)
-        wind3 = scaler.fit_transform(wind3)
-        wind4 = scaler.fit_transform(wind4)
-
-        print(wind1.shape)
-        # print(wind2.shape)
-
-        wind_train1 = wind1[:datasize, :]
-        wind_train2 = wind2[:datasize, :]
-        wind_train3 = wind3[:datasize, :]
-        wind_train4 = wind4[:datasize, :]
-        print(wind_train1.shape)
-
-        train1 = lagged_matrix(wind_train1, lag=lag, ahead=ahead - 1, s2s=True)
-        train_x1, train_y1 = train1[:, :lag], train1[:, -1, 0]
-        train2 = lagged_matrix(wind_train2, lag=lag, ahead=ahead - 1, s2s=True)
-        train_x2, train_y2 = train2[:, :lag], train2[:, -1, 0]
-        train3 = lagged_matrix(wind_train3, lag=lag, ahead=ahead - 1, s2s=True)
-        train_x3, train_y3 = train3[:, :lag], train3[:, -1, 0]
-        train4 = lagged_matrix(wind_train4, lag=lag, ahead=ahead - 1, s2s=True)
-        train_x4, train_y4 = train4[:, :lag], train4[:, -1, 0]
-
-        train_x = np.vstack((train_x1, train_x2, train_x3, train_x4))
-        train_y = np.hstack((train_y1, train_y2, train_y3, train_y4))
-
-        print(train_x.shape, train_y.shape)
-
-        wind_test = wind1[datasize:datasize + testsize, :]
-        test = lagged_matrix(wind_test, lag=lag, ahead=ahead - 1, s2s=True)
-        half_test = int(test.shape[0] / 2)
-
-        val_x, val_y = test[:half_test, :lag], test[:half_test, -1, 0]
-        test_x, test_y = test[half_test:, :lag], test[half_test:, -1, 0]
-
-    return train_x, train_y, val_x, val_y, test_x, test_y
 
 
 def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDNN=False, bidirectional=False,
@@ -279,36 +139,27 @@ if __name__ == '__main__':
     ############################################
     # Data
 
-    vars = {0: 'wind_speed', 1: 'air_density', 2: 'pressure'}
-
-    wind = np.load('../Data/%s.npz' % config['datafile'])
-    print(wind.files)
-
-    # Size of the training and size for validatio+test set (half for validation, half for test)
-    datasize = config['datasize']
-    testsize = config['testsize']
-    lag = config['lag']
-    sahead = config['ahead']
+    sahead = config['data']['ahead']
 
     for ahead in range(1, sahead + 1):
         print('-----------------------------------------------------------------------------')
         print('Steps Ahead = %d ' % ahead)
 
-        train_x, train_y, val_x, val_y, test_x, test_y = dataset(ahead)
+        train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], s2s=True)
 
         ############################################
         # Model
 
-        neurons = config['neurons']
-        drop = config['drop']
-        nlayers = config['nlayers']  # >= 1
+        neurons = config['arch']['neurons']
+        drop = config['arch']['drop']
+        nlayers = config['arch']['nlayers']  # >= 1
 
-        activation = config['activation']
-        activation_r = config['activation_r']
-        rec_reg = config['rec_reg']
-        rec_regw = config['rec_regw']
-        k_reg = config['k_reg']
-        k_regw = config['k_regw']
+        activation = config['arch']['activation']
+        activation_r = config['arch']['activation_r']
+        rec_reg = config['arch']['rec_reg']
+        rec_regw = config['arch']['rec_regw']
+        k_reg = config['arch']['k_reg']
+        k_regw = config['arch']['k_regw']
         bidirectional =config['bidirectional']
 
         model = architecture(neurons=neurons, drop=drop, nlayers=nlayers, activation=activation,
@@ -317,7 +168,7 @@ if __name__ == '__main__':
 
         print(model.summary())
 
-        print('lag: ', lag, 'Neurons: ', neurons, 'Layers: ', nlayers, activation, activation_r)
+        print('lag: ', config['data']['lag'], 'Neurons: ', neurons, 'Layers: ', nlayers, activation, activation_r)
         print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
         print()
 
@@ -327,11 +178,11 @@ if __name__ == '__main__':
         mcheck = ModelCheckpoint(filepath='./model.h5', monitor='val_loss', verbose=0, save_best_only=True,
                                  save_weights_only=False, mode='auto', period=1)
         # optimizer = RMSprop(lr=0.00001)
-        optimizer = config['optimizer']
+        optimizer = config['training']['optimizer']
         model.compile(loss='mean_squared_error', optimizer=optimizer)
 
-        batch_size = config['batch']
-        nepochs = config['epochs']
+        batch_size = config['training']['batch']
+        nepochs = config['training']['epochs']
 
         model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
                   verbose=verbose, callbacks=[mcheck])

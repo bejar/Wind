@@ -29,6 +29,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score
 import os
 
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 
@@ -37,6 +38,7 @@ import argparse
 from time import time
 
 from Wind.Util import load_config_file
+from Wind.Data import lagged_vector
 
 __author__ = 'bejar'
 
@@ -393,6 +395,7 @@ if __name__ == '__main__':
     ahead = config['ahead']
 
     train_x, train_y, val_x, val_y, test_x, test_y = dataset(ahead)
+    print(test_y.shape)
 
     ############################################
     # Model
