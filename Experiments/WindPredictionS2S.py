@@ -188,8 +188,8 @@ def dataset(ahead):
         test = lagged_matrix(wind_test, lag=lag, ahead=ahead - 1)
         half_test = int(test.shape[0] / 2)
 
-        val_x, val_y = test[:half_test, :lag], test[:half_test, -1, 0]
-        test_x, test_y = test[half_test:, :lag], test[half_test:, -1, 0]
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
 
     return train_x, train_y, val_x, val_y, test_x, test_y
 

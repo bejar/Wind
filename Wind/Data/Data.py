@@ -94,8 +94,8 @@ def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, s2s=Fals
         val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead, 0]
         test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead, 0]
     else:
-        val_x, val_y = test[:half_test, :lag], test[:half_test, -1, 0]
-        test_x, test_y = test[half_test:, :lag], test[half_test:, -1, 0]
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
 
     return train_x, train_y, val_x, val_y, test_x, test_y
 
@@ -126,8 +126,8 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, s2s
         val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead:, 0]
         test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead:, 0]
     else:
-        val_x, val_y = test[:half_test, :lag], test[:half_test, -1, 0]
-        test_x, test_y = test[half_test:, :lag], test[half_test:, -1, 0]
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
 
     return train_x, train_y, val_x, val_y, test_x, test_y
 

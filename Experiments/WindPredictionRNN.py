@@ -114,7 +114,7 @@ def dataset(ahead):
         else:
             train = lagged_matrix(wind_train, lag=lag, ahead=ahead - 1, s2s=True)
 
-        train_x, train_y = train[:, :lag], train[:, -1, 0]
+        train_x, train_y = train[:, :lag], train[:, -1:, 0]
 
         if config['dataset'] == 0:
             train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1], 1))
@@ -128,11 +128,11 @@ def dataset(ahead):
 
         half_test = int(test.shape[0] / 2)
 
-        val_x, val_y = test[:half_test, :lag], test[:half_test, -1, 0]
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
         if config['dataset'] == 0:
             val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1], 1))
 
-        test_x, test_y = test[half_test:, :lag], test[half_test:, -1, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
         if config['dataset'] == 0:
             test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1], 1))
     elif config['dataset'] == 4:  # four sites all variables all sites stacked
@@ -174,8 +174,8 @@ def dataset(ahead):
         test = lagged_matrix(wind_test, lag=lag, ahead=ahead - 1, s2s=True)
         half_test = int(test.shape[0] / 2)
 
-        val_x, val_y = test[:half_test, :lag], test[:half_test, -1, 0]
-        test_x, test_y = test[half_test:, :lag], test[half_test:, -1, 0]
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
 
     return train_x, train_y, val_x, val_y, test_x, test_y
 

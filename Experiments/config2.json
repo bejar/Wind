@@ -9,9 +9,9 @@
     "vars": [0,1,2,3],
     "datasize": 40912,
     "testsize": 20456,
-    "dataset": 1,
-    "lag": 6,
-    "ahead": 3
+    "dataset": 3,
+    "lag": 24,
+    "ahead": 12
   },
   "arch": {
     "neurons": 100,

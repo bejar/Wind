@@ -126,7 +126,7 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='config1', help='Experiment configuration')
+    parser.add_argument('--config', default='config2', help='Experiment configuration')
     parser.add_argument('--verbose', help="Verbose output (enables Keras verbose output)", action='store_true',
                         default=False)
     parser.add_argument('--gpu', help="Use LSTM/GRU gpu implementation", action='store_true', default=False)
@@ -145,7 +145,7 @@ if __name__ == '__main__':
         print('-----------------------------------------------------------------------------')
         print('Steps Ahead = %d ' % ahead)
 
-        train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], s2s=True)
+        train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], s2s=False)
 
         ############################################
         # Model
@@ -160,15 +160,15 @@ if __name__ == '__main__':
         rec_regw = config['arch']['rec_regw']
         k_reg = config['arch']['k_reg']
         k_regw = config['arch']['k_regw']
-        bidirectional =config['bidirectional']
+        bidirectional =config['arch']['bidirectional']
 
         model = architecture(neurons=neurons, drop=drop, nlayers=nlayers, activation=activation,
-                             activation_r=activation_r, rnntype=config['rnn'], CuDNN=config['CuDNN'],
+                             activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
                              rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, bidirectional=bidirectional)
 
         print(model.summary())
 
-        print('lag: ', config['data']['lag'], 'Neurons: ', neurons, 'Layers: ', nlayers, activation, activation_r)
+        print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation, activation_r)
         print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
         print()
 
@@ -207,6 +207,9 @@ if __name__ == '__main__':
         print('R2 test= ', r2_score(test_y, test_yp))
         print('R2 test persistence =', r2_score(test_y[ahead:], test_y[0:-ahead]))
 
+
+
+    # ----------------------------------------------
     # plt.subplot(2, 1, 1)
     # plt.plot(test_predict, color='r')
     # plt.plot(test_y, color='b')
