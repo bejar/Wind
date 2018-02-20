@@ -74,17 +74,16 @@ def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, s2s=Fals
     """
     scaler = StandardScaler()
     data = scaler.fit_transform(data)
+    print('DATA Dim =', data.shape)
+
     wind_train =  data[:datasize, :]
-    # print(wind_train[:15, 0])
+    print('Train Dim =', wind_train.shape)
 
     train = lagged_vector(wind_train, lag=lag, ahead=ahead, s2s=s2s)
     if s2s:
         train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
     else:
         train_x, train_y = train[:, :lag], train[:, -1:, 0]
-    # print(train_y.shape)
-    # print(train_x[0:5,:])
-    # print(train_y[0:5, :])
 
     wind_test = data[datasize:datasize + testsize, 0].reshape(-1, 1)
     test = lagged_vector(wind_test, lag=lag, ahead=ahead, s2s=s2s)
@@ -107,7 +106,10 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, s2s
     """
     scaler = StandardScaler()
     data = scaler.fit_transform(data)
+    print('DATA Dim =', data.shape)
+
     wind_train = data[:datasize, :]
+    print('Train Dim =', wind_train.shape)
 
     # Train
     train = lagged_matrix(wind_train, lag=lag, ahead=ahead, s2s=s2s)
@@ -132,7 +134,7 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, s2s
     return train_x, train_y, val_x, val_y, test_x, test_y
 
 
-def generate_dataset(config, s2s=False):
+def generate_dataset(config, ahead=1, s2s=False):
     """
     Generates the dataset for training, test and validation
 
@@ -152,7 +154,6 @@ def generate_dataset(config, s2s=False):
     datasize = config['datasize']
     testsize = config['testsize']
     lag = config['lag']
-    ahead = config['ahead']
     vars = config['vars']
     wind = {}
 

@@ -6,12 +6,12 @@
       "90-45229",
       "90-45230"
     ],
-    "vars": [0,1,2,3],
+    "vars": [0,1,2,3,4,5],
     "datasize": 40912,
     "testsize": 20456,
     "dataset": 3,
-    "lag": 24,
-    "ahead": 12
+    "lag": 6,
+    "ahead": 2
   },
   "arch": {
     "neurons": 100,
