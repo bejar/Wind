@@ -169,7 +169,7 @@ if __name__ == '__main__':
                              rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, bidirectional=bidirectional,
                              full=config['arch']['full'])
 
-        print(model.summary())
+        model.summary()
 
         print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation, activation_r)
         print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)

@@ -82,6 +82,7 @@ def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, s2s=Fals
     train = lagged_vector(wind_train, lag=lag, ahead=ahead, s2s=s2s)
     if s2s:
         train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
+        train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
     else:
         train_x, train_y = train[:, :lag], train[:, -1:, 0]
 
@@ -92,6 +93,8 @@ def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, s2s=Fals
     if s2s:
         val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead, 0]
         test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead, 0]
+        val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
+        test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
     else:
         val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
         test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
@@ -115,6 +118,7 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, s2s
     train = lagged_matrix(wind_train, lag=lag, ahead=ahead, s2s=s2s)
     if s2s:
         train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
+        train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
     else:
         train_x, train_y = train[:, :lag], train[:, -1:, 0]
 
@@ -127,6 +131,8 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, s2s
     if s2s:
         val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead:, 0]
         test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead:, 0]
+        val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
+        test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
     else:
         val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
         test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
