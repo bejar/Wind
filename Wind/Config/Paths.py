@@ -21,7 +21,7 @@ __author__ = 'bejar'
 
 wind_path = '/home/bejar/storage/Data/Wind/'
 #wind_data = '/home/bejar/storage/Data/Wind/files/'
-wind_data = '../Data'
+wind_data_path = '../Data'
 wind_data_ext = '/run/media/bejar/NREL Datase/(disk3) NREL Wind Dataset/'
 
 

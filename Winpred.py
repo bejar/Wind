@@ -20,7 +20,7 @@ Winpred
 from netCDF4 import Dataset
 import matplotlib.pyplot as plt
 import numpy as np
-from Wind.Config import wind_data, wind_data_ext, wind_path
+from Wind.Config import wind_data_path, wind_data_ext, wind_path
 import statsmodels.api as sm
 from __future__ import division
 

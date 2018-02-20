@@ -21,7 +21,7 @@ from netCDF4 import Dataset
 import matplotlib.pyplot as plt
 import numpy as np
 import glob
-from Wind.Config import wind_data, wind_data_ext, wind_path
+from Wind.Config import wind_data_path, wind_data_ext, wind_path
 from Wind.Maps.Util import MapThis
 import os
 import time

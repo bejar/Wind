@@ -21,7 +21,7 @@ from __future__ import print_function
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from netCDF4 import Dataset
-from Wind.Config import wind_data
+from Wind.Config import wind_data_path
 __author__ = 'bejar'
 
 
@@ -140,7 +140,7 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, s2s
     return train_x, train_y, val_x, val_y, test_x, test_y
 
 
-def generate_dataset(config, ahead=1, s2s=False):
+def generate_dataset(config, ahead=1, s2s=False, data_path=None):
     """
     Generates the dataset for training, test and validation
 
@@ -165,10 +165,9 @@ def generate_dataset(config, ahead=1, s2s=False):
 
     # Reads numpy arrays for all sites and keep only selected columns
     for d in datanames:
-        wind[d] = np.load(wind_data + '/%s.npy' % d)
+        wind[d] = np.load(data_path + '/%s.npy' % d)
         if vars is not None:
             wind[d] = wind[d][:,vars]
-            # print(wind[d].shape)
 
     if config['dataset'] == 0:
         return _generate_dataset_one_var(wind[datanames[0]][:, 0].reshape(-1, 1), datasize, testsize,
@@ -191,8 +190,11 @@ if __name__ == '__main__':
     from Wind.Util import load_config_file
     config = load_config_file('../../Experiments/config2.json')
 
-    print(config)
-    ldata = generate_dataset(config['data'], s2s=True)
+    # print(config)
+    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=2, s2s=True, data_path='../../Data')
 
-    for d in ldata:
-        print(d.shape)
+    print(train_x.shape)
+    print(train_x[0:5,:,0])
+
+    print(train_y.shape)
+    print(train_y[0:2,:,0])

@@ -39,6 +39,8 @@ from time import time
 
 from Wind.Util import load_config_file
 from Wind.Data import generate_dataset
+from Wind.Config import wind_data_path
+
 __author__ = 'bejar'
 
 def architectureS2S(ahead, neurons, drop, nlayersE, nlayersD, activation, activation_r, rnntype, CuDNN=False,
@@ -146,7 +148,7 @@ if __name__ == '__main__':
     # Data
     ahead = config['data']['ahead']
 
-    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, s2s=True)
+    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, s2s=True, data_path=wind_data_path)
     print(test_y.shape)
 
     ############################################
