@@ -197,4 +197,4 @@ if __name__ == '__main__':
     print(train_x[0:5,:,0])
 
     print(train_y.shape)
-    print(train_y[0:2,:,0])
+    print(train_y[0:5,:,0])
