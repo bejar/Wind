@@ -41,7 +41,7 @@ __author__ = 'bejar'
 
 
 def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDNN=False, bidirectional=False,
-                 rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1):
+                 rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1, full=[1]):
     """
     RNN architecture
 
@@ -75,7 +75,8 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
                 model.add(RNN(neurons, return_sequences=True, recurrent_regularizer=rec_regularizer,
                               kernel_regularizer=k_regularizer))
             model.add(RNN(neurons, recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-        model.add(Dense(1))
+        for l in full:
+            model.add(Dense(l))
     else:
         RNN = LSTM if rnntype == 'LSTM' else GRU
         model = Sequential()
@@ -118,7 +119,8 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
                 model.add(RNN(neurons, recurrent_dropout=drop, activation=activation,
                               recurrent_activation=activation_r, implementation=impl,
                               recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-        model.add(Dense(1))
+        for l in full:
+            model.add(Dense(l))
 
     return model
 
@@ -164,7 +166,8 @@ if __name__ == '__main__':
 
         model = architecture(neurons=neurons, drop=drop, nlayers=nlayers, activation=activation,
                              activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
-                             rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, bidirectional=bidirectional)
+                             rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, bidirectional=bidirectional,
+                             full=config['arch']['full'])
 
         print(model.summary())
 

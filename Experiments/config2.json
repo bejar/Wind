@@ -27,7 +27,8 @@
     "activation_r": "sigmoid",
     "CuDNN": false,
     "bidirectional": false,
-    "rnn": "GRU"
+    "rnn": "GRU",
+    "full": [32, 16, 1]
   },
   "training": {
     "batch": 2000,
