@@ -5,7 +5,7 @@
   "testsize": 20456,
   "dataset": 3,
   "lag": 6,
-  "ahead": 2,
+  "ahead": 6,
   "neurons": 100,
   "k_reg" : "None",
   "k_regw": 0.1,
@@ -21,6 +21,6 @@
   "bidirectional": false,
   "rnn": "GRU",
   "batch":  2000,
-  "epochs": 40,
+  "epochs": 20,
   "optimizer": "adam"
 }

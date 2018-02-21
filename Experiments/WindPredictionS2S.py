@@ -133,10 +133,10 @@ def dataset(ahead):
 
         if config['dataset'] == 0:
             wind_test = wind1[datasize:datasize + testsize, 0].reshape(-1, 1)
-            test = lagged_vector(wind_test, lag=lag, ahead=ahead - 1)
+            test = lagged_vector(wind_test, lag=lag, ahead=ahead)
         else:
             wind_test = wind1[datasize:datasize + testsize, :]
-            test = lagged_matrix(wind_test, lag=lag, ahead=ahead - 1)
+            test = lagged_matrix(wind_test, lag=lag, ahead=ahead)
 
         half_test = int(test.shape[0] / 2)
 
@@ -283,91 +283,6 @@ def architectureS2S(ahead, neurons, drop, nlayersE, nlayersD, activation, activa
 
     return model
 
-
-def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDNN=False, bidirectional=False,
-                 rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1):
-    """
-    RNN architecture
-
-    :return:
-    """
-    if rec_reg == 'l1':
-        rec_regularizer = l1(rec_regw)
-    elif rec_reg == 'l2':
-        rec_regularizer = l2(rec_regw)
-    else:
-        rec_regularizer = None
-
-    if k_reg == 'l1':
-        k_regularizer = l1(k_regw)
-    elif rec_reg == 'l2':
-        k_regularizer = l2(k_regw)
-    else:
-        k_regularizer = None
-
-    if CuDNN:
-
-        RNN = CuDNNLSTM if rnntype == 'LSTM' else CuDNNGRU
-        model = Sequential()
-        if nlayers == 1:
-            model.add(
-                RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), recurrent_regularizer=rec_regularizer,
-                    kernel_regularizer=k_regularizer))
-        else:
-            model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), return_sequences=True,
-                          recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-            for i in range(1, nlayers - 1):
-                model.add(RNN(neurons, return_sequences=True, recurrent_regularizer=rec_regularizer,
-                              kernel_regularizer=k_regularizer))
-            model.add(RNN(neurons, recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-        model.add(Dense(1))
-    else:
-        RNN = LSTM if rnntype == 'LSTM' else GRU
-        model = Sequential()
-        if bidirectional:
-            if nlayers == 1:
-                model.add(
-                    Bidirectional(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
-                                      recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                                      recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)))
-            else:
-                model.add(
-                    Bidirectional(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
-                                      recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                                      return_sequences=True, recurrent_regularizer=rec_regularizer,
-                                      kernel_regularizer=k_regularizer)))
-                for i in range(1, nlayers - 1):
-                    model.add(Bidirectional(RNN(neurons, recurrent_dropout=drop, implementation=impl,
-                                                activation=activation, recurrent_activation=activation_r,
-                                                return_sequences=True,
-                                                recurrent_regularizer=rec_regularizer,
-                                                kernel_regularizer=k_regularizer)))
-                model.add(Bidirectional(RNN(neurons, recurrent_dropout=drop, activation=activation,
-                                            recurrent_activation=activation_r, implementation=impl,
-                                            recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)))
-
-        else:
-            if nlayers == 1:
-                model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
-                              recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                              recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-            else:
-                model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
-                              recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                              return_sequences=True, recurrent_regularizer=rec_regularizer,
-                              kernel_regularizer=k_regularizer))
-                for i in range(1, nlayers - 1):
-                    model.add(RNN(neurons, recurrent_dropout=drop, implementation=impl,
-                                  activation=activation, recurrent_activation=activation_r, return_sequences=True,
-                                  recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-                model.add(RNN(neurons, recurrent_dropout=drop, activation=activation,
-                              recurrent_activation=activation_r, implementation=impl,
-                              recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-        model.add(Dense(1))
-
-    return model
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='config1', help='Experiment configuration')
@@ -396,6 +311,7 @@ if __name__ == '__main__':
 
     train_x, train_y, val_x, val_y, test_x, test_y = dataset(ahead)
     print(test_y.shape)
+
 
     ############################################
     # Model
