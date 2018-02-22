@@ -148,7 +148,7 @@ if __name__ == '__main__':
     # Data
     ahead = config['data']['ahead']
 
-    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, s2s=True, data_path=wind_data_path)
+    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=True, data_path=wind_data_path)
     print(test_y.shape)
 
     ############################################

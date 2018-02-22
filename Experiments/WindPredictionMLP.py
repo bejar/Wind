@@ -19,7 +19,7 @@ from __future__ import print_function
 import numpy as np
 
 from keras.models import Sequential, load_model
-from keras.layers import Dense, Activation
+from keras.layers import Dense, Activation, Input, Flatten, Reshape, Dropout
 from keras.layers import LSTM, GRU, CuDNNGRU, CuDNNLSTM, Bidirectional
 from keras.optimizers import RMSprop, SGD
 from keras.callbacks import TensorBoard, ModelCheckpoint
@@ -41,87 +41,21 @@ from Wind.Config import wind_data_path
 __author__ = 'bejar'
 
 
-def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDNN=False, bidirectional=False,
-                 rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1, full=[1]):
+def architectureMLP(idimensions, odimension, activation='linear', rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1,
+                    dropout=0.0, full_layers=[128]):
     """
-    RNN architecture
+    MLP architecture
 
     :return:
     """
-    if rec_reg == 'l1':
-        rec_regularizer = l1(rec_regw)
-    elif rec_reg == 'l2':
-        rec_regularizer = l2(rec_regw)
-    else:
-        rec_regularizer = None
+    model = Sequential()
+    model.add(Dense(full_layers[0], input_shape=idimensions))
+    model.add(Dropout(rate=dropout))
+    for units in full_layers[1:]:
+        model.add(Dense(units=units, activation=activation))
+        model.add(Dropout(rate=dropout))
 
-    if k_reg == 'l1':
-        k_regularizer = l1(k_regw)
-    elif rec_reg == 'l2':
-        k_regularizer = l2(k_regw)
-    else:
-        k_regularizer = None
-
-    if CuDNN:
-        RNN = CuDNNLSTM if rnntype == 'LSTM' else CuDNNGRU
-        model = Sequential()
-        if nlayers == 1:
-            model.add(
-                RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), recurrent_regularizer=rec_regularizer,
-                    kernel_regularizer=k_regularizer))
-        else:
-            model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), return_sequences=True,
-                          recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-            for i in range(1, nlayers - 1):
-                model.add(RNN(neurons, return_sequences=True, recurrent_regularizer=rec_regularizer,
-                              kernel_regularizer=k_regularizer))
-            model.add(RNN(neurons, recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-        for l in full:
-            model.add(Dense(l))
-    else:
-        RNN = LSTM if rnntype == 'LSTM' else GRU
-        model = Sequential()
-        if bidirectional:
-            if nlayers == 1:
-                model.add(
-                    Bidirectional(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
-                                      recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                                      recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)))
-            else:
-                model.add(
-                    Bidirectional(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
-                                      recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                                      return_sequences=True, recurrent_regularizer=rec_regularizer,
-                                      kernel_regularizer=k_regularizer)))
-                for i in range(1, nlayers - 1):
-                    model.add(Bidirectional(RNN(neurons, recurrent_dropout=drop, implementation=impl,
-                                                activation=activation, recurrent_activation=activation_r,
-                                                return_sequences=True,
-                                                recurrent_regularizer=rec_regularizer,
-                                                kernel_regularizer=k_regularizer)))
-                model.add(Bidirectional(RNN(neurons, recurrent_dropout=drop, activation=activation,
-                                            recurrent_activation=activation_r, implementation=impl,
-                                            recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)))
-
-        else:
-            if nlayers == 1:
-                model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
-                              recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                              recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-            else:
-                model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
-                              recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                              return_sequences=True, recurrent_regularizer=rec_regularizer,
-                              kernel_regularizer=k_regularizer))
-                for i in range(1, nlayers - 1):
-                    model.add(RNN(neurons, recurrent_dropout=drop, implementation=impl,
-                                  activation=activation, recurrent_activation=activation_r, return_sequences=True,
-                                  recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-                model.add(RNN(neurons, recurrent_dropout=drop, activation=activation,
-                              recurrent_activation=activation_r, implementation=impl,
-                              recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-        for l in full:
-            model.add(Dense(l))
+    model.add(Dense(odimension))
 
     return model
 
@@ -134,84 +68,79 @@ if __name__ == '__main__':
     parser.add_argument('--gpu', help="Use LSTM/GRU gpu implementation", action='store_true', default=False)
     args = parser.parse_args()
 
-    verbose = 1 if args.verbose else 0
+    verbose = 0 if args.verbose else 1
     impl = 1 if args.gpu else 1
 
     config = load_config_file(args.config)
     ############################################
     # Data
 
-    sahead = config['data']['ahead']
+    ahead = config['data']['ahead']
 
-    for ahead in range(1, sahead + 1):
-        print('-----------------------------------------------------------------------------')
-        print('Steps Ahead = %d ' % ahead)
+    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='mlp',
+                                                                      data_path=wind_data_path)
+    print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
 
-        train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, s2s=False, data_path=wind_data_path)
+    ############################################
+    # Model
 
+    neurons = config['arch']['neurons']
+    drop = config['arch']['drop']
+    nlayers = config['arch']['nlayers']  # >= 1
 
-        ############################################
-        # Model
+    activation = config['arch']['activation']
+    activation_r = config['arch']['activation_r']
+    rec_reg = config['arch']['rec_reg']
+    rec_regw = config['arch']['rec_regw']
+    k_reg = config['arch']['k_reg']
+    k_regw = config['arch']['k_regw']
+    bidirectional = config['arch']['bidirectional']
+    dropout = config['arch']['drop']
 
-        neurons = config['arch']['neurons']
-        drop = config['arch']['drop']
-        nlayers = config['arch']['nlayers']  # >= 1
+    model = architectureMLP(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation='sigmoid',
+                            rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
+                            full_layers=config['arch']['full'])
 
-        activation = config['arch']['activation']
-        activation_r = config['arch']['activation_r']
-        rec_reg = config['arch']['rec_reg']
-        rec_regw = config['arch']['rec_regw']
-        k_reg = config['arch']['k_reg']
-        k_regw = config['arch']['k_regw']
-        bidirectional =config['arch']['bidirectional']
+    model.summary()
 
-        model = architecture(neurons=neurons, drop=drop, nlayers=nlayers, activation=activation,
-                             activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
-                             rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, bidirectional=bidirectional,
-                             full=config['arch']['full'])
+    print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation,
+          activation_r)
+    print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
+    print()
 
-        model.summary()
+    ############################################
+    # Training
+    tensorboard = TensorBoard(log_dir="logs/{}".format(time()))
+    mcheck = ModelCheckpoint(filepath='./model.h5', monitor='val_loss', verbose=0, save_best_only=True,
+                             save_weights_only=False, mode='auto', period=1)
+    # optimizer = RMSprop(lr=0.00001)
+    optimizer = config['training']['optimizer']
+    model.compile(loss='mean_squared_error', optimizer=optimizer)
 
-        print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation, activation_r)
-        print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
-        print()
+    batch_size = config['training']['batch']
+    nepochs = config['training']['epochs']
 
-        ############################################
-        # Training
-        tensorboard = TensorBoard(log_dir="logs/{}".format(time()))
-        mcheck = ModelCheckpoint(filepath='./model.h5', monitor='val_loss', verbose=0, save_best_only=True,
-                                 save_weights_only=False, mode='auto', period=1)
-        # optimizer = RMSprop(lr=0.00001)
-        optimizer = config['training']['optimizer']
-        model.compile(loss='mean_squared_error', optimizer=optimizer)
+    model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
+              verbose=verbose, callbacks=[mcheck])
 
-        batch_size = config['training']['batch']
-        nepochs = config['training']['epochs']
+    ############################################
+    # Results
 
-        model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-                  verbose=verbose, callbacks=[mcheck])
+    model = load_model('./model.h5')
 
-        ############################################
-        # Results
+    val_yp = model.predict(val_x, batch_size=batch_size, verbose=0)
+    for i in range(1, ahead + 1):
+        print('R2 val= ', i, r2_score(val_y[:, i - 1], val_yp[:, i - 1]))
+        print('R2 val persistence =', i, r2_score(val_y[i:, 0], val_y[0:-i, 0]))
 
-        model = load_model('./model.h5')
-
-        score = model.evaluate(val_x, val_y, batch_size=batch_size, verbose=0)
-        print('MSE val= ', score)
-        print('MSE val persistence =', mean_squared_error(val_y[ahead:], val_y[0:-ahead]))
-        val_yp = model.predict(val_x, batch_size=batch_size, verbose=0)
-        print('R2 val= ', r2_score(val_y, val_yp))
-        print('R2 val persistence =', r2_score(val_y[ahead:], val_y[0:-ahead]))
-
-        score = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=0)
-        print()
-        print('MSE test= ', score)
-        print('MSE test persistence =', mean_squared_error(test_y[ahead:], test_y[0:-ahead]))
-        test_yp = model.predict(test_x, batch_size=batch_size, verbose=0)
-        print('R2 test= ', r2_score(test_y, test_yp))
-        print('R2 test persistence =', r2_score(test_y[ahead:], test_y[0:-ahead]))
-
-
+    # score = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=0)
+    print()
+    # print('MSE test= ', score)
+    # print('MSE test persistence =', mean_squared_error(test_y[ahead:], test_y[0:-ahead]))
+    test_yp = model.predict(test_x, batch_size=batch_size, verbose=0)
+    for i in range(1, ahead + 1):
+        print('R2 test= ', i, r2_score(test_y[:, i - 1], test_yp[:, i - 1]))
+        print('R2 test persistence =', i, r2_score(test_y[i:, 0], test_y[0:-i, 0]))
 
     # ----------------------------------------------
     # plt.subplot(2, 1, 1)

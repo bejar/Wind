@@ -25,7 +25,7 @@ from Wind.Config import wind_data_path
 __author__ = 'bejar'
 
 
-def lagged_vector(data, lag=1, ahead=0, s2s=False):
+def lagged_vector(data, lag=1, ahead=0, mode=None):
     """
     Returns a matrix with columns that are the steps of the lagged time series
     Last column is the value to predict
@@ -34,7 +34,7 @@ def lagged_vector(data, lag=1, ahead=0, s2s=False):
     :return:
     """
     lvect = []
-    if s2s:
+    if mode in ['s2s', 'mlp']:
         for i in range(lag + ahead):
             lvect.append(data[i: -lag - ahead + i])
     else:
@@ -46,7 +46,7 @@ def lagged_vector(data, lag=1, ahead=0, s2s=False):
     return np.stack(lvect, axis=1)
 
 
-def lagged_matrix(data, lag=1, ahead=0, s2s=False):
+def lagged_matrix(data, lag=1, ahead=0, mode=None):
     """
     Returns a matrix with columns that are the steps of the lagged time series
     Last column is the value to predict
@@ -56,7 +56,7 @@ def lagged_matrix(data, lag=1, ahead=0, s2s=False):
     """
     lvect = []
 
-    if s2s:
+    if mode in ['s2s', 'mlp']:
         for i in range(lag + ahead):
             lvect.append(data[i: -lag - ahead + i, :])
     else:
@@ -67,7 +67,7 @@ def lagged_matrix(data, lag=1, ahead=0, s2s=False):
     return np.stack(lvect, axis=1)
 
 
-def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, s2s=False):
+def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, mode=None):
     """
     Generates
     :return:
@@ -79,22 +79,30 @@ def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, s2s=Fals
     wind_train =  data[:datasize, :]
     print('Train Dim =', wind_train.shape)
 
-    train = lagged_vector(wind_train, lag=lag, ahead=ahead, s2s=s2s)
-    if s2s:
+    train = lagged_vector(wind_train, lag=lag, ahead=ahead, mode=mode)
+    if mode == 's2s':
         train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
         train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
+    elif mode == 'mlp':
+        train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
+        train_x = np.reshape(train_x, (train_y.shape[0], train_y.shape[1]))
     else:
         train_x, train_y = train[:, :lag], train[:, -1:, 0]
 
     wind_test = data[datasize:datasize + testsize, 0].reshape(-1, 1)
-    test = lagged_vector(wind_test, lag=lag, ahead=ahead, s2s=s2s)
+    test = lagged_vector(wind_test, lag=lag, ahead=ahead, mode=mode)
     half_test = int(test.shape[0] / 2)
 
-    if s2s:
-        val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead, 0]
-        test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead, 0]
+    if mode == 's2s':
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead:, 0]
         val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
         test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
+    elif mode == 'mlp':
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead:, 0]
+        val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1]))
+        test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1]))
     else:
         val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
         test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
@@ -102,7 +110,7 @@ def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, s2s=Fals
     return train_x, train_y, val_x, val_y, test_x, test_y
 
 
-def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, s2s=False):
+def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, mode=None):
     """
     Generates
     :return:
@@ -115,24 +123,32 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, s2s
     print('Train Dim =', wind_train.shape)
 
     # Train
-    train = lagged_matrix(wind_train, lag=lag, ahead=ahead, s2s=s2s)
-    if s2s:
+    train = lagged_matrix(wind_train, lag=lag, ahead=ahead, mode=mode)
+    if mode == 's2s':
         train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
         train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
+    elif mode == 'mlp':
+        train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
+        train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1] * train_x.shape[2]))
     else:
         train_x, train_y = train[:, :lag], train[:, -1:, 0]
 
     # Test and Val
     wind_test = data[datasize:datasize + testsize, :]
 
-    test = lagged_matrix(wind_test, lag=lag, ahead=ahead, s2s=s2s)
+    test = lagged_matrix(wind_test, lag=lag, ahead=ahead, mode=mode)
     half_test = int(test.shape[0] / 2)
 
-    if s2s:
+    if mode == 's2s':
         val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead:, 0]
         test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead:, 0]
         val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
         test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
+    elif mode == 'mlp':
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead:, 0]
+        val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1] * val_x.shape[2]))
+        test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1] * test_x.shape[2]))
     else:
         val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
         test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
@@ -140,7 +156,7 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, s2s
     return train_x, train_y, val_x, val_y, test_x, test_y
 
 
-def generate_dataset(config, ahead=1, s2s=False, data_path=None):
+def generate_dataset(config, ahead=1, mode=None, data_path=None):
     """
     Generates the dataset for training, test and validation
 
@@ -150,10 +166,14 @@ def generate_dataset(config, ahead=1, s2s=False, data_path=None):
       3 = All sites - all variables
       4 = All sites - all variables stacked
 
+
     :param datanames: Name of the wind datafiles
     :param vars: List with the indices of the variables to use
     :param ahead: number of steps ahead for prediction
-    :param type: type of dataset
+    :param mode: type of dataset
+            None (recurrent one output regression)
+            's2s' (recurrent multiple output regression)
+            'mlp' (plain n layer MLP for regression)
     :return:
     """
     datanames = config['datanames']
@@ -171,18 +191,18 @@ def generate_dataset(config, ahead=1, s2s=False, data_path=None):
 
     if config['dataset'] == 0:
         return _generate_dataset_one_var(wind[datanames[0]][:, 0].reshape(-1, 1), datasize, testsize,
-                                         lag=lag, ahead=ahead, s2s=s2s)
+                                         lag=lag, ahead=ahead, mode=mode)
     elif config['dataset'] == 1:
         return _generate_dataset_multiple_var(wind[datanames[0]], datasize, testsize,
-                                              lag=lag, ahead=ahead, s2s=s2s)
+                                              lag=lag, ahead=ahead, mode=mode)
     elif config['dataset'] == 2:
         stacked = np.vstack([wind[d][:,0] for d in datanames]).T
         return _generate_dataset_multiple_var(stacked, datasize, testsize,
-                                              lag=lag, ahead=ahead, s2s=s2s)
+                                              lag=lag, ahead=ahead, mode=mode)
     elif config['dataset'] == 3:
         stacked = np.hstack([wind[d] for d in datanames])
         return _generate_dataset_multiple_var(stacked, datasize, testsize,
-                                              lag=lag, ahead=ahead, s2s=s2s)
+                                              lag=lag, ahead=ahead, mode=mode)
     raise NameError('ERROR: No such dataset type')
 
 
@@ -191,10 +211,15 @@ if __name__ == '__main__':
     config = load_config_file('../../Experiments/config2.json')
 
     # print(config)
-    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=2, s2s=True, data_path='../../Data')
+    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=6, mode='mlp', data_path='../../Data')
 
     print(train_x.shape)
-    print(train_x[0:5,:,0])
+    # print(train_x[0:5,:])
 
     print(train_y.shape)
-    print(train_y[0:5,:,0])
+    # print(train_y[0:5,:])
+
+    print(test_x.shape)
+    print(test_y.shape)
+    print(val_x.shape)
+    print(val_y.shape)

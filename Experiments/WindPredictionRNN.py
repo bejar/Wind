@@ -147,7 +147,7 @@ if __name__ == '__main__':
         print('-----------------------------------------------------------------------------')
         print('Steps Ahead = %d ' % ahead)
 
-        train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, s2s=False, data_path=wind_data_path)
+        train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False, data_path=wind_data_path)
 
 
         ############################################
