@@ -30,7 +30,8 @@ if __name__ == '__main__':
     # Grupos de 5 minutos
     step = 12
 
-    wfiles = ['90/45142', '90/45143','90/45229','90/45230']
+    # wfiles = ['90/45142', '90/45143','90/45229','90/45230']
+    wfiles = ['1/741', '1/742', '1/743', '1/703', '1/704', '1/705', '1/668', '1/669', '1/670']
     vars = ['wind_speed', 'density', 'pressure', 'wind_direction']
     mdata = {}
     for d, wf in enumerate(wfiles):

@@ -132,6 +132,7 @@ def architectureS2S(ahead, neurons, drop, nlayersE, nlayersD, activation, activa
 
     return model
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='config2', help='Experiment configuration')

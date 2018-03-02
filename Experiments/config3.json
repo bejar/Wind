@@ -1,20 +1,16 @@
 {
   "data": {
     "datanames": [
-      "90-45142",
-      "90-45143",
-      "90-45229",
-      "90-45230"
-    ],
+     "1-704", "1-741", "1-742", "1-743", "1-703",  "1-705", "1-668", "1-669", "1-670"],
     "vars": [0,1,2,3],
     "datasize": 40912,
     "testsize": 20456,
     "dataset": 3,
     "lag": 12,
-    "ahead": 12
+    "ahead": 1
   },
   "arch": {
-    "neurons": 100,
+    "neurons": 40,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",
@@ -24,15 +20,16 @@
     "nlayersE": 1,
     "nlayersD": 1,
     "activation": "tanh",
-    "activation_r": "hard_sigmoid",
+    "activation_r": "sigmoid",
     "CuDNN": false,
     "bidirectional": false,
     "rnn": "GRU",
-    "full": [32]
+    "full": [1]
   },
   "training": {
     "batch": 1000,
     "epochs": 50,
-    "optimizer": "adam"
+    "optimizer": "nadam",
+    "lrate": 0.001
   }
 }

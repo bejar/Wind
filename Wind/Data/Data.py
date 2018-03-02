@@ -203,6 +203,18 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None):
         stacked = np.hstack([wind[d] for d in datanames])
         return _generate_dataset_multiple_var(stacked, datasize, testsize,
                                               lag=lag, ahead=ahead, mode=mode)
+    elif config['dataset'] == 4:
+        stacked = [_generate_dataset_multiple_var(wind[d], datasize, testsize,
+                                              lag=lag, ahead=ahead) for d in datanames]
+
+
+        train_x = np.vstack([x[0] for x in stacked])
+        train_y = np.vstack([x[1] for x in stacked])
+
+        test_x = stacked[0][2]
+        test_y = stacked[0][3]
+        return train_x, train_y, test_x, test_y
+
     raise NameError('ERROR: No such dataset type')
 
 
