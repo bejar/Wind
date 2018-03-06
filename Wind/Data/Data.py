@@ -211,9 +211,11 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None):
         train_x = np.vstack([x[0] for x in stacked])
         train_y = np.vstack([x[1] for x in stacked])
 
-        test_x = stacked[0][2]
-        test_y = stacked[0][3]
-        return train_x, train_y, test_x, test_y
+        val_x = stacked[0][2]
+        val_y = stacked[0][3]
+        test_x = stacked[0][4]
+        test_y = stacked[0][5]
+        return train_x, train_y, val_x, val_y, test_x, test_y
 
     raise NameError('ERROR: No such dataset type')
 
