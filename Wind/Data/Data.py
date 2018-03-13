@@ -117,10 +117,10 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, mod
     """
     scaler = StandardScaler()
     data = scaler.fit_transform(data)
-    print('DATA Dim =', data.shape)
+    # print('DATA Dim =', data.shape)
 
     wind_train = data[:datasize, :]
-    print('Train Dim =', wind_train.shape)
+    # print('Train Dim =', wind_train.shape)
 
     # Train
     train = lagged_matrix(wind_train, lag=lag, ahead=ahead, mode=mode)
