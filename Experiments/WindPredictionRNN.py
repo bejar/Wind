@@ -24,7 +24,7 @@ from keras.layers import LSTM, GRU, CuDNNGRU, CuDNNLSTM, Bidirectional, TimeDist
 from keras.optimizers import RMSprop, SGD
 from keras.callbacks import TensorBoard, ModelCheckpoint
 from keras.regularizers import l1, l2
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, r2_score
 import os
 
