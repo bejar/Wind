@@ -299,8 +299,8 @@ if __name__ == '__main__':
                            r2val, r2persV, r2test, r2persT
                            ))
             resfile.close()
-            print('DNAME= %s, DATAS= %d, VARS= %d, LAG= %d, AHEAD= %d, RNN= %s, Bi=%s, NLAY= %d, NNEUR= %d, DROP= %3.2f, ACT= %s, RACT= %s, '
-                      'OPT= %s, R2Val = %3.5f, R2persV = %3.5f, R2Test = %3.5f, R2persT = %3.5f\n' %
+            print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
+                      'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
                       (config['data']['datanames'][0],
                        config['data']['dataset'],
                        len(config['data']['vars']),
