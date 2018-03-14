@@ -39,6 +39,8 @@ from Wind.Data import generate_dataset
 from Wind.Config import wind_data_path
 import itertools
 from copy import deepcopy
+import pprint
+import sys
 
 __author__ = 'bejar'
 
@@ -167,12 +169,17 @@ if __name__ == '__main__':
     parser.add_argument('--gpu', help="Use LSTM/GRU gpu implementation", action='store_true', default=False)
     parser.add_argument('--best', help="Save weights best in test", action='store_true', default=False)
     parser.add_argument('--tboard', help="Save log for tensorboard", action='store_true', default=False)
+    parser.add_argument('--test', help="Print configurations and stop", action='store_true', default=False)
     args = parser.parse_args()
 
     verbose = 1 if args.verbose else 0
     impl = 2 if args.gpu else 1
 
     configB = load_config_file(args.config)
+    if args.test:
+        lconf = generate_configs(configB)
+        print(len(lconf))
+        sys.exit(0)
 
     rescode = int(time())
     for dname in configB['data']['datanames']:
