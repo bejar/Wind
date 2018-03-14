@@ -74,10 +74,10 @@ def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, mode=Non
     """
     scaler = StandardScaler()
     data = scaler.fit_transform(data)
-    print('DATA Dim =', data.shape)
+    # print('DATA Dim =', data.shape)
 
     wind_train =  data[:datasize, :]
-    print('Train Dim =', wind_train.shape)
+    # print('Train Dim =', wind_train.shape)
 
     train = lagged_vector(wind_train, lag=lag, ahead=ahead, mode=mode)
     if mode == 's2s':

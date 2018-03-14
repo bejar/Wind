@@ -177,7 +177,7 @@ if __name__ == '__main__':
     for dname in configB['data']['datanames']:
         resfile = open('result-%s.txt'%dname[0], 'a')
         resfile.write('DNAME, DATAS, VARS, LAG, AHEAD, RNN, Bi, NLAY, NNEUR, DROP, ACT, RACT, '
-                      'OPT, R2Val, R2persV, R2Test, R2persT')
+                      'OPT, R2Val, R2persV, R2Test, R2persT\n')
         resfile.close()
 
     ############################################
