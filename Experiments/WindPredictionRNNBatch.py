@@ -184,8 +184,8 @@ if __name__ == '__main__':
     rescode = int(time())
     for dname in configB['data']['datanames']:
         resfile = open('result-%d-%s.txt'% (rescode, dname[0]), 'a')
-        resfile.write('DNAME, DATAS, VARS, LAG, AHEAD, RNN, Bi, NLAY, NNEUR, DROP, ACT, RACT, '
-                      'OPT, R2Val, R2persV, R2Test, R2persT\n')
+        resfile.write('DNAME,DATAS,VARS,LAG,AHEAD,RNN,Bi,NLAY,NNEUR,DROP,ACT,RACT,'
+                      'OPT,R2Val,R2persV,R2Test,R2persT\n')
         resfile.close()
 
     ############################################
@@ -288,8 +288,7 @@ if __name__ == '__main__':
             # print('R2 test persistence =', r2persT)
 
             resfile = open('result-%d-%s.txt'%(rescode, config['data']['datanames'][0]), 'a')
-            resfile.write('%s, %d, %d, %d, %d, %s, %s, %d, %d, %3.2f, %s, %s, '
-                          '%s, %3.5f, %3.5f, %3.5f, %3.5f\n' %
+            resfile.write('%s,%d,%d,%d,%d,%s,%s,%d,%d,%3.2f,%s,%s,%s,%3.5f,%3.5f,%3.5f,%3.5f\n' %
                           (config['data']['datanames'][0],
                            config['data']['dataset'],
                            len(config['data']['vars']),
