@@ -328,6 +328,9 @@ if __name__ == '__main__':
                 os.remove(modfile)
             except OSError:
                 pass
+
+            del train_x, train_y, test_x, test_y, val_x, val_y
+            del model
     # ----------------------------------------------
     # plt.subplot(2, 1, 1)
     # plt.plot(test_predict, color='r')
