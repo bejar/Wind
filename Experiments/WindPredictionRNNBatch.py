@@ -41,6 +41,7 @@ import itertools
 from copy import deepcopy
 import pprint
 import sys
+import gc
 
 __author__ = 'bejar'
 
@@ -194,7 +195,7 @@ if __name__ == '__main__':
     for config in generate_configs(configB):
 
         sahead = config['data']['ahead']
-
+        gc.collect()
         for ahead in range(1, sahead + 1):
 
             if args.verbose:
