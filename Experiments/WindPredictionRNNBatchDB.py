@@ -158,6 +158,8 @@ if __name__ == '__main__':
 
     for cnf in range(args.nbatches):
         config = col.find_one({'status': 'pending'})
+        if config is None:
+            break
         col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
         col.update({'_id': config['_id']}, {'$set': {'btime': time.strftime('%Y-%m-%d %H:%M:%S', time())}})
 
