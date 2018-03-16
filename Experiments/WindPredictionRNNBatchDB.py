@@ -159,6 +159,8 @@ if __name__ == '__main__':
     for cnf in range(args.nbatches):
         config = col.find_one({'status': 'pending'})
         col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
+        col.update({'_id': config['_id']}, {'$set': {'btime': time.strftime('%Y-%m-%d %H:%M:%S', time())}})
+
         ############################################
         # Data
 
@@ -286,3 +288,4 @@ if __name__ == '__main__':
             del model
         col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
         col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
+        col.update({'_id': config['_id']}, {'$set': {'etime': time.strftime('%Y-%m-%d %H:%M:%S', time())}})

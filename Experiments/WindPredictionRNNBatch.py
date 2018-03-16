@@ -188,6 +188,8 @@ if __name__ == '__main__':
     for config in generate_configs(configB):
         lresults = []
         sahead = config['data']['ahead']
+        config['btime'] = time.strftime('%Y-%m-%d %H:%M:%S', time())
+
         for ahead in range(1, sahead + 1):
 
             if args.verbose:
@@ -308,6 +310,7 @@ if __name__ == '__main__':
             del model
         config['status'] = 'done'
         config['result'] = lresults
+        config['etime'] = time.strftime('%Y-%m-%d %H:%M:%S', time())
         resfile = open('result-%d.json' % rescode)
         resfile.write(json.dumps(config))
         resfile.close()
