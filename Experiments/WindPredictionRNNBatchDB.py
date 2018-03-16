@@ -34,11 +34,12 @@ import tensorflow as tf
 import argparse
 from time import time
 
-from Wind.Util import load_config_file
 from Wind.Data import generate_dataset
 from Wind.Config import wind_data_path
-from copy import deepcopy
 import sys
+from Wind.Private.DBConfig import mongoconnection
+from copy import deepcopy
+from pymongo import MongoClient
 
 __author__ = 'bejar'
 
@@ -135,63 +136,34 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
 
     return model
 
-def generate_configs(config):
-    """
-    Generates all possible individual configs from the fields with multiple values
-    :param config:
-    :return:
-    """
-    lconf = [{}]
-
-    for f1 in config:
-        for f2 in config[f1]:
-            lnconf = []
-            for v in config[f1][f2]:
-                for c in lconf:
-                    cp = deepcopy(c)
-                    if f1 in cp:
-                        cp[f1][f2] = v
-                    else:
-                        cp[f1] = {f2: v}
-                    lnconf.append(cp)
-            lconf = lnconf
-
-    return lconf
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='configBatch1', help='Experiment configuration')
     parser.add_argument('--verbose', help="Verbose output (enables Keras verbose output)", action='store_true',
                         default=False)
     parser.add_argument('--gpu', help="Use LSTM/GRU gpu implementation", action='store_true', default=False)
     parser.add_argument('--best', help="Save weights best in test", action='store_true', default=False)
     parser.add_argument('--tboard', help="Save log for tensorboard", action='store_true', default=False)
-    parser.add_argument('--test', help="Print configurations and stop", action='store_true', default=False)
+    parser.add_argument('--nbatches', help="Number of configurations to run", default=1, type=int)
     args = parser.parse_args()
 
     verbose = 1 if args.verbose else 0
     impl = 2 if args.gpu else 1
 
-    configB = load_config_file(args.config)
-    if args.test:
-        lconf = generate_configs(configB)
-        print(len(lconf))
-        sys.exit(0)
+    client = MongoClient(mongoconnection.server)
+    db = client[mongoconnection.db]
+    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    col = db[mongoconnection.col]
 
-    rescode = int(time())
-    for dname in configB['data']['datanames']:
-        resfile = open('result-%d-%s.txt'% (rescode, dname[0]), 'a')
-        resfile.write('DNAME,DATAS,VARS,LAG,AHEAD,RNN,Bi,NLAY,NNEUR,DROP,ACT,RACT,'
-                      'OPT,R2Val,R2persV,R2Test,R2persT\n')
-        resfile.close()
 
-    ############################################
-    # Data
-
-    for config in generate_configs(configB):
+    for cnf in range(args.nbatches):
+        config = col.find_one({'status': 'pending'})
+        col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
+        ############################################
+        # Data
 
         sahead = config['data']['ahead']
+        lresults = []
         for ahead in range(1, sahead + 1):
 
             if args.verbose:
@@ -284,24 +256,9 @@ if __name__ == '__main__':
             # print('R2 test= ', r2test)
             # print('R2 test persistence =', r2persT)
 
-            resfile = open('result-%d-%s.txt'%(rescode, config['data']['datanames'][0]), 'a')
-            resfile.write('%s,%d,%d,%d,%d,%s,%s,%d,%d,%3.2f,%s,%s,%s,%3.5f,%3.5f,%3.5f,%3.5f\n' %
-                          (config['data']['datanames'][0],
-                           config['data']['dataset'],
-                           len(config['data']['vars']),
-                           config['data']['lag'],
-                           ahead,
-                           config['arch']['rnn'],
-                           config['arch']['bimerge'] if config['arch']['bidirectional'] else 'no',
-                           config['arch']['nlayers'],
-                           config['arch']['neurons'],
-                           config['arch']['drop'],
-                           config['arch']['activation'],
-                           config['arch']['activation_r'],
-                           config['training']['optimizer'],
-                           r2val, r2persV, r2test, r2persT
-                           ))
-            resfile.close()
+            # Update result in db
+            lresults.append((ahead, r2val, r2persV, r2test, r2persT))
+
             print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
                       'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
                       (config['data']['datanames'][0],
@@ -327,38 +284,5 @@ if __name__ == '__main__':
 
             del train_x, train_y, test_x, test_y, val_x, val_y
             del model
-    # ----------------------------------------------
-    # plt.subplot(2, 1, 1)
-    # plt.plot(test_predict, color='r')
-    # plt.plot(test_y, color='b')
-    # plt.subplot(2, 1, 2)
-    # plt.plot(test_y - test_predict, color='r')
-    # plt.show()
-    #
-    # # step prediction
-    #
-    # obs = np.zeros((1, lag, 1))
-    # pwindow = 5
-    # lwpred = []
-    # for i in range(0, 2000-(2*lag)-pwindow, pwindow):
-    #     # copy the observations values
-    #     for j in range(lag):
-    #         obs[0, j, 0] = test_y[i+j]
-    #
-    #     lpred = []
-    #     for j in range(pwindow):
-    #         pred = model.predict(obs)
-    #         lpred.append(pred)
-    #         for k in range(lag-1):
-    #             obs[0, k, 0] = obs[0, k+1, 0]
-    #         obs[0, -1, 0] = pred
-    #
-    #
-    #     lwpred.append((i, np.array(lpred)))
-    #
-    #
-    # plt.subplot(1, 1, 1)
-    # plt.plot(test_y[0:2100], color='b')
-    # for i, (_, pred) in zip(range(0, 2000, pwindow), lwpred):
-    #     plt.plot(range(i+lag, i+lag+pwindow), np.reshape(pred,pwindow), color='r')
-    # plt.show()
+        col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
+        col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
