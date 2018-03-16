@@ -30,9 +30,24 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
     exp = col.find({'status': 'done'})
-    print("Done = %d" % len([v for v in exp]))
+    jobs = [v for v in exp]
+    print("Done = %d" % len(jobs))
+    for i, j in enumerate(jobs):
+        if 'etime' in j:
+            print('JOB %d = %s'(i, j['etime']))
+        else:
+            print('JOB %d = ???' % i)
+
     exp = col.find({'status': 'working'})
-    print("Working = %d" % len([v for v in exp]))
+    jobs = [v for v in exp]
+    print("Working = %d" % len(jobs))
+
+    for i, j in enumerate(jobs):
+        if 'btime' in j:
+            print('JOB %d = %s'(i, j['btime']))
+        else:
+            print('JOB %d = ???' % i)
+
     exp = col.find({'status': 'pending'})
     print("Pending = %d" % len([v for v in exp]))
 
