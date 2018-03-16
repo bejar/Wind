@@ -161,7 +161,7 @@ if __name__ == '__main__':
         if config is None:
             break
         col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
-        col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S', time())}})
+        col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S')}})
 
         ############################################
         # Data
@@ -290,4 +290,4 @@ if __name__ == '__main__':
             del model
         col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
         col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
-        col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S', time())}})
+        col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})

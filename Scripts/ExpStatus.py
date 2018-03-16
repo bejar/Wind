@@ -34,7 +34,7 @@ if __name__ == '__main__':
     print("Done = %d" % len(jobs))
     for i, j in enumerate(jobs):
         if 'etime' in j:
-            print('JOB %d = %s'(i, j['etime']))
+            print('JOB %d = %s'%(i, j['etime']))
         else:
             print('JOB %d = ???' % i)
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     for i, j in enumerate(jobs):
         if 'btime' in j:
-            print('JOB %d = %s'(i, j['btime']))
+            print('JOB %d = %s'%(i, j['btime']))
         else:
             print('JOB %d = ???' % i)
 
