@@ -32,7 +32,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 
 import argparse
-from time import time
+from time import time, strftime
 
 from Wind.Data import generate_dataset
 from Wind.Config import wind_data_path
@@ -161,7 +161,7 @@ if __name__ == '__main__':
         if config is None:
             break
         col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
-        col.update({'_id': config['_id']}, {'$set': {'btime': time.strftime('%Y-%m-%d %H:%M:%S', time())}})
+        col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S', time())}})
 
         ############################################
         # Data
@@ -290,4 +290,4 @@ if __name__ == '__main__':
             del model
         col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
         col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
-        col.update({'_id': config['_id']}, {'$set': {'etime': time.strftime('%Y-%m-%d %H:%M:%S', time())}})
+        col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S', time())}})
