@@ -39,6 +39,7 @@ from Wind.Data import generate_dataset
 from Wind.Config import wind_data_path
 from copy import deepcopy
 import sys
+import json
 
 __author__ = 'bejar'
 
@@ -180,17 +181,12 @@ if __name__ == '__main__':
         sys.exit(0)
 
     rescode = int(time())
-    for dname in configB['data']['datanames']:
-        resfile = open('result-%d-%s.txt'% (rescode, dname[0]), 'a')
-        resfile.write('DNAME,DATAS,VARS,LAG,AHEAD,RNN,Bi,NLAY,NNEUR,DROP,ACT,RACT,'
-                      'OPT,R2Val,R2persV,R2Test,R2persT\n')
-        resfile.close()
 
     ############################################
     # Data
 
     for config in generate_configs(configB):
-
+        lresults = []
         sahead = config['data']['ahead']
         for ahead in range(1, sahead + 1):
 
@@ -283,25 +279,8 @@ if __name__ == '__main__':
             r2persT = r2_score(test_y[ahead:, 0], test_y[0:-ahead, 0])
             # print('R2 test= ', r2test)
             # print('R2 test persistence =', r2persT)
+            lresults.append((ahead, r2val, r2persV, r2test, r2persT))
 
-            resfile = open('result-%d-%s.txt'%(rescode, config['data']['datanames'][0]), 'a')
-            resfile.write('%s,%d,%d,%d,%d,%s,%s,%d,%d,%3.2f,%s,%s,%s,%3.5f,%3.5f,%3.5f,%3.5f\n' %
-                          (config['data']['datanames'][0],
-                           config['data']['dataset'],
-                           len(config['data']['vars']),
-                           config['data']['lag'],
-                           ahead,
-                           config['arch']['rnn'],
-                           config['arch']['bimerge'] if config['arch']['bidirectional'] else 'no',
-                           config['arch']['nlayers'],
-                           config['arch']['neurons'],
-                           config['arch']['drop'],
-                           config['arch']['activation'],
-                           config['arch']['activation_r'],
-                           config['training']['optimizer'],
-                           r2val, r2persV, r2test, r2persT
-                           ))
-            resfile.close()
             print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
                       'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
                       (config['data']['datanames'][0],
@@ -327,38 +306,8 @@ if __name__ == '__main__':
 
             del train_x, train_y, test_x, test_y, val_x, val_y
             del model
-    # ----------------------------------------------
-    # plt.subplot(2, 1, 1)
-    # plt.plot(test_predict, color='r')
-    # plt.plot(test_y, color='b')
-    # plt.subplot(2, 1, 2)
-    # plt.plot(test_y - test_predict, color='r')
-    # plt.show()
-    #
-    # # step prediction
-    #
-    # obs = np.zeros((1, lag, 1))
-    # pwindow = 5
-    # lwpred = []
-    # for i in range(0, 2000-(2*lag)-pwindow, pwindow):
-    #     # copy the observations values
-    #     for j in range(lag):
-    #         obs[0, j, 0] = test_y[i+j]
-    #
-    #     lpred = []
-    #     for j in range(pwindow):
-    #         pred = model.predict(obs)
-    #         lpred.append(pred)
-    #         for k in range(lag-1):
-    #             obs[0, k, 0] = obs[0, k+1, 0]
-    #         obs[0, -1, 0] = pred
-    #
-    #
-    #     lwpred.append((i, np.array(lpred)))
-    #
-    #
-    # plt.subplot(1, 1, 1)
-    # plt.plot(test_y[0:2100], color='b')
-    # for i, (_, pred) in zip(range(0, 2000, pwindow), lwpred):
-    #     plt.plot(range(i+lag, i+lag+pwindow), np.reshape(pred,pwindow), color='r')
-    # plt.show()
+        config['status'] = 'done'
+        config['result'] = lresults
+        resfile = open('result-%d.json' % rescode)
+        resfile.write(json.dumps(config))
+        resfile.close()
