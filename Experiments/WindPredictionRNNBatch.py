@@ -311,6 +311,6 @@ if __name__ == '__main__':
         config['status'] = 'done'
         config['result'] = lresults
         config['etime'] = strftime('%Y-%m-%d %H:%M:%S')
-        resfile = open('result-%d.json' % rescode)
+        resfile = open('result-%d.json' % rescode, 'a')
         resfile.write(json.dumps(config))
         resfile.close()

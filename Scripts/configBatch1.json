@@ -8,14 +8,14 @@
       "vars": [[0,1,2,3]],
     "datasize": [40912],
     "testsize": [20456],
-    "dataset": [0, 1, 2,3],
+      "dataset": [0,1,2,3],
     "lag": [3, 6, 12, 18],
     "ahead": [12]
   },
   "arch": {
     "neurons": [32],
     "k_reg": ["None"],
-    "k_regw": [0.1],
+    "k_regw": [0.05],
     "rec_reg": ["None"],
     "rec_regw": [0.1],
     "drop": [0.1],
@@ -25,9 +25,9 @@
     "activation": ["tanh"],
     "activation_r": ["hard_sigmoid"],
     "CuDNN": [false],
-    "bidirectional": [false],
+    "bidirectional": [true],
     "bimerge":["ave"],
-    "rnn": ["GRU", "LSTM"],
+    "rnn": ["GRU"],
     "full": [[1]]
   },
   "training": {
