@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wind Training Status Page</title>
+
+    <style type="text/css">
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Wind Status</h1>
+
+<br>
+
+<p>Working</p>
+
+<table>
+    <tr>
+        <th>Start</th>
+    </tr>
+    {% for job in work|sort%}
+    <tr>
+        <td>{{job}}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+<p>{{done}} jobs done</p>
+<p>{{pend}} jobs pending</p>
+</body>
+</html>
