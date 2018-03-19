@@ -16,7 +16,7 @@
 <br>
 
 
-<p>Dataset {{prob}}</p>
+<h2>Dataset {{prob}}</h2>
 
 
 <table>
@@ -42,7 +42,6 @@
     {% for drop in [0.05,0.1,0.15,0.2,0.3,0.4,0.5] %}
     {% for opt in ['adam', 'nadam','adamax','adaprop'] %}
     {% for job in done|sort%}
-    {% if done[job]['dataset'] == i %}
     {% if done[job]['rnn'] == rnn %}
     {% if done[job]['vars'] == nv %}
     {% if done[job]['nly'] == nl %}
@@ -67,7 +66,6 @@
         <td>{{done[job]['act']}}</td>
         <td>{{done[job]['opt']}}</td>
     </tr>
-    {% endif %}
     {% endif %}
     {% endif %}
     {% endif %}

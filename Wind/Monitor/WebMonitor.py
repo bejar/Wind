@@ -23,7 +23,14 @@ from pymongo import MongoClient
 from Wind.Private.DBConfig import mongoconnection
 from time import time, strftime
 import json
+import StringIO
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 
+import base64
+import numpy as np
 __author__ = 'bejar'
 
 # Configuration stuff
@@ -118,7 +125,7 @@ def done():
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    exp = col.find({'status': 'done', 'data':{'dataset':int(request.form['problem'])}})
+    exp = col.find({'status': 'done', 'data.dataset':int(request.form['problem'])})
     done = {}
     for v in exp:
         done[v['_id']] = {'data': v['data']['datanames'][0],
@@ -133,7 +140,6 @@ def done():
                           'act': v['arch']['activation'],
                           'opt': v['training']['optimizer'],
                           }
-        print(v['_id'])
 
     return render_template('Done.html', done=done, prob=request.form['problem'])
 
@@ -159,7 +165,25 @@ def experiment(exp):
     col = db[mongoconnection.col]
     expres = col.find_one({'_id': exp})
 
-    return render_template('Experiment.html', exp=expres)
+    data = np.array(expres['result'])
+
+    img = StringIO.StringIO()
+    fig = plt.figure(figsize=(16, 10), dpi=100)
+
+    axes = fig.add_subplot(1, 1, 1)
+
+    axes.plot(data[:,0], data[:,1],color='r')
+    axes.plot(data[:,0], data[:,2],color='r',linestyle='--')
+    axes.plot(data[:,0], data[:,3],color='g')
+    axes.plot(data[:,0], data[:,4],color='g',linestyle='--')
+
+    plt.savefig(img, format='png')
+    img.seek(0)
+
+    plot_url = base64.b64encode(img.getvalue())
+    plt.close()
+
+    return render_template('Experiment.html', exp=expres, plot_url=plot_url)
 
 
 if __name__ == '__main__':
