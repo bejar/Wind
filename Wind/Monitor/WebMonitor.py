@@ -118,8 +118,6 @@ def done():
     Done jobs
     :return:
     """
-
-    print(request.form['problem'])
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)

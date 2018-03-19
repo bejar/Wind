@@ -38,11 +38,8 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
     configs = col.find()
-    ids = int(time())
-    for i, conf in enumerate(configs):
-        col.delete_one({'_id': conf['_id']})
-        conf['_id'] = str(ids + i)
-        print(conf['_id'])
-        col.insert(conf)
+
+    for conf in configs:
+        col.update({'_id': conf['_id']}, {'$set': {'arch.mode': 'regdir'}})
 
 

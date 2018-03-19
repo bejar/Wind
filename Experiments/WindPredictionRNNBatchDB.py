@@ -46,10 +46,10 @@ import json
 __author__ = 'bejar'
 
 
-def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDNN=False, bidirectional=False, bimerge='sum',
-                 rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1, full=[1]):
+def architectureREG(idimensions, neurons, drop, nlayers, activation, activation_r, rnntype, CuDNN=False, bidirectional=False, bimerge='sum',
+                    rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1, full=[1], impl=1):
     """
-    RNN architecture
+    Regression RNN architecture
 
     :return:
     """
@@ -72,10 +72,10 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
         model = Sequential()
         if nlayers == 1:
             model.add(
-                RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), recurrent_regularizer=rec_regularizer,
+                RNN(neurons, input_shape=(idimensions), recurrent_regularizer=rec_regularizer,
                     kernel_regularizer=k_regularizer))
         else:
-            model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), return_sequences=True,
+            model.add(RNN(neurons, input_shape=(idimensions), return_sequences=True,
                           recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
             for i in range(1, nlayers - 1):
                 model.add(RNN(neurons, return_sequences=True, recurrent_regularizer=rec_regularizer,
@@ -95,7 +95,7 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
                                       recurrent_activation=activation_r,
                                       recurrent_regularizer=rec_regularizer,
                                       kernel_regularizer=k_regularizer),
-                                  input_shape=(train_x.shape[1], train_x.shape[2]), merge_mode=bimerge))
+                                  input_shape=(idimensions), merge_mode=bimerge))
             else:
                 model.add(
                     Bidirectional(RNN(neurons, implementation=impl,
@@ -105,7 +105,7 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
                                       return_sequences=True,
                                       recurrent_regularizer=rec_regularizer,
                                       kernel_regularizer=k_regularizer),
-                                  input_shape=(train_x.shape[1], train_x.shape[2]), merge_mode=bimerge))
+                                  input_shape=(idimensions), merge_mode=bimerge))
                 for i in range(1, nlayers - 1):
                     model.add(Bidirectional(RNN(neurons, recurrent_dropout=drop, implementation=impl,
                                                 activation=activation, recurrent_activation=activation_r,
@@ -118,11 +118,11 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
             model.add(Dense(1))
         else:
             if nlayers == 1:
-                model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
+                model.add(RNN(neurons, input_shape=(idimensions), implementation=impl,
                               recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
                               recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
             else:
-                model.add(RNN(neurons, input_shape=(train_x.shape[1], train_x.shape[2]), implementation=impl,
+                model.add(RNN(neurons, input_shape=(idimensions), implementation=impl,
                               recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
                               return_sequences=True, recurrent_regularizer=rec_regularizer,
                               kernel_regularizer=k_regularizer))
@@ -231,11 +231,11 @@ if __name__ == '__main__':
             bidirectional = config['arch']['bidirectional']
             bimerge = config['arch']['bimerge']
 
-            model = architecture(neurons=neurons, drop=drop, nlayers=nlayers, activation=activation,
-                                 activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
-                                 rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
-                                 bidirectional=bidirectional, bimerge=bimerge,
-                                 full=config['arch']['full'])
+            model = architectureREG(idimensions=train_x.shape[1:], neurons=neurons, drop=drop, nlayers=nlayers, activation=activation,
+                                    activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
+                                    rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
+                                    bidirectional=bidirectional, bimerge=bimerge,
+                                    full=config['arch']['full'], impl=impl)
             if args.verbose:
                 model.summary()
 

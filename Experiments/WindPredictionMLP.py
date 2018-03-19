@@ -44,7 +44,7 @@ __author__ = 'bejar'
 def architectureMLP(idimensions, odimension, activation='linear', rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1,
                     dropout=0.0, full_layers=[128]):
     """
-    MLP architecture
+    MLP architectureREG
 
     :return:
     """

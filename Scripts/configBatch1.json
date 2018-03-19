@@ -5,21 +5,21 @@
               "11-5793",  "11-5795", "11-5796",
 		  "11-5752", "11-5753", "11-5754", "11-5755"
      ]],
-      "vars": [[0,1,2,3]],
+      "vars": [[0,1,2,3,4,5]],
     "datasize": [40912],
     "testsize": [20456],
-      "dataset": [0,1,2,3],
-      "lag": [3,6,12,18],
+      "dataset": [1,3],
+      "lag": [30],
     "ahead": [12]
   },
   "arch": {
-      "neurons": [8],
+      "neurons": [48],
     "k_reg": ["None"],
       "k_regw": [0.1],
     "rec_reg": ["None"],
     "rec_regw": [0.1],
-      "drop": [0.05, 0.1],
-    "nlayers": [3],
+      "drop": [0.05, 0.1,0.15],
+    "nlayers": [2],
     "nlayersE": [1],
     "nlayersD": [1],
     "activation": ["tanh"],
@@ -28,11 +28,12 @@
     "bidirectional": [false],
     "bimerge":["ave"],
     "rnn": ["GRU"],
-    "full": [[1]]
+      "full": [[1]],
+      "mode":"regdir"
   },
   "training": {
     "batch": [1000],
-    "epochs": [100],
+    "epochs": [150],
     "optimizer": ["adamax"],
     "lrate": [0.001]
   }

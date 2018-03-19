@@ -44,7 +44,7 @@ __author__ = 'bejar'
 def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDNN=False, bidirectional=False, bimerge='sum',
                  rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1, full=[1]):
     """
-    RNN architecture
+    RNN architectureREG
 
     :return:
     """
