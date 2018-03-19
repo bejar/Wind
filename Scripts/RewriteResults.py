@@ -27,9 +27,7 @@ from copy import deepcopy
 from pymongo import MongoClient
 import json
 
-
 __author__ = 'bejar'
-
 
 if __name__ == '__main__':
     client = MongoClient(mongoconnection.server)
