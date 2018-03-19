@@ -202,6 +202,8 @@ if __name__ == '__main__':
         ############################################
         # Data
 
+        print('Running job %s' % config['_id'])
+
         sahead = config['data']['ahead']
         lresults = []
         for ahead in range(1, sahead + 1):
