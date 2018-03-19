@@ -154,7 +154,7 @@ def getconfig(proxy=False):
             col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S')}})
         return config
     else:
-        return requests.get('polaris.cs.upc.edu:9000/Proxy').json()
+        return requests.get('http://polaris.cs.upc.edu:9000/Proxy').json()
 
 
 
@@ -175,7 +175,7 @@ def saveconfig(config, lresults, proxy=False):
         col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
     else:
         config['results'] = lresults
-        requests.post('polaris.cs.upc.edu:9000/Proxy', params={'res': config})
+        requests.post('http://polaris.cs.upc.edu:9000/Proxy', params={'res': config})
 
 
 if __name__ == '__main__':
