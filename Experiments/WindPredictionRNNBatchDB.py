@@ -166,6 +166,10 @@ def saveconfig(config, lresults, proxy=False):
     """
 
     if not proxy:
+        client = MongoClient(mongoconnection.server)
+        db = client[mongoconnection.db]
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+        col = db[mongoconnection.col]
         col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
         col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
         col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
@@ -188,10 +192,7 @@ if __name__ == '__main__':
     verbose = 1 if args.verbose else 0
     impl = 2 if args.gpu else 1
 
-    client = MongoClient(mongoconnection.server)
-    db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-    col = db[mongoconnection.col]
+
 
 
     config = getconfig(proxy=args.proxy)
