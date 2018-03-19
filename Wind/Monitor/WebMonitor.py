@@ -44,9 +44,6 @@ def getconfig():
     col = db[mongoconnection.col]
     config = col.find_one({'status': 'pending'})
     if config is not None:
-        newid = str(int(time()))
-        col.update({'_id': config['_id']}, {'$set': {'_id': newid}})
-        config['_id'] = newid
         col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
         col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S')}})
 

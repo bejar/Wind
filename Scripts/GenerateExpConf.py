@@ -64,8 +64,10 @@ if __name__ == '__main__':
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    for config in generate_configs(configB):
+    ids = int(time())
+    for i, config in enumerate(generate_configs(configB)):
         config['status'] = 'pending'
         config['result'] = []
+        config['_id'] = str(ids + i)
         col.insert(config)
 
