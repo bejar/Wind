@@ -40,6 +40,7 @@ import sys
 from Wind.Private.DBConfig import mongoconnection
 from copy import deepcopy
 from pymongo import MongoClient
+import requests
 
 __author__ = 'bejar'
 
@@ -137,6 +138,42 @@ def architecture(neurons, drop, nlayers, activation, activation_r, rnntype, CuDN
     return model
 
 
+def getconfig(proxy=False):
+    """
+    Gets a config from the database
+    :return:
+    """
+    if not proxy:
+        client = MongoClient(mongoconnection.server)
+        db = client[mongoconnection.db]
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+        col = db[mongoconnection.col]
+        config = col.find_one({'status': 'pending'})
+        if config is not None:
+            col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
+            col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S')}})
+        return config
+    else:
+        return requests.get('polaris.cs.upc.edu:9000/Proxy').json()
+
+
+
+def saveconfig(config, lresults, proxy=False):
+    """
+    Saves a config in the database
+    :param proxy:
+    :return:
+    """
+
+    if not proxy:
+        col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
+        col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
+        col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
+    else:
+        config['results'] = lresults
+        requests.post('polaris.cs.upc.edu:9000/Proxy', params={'res': config})
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--verbose', help="Verbose output (enables Keras verbose output)", action='store_true',
@@ -145,6 +182,7 @@ if __name__ == '__main__':
     parser.add_argument('--best', help="Save weights best in test", action='store_true', default=False)
     parser.add_argument('--tboard', help="Save log for tensorboard", action='store_true', default=False)
     parser.add_argument('--nbatches', help="Number of configurations to run", default=1, type=int)
+    parser.add_argument('--proxy', help="Access configurations throught proxy", action='store_true', default=False)
     args = parser.parse_args()
 
     verbose = 1 if args.verbose else 0
@@ -156,12 +194,8 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
 
-    for cnf in range(args.nbatches):
-        config = col.find_one({'status': 'pending'})
-        if config is None:
-            break
-        col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
-        col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S')}})
+    config = getconfig(proxy=args.proxy)
+    if config is not None:
 
         ############################################
         # Data
@@ -288,6 +322,5 @@ if __name__ == '__main__':
 
             del train_x, train_y, test_x, test_y, val_x, val_y
             del model
-        col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
-        col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
-        col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
+
+        saveconfig(config, lresults, proxy=args.proxy)
