@@ -68,7 +68,7 @@ def saveconfig(config):
 @app.route('/Monitor')
 def info():
     """
-    Status de las ciudades
+    Job status
     """
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
@@ -80,7 +80,9 @@ def info():
 
 
     exp = col.find({'status': 'working'})
-    work = [v['btime'] for v in exp]
+    work = {}
+    for v in exp:
+        work[v['_id']] = v['btime']
 
     exp = col.find({'status': 'pending'})
     pend= len([v for v in exp])
@@ -102,6 +104,62 @@ def proxy():
         res = json.loads(param)
         saveconfig(res)
         return "OK"
+
+@app.route('/Done', methods=['GET', 'POST'])
+def done():
+    """
+    Done jobs
+    :return:
+    """
+
+    print(request.form['problem'])
+    client = MongoClient(mongoconnection.server)
+    db = client[mongoconnection.db]
+    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    col = db[mongoconnection.col]
+
+    exp = col.find({'status': 'done', 'data':{'dataset':int(request.form['problem'])}})
+    done = {}
+    for v in exp:
+        done[v['_id']] = {'data': v['data']['datanames'][0],
+                          'dataset':v['data']['dataset'],
+                          'vars': len(v['data']['vars']),
+                          'lag': v['data']['lag'],
+                          'rnn': v['arch']['rnn'],
+                          'bi': v['arch']['bimerge'] if v['arch']['bidirectional'] else 'no',
+                          'nly': v['arch']['nlayers'],
+                          'nns': v['arch']['neurons'],
+                          'drop': v['arch']['drop'],
+                          'act': v['arch']['activation'],
+                          'opt': v['training']['optimizer'],
+                          }
+        print(v['_id'])
+
+    return render_template('Done.html', done=done, prob=request.form['problem'])
+
+@app.route('/Elist', methods=['GET', 'POST'])
+def iface():
+    """
+    Interfaz con el cliente a traves de una pagina de web
+    """
+    probtypes = [0,1,2,3]
+    return render_template('ExpList.html', types=probtypes)
+
+@app.route('/Experiment/<exp>')
+def experiment(exp):
+    """
+    Individual Experiment
+
+    :param exp:
+    :return:
+    """
+    client = MongoClient(mongoconnection.server)
+    db = client[mongoconnection.db]
+    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    col = db[mongoconnection.col]
+    expres = col.find_one({'_id': exp})
+
+    return render_template('Experiment.html', exp=expres)
 
 
 if __name__ == '__main__':

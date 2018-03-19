@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cliente Solver</title>
+</head>
+<body>
+<form action="/Done" method="post">
+
+    <select name="problem" method="GET" action="/">
+        {% for t in types %}
+        <option value={{t}}>{{t}}</option>
+        {% endfor %}
+    </select>
+
+    <p>
+        <button type="submit" name="message" value='message'>Send</button>
+    </p>
+</form>
+</body>
+</html>

@@ -19,17 +19,19 @@
 
 <table>
     <tr>
+        <th>ID</th>
         <th>Start</th>
     </tr>
     {% for job in work|sort%}
     <tr>
         <td>{{job}}</td>
+        <td>{{work[job]}}</td>
     </tr>
     {% endfor %}
 </table>
 
 
-<p>{{done}} jobs done</p>
+<p>{{done}} jobs done </p>
 <p>{{pend}} jobs pending</p>
 </body>
 </html>

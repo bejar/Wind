@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wind Finished experiments Page</title>
+
+    <style type="text/css">
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Wind Status</h1>
+
+<br>
+
+
+<p>Dataset {{prob}}</p>
+
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>data</th>
+        <th>vars</th>
+        <th>lag</th>
+        <th>rnn</th>
+        <th>bi</th>
+        <th>nly</th>
+        <th>nns</th>
+        <th>drop</th>
+        <th>act</th>
+        <th>opt</th>
+    </tr>
+    {% for nv in [4,6] %}
+    {% for rnn in ['GRU', 'LSTM'] %}
+    {% for lag in [3,6,12,18,24,30,36] %}
+    {% for nn in [8,16,32,48] %}
+    {% for nl in [1,2,3] %}
+    {% for bi in ['no','ave'] %}
+    {% for drop in [0.05,0.1,0.15,0.2,0.3,0.4,0.5] %}
+    {% for opt in ['adam', 'nadam','adamax','adaprop'] %}
+    {% for job in done|sort%}
+    {% if done[job]['dataset'] == i %}
+    {% if done[job]['rnn'] == rnn %}
+    {% if done[job]['vars'] == nv %}
+    {% if done[job]['nly'] == nl %}
+    {% if done[job]['bi'] == bi %}
+    {% if done[job]['lag'] == lag %}
+    {% if done[job]['nns'] == nn %}
+    {% if done[job]['drop'] == drop %}
+    {% if done[job]['opt'] == opt %}
+    <tr>
+               <td>    <form action="/Experiment/{{job}}" method="get">
+                <button type="submit" name="experiment" value={{job}}> {{job}}</button>
+            </form></td>
+
+        <td>{{done[job]['data']}}</td>
+        <td>{{done[job]['vars']}}</td>
+        <td>{{done[job]['lag']}}</td>
+        <td>{{done[job]['rnn']}}</td>
+        <td>{{done[job]['bi']}}</td>
+        <td>{{done[job]['nly']}}</td>
+        <td>{{done[job]['nns']}}</td>
+        <td>{{done[job]['drop']}}</td>
+        <td>{{done[job]['act']}}</td>
+        <td>{{done[job]['opt']}}</td>
+    </tr>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
+</table>
+
+
+</body>
+</html>
