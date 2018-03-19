@@ -44,7 +44,7 @@ def getconfig():
     col = db[mongoconnection.col]
     config = col.find_one({'status': 'pending'})
     if config is not None:
-        print("Served jog %s" % config['_id'])
+        print("Served job %s" % config['_id'])
         col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
         col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S')}})
 
@@ -56,6 +56,7 @@ def saveconfig(config):
     :param proxy:
     :return:
     """
+    print("received job %s" % config['_id'])
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
