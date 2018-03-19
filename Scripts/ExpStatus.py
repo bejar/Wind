@@ -29,14 +29,6 @@ if __name__ == '__main__':
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    exp = col.find({'status': 'done'})
-    jobs = [v for v in exp]
-    print("Done = %d" % len(jobs))
-    for i, j in enumerate(jobs):
-        if 'etime' in j:
-            print('JOB %d = %s'%(i, j['etime']))
-        else:
-            print('JOB %d = ???' % i)
 
     exp = col.find({'status': 'working'})
     jobs = [v for v in exp]
@@ -50,5 +42,13 @@ if __name__ == '__main__':
 
     exp = col.find({'status': 'pending'})
     print("Pending = %d" % len([v for v in exp]))
+    exp = col.find({'status': 'done'})
+    jobs = [v for v in exp]
+    print("Done = %d" % len(jobs))
+#    for i, j in enumerate(jobs):
+#        if 'etime' in j:
+#            print('JOB %d = %s'%(i, j['etime']))
+#        else:
+#            print('JOB %d = ???' % i)
 
 

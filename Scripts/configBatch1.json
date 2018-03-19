@@ -9,30 +9,30 @@
     "datasize": [40912],
     "testsize": [20456],
       "dataset": [0,1,2,3],
-    "lag": [3, 6, 12, 18],
+      "lag": [3,6,12,18],
     "ahead": [12]
   },
   "arch": {
-    "neurons": [32],
+      "neurons": [8],
     "k_reg": ["None"],
-    "k_regw": [0.05],
+      "k_regw": [0.1],
     "rec_reg": ["None"],
     "rec_regw": [0.1],
-    "drop": [0.1],
-    "nlayers": [2],
+      "drop": [0.05, 0.1],
+    "nlayers": [3],
     "nlayersE": [1],
     "nlayersD": [1],
     "activation": ["tanh"],
     "activation_r": ["hard_sigmoid"],
     "CuDNN": [false],
-    "bidirectional": [true],
+    "bidirectional": [false],
     "bimerge":["ave"],
     "rnn": ["GRU"],
     "full": [[1]]
   },
   "training": {
     "batch": [1000],
-    "epochs": [150],
+    "epochs": [100],
     "optimizer": ["adamax"],
     "lrate": [0.001]
   }
