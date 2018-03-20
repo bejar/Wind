@@ -202,7 +202,7 @@ if __name__ == '__main__':
         ############################################
         # Data
 
-        print('Running job %s' % config['_id'])
+        print('Running job %s %s' % (config['_id'], strftime('%Y-%m-%d %H:%M:%S')))
 
         sahead = config['data']['ahead']
         lresults = []
@@ -300,7 +300,6 @@ if __name__ == '__main__':
 
             # Update result in db
             lresults.append((ahead, r2val, r2persV, r2test, r2persT))
-
             print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
                       'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
                       (config['data']['datanames'][0],
@@ -318,6 +317,7 @@ if __name__ == '__main__':
                        config['training']['optimizer'],
                        r2val, r2persV, r2test, r2persT
                            ))
+            print(strftime('%Y-%m-%d %H:%M:%S'))
 
             try:
                 os.remove(modfile)

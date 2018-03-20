@@ -48,7 +48,7 @@ def generate_configs(config):
                         cp[f1] = {f2: v}
                     lnconf.append(cp)
             lconf = lnconf
-
+    print('%d Configurations' % len(lconf))
     return lconf
 
 
