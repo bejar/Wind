@@ -54,6 +54,7 @@ def getconfig():
         print("Served job %s" % config['_id'])
         col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
         col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S')}})
+        col.update({'_id': config['_id']}, {'$set': {'host': 'proxy'}})
 
     return config
 
@@ -89,7 +90,8 @@ def info():
     exp = col.find({'status': 'working'})
     work = {}
     for v in exp:
-        work[v['_id']] = v['btime']
+        work[v['_id']] = {'btime': v['btime'],
+                          'host': v['host'] if 'host' in v else 'host'}
 
     exp = col.find({'status': 'pending'})
     pend= len([v for v in exp])

@@ -153,6 +153,7 @@ def getconfig(proxy=False):
         if config is not None:
             col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
             col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S')}})
+            col.update({'_id': config['_id']}, {'$set': {'host': socket.gethostname().split('.')[0]}})
         return config
     else:
         return requests.get('http://polaris.cs.upc.edu:9000/Proxy').json()

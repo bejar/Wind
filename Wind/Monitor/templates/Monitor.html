@@ -20,12 +20,15 @@
 <table>
     <tr>
         <th>ID</th>
+         <th>Host</th>
+
         <th>Start</th>
     </tr>
     {% for job in work|sort%}
     <tr>
         <td>{{job}}</td>
-        <td>{{work[job]}}</td>
+         <td>{{work[job]['host']}}</td>
+       <td>{{work[job]['btime']}}</td>
     </tr>
     {% endfor %}
 </table>
