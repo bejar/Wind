@@ -42,6 +42,7 @@ from copy import deepcopy
 from pymongo import MongoClient
 import requests
 import json
+import socket
 
 __author__ = 'bejar'
 
