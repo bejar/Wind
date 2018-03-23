@@ -48,26 +48,30 @@ def generate_configs(config):
                         cp[f1] = {f2: v}
                     lnconf.append(cp)
             lconf = lnconf
-    print('%d Configurations' % len(lconf))
+    #print('%d Configurations' % len(lconf))
     return lconf
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='configBatch1', help='Experiment configuration')
+    parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
     args = parser.parse_args()
 
     configB = load_config_file(args.config)
 
-    client = MongoClient(mongoconnection.server)
-    db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-    col = db[mongoconnection.col]
+    if args.test:
+        print("%d configurations" %  len(generate_configs(configB)))
+    else:
+        client = MongoClient(mongoconnection.server)
+        db = client[mongoconnection.db]
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+        col = db[mongoconnection.col]
 
-    ids = int(time())
-    for i, config in enumerate(generate_configs(configB)):
-        config['status'] = 'pending'
-        config['result'] = []
-        config['_id'] = str(ids + i)
-        col.insert(config)
+        ids = int(time())
+        for i, config in enumerate(generate_configs(configB)):
+            config['status'] = 'pending'
+            config['result'] = []
+            config['_id'] = str(ids + i)
+            col.insert(config)
 

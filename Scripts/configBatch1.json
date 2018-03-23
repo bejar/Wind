@@ -9,7 +9,7 @@
     "datasize": [40912],
     "testsize": [20456],
       "dataset": [1],
-      "lag": [16,32,48],
+      "lag": [12,18,24],
     "ahead": [12]
   },
   "arch": {
@@ -18,23 +18,23 @@
       "k_regw": [0.1],
     "rec_reg": ["None"],
     "rec_regw": [0.1],
-      "drop": [0,0.05,0.1,0.2,0.3,0.4,0.5,0.6],
-    "nlayers": [2],
+      "drop": [0.4,0.5],
+      "nlayers": [2],
     "nlayersE": [1],
     "nlayersD": [1],
-      "activation": ["tanh"],
+      "activation": ["tanh", "relu"],
     "activation_r": ["hard_sigmoid"],
     "CuDNN": [false],
       "bidirectional": [false],
     "bimerge":["ave"],
     "rnn": ["GRU"],
       "full": [[1]],
-      "mode":"regdir"
+      "mode":["regdir"]
   },
   "training": {
     "batch": [1000],
     "epochs": [100],
-      "optimizer": ["adamax"],
+      "optimizer": ["adamax", "adam", "adagrad","nadam"],
     "lrate": [0.0001]
   }
 }
