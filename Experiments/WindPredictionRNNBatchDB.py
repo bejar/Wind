@@ -22,7 +22,7 @@ from keras.models import Sequential, load_model
 from keras.layers import Dense, Activation
 from keras.layers import LSTM, GRU, CuDNNGRU, CuDNNLSTM, Bidirectional, TimeDistributed, Flatten
 from keras.optimizers import RMSprop, SGD
-from keras.callbacks import TensorBoard, ModelCheckpoint
+from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.regularizers import l1, l2
 #import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, r2_score
@@ -187,6 +187,7 @@ if __name__ == '__main__':
                         default=False)
     parser.add_argument('--gpu', help="Use LSTM/GRU gpu implementation", action='store_true', default=False)
     parser.add_argument('--best', help="Save weights best in test", action='store_true', default=False)
+    parser.add_argument('--early', help="Early stopping when no improving", action='store_true', default=True)
     parser.add_argument('--tboard', help="Save log for tensorboard", action='store_true', default=False)
     parser.add_argument('--nbatches', help="Number of configurations to run", default=1, type=int)
     parser.add_argument('--proxy', help="Access configurations throught proxy", action='store_true', default=False)
@@ -259,6 +260,10 @@ if __name__ == '__main__':
                 mcheck = ModelCheckpoint(filepath=modfile, monitor='val_loss', verbose=0, save_best_only=True,
                                          save_weights_only=False, mode='auto', period=1)
                 cbacks.append(mcheck)
+
+            if args.early:
+                early = EarlyStopping(monitor='val_loss', patience=10, verbose=0)
+                cbacks.append(early)
 
             optimizer = config['training']['optimizer']
             if optimizer == 'rmsprop':
