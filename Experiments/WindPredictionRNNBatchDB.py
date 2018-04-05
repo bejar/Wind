@@ -415,7 +415,6 @@ def train_regdir_architecture(config, impl, verbose):
         # print('R2 test= ', r2test)
         # print('R2 test persistence =', r2persT)
 
-
         lresults.append((ahead, r2val, r2persV, r2test, r2persT))
         print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
               'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
@@ -437,7 +436,7 @@ def train_regdir_architecture(config, impl, verbose):
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
         # Update result in db
-        if args.config is not None:
+        if args.config is None:
             updateprocess(config, ahead)
 
         try:
@@ -660,10 +659,10 @@ if __name__ == '__main__':
     verbose = 1 if args.verbose else 0
     impl = 2 if args.gpu else 1
 
-    if args.config is not None:
-        config = load_config_file(args.config)
-    else:
+    if args.config is None:
         config = getconfig(proxy=args.proxy)
+    else:
+        config = load_config_file(args.config)
 
     if config is not None:
 
@@ -679,7 +678,7 @@ if __name__ == '__main__':
         elif config['arch']['mode'] == 'mlp':
             lresults = train_MLP_regdir_architecture(config, verbose)
 
-        if args.config is not None:
+        if args.config is None:
             saveconfig(config, lresults, proxy=args.proxy)
         else:
             for res in lresults:
