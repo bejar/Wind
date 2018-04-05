@@ -28,7 +28,8 @@
     "bidirectional": false,
     "bimerge":"ave",
     "rnn": "GRU",
-      "full": [1]
+      "full": [1],
+    "mode": "seq2seq"
   },
   "training": {
     "batch": 1000,

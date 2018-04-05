@@ -24,30 +24,30 @@ from keras.layers import LSTM, GRU, CuDNNGRU, CuDNNLSTM, Bidirectional, TimeDist
 from keras.optimizers import RMSprop, SGD
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.regularizers import l1, l2
-#import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, r2_score
-import os
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 
-import argparse
 from time import time, strftime
 
 from Wind.Data import generate_dataset
 from Wind.Config import wind_data_path
-import sys
+from Wind.Util import load_config_file
 from Wind.Private.DBConfig import mongoconnection
-from copy import deepcopy
+
 from pymongo import MongoClient
 import requests
 import json
 import socket
+import os
+import argparse
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 __author__ = 'bejar'
 
 
-def architectureREG(idimensions, neurons, drop, nlayers, activation, activation_r, rnntype, CuDNN=False, bidirectional=False, bimerge='sum',
+def architectureREG(idimensions, neurons, drop, nlayers, activation, activation_r, rnntype, CuDNN=False,
+                    bidirectional=False, bimerge='sum',
                     rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1, full=[1], impl=1):
     """
     Regression RNN architecture
@@ -115,7 +115,8 @@ def architectureREG(idimensions, neurons, drop, nlayers, activation, activation_
                                                 kernel_regularizer=k_regularizer), merge_mode=bimerge))
                 model.add(Bidirectional(RNN(neurons, recurrent_dropout=drop, activation=activation,
                                             recurrent_activation=activation_r, implementation=impl,
-                                            recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer), merge_mode=bimerge))
+                                            recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer),
+                                        merge_mode=bimerge))
             model.add(Dense(1))
         else:
             if nlayers == 1:
@@ -140,7 +141,8 @@ def architectureREG(idimensions, neurons, drop, nlayers, activation, activation_
     return model
 
 
-def architectureS2S(ahead, idimensions, neurons, drop, nlayersE, nlayersD, activation, activation_r, rnntype, CuDNN=False,
+def architectureS2S(ahead, idimensions, neurons, drop, nlayersE, nlayersD, activation, activation_r, rnntype, impl=1,
+                    CuDNN=False,
                     bidirectional=False,
                     rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1):
     """
@@ -414,7 +416,9 @@ def train_regdir_architecture(config, impl, verbose):
         # print('R2 test persistence =', r2persT)
 
         # Update result in db
-        updateprocess(config, ahead)
+        if not args.local:
+            updateprocess(config, ahead)
+
         lresults.append((ahead, r2val, r2persV, r2test, r2persT))
         print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
               'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
@@ -445,6 +449,7 @@ def train_regdir_architecture(config, impl, verbose):
 
     return lresults
 
+
 def train_seq2seq_architecture(config, impl, verbose):
     """
     Training process for RNN architecture with sequence to sequence regression of ahead time steps
@@ -453,7 +458,8 @@ def train_seq2seq_architecture(config, impl, verbose):
     """
     ahead = config['data']['ahead']
 
-    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='s2s', data_path=wind_data_path)
+    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='s2s',
+                                                                      data_path=wind_data_path)
 
     ############################################
     # Model
@@ -470,14 +476,15 @@ def train_seq2seq_architecture(config, impl, verbose):
     k_reg = config['arch']['k_reg']
     k_regw = config['arch']['k_regw']
 
-
-    model = architectureS2S(ahead=ahead, idimensions=train_x.shape[1:], neurons=neurons, drop=drop, nlayersE=nlayersE, nlayersD=nlayersD,
-                            activation=activation,
+    model = architectureS2S(ahead=ahead, idimensions=train_x.shape[1:], neurons=neurons, drop=drop, nlayersE=nlayersE,
+                            nlayersD=nlayersD,
+                            activation=activation, impl=impl,
                             activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
                             rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw)
     if args.verbose:
         model.summary()
-        print('lag: ', config['data']['lag'], 'Neurons: ', neurons, 'Layers: ', nlayersE, nlayersD, activation, activation_r)
+        print('lag: ', config['data']['lag'], 'Neurons: ', neurons, 'Layers: ', nlayersE, nlayersD, activation,
+              activation_r)
         print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
         print()
 
@@ -523,18 +530,17 @@ def train_seq2seq_architecture(config, impl, verbose):
     test_yp = model.predict(test_x, batch_size=batch_size, verbose=0)
     lresults = []
 
-    for i in range(1, ahead+1):
+    for i in range(1, ahead + 1):
         lresults.append((i,
-                         r2_score(val_y[:, i-1, 0], val_yp[:, i-1, 0]),
+                         r2_score(val_y[:, i - 1, 0], val_yp[:, i - 1, 0]),
                          r2_score(val_y[i:, 0, 0], val_y[0:-i, 0, 0]),
-                         r2_score(test_y[:, i-1, 0], test_yp[:, i-1, 0]),
+                         r2_score(test_y[:, i - 1, 0], test_yp[:, i - 1, 0]),
                          r2_score(test_y[i:, 0, 0], test_y[0:-i, 0, 0])))
 
     try:
         os.remove(modfile)
     except OSError:
         pass
-
 
     return lresults
 
@@ -575,7 +581,6 @@ def train_MLP_regdir_architecture(config, verbose):
                             full_layers=config['arch']['full'])
 
     if args.verbose:
-
         model.summary()
 
         print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation)
@@ -647,14 +652,18 @@ if __name__ == '__main__':
     parser.add_argument('--best', help="Save weights best in test", action='store_true', default=False)
     parser.add_argument('--early', help="Early stopping when no improving", action='store_true', default=True)
     parser.add_argument('--tboard', help="Save log for tensorboard", action='store_true', default=False)
-    parser.add_argument('--nbatches', help="Number of configurations to run", default=1, type=int)
     parser.add_argument('--proxy', help="Access configurations throught proxy", action='store_true', default=False)
+    parser.add_argument('--local', help="Running from local configuration file", action='store_true', default=False)
     args = parser.parse_args()
 
     verbose = 1 if args.verbose else 0
     impl = 2 if args.gpu else 1
 
-    config = getconfig(proxy=args.proxy)
+    if args.local:
+        config = load_config_file(args.config)
+    else:
+        config = getconfig(proxy=args.proxy)
+
     if config is not None:
 
         ############################################
@@ -669,4 +678,5 @@ if __name__ == '__main__':
         elif config['arch']['mode'] == 'mlp':
             lresults = train_MLP_regdir_architecture(config, verbose)
 
-        saveconfig(config, lresults, proxy=args.proxy)
+        if not args.local:
+            saveconfig(config, lresults, proxy=args.proxy)
