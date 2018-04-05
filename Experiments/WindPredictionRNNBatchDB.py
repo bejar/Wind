@@ -396,7 +396,7 @@ def train_regdir_architecture(config, impl, verbose):
         if args.best:
             model = load_model(modfile)
 
-        score = model.evaluate(val_x, val_y, batch_size=batch_size, verbose=0)
+        # score = model.evaluate(val_x, val_y, batch_size=batch_size, verbose=0)
         # print('MSE val= ', score)
         # print('MSE val persistence =', mean_squared_error(val_y[ahead:], val_y[0:-ahead]))
         val_yp = model.predict(val_x, batch_size=batch_size, verbose=0)
@@ -405,7 +405,7 @@ def train_regdir_architecture(config, impl, verbose):
         # print('R2 val= ', r2val)
         # print('R2 val persistence =', r2persV)
 
-        score = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=0)
+        # score = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=0)
         # print()
         # print('MSE test= ', score)
         # print('MSE test persistence =', mean_squared_error(test_y[ahead:], test_y[0:-ahead]))
@@ -415,9 +415,6 @@ def train_regdir_architecture(config, impl, verbose):
         # print('R2 test= ', r2test)
         # print('R2 test persistence =', r2persT)
 
-        # Update result in db
-        if not args.local:
-            updateprocess(config, ahead)
 
         lresults.append((ahead, r2val, r2persV, r2test, r2persT))
         print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
@@ -438,6 +435,10 @@ def train_regdir_architecture(config, impl, verbose):
                r2val, r2persV, r2test, r2persT
                ))
         print(strftime('%Y-%m-%d %H:%M:%S'))
+
+        # Update result in db
+        if args.config is not None:
+            updateprocess(config, ahead)
 
         try:
             os.remove(modfile)
@@ -653,13 +654,13 @@ if __name__ == '__main__':
     parser.add_argument('--early', help="Early stopping when no improving", action='store_true', default=True)
     parser.add_argument('--tboard', help="Save log for tensorboard", action='store_true', default=False)
     parser.add_argument('--proxy', help="Access configurations throught proxy", action='store_true', default=False)
-    parser.add_argument('--local', help="Running from local configuration file", action='store_true', default=False)
+    parser.add_argument('--config', default=None, help='Experiment configuration')
     args = parser.parse_args()
 
     verbose = 1 if args.verbose else 0
     impl = 2 if args.gpu else 1
 
-    if args.local:
+    if args.config is not None:
         config = load_config_file(args.config)
     else:
         config = getconfig(proxy=args.proxy)
@@ -678,5 +679,5 @@ if __name__ == '__main__':
         elif config['arch']['mode'] == 'mlp':
             lresults = train_MLP_regdir_architecture(config, verbose)
 
-        if not args.local:
+        if args.config is not None:
             saveconfig(config, lresults, proxy=args.proxy)
