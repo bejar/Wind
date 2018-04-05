@@ -636,7 +636,6 @@ def train_MLP_regdir_architecture(config, verbose):
     except OSError:
         pass
 
-
     return lresults
 
 
@@ -654,7 +653,6 @@ if __name__ == '__main__':
 
     verbose = 1 if args.verbose else 0
     impl = 2 if args.gpu else 1
-
 
     config = getconfig(proxy=args.proxy)
     if config is not None:
