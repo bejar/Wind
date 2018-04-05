@@ -681,3 +681,6 @@ if __name__ == '__main__':
 
         if args.config is not None:
             saveconfig(config, lresults, proxy=args.proxy)
+        else:
+            for res in lresults:
+                print(res)
