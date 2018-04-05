@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     for i, j in enumerate(jobs):
         if 'btime' in j:
-            print('JOB %d = %s'%(i, j['btime']))
+            print('JOB %d = %s %s'%(i, j['btime'], j['host']))
         else:
             print('JOB %d = ???' % i)
 

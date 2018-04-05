@@ -23,12 +23,17 @@
          <th>Host</th>
 
         <th>Start</th>
+        <th>Updated</th>
+        <th>ahead</th>
+
     </tr>
     {% for job in work|sort%}
     <tr>
         <td>{{job}}</td>
          <td>{{work[job]['host']}}</td>
        <td>{{work[job]['btime']}}</td>
+       <td>{{work[job]['etime']}}</td>
+       <td>{{work[job]['ahead']}}</td>
     </tr>
     {% endfor %}
 </table>

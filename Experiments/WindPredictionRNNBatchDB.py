@@ -160,6 +160,21 @@ def getconfig(proxy=False):
         return requests.get('http://polaris.cs.upc.edu:9000/Proxy').json()
 
 
+def updateprocess(config, ahead, proxy=False):
+    """
+    updates the info of the training process for each iteration
+
+    :param config:
+    :return:
+    """
+    if not proxy:
+        client = MongoClient(mongoconnection.server)
+        db = client[mongoconnection.db]
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+        col = db[mongoconnection.col]
+        col.update({'_id': config['_id']}, {'$set': {'ahead': ahead}})
+        col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
+
 
 def saveconfig(config, lresults, proxy=False):
     """
@@ -306,6 +321,7 @@ if __name__ == '__main__':
             # print('R2 test persistence =', r2persT)
 
             # Update result in db
+            updateprocess(config, ahead)
             lresults.append((ahead, r2val, r2persV, r2test, r2persT))
             print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
                       'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
