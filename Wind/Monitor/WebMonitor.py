@@ -40,7 +40,7 @@ port = 9000
 app = Flask(__name__)
 
 
-def getconfig():
+def getconfig(mode=None):
     """
     Gets a config from the database
     :return:
@@ -49,7 +49,10 @@ def getconfig():
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
-    config = col.find_one({'status': 'pending'})
+    query = {'status': 'pending'}
+    if mode is not None:
+        query['arch.mode']= mode
+    config = col.find_one(query)
     if config is not None:
         print("Served job %s" % config['_id'])
         col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
@@ -107,7 +110,7 @@ def proxy():
     :return:
     """
     if request.method == 'GET':
-        config = getconfig()
+        config = getconfig(mode=request.args['mode'])
 
         return json.dumps(config)
     else:
