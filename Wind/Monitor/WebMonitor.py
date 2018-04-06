@@ -52,7 +52,12 @@ def getconfig(mode=None):
     query = {'status': 'pending'}
     if mode is not None:
         query['arch.mode']= mode
-    config = col.find_one(query)
+    lconfig = col.find(query, limit=10)
+    ch = np.random.randint(0,10)
+    for i, conf in enumerate(lconfig):
+        if i == ch:
+            config = conf
+
     if config is not None:
         print("Served job %s" % config['_id'])
         col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
