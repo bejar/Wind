@@ -19,7 +19,7 @@ __init__.py
 
 from .DirectRegression import architectureDirRegression, train_dirregression_architecture
 from .MLPRegression import architectureMLP, train_MLP_regdir_architecture
-from Seq2SeqRegression import architectureS2S, train_seq2seq_architecture
+from .Seq2SeqRegression import architectureS2S, train_seq2seq_architecture
 
 __author__ = 'bejar'
 
