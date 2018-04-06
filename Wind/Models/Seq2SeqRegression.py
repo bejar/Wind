@@ -212,7 +212,7 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early):
                          r2_score(test_y[i:, 0, 0], test_y[0:-i, 0, 0])))
 
     for i, r2val, r2persV, r2test, r2persT in lresults:
-        print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
+        print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
               'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
               (config['data']['datanames'][0],
                config['data']['dataset'],
@@ -221,7 +221,7 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early):
                i,
                config['arch']['rnn'],
                config['arch']['bimerge'] if config['arch']['bidirectional'] else 'no',
-               config['arch']['nlayers'],
+               config['arch']['nlayersE'],config['arch']['nlayersD'],
                config['arch']['neurons'],
                config['arch']['drop'],
                config['arch']['activation'],
