@@ -72,9 +72,12 @@ def saveconfig(config):
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
-    col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
-    col.update({'_id': config['_id']}, {'$set': {'result': config['results']}})
-    col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
+    if config['results'][0][1] > 0.5:
+        col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
+        col.update({'_id': config['_id']}, {'$set': {'result': config['results']}})
+        col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
+    else:
+        col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
 
 @app.route('/Monitor')
 def info():

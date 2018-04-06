@@ -62,9 +62,13 @@ def saveconfig(config, lresults, proxy=False):
         db = client[mongoconnection.db]
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
-        col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
-        col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
-        col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
+
+        if lresults[0][1] > 0.5:
+            col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
+            col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
+            col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
+        else:
+            col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
     else:
         config['results'] = lresults
         requests.post('http://polaris.cs.upc.edu:9000/Proxy', params={'res': json.dumps(config)})
