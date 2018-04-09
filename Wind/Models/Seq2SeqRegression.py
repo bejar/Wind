@@ -31,7 +31,7 @@ import os
 __author__ = 'bejar'
 
 
-def architectureS2S(ahead, idimensions, neurons, drop, nlayersE, nlayersD, activation, activation_r, rnntype, impl=1,
+def architectureS2S(ahead, idimensions, neurons, neuronsD, drop, nlayersE, nlayersD, activation, activation_r, rnntype, impl=1,
                     CuDNN=False,
                     bidirectional=False,
                     rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1):
@@ -87,7 +87,7 @@ def architectureS2S(ahead, idimensions, neurons, drop, nlayersE, nlayersD, activ
         model.add(RepeatVector(ahead))
 
         for i in range(nlayersD):
-            model.add(RNN(neurons, return_sequences=True, recurrent_regularizer=rec_regularizer,
+            model.add(RNN(neuronsD, return_sequences=True, recurrent_regularizer=rec_regularizer,
                           kernel_regularizer=k_regularizer))
 
         model.add(TimeDistributed(Dense(1)))
@@ -114,7 +114,7 @@ def architectureS2S(ahead, idimensions, neurons, drop, nlayersE, nlayersD, activ
         model.add(RepeatVector(ahead))
 
         for i in range(nlayersD):
-            model.add(RNN(neurons, recurrent_dropout=drop, implementation=impl,
+            model.add(RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
                           activation=activation, recurrent_activation=activation_r,
                           return_sequences=True, recurrent_regularizer=rec_regularizer,
                           kernel_regularizer=k_regularizer))
@@ -150,7 +150,9 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early):
     k_reg = config['arch']['k_reg']
     k_regw = config['arch']['k_regw']
 
-    model = architectureS2S(ahead=ahead, idimensions=train_x.shape[1:], neurons=neurons, drop=drop, nlayersE=nlayersE,
+    model = architectureS2S(ahead=ahead, idimensions=train_x.shape[1:], neurons=neurons,
+                            neuronsD=config['arch']['neuronsD'],
+                            drop=drop, nlayersE=nlayersE,
                             nlayersD=nlayersD,
                             activation=activation, impl=impl,
                             activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
@@ -212,7 +214,7 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early):
                          r2_score(test_y[i:, 0, 0], test_y[0:-i, 0, 0])))
 
     for i, r2val, r2persV, r2test, r2persT in lresults:
-        print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
+        print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d %d, DR= %3.2f, AF= %s, RAF= %s, '
               'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
               (config['data']['datanames'][0],
                config['data']['dataset'],
@@ -222,7 +224,7 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early):
                config['arch']['rnn'],
                config['arch']['bimerge'] if config['arch']['bidirectional'] else 'no',
                config['arch']['nlayersE'],config['arch']['nlayersD'],
-               config['arch']['neurons'],
+               config['arch']['neurons'],config['arch']['neuronsD'],
                config['arch']['drop'],
                config['arch']['activation'],
                config['arch']['activation_r'],
