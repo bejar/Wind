@@ -55,17 +55,20 @@ if __name__ == '__main__':
         ############################################
         # Data
 
-        print('Running job %s %s' % (config['_id'], strftime('%Y-%m-%d %H:%M:%S')))
+        try:
+            print('Running job %s %s' % (config['_id'], strftime('%Y-%m-%d %H:%M:%S')))
 
-        if config['arch']['mode'] == 'regdir':
-            lresults = train_dirregression_architecture(config, impl, verbose, args.tboard, args.best, args.early)
-        elif config['arch']['mode'] == 'seq2seq':
-            lresults = train_seq2seq_architecture(config, impl, verbose, args.tboard, args.best, args.early)
-        elif config['arch']['mode'] == 'mlp':
-            lresults = train_MLP_regdir_architecture(config, verbose, args.tboard, args.best, args.early)
+            if config['arch']['mode'] == 'regdir':
+                lresults = train_dirregression_architecture(config, impl, verbose, args.tboard, args.best, args.early)
+            elif config['arch']['mode'] == 'seq2seq':
+                lresults = train_seq2seq_architecture(config, impl, verbose, args.tboard, args.best, args.early)
+            elif config['arch']['mode'] == 'mlp':
+                lresults = train_MLP_regdir_architecture(config, verbose, args.tboard, args.best, args.early)
 
-        if args.config is None:
-            saveconfig(config, lresults, proxy=args.proxy)
-        else:
-            for res in lresults:
-                print(res)
+            if args.config is None:
+                saveconfig(config, lresults, proxy=args.proxy)
+            else:
+                for res in lresults:
+                    print(res)
+        except Exception:
+            pass

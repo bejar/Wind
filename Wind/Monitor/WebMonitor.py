@@ -119,7 +119,6 @@ def proxy():
     """
     if request.method == 'GET':
         config = getconfig(mode=request.args['mode'])
-
         return json.dumps(config)
     else:
         param = request.args['res']
