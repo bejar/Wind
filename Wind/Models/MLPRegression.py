@@ -63,7 +63,6 @@ def train_MLP_regdir_architecture(config, verbose, tboard, best, early):
 
     train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='mlp',
                                                                       data_path=wind_data_path)
-    print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
 
     ############################################
     # Model
@@ -87,7 +86,6 @@ def train_MLP_regdir_architecture(config, verbose, tboard, best, early):
 
     if verbose:
         model.summary()
-
         print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation)
         print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
         print()
@@ -140,6 +138,21 @@ def train_MLP_regdir_architecture(config, verbose, tboard, best, early):
                          r2_score(val_y[i:, 0], val_y[0:-i, 0]),
                          r2_score(test_y[:, i - 1], test_yp[:, i - 1]),
                          r2_score(test_y[i:, 0], test_y[0:-i, 0])))
+
+
+    for i, r2val, r2persV, r2test, r2persT in lresults:
+        print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, FL= %s, DR= %3.2f, AF= %s, '
+              'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
+              (config['data']['datanames'][0],
+               config['data']['dataset'],
+               len(config['data']['vars']),
+               config['data']['lag'],
+               i,str(config['arch']['full']),
+               config['arch']['drop'],
+               config['arch']['activation'],
+               config['training']['optimizer'],
+               r2val, r2persV, r2test, r2persT
+               ))
 
     try:
         os.remove(modfile)
