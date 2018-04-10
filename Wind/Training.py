@@ -50,6 +50,21 @@ def getconfig(proxy=False, mode=None):
 
 
 
+def failconfig(config, proxy=False):
+    """
+    Changes the status of the configuration to pending if the experiment fails
+    :param config:
+    :param lresults:
+    :param proxy:
+    :return:
+    """
+    if not proxy:
+        client = MongoClient(mongoconnection.server)
+        db = client[mongoconnection.db]
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+        col = db[mongoconnection.col]
+        col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
+
 def saveconfig(config, lresults, proxy=False):
     """
     Saves a config in the database

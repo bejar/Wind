@@ -20,7 +20,7 @@ from __future__ import print_function
 from time import strftime
 
 from Wind.Util import load_config_file
-from Wind.Training import getconfig, saveconfig
+from Wind.Training import getconfig, saveconfig, failconfig
 from Wind.Models import train_dirregression_architecture, train_seq2seq_architecture, train_MLP_regdir_architecture
 
 import os
@@ -71,4 +71,5 @@ if __name__ == '__main__':
                 for res in lresults:
                     print(res)
         except Exception:
-            pass
+            failconfig(config)
+
