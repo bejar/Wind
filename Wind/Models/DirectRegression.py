@@ -140,10 +140,9 @@ def train_dirregression_architecture(config, impl, verbose, tboard, best, early)
         if verbose:
             print('-----------------------------------------------------------------------------')
             print('Steps Ahead = %d ' % ahead)
-        print('predata')
+
         train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
                                                                           data_path=wind_data_path)
-        print('postdata',train_x.shape, train_y.shape)
 
         ############################################
         # Model

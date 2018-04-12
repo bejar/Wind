@@ -51,12 +51,16 @@ def getconfig(mode=None):
     col = db[mongoconnection.col]
     query = {'status': 'pending'}
     if mode is not None:
-        query['arch.mode']= mode
-    lconfig = col.find(query, limit=10)
-    ch = np.random.randint(0,10)
-    for i, conf in enumerate(lconfig):
-        if i == ch:
-            config = conf
+        query['arch.mode'] = mode
+
+    lconfig = [c for c in col.find(query, limit=10)]
+
+    config = None
+    if len(lconfig) > 0:
+        ch = np.random.randint(0,len(lconfig))
+        for i, conf in enumerate(lconfig):
+            if i == ch:
+                config = conf
 
     if config is not None:
         print("Served job %s" % config['_id'])

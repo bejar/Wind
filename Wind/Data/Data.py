@@ -186,7 +186,6 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None):
     vars = config['vars']
     wind = {}
 
-    print(datanames)
     # Reads numpy arrays for all sites and keep only selected columns
     for d in datanames:
         wind[d] = np.load(data_path + '/%s.npy' % d)
@@ -210,7 +209,6 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None):
     elif config['dataset'] == 4:
         stacked = [_generate_dataset_multiple_var(wind[d], datasize, testsize,
                                               lag=lag, ahead=ahead) for d in datanames]
-
 
         train_x = np.vstack([x[0] for x in stacked])
         train_y = np.vstack([x[1] for x in stacked])
