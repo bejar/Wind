@@ -186,6 +186,7 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None):
     vars = config['vars']
     wind = {}
 
+    print(datanames)
     # Reads numpy arrays for all sites and keep only selected columns
     for d in datanames:
         wind[d] = np.load(data_path + '/%s.npy' % d)
