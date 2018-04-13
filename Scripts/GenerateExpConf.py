@@ -48,7 +48,7 @@ def generate_configs(config):
                         cp[f1] = {f2: v}
                     lnconf.append(cp)
             lconf = lnconf
-    #print('%d Configurations' % len(lconf))
+    print('%d Configurations' % len(lconf))
     return lconf
 
 
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     configB = load_config_file(args.config)
 
     if args.test:
-        print("%d configurations" %  len(generate_configs(configB)))
+       len(generate_configs(configB))
     else:
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]

@@ -25,15 +25,17 @@ import time
 __author__ = 'bejar'
 
 
-def generate_data(dfile, vars, step):
+def generate_data(dfile, vars, step, mode='average'):
     """
 
     :param dfile:
     :param vars:
     :param step:
+    :param mode: Mode for multi-step data generation (>1):
+        'average' all the points in a step
+        'split' the data steps in separated files
     :return:
     """
-
     nc_fid = Dataset("/home/bejar/storage/Data/Wind/files/%s.nc" % dfile, 'r')
     nint = nc_fid.dimensions['time'].size
     stime = nc_fid.getncattr('start_time')
@@ -42,34 +44,59 @@ def generate_data(dfile, vars, step):
         [t.tm_hour * 60 + t.tm_min for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
     month = np.array([t.tm_mon for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
 
-    ldata = []
-    for v in vars:
-        data = nc_fid.variables[v]
 
-        if step == 1:
+    if step == 1: # The original data
+        ldata = []
+        for v in vars:
+            data = nc_fid.variables[v]
             ldata.append(data)
-        else:
+        ldata.append(hour)
+        ldata.append(month)
+
+        data_stack = np.stack(ldata, axis=1)
+        print(data_stack.shape)
+        np.save('/home/bejar/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
+    elif mode == 'average': # Average step points
+        ldata = []
+        for v in vars:
+            data = nc_fid.variables[v]
             end = data.shape[0]
             length = int(end / step)
-            print(length)
             data_aver = np.zeros(length)
 
-            for i in range(0, end, step):
-                data_aver[i / step] = np.sum(data[i: i + step]) / step
+            for i in range(step):
+                data_aver += data[i::step]
+            data_aver /= step
+
+            # for i in range(0, end, step):
+            #     data_aver[i / step] = np.sum(data[i: i + step]) / step
 
             ldata.append(data_aver)
-    ldata.append(hour)
-    ldata.append(month)
+        ldata.append(hour)
+        ldata.append(month)
 
-    data_stack = np.stack(ldata, axis=1)
-    print(data_stack.shape)
-    np.save('/home/bejar/%s-%d.npy' % (wf.replace('/', '-'), step), data_stack)
+        data_stack = np.stack(ldata, axis=1)
+        print(data_stack.shape)
+        np.save('/home/bejar/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
+    elif mode == 'split': # split in n step files
+        for i in range(step):
+            ldata = []
+            for v in vars:
+                data = nc_fid.variables[v]
+                ldata.append(data[i::step])
+            ldata.append(hour)
+            ldata.append(month)
+
+            data_stack = np.stack(ldata, axis=1)
+            print(data_stack.shape)
+            np.save('/home/bejar/%s-%02d-%02d.npy' % (wf.replace('/', '-'), step, i+1), data_stack)
+
 
 
 if __name__ == '__main__':
 
     # Grupos de 5 minutos
-    step = 1
+    step = 12
 
     # wfiles = ['90/45142', '90/45143',
     #           '90/45229','90/45230']
@@ -85,4 +112,4 @@ if __name__ == '__main__':
 
     for wf in wfiles:
         print("Processing %s" % wf)
-        generate_data(wf, vars, step)
+        generate_data(wf, vars, step, mode="average")
