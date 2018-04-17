@@ -22,6 +22,8 @@ from keras.layers import LSTM, GRU, CuDNNGRU, CuDNNLSTM, Bidirectional, TimeDist
 from keras.optimizers import RMSprop, SGD
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.regularizers import l1, l2
+from keras.utils import multi_gpu_model
+import tensorflow as tf
 from sklearn.metrics import mean_squared_error, r2_score
 from Wind.Data import generate_dataset
 from Wind.Config import wind_data_path
@@ -124,7 +126,7 @@ def architectureS2S(ahead, idimensions, neurons, neuronsD, drop, nlayersE, nlaye
     return model
 
 
-def train_seq2seq_architecture(config, impl, verbose, tboard, best, early):
+def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi=1):
     """
     Training process for RNN architecture with sequence to sequence regression of ahead time steps
 
@@ -188,12 +190,20 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early):
         else:
             optimizer = RMSprop(lr=0.001)
 
-    model.compile(loss='mean_squared_error', optimizer=optimizer)
+    if multi == 1:
+        model.compile(loss='mean_squared_error', optimizer=optimizer)
+    else:
+        pmodel = multi_gpu_model(model, gpus=multi)
+        pmodel.compile(loss='mean_squared_error', optimizer=optimizer)
 
     batch_size = config['training']['batch']
     nepochs = config['training']['epochs']
 
-    model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
+    if multi == 1:
+        model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
+              verbose=verbose, callbacks=cbacks)
+    else:
+        pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
               verbose=verbose, callbacks=cbacks)
 
     ############################################

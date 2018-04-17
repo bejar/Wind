@@ -22,6 +22,8 @@ from keras.layers import Dense, Activation, Dropout
 from keras.optimizers import RMSprop, SGD
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.regularizers import l1, l2
+from keras.utils import multi_gpu_model
+import tensorflow as tf
 from sklearn.metrics import mean_squared_error, r2_score
 from Wind.Data import generate_dataset
 from Wind.Config import wind_data_path
@@ -50,7 +52,7 @@ def architectureMLP(idimensions, odimension, activation='linear', rec_reg='l1', 
     return model
 
 
-def train_MLP_regdir_architecture(config, verbose, tboard, best, early):
+def train_MLP_regdir_architecture(config, verbose, tboard, best, early, multi=1):
     """
      Training process for MLP architecture with regression of ahead time steps
 
@@ -79,8 +81,13 @@ def train_MLP_regdir_architecture(config, verbose, tboard, best, early):
     k_regw = config['arch']['k_regw']
 
     dropout = config['arch']['drop']
-
-    model = architectureMLP(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
+    if multi == 1:
+        model = architectureMLP(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
+                            rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
+                            full_layers=config['arch']['full'])
+    else:
+        with tf.device('/cpu:0'):
+            model = architectureMLP(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
                             rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
                             full_layers=config['arch']['full'])
 
@@ -114,13 +121,22 @@ def train_MLP_regdir_architecture(config, verbose, tboard, best, early):
         else:
             optimizer = RMSprop(lr=0.001)
 
-    model.compile(loss='mean_squared_error', optimizer=optimizer)
+    if multi == 1:
+        model.compile(loss='mean_squared_error', optimizer=optimizer)
+    else:
+        pmodel = multi_gpu_model(model, gpus=multi)
+        pmodel.compile(loss='mean_squared_error', optimizer=optimizer)
 
     batch_size = config['training']['batch']
     nepochs = config['training']['epochs']
 
-    model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
+    if multi == 1:
+        model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
               verbose=verbose, callbacks=cbacks)
+    else:
+        pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
+              verbose=verbose, callbacks=cbacks)
+
 
     ############################################
     # Results

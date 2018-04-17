@@ -40,6 +40,7 @@ if __name__ == '__main__':
     parser.add_argument('--proxy', help="Access configurations throught proxy", action='store_true', default=False)
     parser.add_argument('--config', default=None, help='Experiment configuration')
     parser.add_argument('--exp', default=None, help='type of experiment')
+    parser.add_argument('--multi', type=int, default=1, help='multi GPU training')
     args = parser.parse_args()
 
     verbose = 1 if args.verbose else 0
@@ -59,11 +60,11 @@ if __name__ == '__main__':
             print('Running job %s %s' % (config['_id'], strftime('%Y-%m-%d %H:%M:%S')))
 
             if config['arch']['mode'] == 'regdir':
-                lresults = train_dirregression_architecture(config, impl, verbose, args.tboard, args.best, args.early)
+                lresults = train_dirregression_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi)
             elif config['arch']['mode'] == 'seq2seq':
-                lresults = train_seq2seq_architecture(config, impl, verbose, args.tboard, args.best, args.early)
+                lresults = train_seq2seq_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi)
             elif config['arch']['mode'] == 'mlp':
-                lresults = train_MLP_regdir_architecture(config, verbose, args.tboard, args.best, args.early)
+                lresults = train_MLP_regdir_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
 
             if args.config is None:
                 saveconfig(config, lresults, proxy=args.proxy)
