@@ -35,7 +35,7 @@ __author__ = 'bejar'
 
 # Configuration stuff
 hostname = socket.gethostname()
-port = 9000
+port = 9073
 
 app = Flask(__name__)
 

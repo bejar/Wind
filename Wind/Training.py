@@ -46,7 +46,7 @@ def getconfig(proxy=False, mode=None):
             col.update({'_id': config['_id']}, {'$set': {'host': socket.gethostname().split('.')[0]}})
         return config
     else:
-        return requests.get('http://polaris.cs.upc.edu:9000/Proxy',params={'mode': mode}).json()
+        return requests.get('http://polaris.cs.upc.edu:9073/Proxy',params={'mode': mode}).json()
 
 
 
@@ -86,7 +86,7 @@ def saveconfig(config, lresults, proxy=False):
             col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
     else:
         config['results'] = lresults
-        requests.post('http://polaris.cs.upc.edu:9000/Proxy', params={'res': json.dumps(config)})
+        requests.post('http://polaris.cs.upc.edu:9073/Proxy', params={'res': json.dumps(config)})
 
 def updateprocess(config, ahead, proxy=False):
     """
