@@ -14,6 +14,7 @@
   },
   "arch": {
     "neurons":32,
+    "neuronsD":32,      
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",

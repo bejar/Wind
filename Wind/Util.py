@@ -39,4 +39,7 @@ def load_config_file(nfile, abspath=False):
     for l in fp:
         s += l
 
-    return json.loads(s)
+    config = json.loads(s)
+    config['_id'] = '00000000'
+
+    return config

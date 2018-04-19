@@ -9,7 +9,7 @@
     "vars": [0,1,2,3],
     "datasize": 40912,
     "testsize": 20456,
-    "dataset": 0,
+    "dataset": 1,
     "lag": 12,
     "ahead": 1
   },
@@ -26,9 +26,10 @@
     "activation": "tanh",
     "activation_r": "hard_sigmoid",
     "CuDNN": false,
-    "bidirectional": true,
+    "bidirectional": false,
     "rnn": "GRU",
-    "full": [1]
+      "full": [1],
+      "mode":"regdir"
   },
   "training": {
     "batch": 1000,
