@@ -50,7 +50,7 @@ if __name__ == '__main__':
     if args.config is None:
         config = getconfig(proxy=args.proxy, mode=args.exp)
     else:
-        config = load_config_file(args.config)
+        config = load_config_file(args.config, id=True)
 
     if config is not None:
 

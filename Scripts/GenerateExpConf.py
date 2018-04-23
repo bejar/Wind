@@ -21,7 +21,6 @@ import argparse
 from time import time
 
 from Wind.Util import load_config_file
-from Wind.Data import generate_dataset
 from Wind.Private.DBConfig import mongoconnection
 from copy import deepcopy
 from pymongo import MongoClient
@@ -61,7 +60,7 @@ if __name__ == '__main__':
     configB = load_config_file(args.config)
 
     if args.test:
-       len(generate_configs(configB))
+        len(generate_configs(configB))
     else:
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]

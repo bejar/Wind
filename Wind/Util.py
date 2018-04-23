@@ -22,7 +22,7 @@ import json
 __author__ = 'bejar'
 
 
-def load_config_file(nfile, abspath=False):
+def load_config_file(nfile, abspath=False, id=False):
     """
     Read the configuration from a json file
 
@@ -40,6 +40,7 @@ def load_config_file(nfile, abspath=False):
         s += l
 
     config = json.loads(s)
-    config['_id'] = '00000000'
+    if id:
+        config['_id'] = '00000000'
 
     return config
