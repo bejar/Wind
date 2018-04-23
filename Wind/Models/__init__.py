@@ -20,9 +20,11 @@ __init__.py
 from .DirectRegression import architectureDirRegression, train_dirregression_architecture
 from .MLPRegression import architectureMLP, train_MLP_regdir_architecture
 from .Seq2SeqRegression import architectureS2S, train_seq2seq_architecture
+from .Ensemble import train_ensemble_architecture
 
 __author__ = 'bejar'
 
 __all__ = ['architectureDirRegression', 'train_dirregression_architecture',
            'architectureMLP', 'train_MLP_regdir_architecture',
-           'architectureS2S', 'train_seq2seq_architecture']
+           'architectureS2S', 'train_seq2seq_architecture',
+           'train_ensemble_architecture']

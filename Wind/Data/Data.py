@@ -159,7 +159,7 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, mod
     return train_x, train_y, val_x, val_y, test_x, test_y
 
 
-def generate_dataset(config, ahead=1, mode=None, data_path=None):
+def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False, ens_slice=None):
     """
     Generates the dataset for training, test and validation
 
@@ -193,11 +193,21 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None):
             wind[d] = wind[d][:,vars]
 
     if config['dataset'] == 0:
-        return _generate_dataset_one_var(wind[datanames[0]][:, 0].reshape(-1, 1), datasize, testsize,
-                                         lag=lag, ahead=ahead, mode=mode)
+        if not ensemble:
+            return _generate_dataset_one_var(wind[datanames[0]][:, 0].reshape(-1, 1), datasize, testsize,
+                                             lag=lag, ahead=ahead, mode=mode)
+        else:
+            return _generate_dataset_one_var(wind[datanames[0]][ens_slice[0]::ens_slice[1], 0].reshape(-1, 1), datasize, testsize,
+                                             lag=lag, ahead=ahead, mode=mode)
+
     elif config['dataset'] == 1:
-        return _generate_dataset_multiple_var(wind[datanames[0]], datasize, testsize,
-                                              lag=lag, ahead=ahead, mode=mode)
+        if not ensemble:
+            return _generate_dataset_multiple_var(wind[datanames[0]], datasize, testsize,
+                                                  lag=lag, ahead=ahead, mode=mode)
+        else:
+            return _generate_dataset_multiple_var(wind[datanames[0][ens_slice[0]::ens_slice[1], :]], datasize, testsize,
+                                                  lag=lag, ahead=ahead, mode=mode)
+
     elif config['dataset'] == 2:
         stacked = np.vstack([wind[d][:,0] for d in datanames]).T
         return _generate_dataset_multiple_var(stacked, datasize, testsize,

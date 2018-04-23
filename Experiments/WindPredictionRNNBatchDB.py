@@ -21,7 +21,8 @@ from time import strftime
 
 from Wind.Util import load_config_file
 from Wind.Training import getconfig, saveconfig, failconfig
-from Wind.Models import train_dirregression_architecture, train_seq2seq_architecture, train_MLP_regdir_architecture
+from Wind.Models import train_dirregression_architecture, train_seq2seq_architecture, train_MLP_regdir_architecture,\
+    train_ensemble_architecture
 
 import os
 import argparse
@@ -65,7 +66,8 @@ if __name__ == '__main__':
                 lresults = train_seq2seq_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi)
             elif config['arch']['mode'] == 'mlp':
                 lresults = train_MLP_regdir_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
-
+            elif 'ens' in config['arch']['mode']:
+                lresults = train_ensemble_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
             if args.config is None:
                 saveconfig(config, lresults, proxy=args.proxy)
             else:
