@@ -64,7 +64,7 @@ if __name__ == '__main__':
                 lresults = train_dirregression_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi)
             elif config['arch']['mode'] == 'seq2seq':
                 lresults = train_seq2seq_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi)
-            elif config['arch']['mode'] == 'mlp':
+            elif config['arch']['mode'] == 'mlps2s':
                 lresults = train_MLP_regs2s_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
             elif config['arch']['mode'] == 'convo':
                 lresults = train_convdirregression_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
