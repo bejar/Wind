@@ -1,12 +1,12 @@
 """
-.. module:: MLPRegression
+.. module:: MLPRegressions2s
 
 MLPRegression
 *************
 
-:Description: MLPRegression
+:Description: MLPRegressions2s
 
- Multiple Direct regression with MLP
+ Sequence to seguence Direct regression with MLP
 
 :Authors: bejar
     
@@ -33,26 +33,26 @@ import os
 __author__ = 'bejar'
 
 
-def architectureMLP(idimensions, odimension, activation='linear', rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1,
-                    dropout=0.0, full_layers=[128]):
+def architectureMLPs2s(idimensions, odimension, activation='linear', rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1,
+                       dropout=0.0, full_layers=[128]):
     """
     Arquitecture with direct regression using MLP
 
     :return:
     """
     model = Sequential()
-    model.add(Dense(full_layers[0], input_shape=idimensions))
+    model.add(Dense(full_layers[0], input_shape=idimensions, activation=activation))
     model.add(Dropout(rate=dropout))
     for units in full_layers[1:]:
         model.add(Dense(units=units, activation=activation))
         model.add(Dropout(rate=dropout))
 
-    model.add(Dense(odimension))
+    model.add(Dense(odimension, activation='linear'))
 
     return model
 
 
-def train_MLP_regdir_architecture(config, verbose, tboard, best, early, multi=1):
+def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1):
     """
      Training process for MLP architecture with regression of ahead time steps
 
@@ -82,14 +82,14 @@ def train_MLP_regdir_architecture(config, verbose, tboard, best, early, multi=1)
 
     dropout = config['arch']['drop']
     if multi == 1:
-        model = architectureMLP(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
-                            rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
-                            full_layers=config['arch']['full'])
+        model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
+                                   rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
+                                   full_layers=config['arch']['full'])
     else:
         with tf.device('/cpu:0'):
-            model = architectureMLP(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
-                            rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
-                            full_layers=config['arch']['full'])
+            model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
+                                       rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
+                                       full_layers=config['arch']['full'])
 
     if verbose:
         model.summary()

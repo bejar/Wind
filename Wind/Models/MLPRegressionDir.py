@@ -1,24 +1,24 @@
 """
-.. module:: ConvoRegression
+.. module:: MLPRegressionDir
 
-ConvoRegression
+MLPRegressionDir
 *************
 
-:Description: ConvoRegression
+:Description: MLPRegressionDir
 
-    Direct Regression with CNN
+    Multilater perceptron with direct regresion horizon
 
 :Authors: bejar
     
 
 :Version: 
 
-:Created on: 23/04/2018 13:31 
+:Created on: 24/04/2018 12:17 
 
 """
 
 from keras.models import Sequential, load_model
-from keras.layers import Dense, Activation, Dropout, Conv1D
+from keras.layers import Dense, Activation, Dropout
 from keras.layers import LSTM, GRU, CuDNNGRU, CuDNNLSTM, Bidirectional, TimeDistributed, Flatten, RepeatVector
 from keras.optimizers import RMSprop, SGD
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
@@ -35,61 +35,25 @@ import os
 __author__ = 'bejar'
 
 
-def architectureConvDirRegression(idimensions, filters, kernel_size, strides, drop, nlayers, activation,
-                                  act_reg='l1', act_regw=0.1, k_reg='l1', k_regw=0.1, full=[1]):
+def architectureMLP_dirreg(idimensions, activation='linear', rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1,
+                       dropout=0.0, full_layers=[128]):
     """
-    Regression RNN architecture
+    Arquitecture with direct regression using MLP
 
     :return:
     """
-    if act_reg == 'l1':
-        act_regularizer = l1(act_regw)
-    elif act_reg == 'l2':
-        act_regularizer = l2(act_regw)
-    else:
-        act_regularizer = None
-
-    if k_reg == 'l1':
-        k_regularizer = l1(k_regw)
-    elif act_reg == 'l2':
-        k_regularizer = l2(k_regw)
-    else:
-        k_regularizer = None
-
     model = Sequential()
-    if nlayers == 1:
-        model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                         activation=activation, padding='causal',
-                         activity_regularizer=act_regularizer, kernel_regularizer=k_regularizer))
-        if drop != 0:
-            model.add(Dropout(rate=drop))
+    model.add(Dense(full_layers[0], input_shape=idimensions))
+    model.add(Dropout(rate=dropout))
+    for units in full_layers[1:]:
+        model.add(Dense(units=units, activation=activation))
+        model.add(Dropout(rate=dropout))
 
-    else:
-        model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                         activation=activation, padding='causal',
-                         activity_regularizer=act_regularizer,
-                         kernel_regularizer=k_regularizer))
-        if drop != 0:
-            model.add(Dropout(rate=drop))
-        for i in range(1, nlayers - 1):
-            model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                             activation=activation, padding='causal',
-                             kernel_regularizer=k_regularizer))
-            if drop != 0:
-                model.add(Dropout(rate=drop))
-        model.add(Conv1D(filters[-1], activation=activation, strides=strides[-1],
-                         kernel_size=kernel_size[-1], activity_regularizer=act_regularizer,
-                         kernel_regularizer=k_regularizer))
-        if drop != 0:
-            model.add(Dropout(rate=drop))
-    model.add(Flatten())
-    for l in full:
-        model.add(Dense(l))
+    model.add(Dense(1),activation='linear')
 
     return model
 
-
-def train_convdirregression_architecture(config, verbose, tboard, best, early, multi=1):
+def train_MLP_dirreg_architecture(config, impl, verbose, tboard, best, early, multi=1):
     """
     Training process for architecture with direct regression of ahead time steps
 
@@ -110,44 +74,33 @@ def train_convdirregression_architecture(config, verbose, tboard, best, early, m
         ############################################
         # Model
 
-        filters = config['arch']['filters']
-        strides = config['arch']['strides']
-        kernel_size = config['arch']['kernel_size']
-
+        neurons = config['arch']['neurons']
         drop = config['arch']['drop']
         nlayers = config['arch']['nlayers']  # >= 1
 
         activation = config['arch']['activation']
+        activation_r = config['arch']['activation_r']
         rec_reg = config['arch']['rec_reg']
         rec_regw = config['arch']['rec_regw']
         k_reg = config['arch']['k_reg']
         k_regw = config['arch']['k_regw']
+        bidirectional = config['arch']['bidirectional']
+        bimerge = config['arch']['bimerge']
 
         if multi == 1:
-            model = architectureConvDirRegression(idimensions=train_x.shape[1:], filters=filters, drop=drop,
-                                                  nlayers=nlayers,
-                                                  activation=activation,
-                                                   strides=strides,
-                                                  kernel_size=kernel_size,
-                                                  act_reg=rec_reg, act_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
-                                                  full=config['arch']['full'])
+            model = architectureMLP_dirreg(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
+                                   rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=drop,
+                                   full_layers=config['arch']['full'])
         else:
             with tf.device('/cpu:0'):
-                model = architectureConvDirRegression(idimensions=train_x.shape[1:], filters=filters, drop=drop,
-                                                      nlayers=nlayers,
-                                                      activation=activation,
-                                                      strides=strides,
-                                                      kernel_size=kernel_size,
-                                                      act_reg=rec_reg, act_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
-                                                      full=config['arch']['full'])
+                model = architectureMLP_dirreg(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
+                                   rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=drop,
+                                   full_layers=config['arch']['full'])
 
         if verbose:
             model.summary()
-
-            print('lag: ', config['data']['lag'], '/Filters: ', filters, '/Layers: ', nlayers, '/Activation:',
-                  activation, 'K Size', kernel_size, '/Strides', strides)
-            print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape,
-                  test_y.shape)
+            print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation)
+            print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
             print()
 
         ############################################
@@ -180,15 +133,17 @@ def train_convdirregression_architecture(config, verbose, tboard, best, early, m
             pmodel = multi_gpu_model(model, gpus=multi)
             pmodel.compile(loss='mean_squared_error', optimizer=optimizer)
 
+
         batch_size = config['training']['batch']
         nepochs = config['training']['epochs']
 
         if multi == 1:
             model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-                      verbose=verbose, callbacks=cbacks)
+                  verbose=verbose, callbacks=cbacks)
         else:
             pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-                       verbose=verbose, callbacks=cbacks)
+                  verbose=verbose, callbacks=cbacks)
+
 
         ############################################
         # Results
@@ -216,22 +171,20 @@ def train_convdirregression_architecture(config, verbose, tboard, best, early, m
         # print('R2 test persistence =', r2persT)
 
         lresults.append((ahead, r2val, r2persV, r2test, r2persT))
-        print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, ST= %s, KS= %s, LY= %d, FLT= %s, DR= %3.2f, AF= %s, '
+
+        print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, FL= %s, DR= %3.2f, AF= %s, '
               'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
               (config['data']['datanames'][0],
                config['data']['dataset'],
                len(config['data']['vars']),
                config['data']['lag'],
-               ahead,
-               str(config['arch']['strides']),
-               str(config['arch']['kernel_size']),
-               config['arch']['nlayers'],
-               str(config['arch']['filters']),
+               ahead,str(config['arch']['full']),
                config['arch']['drop'],
                config['arch']['activation'],
                config['training']['optimizer'],
                r2val, r2persV, r2test, r2persT
                ))
+
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
         # Update result in db
@@ -247,11 +200,3 @@ def train_convdirregression_architecture(config, verbose, tboard, best, early, m
         del model
 
     return lresults
-
-
-if __name__ == '__main__':
-
-    from Wind.Util import load_config_file
-    config = load_config_file("configcnv.json")
-    wind_data_path = '../../Data'
-    lresults = train_convdirregression_architecture(config, False, False, True, True)
