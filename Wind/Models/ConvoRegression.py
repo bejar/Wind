@@ -205,9 +205,10 @@ def train_convdirregression_architecture(config, verbose, tboard, best, early, m
         # print('R2 test persistence =', r2persT)
 
         lresults.append((ahead, r2val, r2persV, r2test, r2persT))
-        print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, ST= %s, KS= %s, LY= %d, FLT= %s, DR= %3.2f, AF= %s, '
+        print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, ST= %s, KS= %s, LY= %d, FLT= %s, DR= %3.2f, AF= %s, '
               'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
-              (config['data']['datanames'][0],
+              (config['arch']['mode'],
+               config['data']['datanames'][0],
                config['data']['dataset'],
                len(config['data']['vars']),
                config['data']['lag'],

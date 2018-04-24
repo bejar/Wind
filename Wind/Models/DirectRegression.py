@@ -257,9 +257,10 @@ def train_dirregression_architecture(config, impl, verbose, tboard, best, early,
         # print('R2 test persistence =', r2persT)
 
         lresults.append((ahead, r2val, r2persV, r2test, r2persT))
-        print('DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
+        print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
               'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
-              (config['data']['datanames'][0],
+              (config['arch']['mode'],
+               config['data']['datanames'][0],
                config['data']['dataset'],
                len(config['data']['vars']),
                config['data']['lag'],
