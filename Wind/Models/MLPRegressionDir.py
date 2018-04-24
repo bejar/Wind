@@ -48,12 +48,12 @@ def architectureMLP_dirreg(idimensions, activation='linear', rec_reg='l1', rec_r
     for units in full_layers[1:]:
         model.add(Dense(units=units, activation=activation))
         model.add(Dropout(rate=dropout))
-
-    model.add(Dense(1),activation='linear')
+    model.add(Flatten())
+    model.add(Dense(1,activation='linear'))
 
     return model
 
-def train_MLP_dirreg_architecture(config, impl, verbose, tboard, best, early, multi=1):
+def train_MLP_dirreg_architecture(config, verbose, tboard, best, early, multi=1):
     """
     Training process for architecture with direct regression of ahead time steps
 
@@ -74,32 +74,29 @@ def train_MLP_dirreg_architecture(config, impl, verbose, tboard, best, early, mu
         ############################################
         # Model
 
-        neurons = config['arch']['neurons']
         drop = config['arch']['drop']
         nlayers = config['arch']['nlayers']  # >= 1
 
         activation = config['arch']['activation']
-        activation_r = config['arch']['activation_r']
         rec_reg = config['arch']['rec_reg']
         rec_regw = config['arch']['rec_regw']
         k_reg = config['arch']['k_reg']
         k_regw = config['arch']['k_regw']
-        bidirectional = config['arch']['bidirectional']
-        bimerge = config['arch']['bimerge']
+
 
         if multi == 1:
-            model = architectureMLP_dirreg(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
+            model = architectureMLP_dirreg(idimensions=train_x.shape[1:], activation=activation,
                                    rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=drop,
                                    full_layers=config['arch']['full'])
         else:
             with tf.device('/cpu:0'):
-                model = architectureMLP_dirreg(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
+                model = architectureMLP_dirreg(idimensions=train_x.shape[1:], activation=activation,
                                    rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=drop,
                                    full_layers=config['arch']['full'])
 
         if verbose:
             model.summary()
-            print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation)
+            print('lag: ', config['data']['lag'], '/Layers: ', nlayers, '/Activation:', activation)
             print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
             print()
 
@@ -178,7 +175,7 @@ def train_MLP_dirreg_architecture(config, impl, verbose, tboard, best, early, mu
                config['data']['dataset'],
                len(config['data']['vars']),
                config['data']['lag'],
-               ahead,str(config['arch']['full']),
+               ahead, str(config['arch']['full']),
                config['arch']['drop'],
                config['arch']['activation'],
                config['training']['optimizer'],
@@ -200,3 +197,11 @@ def train_MLP_dirreg_architecture(config, impl, verbose, tboard, best, early, mu
         del model
 
     return lresults
+
+
+if __name__ == '__main__':
+
+    from Wind.Util import load_config_file
+    config = load_config_file("configmlpdir.json")
+    wind_data_path = '../../Data'
+    lresults = train_MLP_dirreg_architecture(config, False, False, True, True)

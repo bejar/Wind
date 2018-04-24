@@ -57,31 +57,20 @@ def architectureConvDirRegression(idimensions, filters, kernel_size, strides, dr
         k_regularizer = None
 
     model = Sequential()
-    if nlayers == 1:
-        model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
+
+    model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
+                     activation=activation, padding='causal',
+                     activity_regularizer=act_regularizer,
+                     kernel_regularizer=k_regularizer))
+    if drop != 0:
+        model.add(Dropout(rate=drop))
+    for i in range(1, len(filters)):
+        model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
                          activation=activation, padding='causal',
-                         activity_regularizer=act_regularizer, kernel_regularizer=k_regularizer))
+                         kernel_regularizer=k_regularizer))
         if drop != 0:
             model.add(Dropout(rate=drop))
 
-    else:
-        model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                         activation=activation, padding='causal',
-                         activity_regularizer=act_regularizer,
-                         kernel_regularizer=k_regularizer))
-        if drop != 0:
-            model.add(Dropout(rate=drop))
-        for i in range(1, nlayers - 1):
-            model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                             activation=activation, padding='causal',
-                             kernel_regularizer=k_regularizer))
-            if drop != 0:
-                model.add(Dropout(rate=drop))
-        model.add(Conv1D(filters[-1], activation=activation, strides=strides[-1],
-                         kernel_size=kernel_size[-1], activity_regularizer=act_regularizer,
-                         kernel_regularizer=k_regularizer))
-        if drop != 0:
-            model.add(Dropout(rate=drop))
     model.add(Flatten())
     for l in full:
         model.add(Dense(l))
