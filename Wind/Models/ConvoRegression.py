@@ -58,16 +58,29 @@ def architectureConvDirRegression(idimensions, filters, kernel_size, strides, dr
 
     model = Sequential()
 
-    model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                     activation=activation, padding='causal',
-                     activity_regularizer=act_regularizer,
-                     kernel_regularizer=k_regularizer))
+    if type(filters) == list:
+        model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
+                         activation=activation, padding='causal',
+                         activity_regularizer=act_regularizer,
+                         kernel_regularizer=k_regularizer))
+    else:
+        model.add(Conv1D(filters, input_shape=(idimensions), kernel_size=kernel_size, strides=strides,
+                         activation=activation, padding='causal',
+                         activity_regularizer=act_regularizer,
+                         kernel_regularizer=k_regularizer))
+
     if drop != 0:
         model.add(Dropout(rate=drop))
     for i in range(1, len(filters)):
-        model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                         activation=activation, padding='causal',
-                         kernel_regularizer=k_regularizer))
+        if type(filters) == list:
+            model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
+                             activation=activation, padding='causal',
+                             kernel_regularizer=k_regularizer))
+        else:
+            model.add(Conv1D(filters, kernel_size=kernel_size, strides=strides,
+                             activation=activation, padding='causal',
+                             kernel_regularizer=k_regularizer))
+
         if drop != 0:
             model.add(Dropout(rate=drop))
 
