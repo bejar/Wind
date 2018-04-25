@@ -23,6 +23,7 @@ from .MLPRegressionDir import architectureMLP_dirreg, train_MLP_dirreg_architect
 from .Seq2SeqRegression import architectureS2S, train_seq2seq_architecture
 from .Ensemble import train_ensemble_architecture
 from .ConvoRegression import train_convdirregression_architecture, architectureConvDirRegression
+from .SVMRegressionDir import train_svm_dirregression_architecture
 __author__ = 'bejar'
 
 __all__ = ['architectureDirRegression', 'train_dirregression_architecture',
@@ -30,4 +31,5 @@ __all__ = ['architectureDirRegression', 'train_dirregression_architecture',
            'architectureS2S', 'train_seq2seq_architecture',
            'train_ensemble_architecture',
            'train_convdirregression_architecture', 'architectureConvDirRegression',
-           'architectureMLP_dirreg', 'train_MLP_dirreg_architecture']
+           'architectureMLP_dirreg', 'train_MLP_dirreg_architecture',
+           'train_svm_dirregression_architecture']

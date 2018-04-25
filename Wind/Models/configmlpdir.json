@@ -1,0 +1,28 @@
+{ "_id": "00000000",
+  "data": {
+    "datanames": ["11-5794"],
+      "vars": [0,1,2,3,4,5],
+    "datasize": 40912,
+    "testsize": 20456,
+    "dataset": 1,
+    "lag": 18,
+    "ahead": 12
+  },
+  "arch": {
+    "k_reg": "None",
+    "k_regw": 0.1,
+    "rec_reg": "None",
+    "rec_regw": 0.1,
+    "drop": 0,
+    "nlayers": 2,
+    "activation": "relu",
+      "full": [256, 128],
+    "mode": "mlpdir"
+  },
+  "training": {
+    "batch": 1000,
+    "epochs": 100,
+    "optimizer": "adamax",
+    "lrate": 0.001
+  }
+}
