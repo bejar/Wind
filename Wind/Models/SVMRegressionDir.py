@@ -50,6 +50,10 @@ def train_svm_dirregression_architecture(config, verbose):
         train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
                                                                           data_path=wind_data_path)
 
+        train_x = np.squeeze(train_x, axis=2)
+        val_x = np.squeeze(val_x, axis=2)
+        test_x = np.squeeze(test_x, axis=2)
+
         ############################################
         # Model
 
