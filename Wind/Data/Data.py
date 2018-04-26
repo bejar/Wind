@@ -70,7 +70,7 @@ def lagged_matrix(data, lag=1, ahead=0, mode=None):
     return np.stack(lvect, axis=1)
 
 
-def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, mode=None):
+def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, slice=1, mode=None):
     """
     Generates
     :return:
@@ -84,10 +84,10 @@ def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, mode=Non
 
     train = lagged_vector(wind_train, lag=lag, ahead=ahead, mode=mode)
     if mode == 's2s':
-        train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
+        train_x, train_y = train[:, :lag], train[:, -slice:, 0]
         train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
     elif mode == 'mlp':
-        train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
+        train_x, train_y = train[:, :lag], train[:, -slice:, 0]
         train_x = np.reshape(train_x, (train_y.shape[0], train_y.shape[1]))
     elif mode == 'svm':
         train_x, train_y = train[:, :lag], np.ravel(train[:, -1:, 0])
@@ -100,13 +100,13 @@ def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, mode=Non
     half_test = int(test.shape[0] / 2)
 
     if mode == 's2s':
-        val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead:, 0]
-        test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead:, 0]
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -slice:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -slice:, 0]
         val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
         test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
     elif mode == 'mlp':
-        val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead:, 0]
-        test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead:, 0]
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -slice:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -slice:, 0]
         val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1]))
         test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1]))
     elif mode == 'svm':
@@ -121,7 +121,7 @@ def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, mode=Non
     return train_x, train_y, val_x, val_y, test_x, test_y
 
 
-def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, mode=None):
+def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, slice=1, mode=None):
     """
     Generates
     :return:
@@ -136,10 +136,10 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, mod
     # Train
     train = lagged_matrix(wind_train, lag=lag, ahead=ahead, mode=mode)
     if mode == 's2s':
-        train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
+        train_x, train_y = train[:, :lag], train[:, -slice:, 0]
         train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
     elif mode == 'mlp':
-        train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
+        train_x, train_y = train[:, :lag], train[:, -slice:, 0]
         train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1] * train_x.shape[2]))
     elif mode== 'svm':
         train_x, train_y = train[:, :lag], np.ravel(train[:, -1:, 0])
@@ -154,13 +154,13 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, mod
     half_test = int(test.shape[0] / 2)
 
     if mode == 's2s':
-        val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead:, 0]
-        test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead:, 0]
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -slice:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -slice:, 0]
         val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
         test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
     elif mode == 'mlp':
-        val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead:, 0]
-        test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead:, 0]
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -slice:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -slice:, 0]
         val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1] * val_x.shape[2]))
         test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1] * test_x.shape[2]))
     elif mode== 'svm':
@@ -202,6 +202,16 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False,
     vars = config['vars']
     wind = {}
 
+
+    if mode == 's2s' or mode == 'mlp':
+        if type(ahead) != list:
+            dahead = ahead[1]
+            slice = (ahead[1] - ahead[0]) + 1
+    else:
+        dahead = ahead
+        slice = ahead
+
+
     # Reads numpy arrays for all sites and keep only selected columns
     for d in datanames:
         wind[d] = np.load(data_path + '/%s.npy' % d)
@@ -211,30 +221,30 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False,
     if config['dataset'] == 0:
         if not ensemble:
             return _generate_dataset_one_var(wind[datanames[0]][:, 0].reshape(-1, 1), datasize, testsize,
-                                             lag=lag, ahead=ahead, mode=mode)
+                                             lag=lag, ahead=dahead, slice=slice, mode=mode)
         else:
             return _generate_dataset_one_var(wind[datanames[0]][ens_slice[0]::ens_slice[1], 0].reshape(-1, 1), datasize, testsize,
-                                             lag=lag, ahead=ahead, mode=mode)
+                                             lag=lag, ahead=dahead, slice=slice, mode=mode)
 
     elif config['dataset'] == 1:
         if not ensemble:
             return _generate_dataset_multiple_var(wind[datanames[0]], datasize, testsize,
-                                                  lag=lag, ahead=ahead, mode=mode)
+                                                  lag=lag, ahead=dahead, slice=slice, mode=mode)
         else:
             return _generate_dataset_multiple_var(wind[datanames[0][ens_slice[0]::ens_slice[1], :]], datasize, testsize,
-                                                  lag=lag, ahead=ahead, mode=mode)
+                                                  lag=lag, ahead=dahead, slice=slice, mode=mode)
 
     elif config['dataset'] == 2:
         stacked = np.vstack([wind[d][:,0] for d in datanames]).T
         return _generate_dataset_multiple_var(stacked, datasize, testsize,
-                                              lag=lag, ahead=ahead, mode=mode)
+                                              lag=lag, ahead=dahead, slice=slice, mode=mode)
     elif config['dataset'] == 3:
         stacked = np.hstack([wind[d] for d in datanames])
         return _generate_dataset_multiple_var(stacked, datasize, testsize,
-                                              lag=lag, ahead=ahead, mode=mode)
+                                              lag=lag, ahead=dahead, slice=slice, mode=mode)
     elif config['dataset'] == 4:
         stacked = [_generate_dataset_multiple_var(wind[d], datasize, testsize,
-                                              lag=lag, ahead=ahead) for d in datanames]
+                                              lag=lag, ahead=dahead, slice=slice) for d in datanames]
 
         train_x = np.vstack([x[0] for x in stacked])
         train_y = np.vstack([x[1] for x in stacked])

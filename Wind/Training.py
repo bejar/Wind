@@ -37,8 +37,6 @@ def getconfig(proxy=False, mode=None):
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
         query = {'status': 'pending'}
-        if mode is not None:
-            query['arch.mode']= mode
         config = col.find_one(query)
         if config is not None:
             col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
@@ -46,8 +44,7 @@ def getconfig(proxy=False, mode=None):
             col.update({'_id': config['_id']}, {'$set': {'host': socket.gethostname().split('.')[0]}})
         return config
     else:
-        return requests.get('http://polaris.cs.upc.edu:9073/Proxy',params={'mode': mode}).json()
-
+        return requests.get('http://polaris.cs.upc.edu:9073/Proxy', params={'mode': mode}).json()
 
 
 def failconfig(config, proxy=False):
@@ -64,6 +61,7 @@ def failconfig(config, proxy=False):
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
         col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
+
 
 def saveconfig(config, lresults, proxy=False):
     """
@@ -88,6 +86,7 @@ def saveconfig(config, lresults, proxy=False):
         config['results'] = lresults
         requests.post('http://polaris.cs.upc.edu:9073/Proxy', params={'res': json.dumps(config)})
 
+
 def updateprocess(config, ahead, proxy=False):
     """
     updates the info of the training process for each iteration
@@ -102,6 +101,7 @@ def updateprocess(config, ahead, proxy=False):
         col = db[mongoconnection.col]
         col.update({'_id': config['_id']}, {'$set': {'ahead': ahead}})
         col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
+
 
 if __name__ == '__main__':
     print(getconfig(mode='seq2seq'))

@@ -45,13 +45,13 @@ def getconfig(mode=None):
     Gets a config from the database
     :return:
     """
+    print mode
+
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
     query = {'status': 'pending'}
-    if mode is not None:
-        query['arch.mode'] = mode
 
     lconfig = [c for c in col.find(query, limit=10)]
 
@@ -122,7 +122,7 @@ def proxy():
     :return:
     """
     if request.method == 'GET':
-        config = getconfig(mode=request.args['mode'])
+        config = getconfig()
         return json.dumps(config)
     else:
         param = request.args['res']
