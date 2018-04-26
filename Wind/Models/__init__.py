@@ -17,13 +17,14 @@ __init__.py
 
 """
 
-from .DirectRegression import architectureDirRegression, train_dirregression_architecture
-from .MLPRegressions2s import architectureMLPs2s, train_MLP_regs2s_architecture
+from .RNNRegressionDir import architectureDirRegression, train_dirregression_architecture
+from .MLPRegressionS2S import architectureMLPs2s, train_MLP_regs2s_architecture
 from .MLPRegressionDir import architectureMLP_dirreg, train_MLP_dirreg_architecture
-from .Seq2SeqRegression import architectureS2S, train_seq2seq_architecture
+from .RNNRegressionS2S import architectureS2S, train_seq2seq_architecture
 from .Ensemble import train_ensemble_architecture
-from .ConvoRegression import train_convdirregression_architecture, architectureConvDirRegression
+from .ConvoRegressionDir import train_convdirregression_architecture, architectureConvDirRegression
 from .SVMRegressionDir import train_svm_dirregression_architecture
+
 __author__ = 'bejar'
 
 __all__ = ['architectureDirRegression', 'train_dirregression_architecture',

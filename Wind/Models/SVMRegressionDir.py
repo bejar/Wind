@@ -39,9 +39,13 @@ def train_svm_dirregression_architecture(config, verbose):
     :return:
     """
 
-    sahead = config['data']['ahead']
+    if type(config['data']['ahead']) == list:
+        iahead, sahead = config['data']['ahead']
+    else:
+        iahead, sahead = 1, config['data']['ahead']
+
     lresults = []
-    for ahead in range(1, sahead + 1):
+    for ahead in range(iahead, sahead + 1):
 
         if verbose:
             print('-----------------------------------------------------------------------------')

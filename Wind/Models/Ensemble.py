@@ -36,7 +36,7 @@ from Wind.Config import wind_data_path
 from Wind.Training import updateprocess
 from time import time, strftime
 import os
-from Wind.Models.DirectRegression import architectureDirRegression
+from Wind.Models.RNNRegressionDir import architectureDirRegression
 
 
 __author__ = 'bejar'
