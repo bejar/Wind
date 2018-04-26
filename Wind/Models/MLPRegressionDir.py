@@ -46,7 +46,7 @@ def architectureMLP_dirreg(idimensions, activation='linear', rec_reg='l1', rec_r
     model.add(Dense(full_layers[0], input_shape=idimensions, activation=activation))
     model.add(Dropout(rate=dropout))
     for units in full_layers[1:]:
-        model.add(Dense(units=units, activation=activation), activation=activation)
+        model.add(Dense(units=units, activation=activation))
         model.add(Dropout(rate=dropout))
     model.add(Flatten())
     model.add(Dense(1,activation='linear'))
