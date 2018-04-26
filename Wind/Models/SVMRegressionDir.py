@@ -21,13 +21,10 @@ from Wind.Data import generate_dataset
 from Wind.Config import wind_data_path
 from Wind.Training import updateprocess
 from time import time, strftime
-import os
-from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import SVR
-import numpy as np
-import os
+
 
 __author__ = 'bejar'
 
