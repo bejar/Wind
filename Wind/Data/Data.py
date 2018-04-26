@@ -89,6 +89,9 @@ def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, mode=Non
     elif mode == 'mlp':
         train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
         train_x = np.reshape(train_x, (train_y.shape[0], train_y.shape[1]))
+    elif mode == 'svm':
+        train_x, train_y = train[:, :lag], train[:, -1:, 0]
+        train_x = np.reshape(train_x, (train_y.shape[0], train_y.shape[1]))
     else:
         train_x, train_y = train[:, :lag], train[:, -1:, 0]
 
@@ -104,6 +107,11 @@ def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, mode=Non
     elif mode == 'mlp':
         val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead:, 0]
         test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead:, 0]
+        val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1]))
+        test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1]))
+    elif mode == 'svm':
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
         val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1]))
         test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1]))
     else:
@@ -133,6 +141,9 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, mod
     elif mode == 'mlp':
         train_x, train_y = train[:, :lag], train[:, -ahead:, 0]
         train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1] * train_x.shape[2]))
+    elif mode== 'svm':
+        train_x, train_y = train[:, :lag], train[:, -1:, 0]
+        train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1] * train_x.shape[2]))
     else:
         train_x, train_y = train[:, :lag], train[:, -1:, 0]
 
@@ -150,6 +161,11 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, mod
     elif mode == 'mlp':
         val_x, val_y = test[:half_test, :lag], test[:half_test, -ahead:, 0]
         test_x, test_y = test[half_test:, :lag], test[half_test:, -ahead:, 0]
+        val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1] * val_x.shape[2]))
+        test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1] * test_x.shape[2]))
+    elif mode== 'svm':
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
         val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1] * val_x.shape[2]))
         test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1] * test_x.shape[2]))
     else:

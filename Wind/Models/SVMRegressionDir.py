@@ -47,12 +47,12 @@ def train_svm_dirregression_architecture(config, verbose):
             print('-----------------------------------------------------------------------------')
             print('Steps Ahead = %d ' % ahead)
 
-        train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
+        train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='svm',
                                                                           data_path=wind_data_path)
 
-        train_x = np.squeeze(train_x, axis=2)
-        val_x = np.squeeze(val_x, axis=2)
-        test_x = np.squeeze(test_x, axis=2)
+        # train_x = np.squeeze(train_x, axis=2)
+        # val_x = np.squeeze(val_x, axis=2)
+        # test_x = np.squeeze(test_x, axis=2)
 
         ############################################
         # Model
@@ -114,4 +114,4 @@ if __name__ == '__main__':
     from Wind.Util import load_config_file
     config = load_config_file("configsvmdir.json")
     wind_data_path = '../../Data'
-    lresults = train_svm_dirregression_architecture(config, False)
+    lresults = train_svm_dirregression_architecture(config, True)
