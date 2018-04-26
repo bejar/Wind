@@ -88,7 +88,7 @@ def train_svm_dirregression_architecture(config, verbose):
 
         test_yp = svmr.predict(test_x)
         r2test = r2_score(test_y, test_yp)
-        r2persT = r2_score(test_y[ahead:, 0], test_y[0:-ahead, 0])
+        r2persT = r2_score(test_y[ahead:], test_y[0:-ahead])
 
         lresults.append((ahead, r2val, r2persV, r2test, r2persT))
         print('%s |  KRNL= %s, C= %3.5f, EPS= %3.5f, DEG=%d, COEF0= %d, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
