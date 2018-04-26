@@ -108,6 +108,6 @@ def train_svm_dirregression_architecture(config, verbose):
 if __name__ == '__main__':
 
     from Wind.Util import load_config_file
-    config = load_config_file("configmlpdir.json")
+    config = load_config_file("configsvmdir.json")
     wind_data_path = '../../Data'
     lresults = train_svm_dirregression_architecture(config, False)
