@@ -35,7 +35,7 @@ if __name__ == '__main__':
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    configs = col.find({'host': 'polaris', 'status':'working'})
+    configs = col.find({'status':'working'})
 
     for conf in configs:
         col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})

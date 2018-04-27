@@ -203,10 +203,9 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False,
     wind = {}
 
 
-    if mode == 's2s' or mode == 'mlp':
-        if type(ahead) == list:
-            dahead = ahead[1]
-            slice = (ahead[1] - ahead[0]) + 1
+    if (mode == 's2s' or mode == 'mlp') and type(ahead) == list:
+        dahead = ahead[1]
+        slice = (ahead[1] - ahead[0]) + 1
     else:
         dahead = ahead
         slice = ahead
