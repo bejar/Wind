@@ -105,10 +105,11 @@ def info():
     exp = col.find({'status': 'working'})
     work = {}
     for v in exp:
-        work[v['_id']] = {'btime': v['btime'],
+        work[v['_id']] = {'mode': v['arch']['mode'],
+                          'btime': v['btime'],
                           'host': v['host'] if 'host' in v else 'host',
                           'etime': v['etime'] if 'etime' in v else v['btime'],
-                          'ahead': v['ahead'] if 'ahead' in v else 1}
+                          'ahead': v['data']['ahead'] if 'ahead' in v else 1}
 
     exp = col.find({'status': 'pending'})
     pend= len([v for v in exp])
