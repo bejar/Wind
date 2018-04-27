@@ -91,8 +91,8 @@ def train_svm_dirregression_architecture(config, verbose):
         r2persT = r2_score(test_y[ahead:], test_y[0:-ahead])
 
         lresults.append((ahead, r2val, r2persV, r2test, r2persT))
-        print('%s |  KRNL= %s, C= %3.5f, EPS= %3.5f, DEG=%d, COEF0= %d, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
-              (config['arch']['mode'],
+        print('%s |  AH=%d, KRNL= %s, C= %3.5f, EPS= %3.5f, DEG=%d, COEF0= %d, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
+              (config['arch']['mode'], ahead,
         config['arch']['kernel'],
         config['arch']['C'],
         config['arch']['epsilon'],
