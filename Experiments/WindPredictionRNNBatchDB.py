@@ -58,7 +58,7 @@ if __name__ == '__main__':
         # Data
 
         # try:
-            print('Running job %s %s' % (config['_id'], strftime('%Y-%m-%d %H:%M:%S')))
+            print('Running job %s %s %s' % (config['_id'], config['arch']['mode'], strftime('%Y-%m-%d %H:%M:%S')))
 
             if config['arch']['mode'] == 'regdir':
                 lresults = train_dirregression_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi)
