@@ -109,7 +109,7 @@ def info():
                           'btime': v['btime'],
                           'host': v['host'] if 'host' in v else 'host',
                           'etime': v['etime'] if 'etime' in v else v['btime'],
-                          'ahead': v['data']['ahead'] if 'ahead' in v else 1}
+                          'ahead': v['ahead'] if 'ahead' in v else 0}
 
     exp = col.find({'status': 'pending'})
     pend= len([v for v in exp])

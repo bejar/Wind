@@ -103,7 +103,7 @@ def train_svm_dirregression_architecture(config, verbose):
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
         # Update result in db
-        if config is None:
+        if config is not None:
             updateprocess(config, ahead)
 
 

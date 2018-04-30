@@ -283,7 +283,7 @@ def train_dirregression_architecture(config, impl, verbose, tboard, best, early,
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
         # Update result in db
-        if config is None:
+        if config is not None:
             updateprocess(config, ahead)
 
         try:

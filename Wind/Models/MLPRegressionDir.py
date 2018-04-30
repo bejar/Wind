@@ -190,7 +190,7 @@ def train_MLP_dirreg_architecture(config, verbose, tboard, best, early, multi=1)
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
         # Update result in db
-        if config is None:
+        if config is not None:
             updateprocess(config, ahead)
 
         try:
