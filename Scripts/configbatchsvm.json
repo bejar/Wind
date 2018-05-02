@@ -9,11 +9,11 @@
     "ahead": [12]
   },
   "arch": {
-    "kernel" : ["rbf"],
+    "kernel" : ["linear"],
     "C" : [100, 10, 1, 0.1, 0.01, 0.01],
     "epsilon": [1, 0.1, 0.01, 0.001, 0.001],
-    "degree": [2],
-    "coef0": [1],
+      "degree": [2],
+    "coef0": [0],
     "mode": ["svmdir"]
   }
 }

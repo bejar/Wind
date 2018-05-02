@@ -73,7 +73,7 @@ def train_svm_dirregression_architecture(config, verbose):
         ############################################
         # Training
 
-        svmr = SVR(kernel=kernel, C=C, epsilon=epsilon, degree=degree, coef0=coef0)
+        svmr = SVR(kernel=kernel, C=C, epsilon=epsilon, degree=degree, coef0=coef0, max_iter=250)
         svmr.fit(train_x, train_y)
 
 
