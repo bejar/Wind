@@ -22,6 +22,7 @@ import requests
 from time import strftime
 import socket
 import json
+import numpy as np
 
 __author__ = 'bejar'
 
@@ -37,7 +38,16 @@ def getconfig(proxy=False, mode=None):
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
         query = {'status': 'pending'}
-        config = col.find_one(query)
+        # config = col.find_one(query)
+
+        lconfig = [c for c in col.find(query, limit=10)]
+        config = None
+        if len(lconfig) > 0:
+            ch = np.random.randint(0,len(lconfig))
+            for i, conf in enumerate(lconfig):
+                if i == ch:
+                    config = conf
+
         if config is not None:
             col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
             col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S')}})
