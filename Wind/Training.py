@@ -86,7 +86,7 @@ def saveconfig(config, lresults, proxy=False):
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
 
-        if lresults[0][1] > 0.1:
+        if lresults[0][1] > 0.0:
             col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
             col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
             col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
