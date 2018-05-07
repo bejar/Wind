@@ -35,7 +35,7 @@ if __name__ == '__main__':
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    configs = col.find({'status':'pending', 'arch.C':100})
+    configs = col.find({'status':'pending', 'arch.coef0':0,'arch.kernel':'poly','arch.degree':2})
 
     for conf in configs:
         col.update({'_id': conf['_id']}, {'$set': {'status': 'failed'}})

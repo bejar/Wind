@@ -1,0 +1,31 @@
+{
+  "data": {
+      "datanames": [["11-5794"]],
+      "vars": [[0,1,2,3,4,5]],
+    "datasize": [40912],
+    "testsize": [20456],
+      "dataset": [1],
+      "lag": [12,18,24,32],
+    "ahead": [12]
+  },
+  "arch": {
+      "filters": [16,32],
+      "strides": [[1]],
+      "kernel_size": [[3],[5],[7]],
+    "k_reg": ["None"],
+      "k_regw": [0.1],
+    "rec_reg": ["None"],
+    "rec_regw": [0.1],
+      "drop": [0,0.1],
+      "nlayers": [1],
+      "activation": ["relu", "tanh"],
+      "full": [[]],
+      "mode":["convos2s"]
+  },
+  "training": {
+    "batch": [1000],
+    "epochs": [150],
+      "optimizer": ["adamax"],
+    "lrate": [0.001]
+  }
+}

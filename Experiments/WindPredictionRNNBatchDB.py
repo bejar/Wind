@@ -23,7 +23,7 @@ from Wind.Util import load_config_file
 from Wind.Training import getconfig, saveconfig, failconfig
 from Wind.Models import train_dirregression_architecture, train_seq2seq_architecture, train_MLP_regs2s_architecture,\
     train_ensemble_architecture, train_convdirregression_architecture, train_MLP_dirreg_architecture, \
-    train_svm_dirregression_architecture
+    train_svm_dirregression_architecture, train_convo_regs2s_architecture
 
 import os
 import argparse
@@ -71,6 +71,8 @@ if __name__ == '__main__':
                 lresults = train_MLP_dirreg_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
             elif config['arch']['mode'] == 'convo':
                 lresults = train_convdirregression_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
+            elif config['arch']['mode'] == 'convos2s':
+                lresults = train_convo_regs2s_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
             elif 'ens' in config['arch']['mode']:
                 lresults = train_ensemble_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
             if config['arch']['mode'] == 'svmdir':

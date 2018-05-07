@@ -85,8 +85,11 @@ def architectureConvDirRegression(idimensions, filters, kernel_size, strides, dr
             model.add(Dropout(rate=drop))
 
     model.add(Flatten())
+
     for l in full:
         model.add(Dense(l))
+
+    model.add(Dense(1, activation='linear'))
 
     return model
 
@@ -232,7 +235,7 @@ def train_convdirregression_architecture(config, verbose, tboard, best, early, m
                ahead,
                str(config['arch']['strides']),
                str(config['arch']['kernel_size']),
-               config['arch']['nlayers'],
+               len(config['arch']['kernel_size']),
                str(config['arch']['filters']),
                config['arch']['drop'],
                config['arch']['activation'],
