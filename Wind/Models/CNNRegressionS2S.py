@@ -28,12 +28,13 @@ from sklearn.metrics import mean_squared_error, r2_score
 from Wind.Data import generate_dataset
 from Wind.Config import wind_data_path
 from time import time, strftime
+import numpy as np
 import os
 
 __author__ = 'bejar'
 
 
-def architectureConvos2s(idimensions, odimension, filters, kernel_size, strides, drop, nlayers, activation,
+def architectureConvos2s(idimensions, odimension, filters, kernel_size, strides, drop, activation, activationfl,
                                   act_reg='l1', act_regw=0.1, k_reg='l1', k_regw=0.1, full=[1]):
     """
     Regression RNN architecture
@@ -56,26 +57,17 @@ def architectureConvos2s(idimensions, odimension, filters, kernel_size, strides,
 
     model = Sequential()
 
-    if type(filters) == list:
-        model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                         activation=activation, padding='causal',
-                         activity_regularizer=act_regularizer,
-                         kernel_regularizer=k_regularizer))
-    else:
-        model.add(Conv1D(filters, input_shape=(idimensions), kernel_size=kernel_size, strides=strides,
+    model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
                          activation=activation, padding='causal',
                          activity_regularizer=act_regularizer,
                          kernel_regularizer=k_regularizer))
 
     if drop != 0:
         model.add(Dropout(rate=drop))
+
     for i in range(1, len(filters)):
-        if type(filters) == list:
-            model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                             activation=activation, padding='causal',
-                             kernel_regularizer=k_regularizer))
-        else:
-            model.add(Conv1D(filters, kernel_size=kernel_size, strides=strides,
+
+        model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
                              activation=activation, padding='causal',
                              kernel_regularizer=k_regularizer))
 
@@ -84,7 +76,7 @@ def architectureConvos2s(idimensions, odimension, filters, kernel_size, strides,
 
     model.add(Flatten())
     for l in full:
-        model.add(Dense(l))
+        model.add(Dense(l, activation=activationfl))
 
     model.add(Dense(odimension, activation='linear'))
 
@@ -103,8 +95,13 @@ def train_convo_regs2s_architecture(config, verbose, tboard, best, early, multi=
     """
     ahead = config['data']['ahead']
 
-    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='mlp',
+    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='s2s',
                                                                       data_path=wind_data_path)
+
+
+    train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
+    test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
+    val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1]))
 
     ############################################
     # Model
@@ -113,11 +110,8 @@ def train_convo_regs2s_architecture(config, verbose, tboard, best, early, multi=
     strides = config['arch']['strides']
     kernel_size = config['arch']['kernel_size']
 
-    neurons = config['arch']['neurons']
-    drop = config['arch']['drop']
-    nlayers = config['arch']['nlayers']  # >= 1
-
     activation = config['arch']['activation']
+    activationfl = config['arch']['activationfl']
 
     rec_reg = config['arch']['rec_reg']
     rec_regw = config['arch']['rec_regw']
@@ -127,17 +121,17 @@ def train_convo_regs2s_architecture(config, verbose, tboard, best, early, multi=
     dropout = config['arch']['drop']
     if multi == 1:
         model = architectureConvos2s(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
-                                   rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
-                                   full_layers=config['arch']['full'], filters=filters, kernel_size=kernel_size, strides=strides)
+                                    activationfl=activationfl, k_reg=k_reg, k_regw=k_regw, drop=dropout,
+                                   full=config['arch']['full'], filters=filters, kernel_size=kernel_size, strides=strides)
     else:
         with tf.device('/cpu:0'):
             model = architectureConvos2s(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
-                                       rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
-                                       full_layers=config['arch']['full'], kernel_size=kernel_size, strides=strides)
+                                        k_reg=k_reg, k_regw=k_regw, drop=dropout,
+                                       full=config['arch']['full'], kernel_size=kernel_size, strides=strides)
 
     if verbose:
         model.summary()
-        print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation)
+        print('lag: ', config['data']['lag'],  '/Filters: ', config['arch']['filters'], '/Activation:', activation)
         print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
         print()
 

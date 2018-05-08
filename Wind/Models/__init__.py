@@ -22,7 +22,7 @@ from .MLPRegressionS2S import architectureMLPs2s, train_MLP_regs2s_architecture
 from .MLPRegressionDir import architectureMLP_dirreg, train_MLP_dirreg_architecture
 from .RNNRegressionS2S import architectureS2S, train_seq2seq_architecture
 from .Ensemble import train_ensemble_architecture
-from .ConvoRegressionDir import train_convdirregression_architecture, architectureConvDirRegression
+from .CNNRegressionDir import train_convdirregression_architecture, architectureConvDirRegression
 from .SVMRegressionDir import train_svm_dirregression_architecture
 from .CNNRegressionS2S import train_convo_regs2s_architecture, architectureConvos2s
 

@@ -35,7 +35,7 @@ import os
 __author__ = 'bejar'
 
 
-def architectureConvDirRegression(idimensions, filters, kernel_size, strides, drop, nlayers, activation,
+def architectureConvDirRegression(idimensions, filters, kernel_size, strides, drop, activation, activationfl,
                                   act_reg='l1', act_regw=0.1, k_reg='l1', k_regw=0.1, full=[1]):
     """
     Regression RNN architecture
@@ -58,28 +58,19 @@ def architectureConvDirRegression(idimensions, filters, kernel_size, strides, dr
 
     model = Sequential()
 
-    if type(filters) == list:
-        model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                         activation=activation, padding='causal',
-                         activity_regularizer=act_regularizer,
-                         kernel_regularizer=k_regularizer))
-    else:
-        model.add(Conv1D(filters, input_shape=(idimensions), kernel_size=kernel_size, strides=strides,
-                         activation=activation, padding='causal',
-                         activity_regularizer=act_regularizer,
-                         kernel_regularizer=k_regularizer))
+
+    model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
+                     activation=activation, padding='causal',
+                     activity_regularizer=act_regularizer,
+                     kernel_regularizer=k_regularizer))
 
     if drop != 0:
         model.add(Dropout(rate=drop))
     for i in range(1, len(filters)):
-        if type(filters) == list:
-            model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                             activation=activation, padding='causal',
-                             kernel_regularizer=k_regularizer))
-        else:
-            model.add(Conv1D(filters, kernel_size=kernel_size, strides=strides,
-                             activation=activation, padding='causal',
-                             kernel_regularizer=k_regularizer))
+        model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
+                         activation=activation, padding='causal',
+                         kernel_regularizer=k_regularizer))
+
 
         if drop != 0:
             model.add(Dropout(rate=drop))
@@ -87,7 +78,7 @@ def architectureConvDirRegression(idimensions, filters, kernel_size, strides, dr
     model.add(Flatten())
 
     for l in full:
-        model.add(Dense(l))
+        model.add(Dense(l, activation=activationfl))
 
     model.add(Dense(1, activation='linear'))
 
@@ -124,9 +115,9 @@ def train_convdirregression_architecture(config, verbose, tboard, best, early, m
         kernel_size = config['arch']['kernel_size']
 
         drop = config['arch']['drop']
-        nlayers = config['arch']['nlayers']  # >= 1
 
         activation = config['arch']['activation']
+        activationfl = config['arch']['activationfl']
         rec_reg = config['arch']['rec_reg']
         rec_regw = config['arch']['rec_regw']
         k_reg = config['arch']['k_reg']
@@ -134,8 +125,7 @@ def train_convdirregression_architecture(config, verbose, tboard, best, early, m
 
         if multi == 1:
             model = architectureConvDirRegression(idimensions=train_x.shape[1:], filters=filters, drop=drop,
-                                                  nlayers=nlayers,
-                                                  activation=activation,
+                                                  activation=activation, activationfl=activationfl,
                                                    strides=strides,
                                                   kernel_size=kernel_size,
                                                   act_reg=rec_reg, act_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
@@ -143,8 +133,7 @@ def train_convdirregression_architecture(config, verbose, tboard, best, early, m
         else:
             with tf.device('/cpu:0'):
                 model = architectureConvDirRegression(idimensions=train_x.shape[1:], filters=filters, drop=drop,
-                                                      nlayers=nlayers,
-                                                      activation=activation,
+                                                      activation=activation, activationfl=activationfl,
                                                       strides=strides,
                                                       kernel_size=kernel_size,
                                                       act_reg=rec_reg, act_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
@@ -153,7 +142,7 @@ def train_convdirregression_architecture(config, verbose, tboard, best, early, m
         if verbose:
             model.summary()
 
-            print('lag: ', config['data']['lag'], '/Filters: ', filters, '/Layers: ', nlayers, '/Activation:',
+            print('lag: ', config['data']['lag'], '/Filters: ', filters, '/Activation:',
                   activation, 'K Size', kernel_size, '/Strides', strides)
             print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape,
                   test_y.shape)

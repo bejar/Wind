@@ -18,8 +18,9 @@
     "rec_regw": [0.1],
       "drop": [0,0.1],
       "nlayers": [1],
-      "activation": ["relu", "tanh"],
-      "full": [[]],
+      "activation": ["relu", "sigmoid"],
+      "activation": ["sigmoid"],
+      "full": [[128]],
       "mode":["convos2s"]
   },
   "training": {
