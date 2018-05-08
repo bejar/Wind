@@ -25,6 +25,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import ks_2samp, anderson_ksamp
+import seaborn as sn
 
 plt.style.use('ggplot')
 from matplotlib import rc
@@ -178,35 +179,59 @@ def best_parameters(lexp, archtype, n):
         print(np.array(best[archtype][i]['result'])[:, 1])
 
 
+
+def exp_distrib(lexp):
+
+    ldiff = []
+    for exp in lexp:
+        data = np.array(exp['result'])
+        ldiff.append((data[:, 1]))
+
+    ldiff = np.array(ldiff)
+    print(ldiff.shape)
+
+    sn.boxplot(data=ldiff)
+    plt.show()
+
+
+
+
+
 if __name__ == '__main__':
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    colors = {'regdir': 'b', 'seq2seq': 'r', 'mlps2s': 'g', 'convo': 'c', 'mlpdir': 'y', 'svmdir': 'm'}
 
+
+    colors = {'regdir': 'b', 'seq2seq': 'r', 'mlps2s': 'g', 'convo': 'c', 'mlpdir': 'y', 'svmdir': 'm'}
     labels = {'regdir': 'RNNdir', 'seq2seq': 'RNNs2s', 'mlps2s': 'MLPs2s',
               'convo': 'CNNdir', 'mlpdir': 'MLPdir', 'svmdir': 'SVMdir'}
+    # query1= {'status':'done',
+    #      #'arch.mode':'seq2seq',
+    #          #   'data.lag':32,
+    #          # 'data.dataset':3,
+    #            # 'data.vars': [0,1,2,3],
+    #           #  'arch.neurons': 32,
+    #            # 'arch.drop':0.1,
+    #           #  'arch.rnn':'GRU',
+    #            # 'arch.bidirectional':False,
+    #            # 'arch.activation':'tanh'
+    #            }
+    #
+    # count_exp(query1)
+    # res1 = find_exp(query1)
+    # #best = graph_compare_exp(res1, n=20)
+    # # test_compare_exp(res1, ['regdir', 'mlps2s'], n=20)
+    # best_parameters(res1, 'regdir', 5)
+    #
+    query2= {'status':'done', "experiment.type":"expbest"}
 
-    query1= {'status':'done',
-         #'arch.mode':'seq2seq',
-             #   'data.lag':32,
-             # 'data.dataset':3,
-               # 'data.vars': [0,1,2,3],
-              #  'arch.neurons': 32,
-               # 'arch.drop':0.1,
-              #  'arch.rnn':'GRU',
-               # 'arch.bidirectional':False,
-               # 'arch.activation':'tanh'
-               }
+    count_exp(query2)
+    res1 = find_exp(query2)
 
-    count_exp(query1)
+    exp_distrib(res1)
 
-    res1 = find_exp(query1)
-
-    #best = graph_compare_exp(res1, n=20)
-
-    # test_compare_exp(res1, ['regdir', 'mlps2s'], n=20)
-
-    best_parameters(res1, 'regdir', 5)
+    
+    

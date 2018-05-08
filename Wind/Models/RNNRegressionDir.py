@@ -130,7 +130,7 @@ def architectureDirRegression(idimensions, neurons, drop, nlayers, activation, a
     return model
 
 
-def train_dirregression_architecture(config, impl, verbose, tboard, best, early, multi=1):
+def train_dirregression_architecture(config, impl, verbose, tboard, best, early, multi=1, proxy=False):
     """
     Training process for architecture with direct regression of ahead time steps
 
@@ -283,7 +283,7 @@ def train_dirregression_architecture(config, impl, verbose, tboard, best, early,
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
         # Update result in db
-        if config is not None:
+        if config is not None and not proxy:
             updateprocess(config, ahead)
 
         try:

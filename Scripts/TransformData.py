@@ -21,6 +21,7 @@ from __future__ import print_function
 from netCDF4 import Dataset
 import numpy as np
 import time
+from Wind.Config.Paths import wind_data_path
 
 __author__ = 'bejar'
 
@@ -55,7 +56,7 @@ def generate_data(dfile, vars, step, mode='average'):
 
         data_stack = np.stack(ldata, axis=1)
         print(data_stack.shape)
-        np.save('/home/bejar/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
+        np.save(wind_data_path + '/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
     elif mode == 'average': # Average step points
         ldata = []
         for v in vars:
@@ -77,7 +78,7 @@ def generate_data(dfile, vars, step, mode='average'):
 
         data_stack = np.stack(ldata, axis=1)
         print(data_stack.shape)
-        np.save('/home/bejar/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
+        np.save(wind_data_path + '/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
     elif mode == 'split': # split in n step files
         for i in range(step):
             ldata = []
@@ -89,7 +90,7 @@ def generate_data(dfile, vars, step, mode='average'):
 
             data_stack = np.stack(ldata, axis=1)
             print(data_stack.shape)
-            np.save('/home/bejar/%s-%02d-%02d.npy' % (wf.replace('/', '-'), step, i+1), data_stack)
+            np.save(wind_data_path + '/%s-%02d-%02d.npy' % (wf.replace('/', '-'), step, i+1), data_stack)
 
 
 
@@ -108,7 +109,7 @@ if __name__ == '__main__':
     #           '11/5793', '11/5794', '11/5795', '11/5796',
     #           '11/5752', '11/5753', '11/5754', '11/5755']
     vars = ['wind_speed', 'density', 'pressure', 'wind_direction']
-    wfiles = ['11/5794']
+    wfiles = ['0/' + str(i) for i in range(500) ]
 
     for wf in wfiles:
         print("Processing %s" % wf)
