@@ -53,8 +53,8 @@ def generate_configs(config):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='configBatch1', help='Experiment configuration')
-    parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
+    parser.add_argument('--config', default='configbatchregdir', help='Experiment configuration')
+    parser.add_argument('--test', action='store_true', default=True, help='Print the number of configurations')
     args = parser.parse_args()
 
     configB = load_config_file(args.config)

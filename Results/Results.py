@@ -171,6 +171,7 @@ def best_parameters(lexp, archtype, n):
             print('STRD:', best[archtype][i]['arch']['strides'] if 'strides' in best[archtype][i]['arch'] else '')
             print('KERSIZ:', best[archtype][i]['arch']['kernel_size'] if 'kernel_size' in best[archtype][i]['arch'] else '')
             print('ACT:', best[archtype][i]['arch']['activation'])
+            print('ACTR:', best[archtype][i]['arch']['activation_r'])
             print('OPT:', best[archtype][i]['training']['optimizer'])
             print('FULLLY:', best[archtype][i]['arch']['full'])
 
