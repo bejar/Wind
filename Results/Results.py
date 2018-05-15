@@ -226,12 +226,20 @@ if __name__ == '__main__':
     # # test_compare_exp(res1, ['regdir', 'mlps2s'], n=20)
     # best_parameters(res1, 'regdir', 5)
     #
-    query2= {'status':'done', "experiment.type":"expbest"}
+    query2= {'status':'done', "arch.mode": "regdir", "experiment.type":"expbest"}
 
     count_exp(query2)
     res1 = find_exp(query2)
 
     exp_distrib(res1)
 
+    query2= {'status':'done', "arch.mode": "mlps2s", "experiment.type":"expbest"}
+
+    count_exp(query2)
+    res1 = find_exp(query2)
+
+    exp_distrib(res1)
+
+    
     
     

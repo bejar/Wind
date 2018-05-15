@@ -28,7 +28,7 @@ from Wind.Models import train_dirregression_architecture, train_seq2seq_architec
 import os
 import argparse
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 __author__ = 'bejar'
 
 if __name__ == '__main__':
@@ -43,7 +43,11 @@ if __name__ == '__main__':
     parser.add_argument('--config', default=None, help='Experiment configuration')
     parser.add_argument('--exp', default=None, help='type of experiment')
     parser.add_argument('--multi', type=int, default=1, help='multi GPU training')
+    parser.add_argument('--gpulog', default=False, help='GPU logging')
     args = parser.parse_args()
+
+    if not args.gpulog:
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
     verbose = 1 if args.verbose else 0
     impl = 2 if args.gpu else 1
