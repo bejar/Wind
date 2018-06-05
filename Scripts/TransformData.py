@@ -109,7 +109,7 @@ if __name__ == '__main__':
     #           '11/5793', '11/5794', '11/5795', '11/5796',
     #           '11/5752', '11/5753', '11/5754', '11/5755']
     vars = ['wind_speed', 'density', 'pressure', 'wind_direction']
-    wfiles = ['0/' + str(i) for i in range(500) ]
+    wfiles = ['47/' + str(i) for i in range(47500, 48000) ]
 
     for wf in wfiles:
         print("Processing %s" % wf)
