@@ -25,6 +25,7 @@ from .Ensemble import train_ensemble_architecture
 from .CNNRegressionDir import train_convdirregression_architecture, architectureConvDirRegression
 from .SVMRegressionDir import train_svm_dirregression_architecture
 from .CNNRegressionS2S import train_convo_regs2s_architecture, architectureConvos2s
+from .Persistence import train_persistence
 
 __author__ = 'bejar'
 
@@ -35,4 +36,5 @@ __all__ = ['architectureDirRegression', 'train_dirregression_architecture',
            'train_convdirregression_architecture', 'architectureConvDirRegression',
            'architectureMLP_dirreg', 'train_MLP_dirreg_architecture',
            'train_svm_dirregression_architecture',
-           'train_convo_regs2s_architecture', 'architectureConvos2s']
+           'train_convo_regs2s_architecture', 'architectureConvos2s',
+           'train_persistence']
