@@ -25,7 +25,7 @@
     "bimerge":"ave",
     "rnn": "GRU",
       "full": [256, 128],
-      "mode":"mlps2s"]
+      "mode":"mlps2s"
   },
   "training": {
     "batch": 1000,
