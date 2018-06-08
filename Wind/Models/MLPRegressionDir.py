@@ -157,7 +157,7 @@ def train_MLP_dirreg_architecture(config, verbose, tboard, best, early, multi=1)
         # print('MSE val persistence =', mean_squared_error(val_y[ahead:], val_y[0:-ahead]))
         val_yp = model.predict(val_x, batch_size=batch_size, verbose=0)
         r2val = r2_score(val_y, val_yp)
-        r2persV = r2_score(val_y[ahead:], val_y[0:-ahead])
+        # r2persV = r2_score(val_y[ahead:], val_y[0:-ahead])
         # print('R2 val= ', r2val)
         # print('R2 val persistence =', r2persV)
 
@@ -167,14 +167,14 @@ def train_MLP_dirreg_architecture(config, verbose, tboard, best, early, multi=1)
         # print('MSE test persistence =', mean_squared_error(test_y[ahead:], test_y[0:-ahead]))
         test_yp = model.predict(test_x, batch_size=batch_size, verbose=0)
         r2test = r2_score(test_y, test_yp)
-        r2persT = r2_score(test_y[ahead:, 0], test_y[0:-ahead, 0])
+        # r2persT = r2_score(test_y[ahead:, 0], test_y[0:-ahead, 0])
         # print('R2 test= ', r2test)
         # print('R2 test persistence =', r2persT)
 
-        lresults.append((ahead, r2val, r2persV, r2test, r2persT))
+        lresults.append((ahead, r2val,  r2test))
 
         print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, FL= %s, DR= %3.2f, AF= %s, '
-              'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
+              'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
               (config['arch']['mode'],
                config['data']['datanames'][0],
                config['data']['dataset'],
@@ -184,7 +184,7 @@ def train_MLP_dirreg_architecture(config, verbose, tboard, best, early, multi=1)
                config['arch']['drop'],
                config['arch']['activation'],
                config['training']['optimizer'],
-               r2val, r2persV, r2test, r2persT
+               r2val, r2test
                ))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
