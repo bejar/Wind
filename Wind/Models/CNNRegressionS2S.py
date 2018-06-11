@@ -22,7 +22,6 @@ from keras.layers import Dense, Activation, Dropout, Conv1D, Flatten
 from keras.optimizers import RMSprop, SGD
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.regularizers import l1, l2
-from keras.utils import multi_gpu_model
 import tensorflow as tf
 from sklearn.metrics import mean_squared_error, r2_score
 from Wind.Data import generate_dataset
@@ -30,6 +29,14 @@ from Wind.Config import wind_data_path
 from time import time, strftime
 import numpy as np
 import os
+
+
+try:
+    from keras.utils import multi_gpu_model
+except ImportError:
+    _has_multigpu = False
+else:
+    _has_multigpu = True
 
 __author__ = 'bejar'
 

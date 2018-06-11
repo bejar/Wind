@@ -10,7 +10,7 @@
 # @ wall_clock_limit = 02:00:00
 
 module purge
-module load K80 cuda/8.0 mkl/2017.1 CUDNN/5.1.10-cuda_8.0 intel-opencl/2016 python/3.6.3_ML
+module load K80 cuda/8.0 mkl/2017.1 CUDNN/5.1.10-cuda_8.0 intel-opencl/2016 python/3.6.0+_ML
 PYTHONPATH=/gpfs/projects/nct00/nct00001/DLMAI/Wind
 export PYTHONPATH
 python WindPredictionRNNBatchDB.py --best --early --gpu --mino --config 1528461120

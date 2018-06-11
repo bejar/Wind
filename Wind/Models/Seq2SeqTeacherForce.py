@@ -17,16 +17,15 @@ Seq2SeqRegression
 """
 
 from keras.models import Model
-from keras.models import Sequential, load_model
-from keras.layers import Dense, Activation, Dropout, Input
-from keras.layers import LSTM, GRU, CuDNNGRU, CuDNNLSTM, Bidirectional, TimeDistributed, Flatten, RepeatVector
+from keras.models import load_model
+from keras.layers import Dense, Input
+from keras.layers import LSTM
 from keras.optimizers import RMSprop, SGD
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
-from keras.regularizers import l1, l2
-from sklearn.metrics import mean_squared_error, r2_score
+
 from Wind.Data import generate_dataset
 from Wind.Config import wind_data_path
-from time import time, strftime
+from time import time
 import os
 import numpy as np
 

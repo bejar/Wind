@@ -19,11 +19,19 @@ MLPRegressionDir
 
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Activation, Dropout
-from keras.layers import LSTM, GRU, CuDNNGRU, CuDNNLSTM, Bidirectional, TimeDistributed, Flatten, RepeatVector
+from keras.layers import Flatten
+
+
+try:
+    from keras.utils import multi_gpu_model
+except ImportError:
+    _has_multigpu = False
+else:
+    _has_multigpu = True
+
 from keras.optimizers import RMSprop, SGD
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.regularizers import l1, l2
-from keras.utils import multi_gpu_model
 import tensorflow as tf
 from sklearn.metrics import mean_squared_error, r2_score
 from Wind.Data import generate_dataset

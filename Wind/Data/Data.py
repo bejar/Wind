@@ -23,8 +23,7 @@ Data
 from __future__ import print_function
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-from netCDF4 import Dataset
-from Wind.Config import wind_data_path
+
 __author__ = 'bejar'
 
 
