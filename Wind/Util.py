@@ -18,9 +18,15 @@ Util
 """
 
 import json
-from pymongo import MongoClient
-from Wind.Private.DBConfig import mongoconnection
 import numpy as np
+
+try:
+    from pymongo import MongoClient
+    from Wind.Private.DBConfig import mongoconnection
+except ImportError:
+    _has_mongo= False
+else:
+    _has_mongo = True
 
 __author__ = 'bejar'
 

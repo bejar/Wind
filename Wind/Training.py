@@ -16,13 +16,20 @@ Training
 :Created on: 06/04/2018 14:32 
 
 """
-from Wind.Private.DBConfig import mongoconnection
-from pymongo import MongoClient
 import requests
 from time import strftime
 import socket
 import json
 import numpy as np
+
+try:
+    from pymongo import MongoClient
+    from Wind.Private.DBConfig import mongoconnection
+except ImportError:
+    _has_mongo= False
+else:
+    _has_mongo = True
+
 
 __author__ = 'bejar'
 
@@ -115,7 +122,7 @@ def updateprocess(config, ahead, proxy=False):
     :param config:
     :return:
     """
-    if not proxy:
+    if not proxy and _has_mongo:
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)

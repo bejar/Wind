@@ -28,7 +28,6 @@ import tensorflow as tf
 from sklearn.metrics import mean_squared_error, r2_score
 from Wind.Data import generate_dataset
 from Wind.Config import wind_data_path
-from Wind.Training import updateprocess
 from time import time, strftime
 import os
 
@@ -284,6 +283,7 @@ def train_dirregression_architecture(config, impl, verbose, tboard, best, early,
 
         # Update result in db
         if config is not None and not proxy:
+            from Wind.Training import updateprocess
             updateprocess(config, ahead)
 
         try:
