@@ -22,12 +22,12 @@
     "bidirectional": false,
     "bimerge":"ave",
     "rnn": "GRU",
-      "full": [[1]],
+      "full": [1],
       "mode":"regdir"
   },
   "training": {
     "batch": 1000,
-    "epochs": [150],
+    "epochs": 150,
       "optimizer": "adamax",
     "lrate": 0.001
   }

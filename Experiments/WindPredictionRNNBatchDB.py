@@ -44,6 +44,7 @@ if __name__ == '__main__':
     parser.add_argument('--exp', default=None, help='type of experiment')
     parser.add_argument('--multi', type=int, default=1, help='multi GPU training')
     parser.add_argument('--gpulog', action='store_true', default=False, help='GPU logging')
+    parser.add_argument('--mino', action='store_true', default=False, help='Running in minotauro')
     args = parser.parse_args()
 
     if not args.gpulog:
@@ -54,6 +55,8 @@ if __name__ == '__main__':
 
     if args.config is None:
         config = getconfig(proxy=args.proxy, mode=args.exp)
+    elif args.mino:
+        config = load_config_file(args.config, id=False)
     else:
         config = load_config_file(args.config, id=True)
 
@@ -86,6 +89,8 @@ if __name__ == '__main__':
 
             if args.config is None:
                 saveconfig(config, lresults, proxy=args.proxy)
+            elif args.mino:
+                saveconfig(config, lresults, mino=True)
             else:
                 for res in lresults:
                     print(res)

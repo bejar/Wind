@@ -73,7 +73,7 @@ def failconfig(config, proxy=False):
         col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
 
 
-def saveconfig(config, lresults, proxy=False):
+def saveconfig(config, lresults, proxy=False, mino=False):
     """
     Saves a config in the database
     :param proxy:
@@ -81,17 +81,28 @@ def saveconfig(config, lresults, proxy=False):
     """
 
     if not proxy:
-        client = MongoClient(mongoconnection.server)
-        db = client[mongoconnection.db]
-        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-        col = db[mongoconnection.col]
+        if not mino:
+            client = MongoClient(mongoconnection.server)
+            db = client[mongoconnection.db]
+            db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+            col = db[mongoconnection.col]
 
-        if lresults[0][1] > 0.0:
-            col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
-            col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
-            col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
+            if lresults[0][1] > 0.0:
+                col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
+                col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
+                col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
+            else:
+                col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
         else:
-            col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
+            config['status'] = 'done'
+            config['results'] = lresults
+            config['etime'] = strftime('%Y-%m-%d %H:%M:%S')
+            sconf = json.dumps(config)
+            fconf = open('res'+config['_id']+'.json', 'w')
+            fconf.write(sconf + '\n')
+            fconf.close()
+
+
     else:
         config['results'] = lresults
         requests.post('http://polaris.cs.upc.edu:9073/Proxy', params={'res': json.dumps(config)})

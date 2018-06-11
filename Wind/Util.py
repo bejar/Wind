@@ -49,9 +49,6 @@ def load_config_file(nfile, abspath=False, id=False):
     return config
 
 
-
-
-
 def find_exp(query):
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
