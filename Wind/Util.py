@@ -19,6 +19,7 @@ Util
 
 import json
 import numpy as np
+from time import strftime
 
 try:
     from pymongo import MongoClient
@@ -51,6 +52,8 @@ def load_config_file(nfile, abspath=False, id=False):
     config = json.loads(s)
     if id:
         config['_id'] = '00000000'
+
+    config['btime'] = strftime('%Y-%m-%d %H:%M:%S')
 
     return config
 
