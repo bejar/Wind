@@ -32,7 +32,7 @@ else:
 __author__ = 'bejar'
 
 
-def load_config_file(nfile, abspath=False, id=False):
+def load_config_file(nfile, abspath=False, id=False, upload=False):
     """
     Read the configuration from a json file
 
@@ -53,7 +53,8 @@ def load_config_file(nfile, abspath=False, id=False):
     if id:
         config['_id'] = '00000000'
 
-    config['btime'] = strftime('%Y-%m-%d %H:%M:%S')
+    if not upload:
+        config['btime'] = strftime('%Y-%m-%d %H:%M:%S')
 
     return config
 

@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
 
     for file in lfiles:
-        config = load_config_file(file)
+        config = load_config_file(file, upload=True)
         print(config['_id'])
 
         col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
