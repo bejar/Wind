@@ -234,13 +234,15 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
     for i in range(1, ahead + 1):
         lresults.append((i,
                          r2_score(val_y[:, i - 1, 0], val_yp[:, i - 1, 0]),
-                         r2_score(val_y[i:, 0, 0], val_y[0:-i, 0, 0]),
+                         # r2_score(val_y[i:, 0, 0], val_y[0:-i, 0, 0]),
                          r2_score(test_y[:, i - 1, 0], test_yp[:, i - 1, 0]),
-                         r2_score(test_y[i:, 0, 0], test_y[0:-i, 0, 0])))
+                         # r2_score(test_y[i:, 0, 0], test_y[0:-i, 0, 0])
+                         )
+                        )
 
-    for i, r2val, r2persV, r2test, r2persT in lresults:
+    for i, r2val, r2test in lresults:
         print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d %d, DR= %3.2f, AF= %s, RAF= %s, '
-              'OPT= %s, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
+              'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
               (config['arch']['mode'],
                config['data']['datanames'][0],
                config['data']['dataset'],
@@ -255,7 +257,7 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
                config['arch']['activation'],
                config['arch']['activation_r'],
                config['training']['optimizer'],
-               r2val, r2persV, r2test, r2persT
+               r2val, r2test
                ))
 
 

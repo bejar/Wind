@@ -35,13 +35,11 @@ if __name__ == '__main__':
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    configs = col.find({'experiment':'eastwest9597', 'arch.mode':'regdir'})
+    configs = col.find({'status':'extract'})
 
     count = 0
     for conf in configs:
         col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
-        col.update({'_id': conf['_id']}, {'$set': {'arch.full': [1]}})
-        col.update({'_id': conf['_id']}, {'$set': {'training.epochs': 150}})
         count += 1
 
     print(count)
