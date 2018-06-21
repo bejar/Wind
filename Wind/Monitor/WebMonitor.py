@@ -19,6 +19,7 @@ WebMonitor
 import socket
 
 from flask import Flask, render_template, request
+from flask.logging import default_handler
 from pymongo import MongoClient
 from Wind.Private.DBConfig import mongoconnection
 from time import time, strftime
@@ -28,6 +29,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+import logging
 
 import base64
 import numpy as np
@@ -205,4 +207,5 @@ def experiment(exp):
 
 if __name__ == '__main__':
     # The Flask Server is started
+    default_handler.setLevel(logging.WARNING)
     app.run(host='0.0.0.0', port=port, debug=False)

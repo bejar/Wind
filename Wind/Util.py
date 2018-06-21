@@ -83,3 +83,34 @@ def sel_result(lexp, ncol):
     ldata = sorted(ldata, key=lambda x: x[0])
 
     return np.array([v[0] for v in ldata]), np.array([v[1] for v in ldata])
+
+
+def sel_upper_lower(exp, mode, column, upper=100, lower=100):
+    """
+
+    :param up:
+    :param low:
+    :return:
+    """
+    client = MongoClient(mongoconnection.server)
+    db = client[mongoconnection.db]
+    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    col = db[mongoconnection.col]
+
+    exps = col.find({'experiment': exp, 'arch.mode': mode})
+
+    lexps = []
+    for e in exps:
+        lexps.append((np.sum(np.array(e['result'])[:, column]), e['site'], np.array(e['result'])[:, column]))
+
+    lupper = [(v.split('-')[1], s) for _, v, s in sorted(lexps, reverse=True)][:upper]
+    llower = [(v.split('-')[1], s)  for _, v, s in sorted(lexps, reverse=False)][:lower]
+    lexps = []
+    lexps.extend(lupper)
+    lexps.extend(llower)
+
+    return np.array([v[0] for v in lexps]), np.array([v[1] for v in lexps])
+
+if __name__ == '__main__':
+    sites1, coord1 = sel_upper_lower('eastwest9597', 'seq2seq',1)
+    print(sites1)
