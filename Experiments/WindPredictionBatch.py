@@ -45,6 +45,7 @@ if __name__ == '__main__':
     parser.add_argument('--multi', type=int, default=1, help='multi GPU training')
     parser.add_argument('--gpulog', action='store_true', default=False, help='GPU logging')
     parser.add_argument('--mino', action='store_true', default=False, help='Running in minotauro')
+    parser.add_argument('--save', action='store_true', default=False, help='Save Model')
     args = parser.parse_args()
 
     if not args.gpulog:
@@ -69,17 +70,17 @@ if __name__ == '__main__':
             print('Running job %s %s %s' % (config['_id'], config['arch']['mode'], strftime('%Y-%m-%d %H:%M:%S')))
 
             if config['arch']['mode'] == 'regdir':
-                lresults = train_dirregression_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi, proxy=args.proxy)
+                lresults = train_dirregression_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi, proxy=args.proxy, save=args.save)
             elif config['arch']['mode'] == 'seq2seq':
-                lresults = train_seq2seq_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi)
+                lresults = train_seq2seq_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
             elif config['arch']['mode'] == 'mlps2s':
-                lresults = train_MLP_regs2s_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
+                lresults = train_MLP_regs2s_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
             elif config['arch']['mode'] == 'mlpdir':
-                lresults = train_MLP_dirreg_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
+                lresults = train_MLP_dirreg_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
             elif config['arch']['mode'] == 'convo':
-                lresults = train_convdirregression_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
+                lresults = train_convdirregression_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
             elif config['arch']['mode'] == 'convos2s':
-                lresults = train_convo_regs2s_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
+                lresults = train_convo_regs2s_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
             elif 'ens' in config['arch']['mode']:
                 lresults = train_ensemble_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
             elif config['arch']['mode'] == 'svmdir':

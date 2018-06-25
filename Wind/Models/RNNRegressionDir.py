@@ -144,7 +144,7 @@ def architectureDirRegression(idimensions, neurons, drop, nlayers, activation, a
     return model
 
 
-def train_dirregression_architecture(config, impl, verbose, tboard, best, early, multi=1, proxy=False):
+def train_dirregression_architecture(config, impl, verbose, tboard, best, early, multi=1, proxy=False, save=False):
     """
     Training process for architecture with direct regression of ahead time steps
 
@@ -242,71 +242,80 @@ def train_dirregression_architecture(config, impl, verbose, tboard, best, early,
         batch_size = config['training']['batch']
         nepochs = config['training']['epochs']
 
-        if multi == 1:
-            model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-                  verbose=verbose, callbacks=cbacks)
+        if 'iter' in config['training']:
+            niter = config['training']['iter']
         else:
-            pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-                  verbose=verbose, callbacks=cbacks)
+            niter = 1
+
+        for iter in range(niter):
+            if multi == 1:
+                model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
+                      verbose=verbose, callbacks=cbacks)
+            else:
+                pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
+                      verbose=verbose, callbacks=cbacks)
 
 
-        ############################################
-        # Results
+            ############################################
+            # Results
 
-        if best:
-            model = load_model(modfile)
+            if best:
+                model = load_model(modfile)
 
-        # score = model.evaluate(val_x, val_y, batch_size=batch_size, verbose=0)
-        # print('MSE val= ', score)
-        # print('MSE val persistence =', mean_squared_error(val_y[ahead:], val_y[0:-ahead]))
-        val_yp = model.predict(val_x, batch_size=batch_size, verbose=0)
-        r2val = r2_score(val_y, val_yp)
-        # r2persV = r2_score(val_y[ahead:], val_y[0:-ahead])
-        # print('R2 val= ', r2val)
-        # print('R2 val persistence =', r2persV)
+            # score = model.evaluate(val_x, val_y, batch_size=batch_size, verbose=0)
+            # print('MSE val= ', score)
+            # print('MSE val persistence =', mean_squared_error(val_y[ahead:], val_y[0:-ahead]))
+            val_yp = model.predict(val_x, batch_size=batch_size, verbose=0)
+            r2val = r2_score(val_y, val_yp)
+            # r2persV = r2_score(val_y[ahead:], val_y[0:-ahead])
+            # print('R2 val= ', r2val)
+            # print('R2 val persistence =', r2persV)
 
-        # score = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=0)
-        # print()
-        # print('MSE test= ', score)
-        # print('MSE test persistence =', mean_squared_error(test_y[ahead:], test_y[0:-ahead]))
-        test_yp = model.predict(test_x, batch_size=batch_size, verbose=0)
-        r2test = r2_score(test_y, test_yp)
-        # r2persT = r2_score(test_y[ahead:, 0], test_y[0:-ahead, 0])
-        # print('R2 test= ', r2test)
-        # print('R2 test persistence =', r2persT)
+            # score = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=0)
+            # print()
+            # print('MSE test= ', score)
+            # print('MSE test persistence =', mean_squared_error(test_y[ahead:], test_y[0:-ahead]))
+            test_yp = model.predict(test_x, batch_size=batch_size, verbose=0)
+            r2test = r2_score(test_y, test_yp)
+            # r2persT = r2_score(test_y[ahead:, 0], test_y[0:-ahead, 0])
+            # print('R2 test= ', r2test)
+            # print('R2 test persistence =', r2persT)
 
-        lresults.append((ahead, r2val,  r2test,))
-        print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
-              'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-              (config['arch']['mode'],
-               config['data']['datanames'][0],
-               config['data']['dataset'],
-               len(config['data']['vars']),
-               config['data']['lag'],
-               ahead,
-               config['arch']['rnn'],
-               config['arch']['bimerge'] if config['arch']['bidirectional'] else 'no',
-               config['arch']['nlayers'],
-               config['arch']['neurons'],
-               config['arch']['drop'],
-               config['arch']['activation'],
-               config['arch']['activation_r'],
-               config['training']['optimizer'],
-               r2val, r2test
-               ))
-        print(strftime('%Y-%m-%d %H:%M:%S'))
+            lresults.append((ahead, r2val,  r2test))
+            print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
+                  'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
+                  (config['arch']['mode'],
+                   config['data']['datanames'][0],
+                   config['data']['dataset'],
+                   len(config['data']['vars']),
+                   config['data']['lag'],
+                   ahead,
+                   config['arch']['rnn'],
+                   config['arch']['bimerge'] if config['arch']['bidirectional'] else 'no',
+                   config['arch']['nlayers'],
+                   config['arch']['neurons'],
+                   config['arch']['drop'],
+                   config['arch']['activation'],
+                   config['arch']['activation_r'],
+                   config['training']['optimizer'],
+                   r2val, r2test
+                   ))
+            print(strftime('%Y-%m-%d %H:%M:%S'))
 
-        # Update result in db
-        if config is not None and not proxy:
-            from Wind.Training import updateprocess
-            updateprocess(config, ahead)
+            # Update result in db
+            if config is not None and not proxy:
+                from Wind.Training import updateprocess
+                updateprocess(config, ahead)
 
-        try:
-            os.remove(modfile)
-        except OSError:
-            pass
+            if not save and best:
+                try:
+                    os.remove(modfile)
+                except OSError:
+                    pass
+            else:
+                os.rename(modfile, 'modelRNNDir-S%s-%A%d-R%d.h5'%(config['data']['datanames'][0], ahead, iter))
 
-        del train_x, train_y, test_x, test_y, val_x, val_y
-        del model
+            del train_x, train_y, test_x, test_y, val_x, val_y
+            del model
 
     return lresults

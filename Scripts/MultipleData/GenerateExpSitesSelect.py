@@ -72,7 +72,7 @@ if __name__ == '__main__':
             config['data']['datanames'] = ['%s-%s' % (site,args.suff)]
             config['status'] = 'pending'
             config['result'] = []
-            config['_id'] = str(ids + i)
+            config['_id'] = "%d%04d" % (ids, i)
             col.insert(config)
             print(config)
 

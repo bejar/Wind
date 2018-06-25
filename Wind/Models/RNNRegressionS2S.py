@@ -141,7 +141,7 @@ def architectureS2S(ahead, idimensions, neurons, neuronsD, drop, nlayersE, nlaye
     return model
 
 
-def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi=1):
+def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi=1, save=False):
     """
     Training process for RNN architecture with sequence to sequence regression of ahead time steps
 
@@ -214,56 +214,67 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
     batch_size = config['training']['batch']
     nepochs = config['training']['epochs']
 
-    if multi == 1:
-        model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-              verbose=verbose, callbacks=cbacks)
+    if 'iter' in config['training']:
+        niter = config['training']['iter']
     else:
-        pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-              verbose=verbose, callbacks=cbacks)
+        niter = 1
 
-    ############################################
-    # Results
-
-    if best:
-        model = load_model(modfile)
-
-    val_yp = model.predict(val_x, batch_size=batch_size, verbose=0)
-    test_yp = model.predict(test_x, batch_size=batch_size, verbose=0)
     lresults = []
+    for iter in range(niter):
+        if multi == 1:
+            model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
+                  verbose=verbose, callbacks=cbacks)
+        else:
+            pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
+                  verbose=verbose, callbacks=cbacks)
 
-    for i in range(1, ahead + 1):
-        lresults.append((i,
-                         r2_score(val_y[:, i - 1, 0], val_yp[:, i - 1, 0]),
-                         # r2_score(val_y[i:, 0, 0], val_y[0:-i, 0, 0]),
-                         r2_score(test_y[:, i - 1, 0], test_yp[:, i - 1, 0]),
-                         # r2_score(test_y[i:, 0, 0], test_y[0:-i, 0, 0])
-                         )
-                        )
+        ############################################
+        # Results
 
-    for i, r2val, r2test in lresults:
-        print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d %d, DR= %3.2f, AF= %s, RAF= %s, '
-              'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-              (config['arch']['mode'],
-               config['data']['datanames'][0],
-               config['data']['dataset'],
-               len(config['data']['vars']),
-               config['data']['lag'],
-               i,
-               config['arch']['rnn'],
-               config['arch']['bimerge'] if config['arch']['bidirectional'] else 'no',
-               config['arch']['nlayersE'],config['arch']['nlayersD'],
-               config['arch']['neurons'],config['arch']['neuronsD'],
-               config['arch']['drop'],
-               config['arch']['activation'],
-               config['arch']['activation_r'],
-               config['training']['optimizer'],
-               r2val, r2test
-               ))
+        if best:
+            model = load_model(modfile)
+
+        val_yp = model.predict(val_x, batch_size=batch_size, verbose=0)
+        test_yp = model.predict(test_x, batch_size=batch_size, verbose=0)
 
 
-    try:
-        os.remove(modfile)
-    except OSError:
-        pass
+        for i in range(1, ahead + 1):
+            lresults.append((i,
+                             r2_score(val_y[:, i - 1, 0], val_yp[:, i - 1, 0]),
+                             # r2_score(val_y[i:, 0, 0], val_y[0:-i, 0, 0]),
+                             r2_score(test_y[:, i - 1, 0], test_yp[:, i - 1, 0]),
+                             # r2_score(test_y[i:, 0, 0], test_y[0:-i, 0, 0])
+                             )
+                            )
+
+        for i, r2val, r2test in lresults:
+            print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d %d, DR= %3.2f, AF= %s, RAF= %s, '
+                  'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
+                  (config['arch']['mode'],
+                   config['data']['datanames'][0],
+                   config['data']['dataset'],
+                   len(config['data']['vars']),
+                   config['data']['lag'],
+                   i,
+                   config['arch']['rnn'],
+                   config['arch']['bimerge'] if config['arch']['bidirectional'] else 'no',
+                   config['arch']['nlayersE'],config['arch']['nlayersD'],
+                   config['arch']['neurons'],config['arch']['neuronsD'],
+                   config['arch']['drop'],
+                   config['arch']['activation'],
+                   config['arch']['activation_r'],
+                   config['training']['optimizer'],
+                   r2val, r2test
+                   ))
+
+
+        if not save and best:
+            try:
+                os.remove(modfile)
+            except OSError:
+                pass
+        elif best:
+            os.rename(modfile, 'modelRNNS2S-S%s-%A%d-R%d.h5'%(config['data']['datanames'][0], ahead, iter))
+
 
     return lresults

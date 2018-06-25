@@ -59,7 +59,7 @@ def architectureMLPs2s(idimensions, odimension, activation='linear', rec_reg='l1
     return model
 
 
-def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1):
+def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1, save=False):
     """
      Training process for MLP architecture with regression of ahead time steps
 
@@ -137,54 +137,64 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1)
     batch_size = config['training']['batch']
     nepochs = config['training']['epochs']
 
-    if multi == 1:
-        model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-              verbose=verbose, callbacks=cbacks)
+    if 'iter' in config['training']:
+        niter = config['training']['iter']
     else:
-        pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-              verbose=verbose, callbacks=cbacks)
-
-
-    ############################################
-    # Results
-    if best:
-        model = load_model(modfile)
-
-    val_yp = model.predict(val_x, batch_size=batch_size, verbose=0)
-    test_yp = model.predict(test_x, batch_size=batch_size, verbose=0)
+        niter = 1
 
     lresults = []
+    for iter in range(niter):
+        if multi == 1:
+            model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
+                  verbose=verbose, callbacks=cbacks)
+        else:
+            pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
+                  verbose=verbose, callbacks=cbacks)
 
-    for i in range(1, ahead + 1):
-        lresults.append((i,
-                         r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
-                         # r2_score(val_y[i:, 0], val_y[0:-i, 0]),
-                         r2_score(test_y[:, i - 1], test_yp[:, i - 1])
-                         # r2_score(test_y[i:, 0], test_y[0:-i, 0])
-                         ))
+
+        ############################################
+        # Results
+        if best:
+            model = load_model(modfile)
+
+        val_yp = model.predict(val_x, batch_size=batch_size, verbose=0)
+        test_yp = model.predict(test_x, batch_size=batch_size, verbose=0)
 
 
-    for i, r2val, r2test in lresults:
-        print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, FL= %s, DR= %3.2f, AF= %s, '
-              'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-              (config['arch']['mode'],
-               config['data']['datanames'][0],
-               config['data']['dataset'],
-               len(config['data']['vars']),
-               config['data']['lag'],
-               i,str(config['arch']['full']),
-               config['arch']['drop'],
-               config['arch']['activation'],
-               config['training']['optimizer'],
-               r2val,
-               # r2persV,
-               r2test,
-               # r2persT
-               ))
 
-    try:
-        os.remove(modfile)
-    except OSError:
-        pass
+        for i in range(1, ahead + 1):
+            lresults.append((i,
+                             r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
+                             # r2_score(val_y[i:, 0], val_y[0:-i, 0]),
+                             r2_score(test_y[:, i - 1], test_yp[:, i - 1])
+                             # r2_score(test_y[i:, 0], test_y[0:-i, 0])
+                             ))
+
+
+        for i, r2val, r2test in lresults:
+            print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, FL= %s, DR= %3.2f, AF= %s, '
+                  'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
+                  (config['arch']['mode'],
+                   config['data']['datanames'][0],
+                   config['data']['dataset'],
+                   len(config['data']['vars']),
+                   config['data']['lag'],
+                   i,str(config['arch']['full']),
+                   config['arch']['drop'],
+                   config['arch']['activation'],
+                   config['training']['optimizer'],
+                   r2val,
+                   # r2persV,
+                   r2test,
+                   # r2persT
+                   ))
+
+        if not save and best:
+            try:
+                os.remove(modfile)
+            except OSError:
+                pass
+        elif best:
+            os.rename(modfile, 'modelMLPRefS2S-S%s-%A%d-R%d.h5'%(config['data']['datanames'][0], ahead, iter))
 
     return lresults

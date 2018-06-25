@@ -72,7 +72,7 @@ export PYTHONPATH
             fconf.close()
             copy(wind_data_path +'/'+ config['data']['datanames'][0]+'.npy', './Data/')
             batchjob.write(
-                'python WindPredictionRNNBatchDB.py --best --early --gpu --mino --config %s >res.out\n' % config['_id'])
+                'python WindPredictionBatch.py --best --early --gpu --mino --config %s >res.out\n' % config['_id'])
             col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
     batchjob.close()
 
