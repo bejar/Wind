@@ -158,96 +158,99 @@ def train_dirregression_architecture(config, impl, verbose, tboard, best, early,
         iahead, sahead = 1, config['data']['ahead']
 
     lresults = []
-    for ahead in range(iahead, sahead + 1):
+    if 'iter' in config['training']:
+        niter = config['training']['iter']
+    else:
+        niter = 1
 
-        if verbose:
-            print('-----------------------------------------------------------------------------')
-            print('Steps Ahead = %d ' % ahead)
+    for iter in range(niter):
 
-        train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
-                                                                          data_path=wind_data_path)
+        for ahead in range(iahead, sahead + 1):
 
-        ############################################
-        # Model
+            if verbose:
+                print('-----------------------------------------------------------------------------')
+                print('Steps Ahead = %d ' % ahead)
 
-        neurons = config['arch']['neurons']
-        drop = config['arch']['drop']
-        nlayers = config['arch']['nlayers']  # >= 1
+            train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
+                                                                              data_path=wind_data_path)
 
-        activation = config['arch']['activation']
-        activation_r = config['arch']['activation_r']
-        rec_reg = config['arch']['rec_reg']
-        rec_regw = config['arch']['rec_regw']
-        k_reg = config['arch']['k_reg']
-        k_regw = config['arch']['k_regw']
-        bidirectional = config['arch']['bidirectional']
-        bimerge = config['arch']['bimerge']
+            ############################################
+            # Model
 
-        if multi == 1:
-            model = architectureDirRegression(idimensions=train_x.shape[1:], neurons=neurons, drop=drop, nlayers=nlayers,
-                                          activation=activation,
-                                          activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
-                                          rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
-                                          bidirectional=bidirectional, bimerge=bimerge,
-                                          full=config['arch']['full'], impl=impl)
-        else:
-            with tf.device('/cpu:0'):
+            neurons = config['arch']['neurons']
+            drop = config['arch']['drop']
+            nlayers = config['arch']['nlayers']  # >= 1
+
+            activation = config['arch']['activation']
+            activation_r = config['arch']['activation_r']
+            rec_reg = config['arch']['rec_reg']
+            rec_regw = config['arch']['rec_regw']
+            k_reg = config['arch']['k_reg']
+            k_regw = config['arch']['k_regw']
+            bidirectional = config['arch']['bidirectional']
+            bimerge = config['arch']['bimerge']
+
+            batch_size = config['training']['batch']
+            nepochs = config['training']['epochs']
+            optimizer = config['training']['optimizer']
+
+
+
+            if multi == 1:
                 model = architectureDirRegression(idimensions=train_x.shape[1:], neurons=neurons, drop=drop, nlayers=nlayers,
-                                          activation=activation,
-                                          activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
-                                          rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
-                                          bidirectional=bidirectional, bimerge=bimerge,
-                                          full=config['arch']['full'], impl=impl)
-
-        if verbose:
-            model.summary()
-
-            print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:',
-                  activation, activation_r)
-            print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape,
-                  test_y.shape)
-            print()
-
-        ############################################
-        # Training
-        cbacks = []
-        if tboard:
-            tensorboard = TensorBoard(log_dir="logs/{}".format(time()))
-            cbacks.append(tensorboard)
-
-        if best:
-            modfile = './model%d.h5' % int(time())
-            mcheck = ModelCheckpoint(filepath=modfile, monitor='val_loss', verbose=0, save_best_only=True,
-                                     save_weights_only=False, mode='auto', period=1)
-            cbacks.append(mcheck)
-
-        if early:
-            early = EarlyStopping(monitor='val_loss', patience=5, verbose=0)
-            cbacks.append(early)
-
-        optimizer = config['training']['optimizer']
-        if optimizer == 'rmsprop':
-            if 'lrate' in config['training']:
-                optimizer = RMSprop(lr=config['training']['lrate'])
+                                              activation=activation,
+                                              activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
+                                              rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
+                                              bidirectional=bidirectional, bimerge=bimerge,
+                                              full=config['arch']['full'], impl=impl)
             else:
-                optimizer = RMSprop(lr=0.001)
+                with tf.device('/cpu:0'):
+                    model = architectureDirRegression(idimensions=train_x.shape[1:], neurons=neurons, drop=drop, nlayers=nlayers,
+                                              activation=activation,
+                                              activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
+                                              rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
+                                              bidirectional=bidirectional, bimerge=bimerge,
+                                              full=config['arch']['full'], impl=impl)
 
-        if multi == 1:
-            model.compile(loss='mean_squared_error', optimizer=optimizer)
-        else:
-            pmodel = multi_gpu_model(model, gpus=multi)
-            pmodel.compile(loss='mean_squared_error', optimizer=optimizer)
+            if verbose:
+                model.summary()
+
+                print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:',
+                      activation, activation_r)
+                print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape,
+                      test_y.shape)
+                print()
+
+            ############################################
+            # Training
+            cbacks = []
+            if tboard:
+                tensorboard = TensorBoard(log_dir="logs/{}".format(time()))
+                cbacks.append(tensorboard)
+
+            if best:
+                modfile = './model%d.h5' % int(time())
+                mcheck = ModelCheckpoint(filepath=modfile, monitor='val_loss', verbose=0, save_best_only=True,
+                                         save_weights_only=False, mode='auto', period=1)
+                cbacks.append(mcheck)
+
+            if early:
+                early = EarlyStopping(monitor='val_loss', patience=5, verbose=0)
+                cbacks.append(early)
 
 
-        batch_size = config['training']['batch']
-        nepochs = config['training']['epochs']
+            if optimizer == 'rmsprop':
+                if 'lrate' in config['training']:
+                    optimizer = RMSprop(lr=config['training']['lrate'])
+                else:
+                    optimizer = RMSprop(lr=0.001)
 
-        if 'iter' in config['training']:
-            niter = config['training']['iter']
-        else:
-            niter = 1
+            if multi == 1:
+                model.compile(loss='mean_squared_error', optimizer=optimizer)
+            else:
+                pmodel = multi_gpu_model(model, gpus=multi)
+                pmodel.compile(loss='mean_squared_error', optimizer=optimizer)
 
-        for iter in range(niter):
             if multi == 1:
                 model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
                       verbose=verbose, callbacks=cbacks)
@@ -313,7 +316,7 @@ def train_dirregression_architecture(config, impl, verbose, tboard, best, early,
                 except OSError:
                     pass
             else:
-                os.rename(modfile, 'modelRNNDir-S%s-%A%d-R%d.h5'%(config['data']['datanames'][0], ahead, iter))
+                os.rename(modfile, 'modelRNNDir-S%s-A%d-R%d.h5'%(config['data']['datanames'][0], ahead, iter))
 
             del train_x, train_y, test_x, test_y, val_x, val_y
             del model

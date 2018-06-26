@@ -88,52 +88,6 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
     k_regw = config['arch']['k_regw']
 
     dropout = config['arch']['drop']
-    if multi == 1:
-        model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
-                                   rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
-                                   full_layers=config['arch']['full'])
-    else:
-        with tf.device('/cpu:0'):
-            model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=config['data']['ahead'], activation=activation,
-                                       rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
-                                       full_layers=config['arch']['full'])
-
-    if verbose:
-        model.summary()
-        print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation)
-        print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
-        print()
-
-    ############################################
-    # Training
-    cbacks = []
-    if tboard:
-        tensorboard = TensorBoard(log_dir="logs/{}".format(time()))
-        cbacks.append(tensorboard)
-
-    if best:
-        modfile = './model%d.h5' % int(time())
-        mcheck = ModelCheckpoint(filepath=modfile, monitor='val_loss', verbose=0, save_best_only=True,
-                                 save_weights_only=False, mode='auto', period=1)
-        cbacks.append(mcheck)
-
-    if early:
-        early = EarlyStopping(monitor='val_loss', patience=10, verbose=0)
-        cbacks.append(early)
-
-    optimizer = config['training']['optimizer']
-    if optimizer == 'rmsprop':
-        if 'lrate' in config['training']:
-            optimizer = RMSprop(lr=config['training']['lrate'])
-        else:
-            optimizer = RMSprop(lr=0.001)
-
-    if multi == 1:
-        model.compile(loss='mean_squared_error', optimizer=optimizer)
-    else:
-        pmodel = multi_gpu_model(model, gpus=multi)
-        pmodel.compile(loss='mean_squared_error', optimizer=optimizer)
-
     batch_size = config['training']['batch']
     nepochs = config['training']['epochs']
 
@@ -141,9 +95,58 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
         niter = config['training']['iter']
     else:
         niter = 1
+    optimizer = config['training']['optimizer']
 
     lresults = []
     for iter in range(niter):
+        if multi == 1:
+            model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=config['data']['ahead'],
+                                       activation=activation,
+                                       rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
+                                       full_layers=config['arch']['full'])
+        else:
+            with tf.device('/cpu:0'):
+                model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=config['data']['ahead'],
+                                           activation=activation,
+                                           rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
+                                           dropout=dropout,
+                                           full_layers=config['arch']['full'])
+
+        if verbose:
+            model.summary()
+            print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation)
+            print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
+            print()
+
+        ############################################
+        # Training
+        cbacks = []
+        if tboard:
+            tensorboard = TensorBoard(log_dir="logs/{}".format(time()))
+            cbacks.append(tensorboard)
+
+        if best:
+            modfile = './model%d.h5' % int(time())
+            mcheck = ModelCheckpoint(filepath=modfile, monitor='val_loss', verbose=0, save_best_only=True,
+                                     save_weights_only=False, mode='auto', period=1)
+            cbacks.append(mcheck)
+
+        if early:
+            early = EarlyStopping(monitor='val_loss', patience=10, verbose=0)
+            cbacks.append(early)
+
+        if optimizer == 'rmsprop':
+            if 'lrate' in config['training']:
+                optimizer = RMSprop(lr=config['training']['lrate'])
+            else:
+                optimizer = RMSprop(lr=0.001)
+
+        if multi == 1:
+            model.compile(loss='mean_squared_error', optimizer=optimizer)
+        else:
+            pmodel = multi_gpu_model(model, gpus=multi)
+            pmodel.compile(loss='mean_squared_error', optimizer=optimizer)
+
         if multi == 1:
             model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
                   verbose=verbose, callbacks=cbacks)
@@ -195,6 +198,6 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
             except OSError:
                 pass
         elif best:
-            os.rename(modfile, 'modelMLPRefS2S-S%s-%A%d-R%d.h5'%(config['data']['datanames'][0], ahead, iter))
+            os.rename(modfile, 'modelMLPRegS2S-S%s-A%d-R%d.h5'%(config['data']['datanames'][0], ahead, iter))
 
     return lresults

@@ -167,53 +167,6 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
     k_reg = config['arch']['k_reg']
     k_regw = config['arch']['k_regw']
 
-    model = architectureS2S(ahead=ahead, idimensions=train_x.shape[1:], neurons=neurons,
-                            neuronsD=config['arch']['neuronsD'],
-                            drop=drop, nlayersE=nlayersE,
-                            nlayersD=nlayersD,
-                            activation=activation, impl=impl,
-                            activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
-                            rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw)
-    if verbose:
-        model.summary()
-        print('lag: ', config['data']['lag'], 'Neurons: ', neurons, 'Layers: ', nlayersE, nlayersD, activation,
-              activation_r)
-        print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
-        print()
-
-    ############################################
-    # Training
-    cbacks = []
-    if tboard:
-        tensorboard = TensorBoard(log_dir="logs/{}".format(time()))
-        cbacks.append(tensorboard)
-
-    if best:
-        modfile = './model%d.h5' % int(time())
-        mcheck = ModelCheckpoint(filepath=modfile, monitor='val_loss', verbose=0, save_best_only=True,
-                                 save_weights_only=False, mode='auto', period=1)
-        cbacks.append(mcheck)
-
-    if early:
-        early = EarlyStopping(monitor='val_loss', patience=10, verbose=0)
-        cbacks.append(early)
-
-    optimizer = config['training']['optimizer']
-    if optimizer == 'rmsprop':
-        if 'lrate' in config['training']:
-            optimizer = RMSprop(lr=config['training']['lrate'])
-        else:
-            optimizer = RMSprop(lr=0.001)
-
-    if multi == 1:
-        model.compile(loss='mean_squared_error', optimizer=optimizer)
-    else:
-        pmodel = multi_gpu_model(model, gpus=multi)
-        pmodel.compile(loss='mean_squared_error', optimizer=optimizer)
-
-    batch_size = config['training']['batch']
-    nepochs = config['training']['epochs']
-
     if 'iter' in config['training']:
         niter = config['training']['iter']
     else:
@@ -221,6 +174,56 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
 
     lresults = []
     for iter in range(niter):
+        model = architectureS2S(ahead=ahead, idimensions=train_x.shape[1:], neurons=neurons,
+                                neuronsD=config['arch']['neuronsD'],
+                                drop=drop, nlayersE=nlayersE,
+                                nlayersD=nlayersD,
+                                activation=activation, impl=impl,
+                                activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
+                                rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw)
+        if verbose:
+            model.summary()
+            print('lag: ', config['data']['lag'], 'Neurons: ', neurons, 'Layers: ', nlayersE, nlayersD, activation,
+                  activation_r)
+            print(
+            'Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
+            print()
+
+        ############################################
+        # Training
+        cbacks = []
+        if tboard:
+            tensorboard = TensorBoard(log_dir="logs/{}".format(time()))
+            cbacks.append(tensorboard)
+
+        if best:
+            modfile = './model%d.h5' % int(time())
+            mcheck = ModelCheckpoint(filepath=modfile, monitor='val_loss', verbose=0, save_best_only=True,
+                                     save_weights_only=False, mode='auto', period=1)
+            cbacks.append(mcheck)
+
+        if early:
+            early = EarlyStopping(monitor='val_loss', patience=10, verbose=0)
+            cbacks.append(early)
+
+        optimizer = config['training']['optimizer']
+        if optimizer == 'rmsprop':
+            if 'lrate' in config['training']:
+                optimizer = RMSprop(lr=config['training']['lrate'])
+            else:
+                optimizer = RMSprop(lr=0.001)
+
+        batch_size = config['training']['batch']
+        nepochs = config['training']['epochs']
+
+        if multi == 1:
+            model.compile(loss='mean_squared_error', optimizer=optimizer)
+        else:
+            pmodel = multi_gpu_model(model, gpus=multi)
+            pmodel.compile(loss='mean_squared_error', optimizer=optimizer)
+
+
+
         if multi == 1:
             model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
                   verbose=verbose, callbacks=cbacks)
@@ -274,7 +277,7 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
             except OSError:
                 pass
         elif best:
-            os.rename(modfile, 'modelRNNS2S-S%s-%A%d-R%d.h5'%(config['data']['datanames'][0], ahead, iter))
+            os.rename(modfile, 'modelRNNS2S-S%s-A%d-R%d.h5'%(config['data']['datanames'][0], ahead, iter))
 
 
     return lresults
