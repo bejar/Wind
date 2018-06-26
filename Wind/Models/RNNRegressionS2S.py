@@ -166,6 +166,9 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
     rec_regw = config['arch']['rec_regw']
     k_reg = config['arch']['k_reg']
     k_regw = config['arch']['k_regw']
+    batch_size = config['training']['batch']
+    nepochs = config['training']['epochs']
+    optimizer = config['training']['optimizer']
 
     if 'iter' in config['training']:
         niter = config['training']['iter']
@@ -206,15 +209,14 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
             early = EarlyStopping(monitor='val_loss', patience=10, verbose=0)
             cbacks.append(early)
 
-        optimizer = config['training']['optimizer']
+
         if optimizer == 'rmsprop':
             if 'lrate' in config['training']:
                 optimizer = RMSprop(lr=config['training']['lrate'])
             else:
                 optimizer = RMSprop(lr=0.001)
 
-        batch_size = config['training']['batch']
-        nepochs = config['training']['epochs']
+
 
         if multi == 1:
             model.compile(loss='mean_squared_error', optimizer=optimizer)
