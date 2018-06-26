@@ -198,6 +198,6 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
             except OSError:
                 pass
         elif best:
-            os.rename(modfile, 'modelMLPRegS2S-S%s-A%d-R%d.h5'%(config['data']['datanames'][0], ahead, iter))
+            os.rename(modfile, 'modelMLPRegS2S-S%s-A%d-R%02d.h5'%(config['data']['datanames'][0], ahead, iter))
 
     return lresults

@@ -316,7 +316,7 @@ def train_dirregression_architecture(config, impl, verbose, tboard, best, early,
                 except OSError:
                     pass
             else:
-                os.rename(modfile, 'modelRNNDir-S%s-A%d-R%d.h5'%(config['data']['datanames'][0], ahead, iter))
+                os.rename(modfile, 'modelRNNDir-S%s-A%d-R%02d.h5'%(config['data']['datanames'][0], ahead, iter))
 
             del train_x, train_y, test_x, test_y, val_x, val_y
             del model

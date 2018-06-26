@@ -277,7 +277,7 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
             except OSError:
                 pass
         elif best:
-            os.rename(modfile, 'modelRNNS2S-S%s-A%d-R%d.h5'%(config['data']['datanames'][0], ahead, iter))
+            os.rename(modfile, 'modelRNNS2S-S%s-A%d-R%02d.h5'%(config['data']['datanames'][0], ahead, iter))
 
 
     return lresults
