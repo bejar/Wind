@@ -37,6 +37,8 @@ if __name__ == '__main__':
     parser.add_argument('--config', help='Config file')
     parser.add_argument('--irange', type=int, help='Initial example')
     parser.add_argument('--erange', type=int, help='Final example')
+    parser.add_argument('--byinstance', action='store_true', default=False, help='Visualize by instance')
+    parser.add_argument('--meandev', action='store_true', default=False, help='Visualize mean and deviation')
 
     args = parser.parse_args()
     print('Config file: /%s/%s/%s' % (args.sec, args.site, args.config))
@@ -72,17 +74,49 @@ if __name__ == '__main__':
             args.sec, args.site, arch, config['data']['datanames'][0], ahead, iter))
         lpreds.append(model.predict(val_x, batch_size=batch_size, verbose=0))
 
-    for i in range(1, ahead + 1):
-        vals = val_y[args.irange:args.erange, i - 1, 0]
-        pred = np.stack([v[args.irange:args.erange, i - 1, 0].ravel() for v in lpreds])
 
-        fig = plt.figure()
+    if not args.byinstance:
+        for i in range(1, ahead + 1):
+            if config['arch']['mode'] == 'seq2seq':
+                vals = val_y[args.irange:args.erange, i - 1, 0]
+                pred = np.stack([v[args.irange:args.erange, i - 1, 0].ravel() for v in lpreds])
+            elif config['arch']['mode'] == 'mlps2s':
+                vals = val_y[args.irange:args.erange, i - 1]
+                pred = np.stack([v[args.irange:args.erange, i - 1].ravel() for v in lpreds])
 
-        axes = fig.add_subplot(1, 1, 1)
-        plt.title('AHEAD=%d'%i)
-        plt.plot(vals, 'r--')
+            fig = plt.figure()
 
-        plt.plot(np.max(pred, axis=0), 'b')
-        plt.plot(np.min(pred, axis=0), 'b')
-        plt.plot(np.mean(pred, axis=0), 'g')
-        plt.show()
+            axes = fig.add_subplot(1, 1, 1)
+            plt.title('AHEAD=%d'%i)
+            plt.plot(vals, 'r--')
+
+            plt.plot(np.max(pred, axis=0), 'b')
+            plt.plot(np.min(pred, axis=0), 'b')
+            plt.plot(np.mean(pred, axis=0), 'g')
+            plt.show()
+    else:
+        for i in range(args.irange,args.erange):
+            if config['arch']['mode'] == 'seq2seq':
+                vals = val_y[i, :, 0]
+                vals_x = val_x[i, :, 0]
+                pred = np.stack([v[i, :, 0].ravel() for v in lpreds])
+            elif config['arch']['mode'] == 'mlps2s':
+                vals = val_y[i, :]
+                vals_x = val_x[i, :, 0]
+                pred = np.stack([v[i, :].ravel() for v in lpreds])
+
+            fig = plt.figure()
+
+            axes = fig.add_subplot(1, 1, 1)
+            plt.title('Time=%d' % i)
+            plt.plot(range(vals_x.shape[0]), vals_x, 'r')
+            plt.plot(range(vals_x.shape[0]-1,vals_x.shape[0]+vals.shape[0]-1), vals, 'r--')
+
+            if args.meandev:
+                plt.plot(range(vals_x.shape[0]-1,vals_x.shape[0]+vals.shape[0]-1),np.max(pred, axis=0), 'b')
+                plt.plot(range(vals_x.shape[0]-1,vals_x.shape[0]+vals.shape[0]-1),np.min(pred, axis=0), 'b')
+                plt.plot(range(vals_x.shape[0]-1,vals_x.shape[0]+vals.shape[0]-1),np.mean(pred, axis=0), 'g')
+            else:
+                for j in range(pred.shape[0]):
+                    plt.plot(range(vals_x.shape[0]-1,vals_x.shape[0]+vals.shape[0]-1),pred[j], 'b')
+            plt.show()
