@@ -21,6 +21,7 @@ import json
 import numpy as np
 from time import strftime
 
+
 try:
     from pymongo import MongoClient
     from Wind.Private.DBConfig import mongoconnection
@@ -110,6 +111,9 @@ def sel_upper_lower(exp, mode, column, upper=100, lower=100):
     lexps.extend(llower)
 
     return np.array([v[0] for v in lexps]), np.array([v[1] for v in lexps])
+
+
+
 
 if __name__ == '__main__':
     sites1, coord1 = sel_upper_lower('eastwest9597', 'seq2seq',1)

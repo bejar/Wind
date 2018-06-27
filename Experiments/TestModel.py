@@ -102,7 +102,7 @@ if __name__ == '__main__':
                 pred = np.stack([v[i, :, 0].ravel() for v in lpreds])
             elif config['arch']['mode'] == 'mlps2s':
                 vals = val_y[i, :]
-                vals_x = val_x[i, :, 0]
+                vals_x = val_x[i, :]
                 pred = np.stack([v[i, :].ravel() for v in lpreds])
 
             fig = plt.figure()

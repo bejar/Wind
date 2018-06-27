@@ -59,20 +59,16 @@ def lagged_matrix(data, lag=1, ahead=0, mode=None):
     lvect = []
 
     if mode in ['s2s', 'mlp']:
-        ahead -= 1
         for i in range(lag + ahead):
             lvect.append(data[i: -lag - ahead + i, :])
     else:
         ahead -= 1
         for i in range(lag):
             lvect.append(data[i: -lag - ahead + i, :])
-            print(data[i: -lag - ahead + i, :].shape)
-            print(i, -lag - ahead + i)
+
         lvect.append(data[lag + ahead:, :])
-        print(lag + ahead)
-    res = np.stack(lvect, axis=1)
-    print(res.shape)
-    return res
+
+    return np.stack(lvect, axis=1)
 
 
 def _generate_dataset_one_var(data, datasize, testsize, lag=1, ahead=1, slice=1, mode=None):
@@ -154,9 +150,10 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, sli
 
     # Test and Val
     wind_test = data[datasize:datasize + testsize, :]
-
+    print(wind_test.shape)
     test = lagged_matrix(wind_test, lag=lag, ahead=ahead, mode=mode)
     half_test = int(test.shape[0] / 2)
+    print(half_test)
 
     if mode == 's2s':
         val_x, val_y = test[:half_test, :lag], test[:half_test, -slice:, 0]
@@ -203,6 +200,7 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False,
     datanames = config['datanames']
     datasize = config['datasize']
     testsize = config['testsize']
+    print(testsize)
     lag = config['lag']
     vars = config['vars']
     wind = {}
@@ -266,7 +264,7 @@ if __name__ == '__main__':
     from Wind.Util import load_config_file
     import matplotlib.pyplot as plt
     config = load_config_file('./config2.json')
-
+    data_path='../../Data'
     # print(config)
     train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=1, mode=False, data_path='../../Data')
 
@@ -280,6 +278,15 @@ if __name__ == '__main__':
     print(test_y.shape)
     print(val_x.shape)
     print(val_y.shape)
+    datasize = config['data']['datasize']
+    testsize = config['data']['testsize'] /2
+
+    d = config['data']['datanames'][0]
+
+    wind = np.load(data_path + '/%s.npy' % d)
+    scaler = StandardScaler()
+    wind = scaler.fit_transform(wind)
+
     fig = plt.figure()
 
     for i in range(0,10):
@@ -301,29 +308,33 @@ if __name__ == '__main__':
         # # MLP
         # axes = fig.add_subplot(1, 1, 1)
         # plt.title('Time=%d' % i)
+        # plt.plot(wind[i:i+24,0], 'k--')
         # plt.plot(range(train_x.shape[1]), train_x[i,:], 'r')
-        # plt.plot(range(train_x.shape[1]-1,train_x.shape[1]+train_y.shape[1]-1), train_y[i,:], 'g')
+        # plt.plot(range(train_x.shape[1],train_x.shape[1]+train_y.shape[1]), train_y[i,:], 'g')
         # plt.show()
         # plt.title('Time=%d' % i)
         # plt.plot(range(val_x.shape[1]), val_x[i,:], 'r')
-        # plt.plot(range(val_x.shape[1]-1,val_x.shape[1]+val_y.shape[1]-1), val_y[i,:], 'g')
+        # plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]), val_y[i,:], 'g')
         # plt.show()
         # plt.title('Time=%d' % i)
         # plt.plot(range(test_x.shape[1]), test_x[i,:], 'r')
-        # plt.plot(range(test_x.shape[1]-1,test_x.shape[1]+test_y.shape[1]-1), test_y[i,:], 'g')
+        # plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]), test_y[i,:], 'g')
         # plt.show()
 
         # DIR
         axes = fig.add_subplot(1, 1, 1)
         plt.title('Time=%d' % i)
+        plt.plot(wind[i:i+24,0], 'k--')
         plt.plot(range(train_x.shape[1]), train_x[i,:,0], 'r')
-        plt.plot(range(train_x.shape[1]-1,train_x.shape[1]+train_y.shape[1]), [train_y[i,:], train_y[i,:]], 'g')
+        plt.plot(range(train_x.shape[1],train_x.shape[1]+train_y.shape[1]+1), [train_y[i,:], train_y[i,:]], 'g')
         plt.show()
         plt.title('Time=%d' % i)
+        plt.plot(wind[datasize+i:datasize+i+24,0], 'k--')
         plt.plot(range(val_x.shape[1]), val_x[i,:,0], 'r')
-        plt.plot(range(val_x.shape[1]-1,val_x.shape[1]+val_y.shape[1]), [val_y[i,:],val_y[i,:]], 'g')
+        plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]+1), [val_y[i,:],val_y[i,:]], 'g')
         plt.show()
         plt.title('Time=%d' % i)
+        plt.plot(wind[(datasize+testsize+i)-6:(datasize+testsize+i)+18,0], 'k--')
         plt.plot(range(test_x.shape[1]), test_x[i,:], 'r')
-        plt.plot(range(test_x.shape[1]-1,test_x.shape[1]+test_y.shape[1]), [test_y[i,:],test_y[i,:] ], 'g')
+        plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]+1), [test_y[i,:],test_y[i,:] ], 'g')
         plt.show()
