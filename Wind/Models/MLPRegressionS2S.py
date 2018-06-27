@@ -153,8 +153,6 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
         else:
             pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
                   verbose=verbose, callbacks=cbacks)
-
-
         ############################################
         # Results
         if best:
