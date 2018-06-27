@@ -87,7 +87,7 @@ if __name__ == '__main__':
             fig = plt.figure()
 
             axes = fig.add_subplot(1, 1, 1)
-            plt.title('AHEAD=%d'%i)
+            plt.title('model%s-S%s-A%d-R%02d AHEAD=%d'%(arch, config['data']['datanames'][0], ahead, iter,  i))
             plt.plot(vals, 'r--')
 
             plt.plot(np.max(pred, axis=0), 'b')
@@ -102,21 +102,21 @@ if __name__ == '__main__':
                 pred = np.stack([v[i, :, 0].ravel() for v in lpreds])
             elif config['arch']['mode'] == 'mlps2s':
                 vals = val_y[i, :]
-                vals_x = val_x[i, :]
+                vals_x = val_x[i, ::len(config['data']['vars'])]
                 pred = np.stack([v[i, :].ravel() for v in lpreds])
 
             fig = plt.figure()
 
             axes = fig.add_subplot(1, 1, 1)
-            plt.title('Time=%d' % i)
+            plt.title('model%s-S%s-A%d-R%02d Time=%d' % (arch, config['data']['datanames'][0], ahead, iter,  i))
             plt.plot(range(vals_x.shape[0]), vals_x, 'r')
-            plt.plot(range(vals_x.shape[0]-1,vals_x.shape[0]+vals.shape[0]-1), vals, 'r--')
+            plt.plot(range(vals_x.shape[0],vals_x.shape[0]+vals.shape[0]), vals, 'r--')
 
             if args.meandev:
-                plt.plot(range(vals_x.shape[0]-1,vals_x.shape[0]+vals.shape[0]-1),np.max(pred, axis=0), 'b')
-                plt.plot(range(vals_x.shape[0]-1,vals_x.shape[0]+vals.shape[0]-1),np.min(pred, axis=0), 'b')
-                plt.plot(range(vals_x.shape[0]-1,vals_x.shape[0]+vals.shape[0]-1),np.mean(pred, axis=0), 'g')
+                plt.plot(range(vals_x.shape[0],vals_x.shape[0]+vals.shape[0]),np.max(pred, axis=0), 'b')
+                plt.plot(range(vals_x.shape[0],vals_x.shape[0]+vals.shape[0]),np.min(pred, axis=0), 'b')
+                plt.plot(range(vals_x.shape[0],vals_x.shape[0]+vals.shape[0]),np.mean(pred, axis=0), 'g')
             else:
                 for j in range(pred.shape[0]):
-                    plt.plot(range(vals_x.shape[0]-1,vals_x.shape[0]+vals.shape[0]-1),pred[j], 'b')
+                    plt.plot(range(vals_x.shape[0],vals_x.shape[0]+vals.shape[0]),pred[j], 'b')
             plt.show()

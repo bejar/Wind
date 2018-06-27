@@ -47,6 +47,7 @@ def architectureMLPs2s(idimensions, odimension, activation='linear', rec_reg='l1
 
     :return:
     """
+
     model = Sequential()
     model.add(Dense(full_layers[0], input_shape=idimensions, activation=activation))
     model.add(Dropout(rate=dropout))
@@ -97,16 +98,21 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
         niter = 1
     optimizer = config['training']['optimizer']
 
+    if type(ahead) == list:
+        odimension = ahead[1] - ahead[0]
+    else:
+        odimension = ahead
+
     lresults = []
     for iter in range(niter):
         if multi == 1:
-            model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=config['data']['ahead'],
+            model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=odimension,
                                        activation=activation,
                                        rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
                                        full_layers=config['arch']['full'])
         else:
             with tf.device('/cpu:0'):
-                model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=config['data']['ahead'],
+                model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=odimension,
                                            activation=activation,
                                            rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
                                            dropout=dropout,

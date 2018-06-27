@@ -150,10 +150,8 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, sli
 
     # Test and Val
     wind_test = data[datasize:datasize + testsize, :]
-    print(wind_test.shape)
     test = lagged_matrix(wind_test, lag=lag, ahead=ahead, mode=mode)
     half_test = int(test.shape[0] / 2)
-    print(half_test)
 
     if mode == 's2s':
         val_x, val_y = test[:half_test, :lag], test[:half_test, -slice:, 0]
@@ -200,7 +198,7 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False,
     datanames = config['datanames']
     datasize = config['datasize']
     testsize = config['testsize']
-    print(testsize)
+
     lag = config['lag']
     vars = config['vars']
     wind = {}
@@ -266,7 +264,10 @@ if __name__ == '__main__':
     config = load_config_file('./config2.json')
     data_path='../../Data'
     # print(config)
-    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=1, mode=False, data_path='../../Data')
+    mode = 's2s'
+    iahead = 7
+    fahead = 12
+    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=[iahead,fahead], mode=mode, data_path='../../Data')
 
     print(train_x.shape)
     # print(train_x[0:5,:])
@@ -280,6 +281,7 @@ if __name__ == '__main__':
     print(val_y.shape)
     datasize = config['data']['datasize']
     testsize = config['data']['testsize'] /2
+    lag = config['data']['lag']
 
     d = config['data']['datanames'][0]
 
@@ -290,51 +292,50 @@ if __name__ == '__main__':
     fig = plt.figure()
 
     for i in range(0,10):
-        # # s2s
-        # axes = fig.add_subplot(1, 1, 1)
-        # plt.title('Time=%d' % i)
-        # plt.plot(range(train_x.shape[1]), train_x[i,:,0], 'r')
-        # plt.plot(range(train_x.shape[1]-1,train_x.shape[1]+train_y.shape[1]-1), train_y[i,:,0], 'g')
-        # plt.show()
-        # plt.title('Time=%d' % i)
-        # plt.plot(range(val_x.shape[1]), val_x[i,:,0], 'r')
-        # plt.plot(range(val_x.shape[1]-1,val_x.shape[1]+val_y.shape[1]-1), val_y[i,:,0], 'g')
-        # plt.show()
-        # plt.title('Time=%d' % i)
-        # plt.plot(range(test_x.shape[1]), test_x[i,:,0], 'r')
-        # plt.plot(range(test_x.shape[1]-1,test_x.shape[1]+test_y.shape[1]-1), test_y[i,:,0], 'g')
-        # plt.show()
-
-        # # MLP
-        # axes = fig.add_subplot(1, 1, 1)
-        # plt.title('Time=%d' % i)
-        # plt.plot(wind[i:i+24,0], 'k--')
-        # plt.plot(range(train_x.shape[1]), train_x[i,:], 'r')
-        # plt.plot(range(train_x.shape[1],train_x.shape[1]+train_y.shape[1]), train_y[i,:], 'g')
-        # plt.show()
-        # plt.title('Time=%d' % i)
-        # plt.plot(range(val_x.shape[1]), val_x[i,:], 'r')
-        # plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]), val_y[i,:], 'g')
-        # plt.show()
-        # plt.title('Time=%d' % i)
-        # plt.plot(range(test_x.shape[1]), test_x[i,:], 'r')
-        # plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]), test_y[i,:], 'g')
-        # plt.show()
-
-        # DIR
-        axes = fig.add_subplot(1, 1, 1)
-        plt.title('Time=%d' % i)
-        plt.plot(wind[i:i+24,0], 'k--')
-        plt.plot(range(train_x.shape[1]), train_x[i,:,0], 'r')
-        plt.plot(range(train_x.shape[1],train_x.shape[1]+train_y.shape[1]+1), [train_y[i,:], train_y[i,:]], 'g')
-        plt.show()
-        plt.title('Time=%d' % i)
-        plt.plot(wind[datasize+i:datasize+i+24,0], 'k--')
-        plt.plot(range(val_x.shape[1]), val_x[i,:,0], 'r')
-        plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]+1), [val_y[i,:],val_y[i,:]], 'g')
-        plt.show()
-        plt.title('Time=%d' % i)
-        plt.plot(wind[(datasize+testsize+i)-6:(datasize+testsize+i)+18,0], 'k--')
-        plt.plot(range(test_x.shape[1]), test_x[i,:], 'r')
-        plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]+1), [test_y[i,:],test_y[i,:] ], 'g')
-        plt.show()
+        if mode == 's2s':
+            axes = fig.add_subplot(1, 1, 1)
+            plt.title('Time=%d' % i)
+            plt.plot(wind[i:i+lag+fahead,0], 'k--')
+            plt.plot(range(train_x.shape[1]), train_x[i,:,0], 'r')
+            plt.plot(range(train_x.shape[1]+iahead-1,train_x.shape[1]+train_y.shape[1]+iahead-1), train_y[i,:,0], 'g')
+            plt.show()
+            plt.title('Time=%d' % i)
+            plt.plot(range(val_x.shape[1]), val_x[i,:,0], 'r')
+            plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]), val_y[i,:,0], 'g')
+            plt.show()
+            plt.title('Time=%d' % i)
+            plt.plot(range(test_x.shape[1]), test_x[i,:,0], 'r')
+            plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]), test_y[i,:,0], 'g')
+            plt.show()
+        elif mode == 'mlp':
+            axes = fig.add_subplot(1, 1, 1)
+            plt.title('Time=%d' % i)
+            plt.plot(wind[i:i+24,0], 'k--')
+            plt.plot(range(train_x.shape[1]), train_x[i,:], 'r')
+            plt.plot(range(train_x.shape[1],train_x.shape[1]+train_y.shape[1]), train_y[i,:], 'g')
+            plt.show()
+            plt.title('Time=%d' % i)
+            plt.plot(range(val_x.shape[1]), val_x[i,:], 'r')
+            plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]), val_y[i,:], 'g')
+            plt.show()
+            plt.title('Time=%d' % i)
+            plt.plot(range(test_x.shape[1]), test_x[i,:], 'r')
+            plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]), test_y[i,:], 'g')
+            plt.show()
+        elif not mode:
+            axes = fig.add_subplot(1, 1, 1)
+            plt.title('Time=%d' % i)
+            plt.plot(wind[i:i+24,0], 'k--')
+            plt.plot(range(train_x.shape[1]), train_x[i,:,0], 'r')
+            plt.plot(range(train_x.shape[1],train_x.shape[1]+train_y.shape[1]+1), [train_y[i,:], train_y[i,:]], 'g')
+            plt.show()
+            plt.title('Time=%d' % i)
+            plt.plot(wind[datasize+i:datasize+i+24,0], 'k--')
+            plt.plot(range(val_x.shape[1]), val_x[i,:,0], 'r')
+            plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]+1), [val_y[i,:],val_y[i,:]], 'g')
+            plt.show()
+            plt.title('Time=%d' % i)
+            plt.plot(wind[(datasize+testsize+i)-6:(datasize+testsize+i)+18,0], 'k--')
+            plt.plot(range(test_x.shape[1]), test_x[i,:], 'r')
+            plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]+1), [test_y[i,:],test_y[i,:] ], 'g')
+            plt.show()

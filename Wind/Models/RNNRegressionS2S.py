@@ -48,7 +48,7 @@ import os
 __author__ = 'bejar'
 
 
-def architectureS2S(ahead, idimensions, neurons, neuronsD, drop, nlayersE, nlayersD, activation, activation_r, rnntype, impl=1,
+def architectureS2S(ahead, idimensions, odimensions, neurons, neuronsD, drop, nlayersE, nlayersD, activation, activation_r, rnntype, impl=1,
                     CuDNN=False,
                     bidirectional=False,
                     rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1):
@@ -101,7 +101,7 @@ def architectureS2S(ahead, idimensions, neurons, neuronsD, drop, nlayersE, nlaye
                               kernel_regularizer=k_regularizer))
             model.add(RNN(neurons, recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
 
-        model.add(RepeatVector(ahead))
+        model.add(RepeatVector(odimensions))
 
         for i in range(nlayersD):
             model.add(RNN(neuronsD, return_sequences=True, recurrent_regularizer=rec_regularizer,
@@ -128,7 +128,7 @@ def architectureS2S(ahead, idimensions, neurons, neuronsD, drop, nlayersE, nlaye
                           recurrent_activation=activation_r, implementation=impl,
                           recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
 
-        model.add(RepeatVector(ahead))
+        model.add(RepeatVector(odimensions))
 
         for i in range(nlayersD):
             model.add(RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
@@ -149,9 +149,13 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
     """
     ahead = config['data']['ahead']
 
+    if not type(ahead) == list:
+        ahead = [1, ahead]
+
     train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='s2s',
                                                                       data_path=wind_data_path)
 
+    print(train_y.shape)
     ############################################
     # Model
 
@@ -175,9 +179,14 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
     else:
         niter = 1
 
+    if type(ahead) == list:
+        odimensions = ahead[1] - ahead[0] +1
+    else:
+        odimensions = ahead
+
     lresults = []
     for iter in range(niter):
-        model = architectureS2S(ahead=ahead, idimensions=train_x.shape[1:], neurons=neurons,
+        model = architectureS2S(ahead=ahead, idimensions=train_x.shape[1:], odimensions=odimensions, neurons=neurons,
                                 neuronsD=config['arch']['neuronsD'],
                                 drop=drop, nlayersE=nlayersE,
                                 nlayersD=nlayersD,
@@ -243,11 +252,11 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
         test_yp = model.predict(test_x, batch_size=batch_size, verbose=0)
 
 
-        for i in range(1, ahead + 1):
+        for i in range(ahead[0], ahead[1] + 1):
             lresults.append((i,
-                             r2_score(val_y[:, i - 1, 0], val_yp[:, i - 1, 0]),
+                             r2_score(val_y[:, i  - ahead[0], 0], val_yp[:, i - ahead[0], 0]),
                              # r2_score(val_y[i:, 0, 0], val_y[0:-i, 0, 0]),
-                             r2_score(test_y[:, i - 1, 0], test_yp[:, i - 1, 0]),
+                             r2_score(test_y[:, i - ahead[0] , 0], test_yp[:, i - ahead[0], 0]),
                              # r2_score(test_y[i:, 0, 0], test_y[0:-i, 0, 0])
                              )
                             )
@@ -279,7 +288,7 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
             except OSError:
                 pass
         elif best:
-            os.rename(modfile, 'modelRNNS2S-S%s-A%d-R%02d.h5'%(config['data']['datanames'][0], ahead, iter))
+            os.rename(modfile, 'modelRNNS2S-S%s-A%d-%d-R%02d.h5'%(config['data']['datanames'][0], ahead[0], ahead[1], iter))
 
 
     return lresults
