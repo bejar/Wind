@@ -1,18 +1,18 @@
 {
   "data": {
     "datanames": [
-      "90-45142"
+      "95-47500-12"
     ],
     "vars": [0,1,2,3,4,5],
     "datasize": 40912,
     "testsize": 20456,
     "dataset": 1,
-    "lag": 12,
+    "lag": 18,
     "ahead": [1,6]
   },
   "arch": {
-    "neurons":96,
-    "neuronsD":64,
+      "neurons":64,
+    "neuronsD":512,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",
@@ -32,8 +32,8 @@
   },
   "training": {
     "iter": 1,
-    "batch": 1000,
+    "batch": 500,
     "epochs": 100,
-    "optimizer": "nadam"
+    "optimizer": "adamax"
   }
 }

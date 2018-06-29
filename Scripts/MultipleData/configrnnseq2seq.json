@@ -9,8 +9,8 @@
     "ahead": 12
   },
   "arch": {
-    "neurons":96,
-    "neuronsD":64,
+    "neurons":64,
+    "neuronsD":256,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",
@@ -29,7 +29,7 @@
     "mode": "seq2seq"
   },
   "training": {
-    "batch": 5000,
+    "batch": 1000,
     "epochs": 150,
     "optimizer": "adamax",
     "lrate": 0.001

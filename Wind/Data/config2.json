@@ -1,14 +1,14 @@
 {
   "data": {
     "datanames": [
-      "90-45142"
+      "95-47500"
     ],
     "vars": [0,1,2,3,4,5],
     "datasize": 40912,
     "testsize": 20456,
     "dataset": 1,
     "lag": 12,
-    "ahead": [6,12]
+    "ahead": [1,12]
   },
   "arch": {
     "neurons":96,

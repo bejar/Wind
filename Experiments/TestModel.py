@@ -56,6 +56,7 @@ if __name__ == '__main__':
         arch = 'MLPRegS2S'
 
     ahead = config['data']['ahead']
+
     lag = config['data']['lag']
     train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=datamode,
                                                                       data_path=wind_data_path)
@@ -68,10 +69,16 @@ if __name__ == '__main__':
 
     lpreds = []
     for iter in range(niter):
-        print('Testing: model%s-S%s-A%d-R%02d' % (arch, config['data']['datanames'][0], ahead, iter))
+
+        if type(ahead) == list:
+            fmodel = 'model%s-S%s-A%d-%d-R%02d' %(arch, config['data']['datanames'][0], ahead[0], ahead[1], iter)
+        else:
+            fmodel = 'model%s-S%s-A%d-R%02d' %(arch, config['data']['datanames'][0], ahead, iter)
+
+
+        print('Testing: %s' % fmodel)
         model = load_model(
-            wind_models_path + '/%s/%s/model%s-S%s-A%d-R%02d.h5' % (
-            args.sec, args.site, arch, config['data']['datanames'][0], ahead, iter))
+            wind_models_path + '/%s/%s/%s.h5' % (args.sec, args.site, fmodel))
         lpreds.append(model.predict(val_x, batch_size=batch_size, verbose=0))
 
 
@@ -87,7 +94,7 @@ if __name__ == '__main__':
             fig = plt.figure()
 
             axes = fig.add_subplot(1, 1, 1)
-            plt.title('model%s-S%s-A%d-R%02d AHEAD=%d'%(arch, config['data']['datanames'][0], ahead, iter,  i))
+            plt.title('%s AHEAD=%d'%(fmodel,  i))
             plt.plot(vals, 'r--')
 
             plt.plot(np.max(pred, axis=0), 'b')
@@ -108,7 +115,7 @@ if __name__ == '__main__':
             fig = plt.figure()
 
             axes = fig.add_subplot(1, 1, 1)
-            plt.title('model%s-S%s-A%d-R%02d Time=%d' % (arch, config['data']['datanames'][0], ahead, iter,  i))
+            plt.title('%s AHEAD=%d'%(fmodel,  i))
             plt.plot(range(vals_x.shape[0]), vals_x, 'r')
             plt.plot(range(vals_x.shape[0],vals_x.shape[0]+vals.shape[0]), vals, 'r--')
 

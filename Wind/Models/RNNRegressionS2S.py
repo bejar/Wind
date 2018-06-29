@@ -48,10 +48,9 @@ import os
 __author__ = 'bejar'
 
 
-def architectureS2S(ahead, idimensions, odimensions, neurons, neuronsD, drop, nlayersE, nlayersD, activation, activation_r, rnntype, impl=1,
-                    CuDNN=False,
-                    bidirectional=False,
-                    rec_reg='l1', rec_regw=0.1, k_reg='l1', k_regw=0.1):
+def architectureS2S(idimensions, odimensions, neurons, neuronsD, drop, nlayersE, nlayersD, activation, activation_r,
+                    rnntype, impl=1, CuDNN=False, bidirectional=False, rec_reg='l1', rec_regw=0.1, k_reg='l1',
+                    k_regw=0.1):
     """
 
     Sequence to sequence architecture
@@ -155,7 +154,6 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
     train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='s2s',
                                                                       data_path=wind_data_path)
 
-    print(train_y.shape)
     ############################################
     # Model
 
@@ -186,13 +184,11 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
 
     lresults = []
     for iter in range(niter):
-        model = architectureS2S(ahead=ahead, idimensions=train_x.shape[1:], odimensions=odimensions, neurons=neurons,
-                                neuronsD=config['arch']['neuronsD'],
-                                drop=drop, nlayersE=nlayersE,
-                                nlayersD=nlayersD,
-                                activation=activation, impl=impl,
-                                activation_r=activation_r, rnntype=config['arch']['rnn'], CuDNN=config['arch']['CuDNN'],
-                                rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw)
+        model = architectureS2S(idimensions=train_x.shape[1:], odimensions=odimensions, neurons=neurons,
+                                neuronsD=config['arch']['neuronsD'], drop=drop, nlayersE=nlayersE, nlayersD=nlayersD,
+                                activation=activation, activation_r=activation_r, rnntype=config['arch']['rnn'],
+                                impl=impl, CuDNN=config['arch']['CuDNN'], rec_reg=rec_reg, rec_regw=rec_regw,
+                                k_reg=k_reg, k_regw=k_regw)
         if verbose:
             model.summary()
             print('lag: ', config['data']['lag'], 'Neurons: ', neurons, 'Layers: ', nlayersE, nlayersD, activation,
