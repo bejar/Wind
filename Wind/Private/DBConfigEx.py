@@ -29,5 +29,5 @@ class MongoData:
         self.col = collect
 
 
-mongoconnection = MongoData('mongodb://localhost/', 'Database', 'User', 'Password',
+mongoconnection = MongoData('mongodb://localhost:27017/', 'Database', 'User', 'Password',
                             'Collection')
