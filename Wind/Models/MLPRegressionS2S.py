@@ -195,6 +195,7 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
                    r2test,
                    # r2persT
                    ))
+        print(strftime('%Y-%m-%d %H:%M:%S'))
 
         if not save and best:
             try:

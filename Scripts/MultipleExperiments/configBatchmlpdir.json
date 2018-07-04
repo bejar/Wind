@@ -1,0 +1,29 @@
+{
+  "data": {
+    "datanames": [["11-5794"]
+     ],
+      "vars": [[0,1,2,3,4,5]],
+    "datasize": [40912],
+    "testsize": [20456],
+      "dataset": [1],
+      "lag": [6,12,18,24,32],
+    "ahead": [12]
+  },
+  "arch": {
+    "k_reg": ["None"],
+    "k_regw": [0.1],
+    "rec_reg": ["None"],
+    "rec_regw": [0.1],
+      "drop": [0, 0.1],
+    "nlayers": [2],
+      "activation": ["sigmoid"],
+      "full": [[256],[512],[1024],[512,256],[1024,512],[1024,512,256]],
+    "mode":["mlpdir"]      
+  },
+  "training": {
+    "batch": [1000],
+    "epochs": [100],
+      "optimizer": ["adam"],
+    "lrate": [0.001]
+  }
+}

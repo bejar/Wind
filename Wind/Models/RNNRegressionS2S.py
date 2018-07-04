@@ -276,6 +276,7 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
                    config['training']['optimizer'],
                    r2val, r2test
                    ))
+        print(strftime('%Y-%m-%d %H:%M:%S'))
 
 
         if not save and best:
