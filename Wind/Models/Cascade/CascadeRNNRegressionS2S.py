@@ -16,7 +16,7 @@ Seq2SeqRegression
 
 """
 
-from keras.models import Sequential, load_model
+from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Activation, Dropout
 from keras.layers import LSTM, GRU, Bidirectional, TimeDistributed, Flatten, RepeatVector
 
@@ -44,12 +44,15 @@ from Wind.Config import wind_data_path
 from time import time, strftime
 import os
 
+
+
+
 from Wind.Models import architectureS2S
 
 __author__ = 'bejar'
 
 
-def architecturecascadeS2S(idimensions, odimensions, neurons, neuronsD, drop, nlayersE, nlayersD, activation, activation_r,
+def architecturecascadeS2S_2(idimensions, odimensions, neurons, neuronsD, drop, nlayersE, nlayersD, activation, activation_r,
                     rnntype, impl=1):
     """
 
@@ -95,6 +98,26 @@ def architecturecascadeS2S(idimensions, odimensions, neurons, neuronsD, drop, nl
     model.add(TimeDistributed(Dense(1)))
 
     return model
+
+
+def architecturecascadeS2S(idimensions, odimensions, neurons, neuronsD, drop, nlayersE, nlayersD, activation, activation_r,
+                    rnntype, impl=1):
+    """
+
+    :param idimensions:
+    :param odimensions:
+    :param neurons:
+    :param neuronsD:
+    :param drop:
+    :param nlayersE:
+    :param nlayersD:
+    :param activation:
+    :param activation_r:
+    :param rnntype:
+    :param impl:
+    :return:
+    """
+
 
 
 def train_cascade_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi=1, save=False):

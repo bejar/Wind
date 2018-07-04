@@ -7,12 +7,12 @@
     "datasize": 40912,
     "testsize": 20456,
     "dataset": 1,
-    "lag": 18,
-    "ahead": [1,6]
+    "lag": 36,
+    "ahead": [1,9]
   },
   "arch": {
-      "neurons":64,
-    "neuronsD":512,
+      "neurons":96,
+    "neuronsD":64,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",
@@ -28,7 +28,7 @@
     "bimerge":"ave",
     "rnn": "GRU",
       "full": [1],
-    "mode": "seq2seq"
+    "mode": "seq2seqa"
   },
   "training": {
     "iter": 1,

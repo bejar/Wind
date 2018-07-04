@@ -21,6 +21,7 @@ from .RNNRegressionDir import architectureDirRegression, train_dirregression_arc
 from .MLPRegressionS2S import architectureMLPs2s, train_MLP_regs2s_architecture
 from .MLPRegressionDir import architectureMLP_dirreg, train_MLP_dirreg_architecture
 from .RNNRegressionS2S import architectureS2S, train_seq2seq_architecture
+from .RNNRegressionS2SAttention import architectureS2SAtt, train_seq2seqatt_architecture
 from .Ensemble import train_ensemble_architecture
 from .CNNRegressionDir import train_convdirregression_architecture, architectureConvDirRegression
 from .SVMRegressionDir import train_svm_dirregression_architecture
@@ -39,4 +40,5 @@ __all__ = ['architectureDirRegression', 'train_dirregression_architecture',
            'train_svm_dirregression_architecture',
            'train_convo_regs2s_architecture', 'architectureConvos2s',
            'train_persistence',
-           'train_cascade_seq2seq_architecture']
+           'train_cascade_seq2seq_architecture',
+           'train_seq2seqatt_architecture', 'architectureS2SAtt']

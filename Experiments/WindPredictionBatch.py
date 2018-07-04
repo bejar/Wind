@@ -23,7 +23,7 @@ from Wind.Util import load_config_file
 from Wind.Training import getconfig, saveconfig, failconfig
 from Wind.Models import train_dirregression_architecture, train_seq2seq_architecture, train_MLP_regs2s_architecture,\
     train_ensemble_architecture, train_convdirregression_architecture, train_MLP_dirreg_architecture, \
-    train_svm_dirregression_architecture, train_convo_regs2s_architecture, train_persistence
+    train_svm_dirregression_architecture, train_convo_regs2s_architecture, train_persistence, train_seq2seqatt_architecture
 
 import os
 import argparse
@@ -73,6 +73,8 @@ if __name__ == '__main__':
                 lresults = train_dirregression_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi, proxy=args.proxy, save=args.save)
             elif config['arch']['mode'] == 'seq2seq':
                 lresults = train_seq2seq_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
+            elif config['arch']['mode'] == 'seq2seqa':
+                lresults = train_seq2seqatt_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
             elif config['arch']['mode'] == 'mlps2s':
                 lresults = train_MLP_regs2s_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
             elif config['arch']['mode'] == 'mlpdir':
