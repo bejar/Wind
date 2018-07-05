@@ -183,7 +183,6 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
         odimensions = ahead
 
     lresults = []
-    print(range(niter), niter)
     for iter in range(niter):
         model = architectureS2S(idimensions=train_x.shape[1:], odimensions=odimensions, neurons=neurons,
                                 neuronsD=config['arch']['neuronsD'], drop=drop, nlayersE=nlayersE, nlayersD=nlayersD,
