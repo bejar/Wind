@@ -30,7 +30,7 @@
     "mode": "seq2seq"
   },
   "training": {
-    "iter":2,
+    "iter":1,
     "batch": 1000,
     "epochs": 150,
     "optimizer": "adamax",

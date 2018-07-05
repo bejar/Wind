@@ -178,23 +178,7 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
                              ))
 
 
-        for i, r2val, r2test in lresults:
-            print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, FL= %s, DR= %3.2f, AF= %s, '
-                  'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-                  (config['arch']['mode'],
-                   config['data']['datanames'][0],
-                   config['data']['dataset'],
-                   len(config['data']['vars']),
-                   config['data']['lag'],
-                   i,str(config['arch']['full']),
-                   config['arch']['drop'],
-                   config['arch']['activation'],
-                   config['training']['optimizer'],
-                   r2val,
-                   # r2persV,
-                   r2test,
-                   # r2persT
-                   ))
+
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
         if not save and best:
@@ -205,4 +189,21 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
         elif best:
             os.rename(modfile, 'modelMLPRegS2S-S%s-A%d-R%02d.h5'%(config['data']['datanames'][0], ahead, iter))
 
+    for i, r2val, r2test in lresults:
+        print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, FL= %s, DR= %3.2f, AF= %s, '
+              'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
+              (config['arch']['mode'],
+               config['data']['datanames'][0],
+               config['data']['dataset'],
+               len(config['data']['vars']),
+               config['data']['lag'],
+               i, str(config['arch']['full']),
+               config['arch']['drop'],
+               config['arch']['activation'],
+               config['training']['optimizer'],
+               r2val,
+               # r2persV,
+               r2test,
+               # r2persT
+               ))
     return lresults

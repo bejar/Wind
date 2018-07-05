@@ -183,6 +183,7 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
         odimensions = ahead
 
     lresults = []
+    print(range(niter), niter)
     for iter in range(niter):
         model = architectureS2S(idimensions=train_x.shape[1:], odimensions=odimensions, neurons=neurons,
                                 neuronsD=config['arch']['neuronsD'], drop=drop, nlayersE=nlayersE, nlayersD=nlayersD,
@@ -257,25 +258,6 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
                              )
                             )
 
-        for i, r2val, r2test in lresults:
-            print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d %d, DR= %3.2f, AF= %s, RAF= %s, '
-                  'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-                  (config['arch']['mode'],
-                   config['data']['datanames'][0],
-                   config['data']['dataset'],
-                   len(config['data']['vars']),
-                   config['data']['lag'],
-                   i,
-                   config['arch']['rnn'],
-                   config['arch']['bimerge'] if config['arch']['bidirectional'] else 'no',
-                   config['arch']['nlayersE'],config['arch']['nlayersD'],
-                   config['arch']['neurons'],config['arch']['neuronsD'],
-                   config['arch']['drop'],
-                   config['arch']['activation'],
-                   config['arch']['activation_r'],
-                   config['training']['optimizer'],
-                   r2val, r2test
-                   ))
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
 
@@ -287,5 +269,24 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
         elif best:
             os.rename(modfile, 'modelRNNS2S-S%s-A%d-%d-R%02d.h5'%(config['data']['datanames'][0], ahead[0], ahead[1], iter))
 
+    for i, r2val, r2test in lresults:
+        print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d %d, DR= %3.2f, AF= %s, RAF= %s, '
+              'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
+              (config['arch']['mode'],
+               config['data']['datanames'][0],
+               config['data']['dataset'],
+               len(config['data']['vars']),
+               config['data']['lag'],
+               i,
+               config['arch']['rnn'],
+               config['arch']['bimerge'] if config['arch']['bidirectional'] else 'no',
+               config['arch']['nlayersE'],config['arch']['nlayersD'],
+               config['arch']['neurons'],config['arch']['neuronsD'],
+               config['arch']['drop'],
+               config['arch']['activation'],
+               config['arch']['activation_r'],
+               config['training']['optimizer'],
+               r2val, r2test
+               ))
 
     return lresults

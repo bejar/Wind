@@ -285,24 +285,6 @@ def train_dirregression_architecture(config, impl, verbose, tboard, best, early,
             # print('R2 test persistence =', r2persT)
 
             lresults.append((ahead, r2val,  r2test))
-            print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
-                  'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-                  (config['arch']['mode'],
-                   config['data']['datanames'][0],
-                   config['data']['dataset'],
-                   len(config['data']['vars']),
-                   config['data']['lag'],
-                   ahead,
-                   config['arch']['rnn'],
-                   config['arch']['bimerge'] if config['arch']['bidirectional'] else 'no',
-                   config['arch']['nlayers'],
-                   config['arch']['neurons'],
-                   config['arch']['drop'],
-                   config['arch']['activation'],
-                   config['arch']['activation_r'],
-                   config['training']['optimizer'],
-                   r2val, r2test
-                   ))
             print(strftime('%Y-%m-%d %H:%M:%S'))
 
             # Update result in db
@@ -320,5 +302,24 @@ def train_dirregression_architecture(config, impl, verbose, tboard, best, early,
 
             del train_x, train_y, test_x, test_y, val_x, val_y
             del model
+
+    print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
+          'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
+          (config['arch']['mode'],
+           config['data']['datanames'][0],
+           config['data']['dataset'],
+           len(config['data']['vars']),
+           config['data']['lag'],
+           ahead,
+           config['arch']['rnn'],
+           config['arch']['bimerge'] if config['arch']['bidirectional'] else 'no',
+           config['arch']['nlayers'],
+           config['arch']['neurons'],
+           config['arch']['drop'],
+           config['arch']['activation'],
+           config['arch']['activation_r'],
+           config['training']['optimizer'],
+           r2val, r2test
+           ))
 
     return lresults
