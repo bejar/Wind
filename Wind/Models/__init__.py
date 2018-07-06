@@ -28,7 +28,7 @@ from .SVMRegressionDir import train_svm_dirregression_architecture
 from .CNNRegressionS2S import train_convo_regs2s_architecture, architectureConvos2s
 from .Persistence import train_persistence
 from .Cascade.CascadeRNNRegressionS2S import train_cascade_seq2seq_architecture
-
+from .RNNDirRegressionArchitecture import RNNDirRegressionArchitecture
 __author__ = 'bejar'
 
 __all__ = ['architectureDirRegression', 'train_dirregression_architecture',
@@ -41,4 +41,5 @@ __all__ = ['architectureDirRegression', 'train_dirregression_architecture',
            'train_convo_regs2s_architecture', 'architectureConvos2s',
            'train_persistence',
            'train_cascade_seq2seq_architecture',
-           'train_seq2seqatt_architecture', 'architectureS2SAtt']
+           'train_seq2seqatt_architecture', 'architectureS2SAtt',
+           'RNNDirRegressionArchitecture']

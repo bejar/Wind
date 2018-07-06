@@ -37,7 +37,6 @@ from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.regularizers import l1, l2
 
 
-
 import tensorflow as tf
 from sklearn.metrics import mean_squared_error, r2_score
 from Wind.Data import generate_dataset
