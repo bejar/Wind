@@ -41,7 +41,7 @@ if __name__ == '__main__':
     parser.add_argument('--early', help="Early stopping when no improving", action='store_true', default=True)
     parser.add_argument('--tboard', help="Save log for tensorboard", action='store_true', default=False)
     parser.add_argument('--proxy', help="Access configurations throught proxy", action='store_true', default=False)
-    parser.add_argument('--config', default=None, help='Experiment configuration')
+    parser.add_argument('--config', default='configregdir.json', help='Experiment configuration')
     parser.add_argument('--exp', default=None, help='type of experiment')
     parser.add_argument('--multi', type=int, default=1, help='multi GPU training')
     parser.add_argument('--gpulog', action='store_true', default=False, help='GPU logging')

@@ -17,10 +17,9 @@ RNNDirRegressionArchitecture
 
 """
 
-from Wind.Models.Architecture import Architecture
+from Wind.Architectures.Architecture import Architecture
 from keras.models import Sequential, load_model
-from keras.layers import Dense
-from keras.layers import LSTM, GRU,  Bidirectional
+from keras.layers import LSTM, GRU,  Bidirectional, Dense
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -40,7 +39,7 @@ except ImportError:
 else:
     _has_multigpu = True
 
-from sklearn.metrics import  r2_score
+from sklearn.metrics import r2_score
 from time import time
 import os
 
@@ -57,7 +56,6 @@ class RNNDirRegressionArchitecture(Architecture):
 
         :return:
         """
-
         neurons = self.config['arch']['neurons']
         drop = self.config['arch']['drop']
         nlayers = self.config['arch']['nlayers']  # >= 1

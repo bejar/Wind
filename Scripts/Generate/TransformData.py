@@ -21,7 +21,7 @@ from __future__ import print_function
 from netCDF4 import Dataset
 import numpy as np
 import time
-from Wind.Config.Paths import wind_data_path
+from Wind.Config.Paths import wind_data_path, wind_path, wind_NREL_data_path
 
 __author__ = 'bejar'
 
@@ -37,7 +37,7 @@ def generate_data(dfile, vars, step, mode='average'):
         'split' the data steps in separated files
     :return:
     """
-    nc_fid = Dataset("/home/bejar/storage/Data/Wind/files/%s.nc" % dfile, 'r')
+    nc_fid = Dataset(wind_NREL_data_path + "/%s.nc" % dfile, 'r')
     nint = nc_fid.dimensions['time'].size
     stime = nc_fid.getncattr('start_time')
     samp = nc_fid.getncattr('sample_period')
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     #           '11/5793', '11/5794', '11/5795', '11/5796',
     #           '11/5752', '11/5753', '11/5754', '11/5755']
     vars = ['wind_speed', 'density', 'pressure', 'wind_direction']
-    wfiles = ['97/' + str(i) for i in range(48500, 49000) ]
+    wfiles = ['230/' + str(i) for i in range(115000, 115500) ]
 
     for wf in wfiles:
         print("Processing %s" % wf)

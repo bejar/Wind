@@ -19,8 +19,8 @@ Dispatch
 
 __author__ = 'bejar'
 
-from Wind.Train.TrainingProcess import train_dirregression, train_persistence
-from Wind.Models import RNNDirRegressionArchitecture
+from Wind.Train.TrainingProcess import train_dirregression, train_persistence, train_svm_dirregression
+from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArchitecture
 
 class TrainDispatch:
 
@@ -30,9 +30,9 @@ class TrainDispatch:
         self.model_dict['RNN_dir_reg'] = (train_dirregression, RNNDirRegressionArchitecture)
         self.model_dict['regdir'] = (train_dirregression, RNNDirRegressionArchitecture)
         self.model_dict['persistence'] = (train_persistence, None)
+        self.model_dict['svm'] = (train_svm_dirregression, SVMDirRegressionArchitecture)
 
     def dispatch(self, mode):
-        print(mode)
         if mode in self.model_dict:
             return self.model_dict[mode]
         else:

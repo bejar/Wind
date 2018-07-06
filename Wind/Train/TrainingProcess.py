@@ -82,8 +82,6 @@ def train_dirregression(architecture, config, runconfig):
             ############################################
             # Model
 
-
-
             config['idimensions'] = train_x.shape[1:]
 
             arch = architecture(config, runconfig)
@@ -119,7 +117,7 @@ def train_dirregression(architecture, config, runconfig):
             arch.save('-A%d-R%02d' % (ahead, iter))
             del train_x, train_y, test_x, test_y, val_x, val_y
 
-    arch.log_results(lresults)
+    arch.log_result(lresults)
 
     return lresults
 
@@ -171,7 +169,7 @@ def train_persistence(architecture, config, runconfig):
     return lresults
 
 
-def train_svm_dirregression(arcchitecture, config, runconfig):
+def train_svm_dirregression(architecture, config, runconfig):
     """
     Training process for architecture with direct regression of ahead time steps
 
@@ -206,9 +204,11 @@ def train_svm_dirregression(arcchitecture, config, runconfig):
         degree = config['arch']['degree']
         coef0 = config['arch']['coef0']
 
+        arch = architecture(config, runconfig)
+
         if runconfig.verbose:
-            print(
-            'lag: ', config['data']['lag'], '/kernel: ', kernel, '/C: ', C, '/epsilon:', epsilon, '/degree:', degree)
+            arch.summary()
+
             print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape,
                   test_y.shape)
             print()
@@ -216,11 +216,14 @@ def train_svm_dirregression(arcchitecture, config, runconfig):
         ############################################
         # Training
 
+        arch.train(train_x, train_y)
         svmr = SVR(kernel=kernel, C=C, epsilon=epsilon, degree=degree, coef0=coef0)
         svmr.fit(train_x, train_y)
 
         ############################################
         # Results
+
+        lresults.append((ahead, arch.evaluate(val_x, val_y, test_x, test_y)))
 
         val_yp = svmr.predict(val_x)
 
@@ -232,20 +235,12 @@ def train_svm_dirregression(arcchitecture, config, runconfig):
         r2persT = r2_score(test_y[ahead:], test_y[0:-ahead])
 
         lresults.append((ahead, r2val, r2persV, r2test, r2persT))
-        print(
-                    '%s |  AH=%d, KRNL= %s, C= %3.5f, EPS= %3.5f, DEG=%d, COEF0= %d, R2V = %3.5f, R2PV = %3.5f, R2T = %3.5f, R2PT = %3.5f' %
-                    (config['arch']['mode'], ahead,
-                     config['arch']['kernel'],
-                     config['arch']['C'],
-                     config['arch']['epsilon'],
-                     config['arch']['degree'],
-                     config['arch']['coef0'],
-                     r2val, r2persV, r2test, r2persT
-                     ))
+
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
-        # Update result in db
         if config is not None:
             updateprocess(config, ahead)
+
+    arch.log_result(lresults)
 
     return lresults
