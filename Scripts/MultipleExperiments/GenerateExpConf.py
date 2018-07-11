@@ -57,7 +57,7 @@ if __name__ == '__main__':
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
     args = parser.parse_args()
 
-    configB = load_config_file(args.config)
+    configB = load_config_file(args.config, upload=True)
 
     if args.test:
         len(generate_configs(configB))
@@ -72,5 +72,5 @@ if __name__ == '__main__':
             config['status'] = 'pending'
             config['result'] = []
             config['_id'] = str(ids + i)
-            col.insert(config)
+            col.insert_one(config)
 

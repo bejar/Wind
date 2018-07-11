@@ -73,7 +73,7 @@ if __name__ == '__main__':
             config['status'] = 'pending'
             config['result'] = []
             config['_id'] = "%d%04d" % (ids, i)
-            col.insert(config)
+            col.insert_one(config)
             print(config)
 
 

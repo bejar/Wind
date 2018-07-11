@@ -1,5 +1,5 @@
 { "_id": "00000000",
-    "experiment": "eastwest9597",
+    "experiment": "Persistence",
   "data": {
       "vars": [0,1,2,3,4,5],
     "datasize": 40912,
@@ -9,6 +9,6 @@
     "ahead": 12
   },
   "arch": {
-    "mode": ["persistence"]
+    "mode": "persistence"
   }
 }
