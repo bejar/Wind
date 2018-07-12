@@ -23,11 +23,29 @@ import numpy as np
 import time
 from Wind.Config.Paths import wind_data_path, wind_path, wind_NREL_data_path
 import argparse
+from time import strftime
+
 
 __author__ = 'bejar'
 
 
-def generate_data(dfile, vars, step, mode='average'):
+def generate_time_vars(dfile):
+    """
+    Generates the time variables for one file (the rest are the same)
+
+    :return:
+    """
+    nc_fid = Dataset(wind_NREL_data_path + "/%s.nc" % dfile, 'r')
+    print ( "Read %s" % strftime('%Y-%m-%d %H:%M:%S'))
+    nint = nc_fid.dimensions['time'].size
+    stime = nc_fid.getncattr('start_time')
+    samp = nc_fid.getncattr('sample_period')
+    hour = np.array(
+        [t.tm_hour * 60 + t.tm_min for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
+    month = np.array([t.tm_mon for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
+    return hour, month
+
+def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
     """
 
     :param dfile:
@@ -39,18 +57,11 @@ def generate_data(dfile, vars, step, mode='average'):
     :return:
     """
     nc_fid = Dataset(wind_NREL_data_path + "/%s.nc" % dfile, 'r')
-    nint = nc_fid.dimensions['time'].size
-    stime = nc_fid.getncattr('start_time')
-    samp = nc_fid.getncattr('sample_period')
-    hour = np.array(
-        [t.tm_hour * 60 + t.tm_min for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
-    month = np.array([t.tm_mon for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
-
 
     if step == 1: # The original data
         ldata = []
         for v in vars:
-            data = nc_fid.variables[v]
+            data = np.array(nc_fid.variables[v])
             ldata.append(data)
         ldata.append(hour)
         ldata.append(month)
@@ -61,17 +72,15 @@ def generate_data(dfile, vars, step, mode='average'):
     elif mode == 'average': # Average step points
         ldata = []
         for v in vars:
-            data = nc_fid.variables[v]
+            data = np.array(nc_fid.variables[v])
             end = data.shape[0]
             length = int(end / step)
-            data_aver = np.zeros(length)
+            # tmp = data.reshape((length, step)).sum(axis=1)/float(step)
 
+            data_aver = np.zeros(length)
             for i in range(step):
                 data_aver += data[i::step]
-            data_aver /= step
-
-            # for i in range(0, end, step):
-            #     data_aver[i / step] = np.sum(data[i: i + step]) / step
+            data_aver /= float(step)
 
             ldata.append(data_aver)
         ldata.append(hour)
@@ -79,12 +88,14 @@ def generate_data(dfile, vars, step, mode='average'):
 
         data_stack = np.stack(ldata, axis=1)
         print(data_stack.shape)
+
         np.save(wind_data_path + '/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
+
     elif mode == 'split': # split in n step files
         for i in range(step):
             ldata = []
             for v in vars:
-                data = nc_fid.variables[v]
+                data = np.array(nc_fid.variables[v])
                 ldata.append(data[i::step])
             ldata.append(hour)
             ldata.append(month)
@@ -119,9 +130,11 @@ if __name__ == '__main__':
     #           '11/5752', '11/5753', '11/5754', '11/5755']
     vars = ['wind_speed', 'density', 'pressure', 'wind_direction']
 
+    hour, month = generate_time_vars(str(args.isec) +'/' + str(args.isite))
+
     for c, site in enumerate(range(args.isec, args.fsec+1)):
         wfiles = [str(site)+'/' + str(i) for i in range(args.isite+(c*500), args.isite+500+(c*500)) ]
 
         for wf in wfiles:
             print("Processing %s" % wf)
-            generate_data(wf, vars, step, mode=args.mode)
+            generate_data(wf, vars, step, mode=args.mode, hour=hour, month=month)
