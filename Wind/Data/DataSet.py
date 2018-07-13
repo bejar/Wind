@@ -17,7 +17,6 @@ DataSet
 
 """
 
-
 from __future__ import print_function
 import numpy as np
 from sklearn.preprocessing import StandardScaler
@@ -70,18 +69,18 @@ def lagged_matrix(data, lag=1, ahead=0, mode=None):
 
 
 class Dataset:
-
     train_x = None
     train_y = None
     val_x = None
     val_y = None
     test_x = None
     test_y = None
-
+    data_path = None
     config = None
 
-    def __init__(self, config):
+    def __init__(self, config, data_path):
         self.config = config
+        self.data_path = data_path
 
     def _generate_dataset_one_var(self, data, datasize, testsize, lag=1, ahead=1, slice=1, mode=None):
         """
@@ -92,7 +91,7 @@ class Dataset:
         data = scaler.fit_transform(data)
         # print('DATA Dim =', data.shape)
 
-        wind_train =  data[:datasize, :]
+        wind_train = data[:datasize, :]
         # print('Train Dim =', wind_train.shape)
 
         train = lagged_vector(wind_train, lag=lag, ahead=ahead, mode=mode)
@@ -133,7 +132,6 @@ class Dataset:
 
         return train_x, train_y, val_x, val_y, test_x, test_y
 
-
     def _generate_dataset_multiple_var(self, data, datasize, testsize, lag=1, ahead=1, slice=1, mode=None):
         """
         Generates
@@ -154,7 +152,7 @@ class Dataset:
         elif mode == 'mlp':
             train_x, train_y = train[:, :lag], train[:, -slice:, 0]
             train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1] * train_x.shape[2]))
-        elif mode== 'svm':
+        elif mode == 'svm':
             train_x, train_y = train[:, :lag], np.ravel(train[:, -1:, 0])
             train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1] * train_x.shape[2]))
         else:
@@ -175,7 +173,7 @@ class Dataset:
             test_x, test_y = test[half_test:, :lag], test[half_test:, -slice:, 0]
             val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1] * val_x.shape[2]))
             test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1] * test_x.shape[2]))
-        elif mode== 'svm':
+        elif mode == 'svm':
             val_x, val_y = test[:half_test, :lag], np.ravel(test[:half_test, -1:, 0])
             test_x, test_y = test[half_test:, :lag], np.ravel(test[half_test:, -1:, 0])
             val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1] * val_x.shape[2]))
@@ -186,8 +184,7 @@ class Dataset:
 
         return train_x, train_y, val_x, val_y, test_x, test_y
 
-
-    def generate_dataset(self, ahead=1, mode=None, data_path=None, ensemble=False, ens_slice=None):
+    def generate_dataset(self, ahead=1, mode=None, ensemble=False, ens_slice=None):
         """
         Generates the dataset for training, test and validation
 
@@ -199,7 +196,6 @@ class Dataset:
 
 
         :param datanames: Name of the wind datafiles
-        :param vars: List with the indices of the variables to use
         :param ahead: number of steps ahead for prediction
         :param mode: type of dataset
                 None (recurrent one output regression)
@@ -215,7 +211,6 @@ class Dataset:
         vars = self.config['vars']
         wind = {}
 
-
         if (mode == 's2s' or mode == 'mlp') and type(ahead) == list:
             dahead = ahead[1]
             slice = (ahead[1] - ahead[0]) + 1
@@ -223,48 +218,70 @@ class Dataset:
             dahead = ahead
             slice = ahead
 
-
         # Reads numpy arrays for all sites and keep only selected columns
         for d in datanames:
-            wind[d] = np.load(data_path + '/%s.npy' % d)
+            wind[d] = np.load(self.data_path + '/%s.npy' % d)
             if vars is not None:
-                wind[d] = wind[d][:,vars]
+                wind[d] = wind[d][:, vars]
 
         if self.config['dataset'] == 0:
             if not ensemble:
-                return self._generate_dataset_one_var(wind[datanames[0]][:, 0].reshape(-1, 1), datasize, testsize,
-                                                 lag=lag, ahead=dahead, slice=slice, mode=mode)
+                self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
+                    self._generate_dataset_one_var(wind[datanames[0]][:, 0].reshape(-1, 1), datasize, testsize,
+                                                   lag=lag, ahead=dahead, slice=slice, mode=mode)
             else:
-                return self._generate_dataset_one_var(wind[datanames[0]][ens_slice[0]::ens_slice[1], 0].reshape(-1, 1), datasize, testsize,
-                                                 lag=lag, ahead=dahead, slice=slice, mode=mode)
+                self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
+                    self._generate_dataset_one_var(wind[datanames[0]][ens_slice[0]::ens_slice[1], 0].reshape(-1, 1),
+                                                   datasize, testsize,
+                                                   lag=lag, ahead=dahead, slice=slice, mode=mode)
 
         elif self.config['dataset'] == 1:
             if not ensemble:
-                return self._generate_dataset_multiple_var(wind[datanames[0]], datasize, testsize,
-                                                      lag=lag, ahead=dahead, slice=slice, mode=mode)
+                self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
+                    self._generate_dataset_multiple_var(wind[datanames[0]], datasize, testsize,
+                                                        lag=lag, ahead=dahead, slice=slice, mode=mode)
             else:
-                return self._generate_dataset_multiple_var(wind[datanames[0][ens_slice[0]::ens_slice[1], :]], datasize, testsize,
-                                                      lag=lag, ahead=dahead, slice=slice, mode=mode)
+                self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
+                    self._generate_dataset_multiple_var(wind[datanames[0][ens_slice[0]::ens_slice[1], :]], datasize,
+                                                        testsize,
+                                                        lag=lag, ahead=dahead, slice=slice, mode=mode)
 
         elif self.config['dataset'] == 2:
-            stacked = np.vstack([wind[d][:,0] for d in datanames]).T
+            stacked = np.vstack([wind[d][:, 0] for d in datanames]).T
             return self._generate_dataset_multiple_var(stacked, datasize, testsize,
-                                                  lag=lag, ahead=dahead, slice=slice, mode=mode)
+                                                       lag=lag, ahead=dahead, slice=slice, mode=mode)
         elif self.config['dataset'] == 3:
             stacked = np.hstack([wind[d] for d in datanames])
-            return self._generate_dataset_multiple_var(stacked, datasize, testsize,
-                                                  lag=lag, ahead=dahead, slice=slice, mode=mode)
+            self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
+                self._generate_dataset_multiple_var(stacked, datasize, testsize,
+                                                    lag=lag, ahead=dahead, slice=slice, mode=mode)
         elif self.config['dataset'] == 4:
             stacked = [self._generate_dataset_multiple_var(wind[d], datasize, testsize,
-                                                  lag=lag, ahead=dahead, slice=slice) for d in datanames]
+                                                           lag=lag, ahead=dahead, slice=slice) for d in datanames]
 
-            train_x = np.vstack([x[0] for x in stacked])
-            train_y = np.vstack([x[1] for x in stacked])
+            self.train_x = np.vstack([x[0] for x in stacked])
+            self.train_y = np.vstack([x[1] for x in stacked])
 
-            val_x = stacked[0][2]
-            val_y = stacked[0][3]
-            test_x = stacked[0][4]
-            test_y = stacked[0][5]
-            return train_x, train_y, val_x, val_y, test_x, test_y
+            self.val_x = stacked[0][2]
+            self.val_y = stacked[0][3]
+            self.test_x = stacked[0][4]
+            self.test_y = stacked[0][5]
+            # return train_x, train_y, val_x, val_y, test_x, test_y
 
         raise NameError('ERROR: No such dataset type')
+
+    def summary(self):
+        """
+        Dataset Summary
+
+        :return:
+        """
+        if self.train_x is None:
+            raise NameError('Data not loaded yet')
+        else:
+            print('Tr:', self.train_x.shape, self.train_y.shape)
+            print('Val:', self.val_x.shape, self.val_y.shape)
+            print('Ts:', self.test_x.shape, self.test_y.shape)
+            print('Dtype=', self.config['dataset'])
+            print('Lag=', self.config['lag'])
+            print('Vars=', self.config['vars'])

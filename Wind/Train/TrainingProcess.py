@@ -41,6 +41,7 @@ else:
 import tensorflow as tf
 from sklearn.metrics import mean_squared_error, r2_score
 from Wind.Data import generate_dataset
+from Wind.Data.DataSet import Dataset
 from Wind.Config import wind_data_path
 from time import time, strftime
 import os
@@ -76,13 +77,16 @@ def train_dirregression(architecture, config, runconfig):
                 print('-----------------------------------------------------------------------------')
                 print('Steps Ahead = %d ' % ahead)
 
-            train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
-                                                                              data_path=wind_data_path)
+            dataset = Dataset(config=config['data'], data_path=wind_data_path)
+            dataset.generate_dataset(ahead=ahead,mode=False)
+
+            # train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
+            #                                                                   data_path=wind_data_path)
 
             ############################################
             # Model
 
-            config['idimensions'] = train_x.shape[1:]
+            config['idimensions'] = dataset.train_x.shape[1:]
 
             arch = architecture(config, runconfig)
 
@@ -94,18 +98,17 @@ def train_dirregression(architecture, config, runconfig):
 
             if runconfig.verbose:
                 arch.summary()
-                print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape,
-                      test_y.shape)
+                dataset.summary()
                 print()
 
             ############################################
             # Training
-            arch.train(train_x, train_y, val_x, val_y)
+            arch.train(dataset.train_x, dataset.train_y, dataset.val_x, dataset.val_y)
 
             ############################################
             # Results
 
-            lresults.append((ahead, arch.evaluate(val_x, val_y, test_x, test_y)))
+            lresults.append((ahead, arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)))
 
             print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -115,9 +118,92 @@ def train_dirregression(architecture, config, runconfig):
                 updateprocess(config, ahead)
 
             arch.save('-A%d-R%02d' % (ahead, iter))
-            del train_x, train_y, test_x, test_y, val_x, val_y
+            del dataset
 
     arch.log_result(lresults)
+
+    return lresults
+
+def train_sequence2sequence(architecture, config, runconfig):
+    """
+    Training process for sequence 2 sequence architectures
+
+    :param architecture:
+    :param config:
+    :param runconfig:
+    :return:
+    """
+    ahead = config['data']['ahead']
+
+    if not type(ahead) == list:
+        ahead = [1, ahead]
+
+    dataset = Dataset(config=config['data'], data_path=wind_data_path)
+    dataset.generate_dataset(ahead=ahead, mode=False)
+
+    # train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='s2s',
+    #                                                                   data_path=wind_data_path)
+
+    batch_size = config['training']['batch']
+    nepochs = config['training']['epochs']
+    optimizer = config['training']['optimizer']
+
+    if 'iter' in config['training']:
+        niter = config['training']['iter']
+    else:
+        niter = 1
+
+    if type(ahead) == list:
+        odimensions = ahead[1] - ahead[0] +1
+    else:
+        odimensions = ahead
+
+    lresults = []
+    for iter in range(niter):
+
+        config['idimensions'] = dataset.train_x.shape[1:]
+        config['odimensions'] = odimensions
+        arch = architecture(config, runconfig)
+
+        if runconfig.multi == 1:
+            arch.generate_model()
+        else:
+            with tf.device('/cpu:0'):
+                arch.generate_model()
+
+        # model = architectureS2S(idimensions=train_x.shape[1:], odimensions=odimensions, neurons=neurons,
+        #                         neuronsD=config['arch']['neuronsD'], drop=drop, nlayersE=nlayersE, nlayersD=nlayersD,
+        #                         activation=activation, activation_r=activation_r, rnntype=config['arch']['rnn'],
+        #                         impl=impl, CuDNN=config['arch']['CuDNN'], rec_reg=rec_reg, rec_regw=rec_regw,
+        #                         k_reg=k_reg, k_regw=k_regw)
+        if runconfig.verbose:
+            arch.summary()
+            dataset.summary()
+            print()
+
+        ############################################
+        # Training
+        arch.train(dataset.train_x, dataset.train_y, dataset.val_x, dataset.val_y)
+
+
+        ############################################
+        # Results
+
+        lresults.append((ahead, arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)))
+
+        print(strftime('%Y-%m-%d %H:%M:%S'))
+
+        arch.save('-A%d-R%02d' % (ahead, iter))
+
+        if not save and best:
+            try:
+                os.remove(modfile)
+            except OSError:
+                pass
+        elif best:
+            os.rename(modfile, 'modelRNNS2S-S%s-A%d-%d-R%02d.h5'%(config['data']['datanames'][0], ahead[0], ahead[1], iter))
+    arch.log_result(lresults)
+
 
     return lresults
 
@@ -141,12 +227,14 @@ def train_persistence(architecture, config, runconfig):
             print('-----------------------------------------------------------------------------')
             print('Steps Ahead = %d ' % ahead)
 
-        train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
-                                                                          data_path=wind_data_path)
+        dataset = Dataset(config=config['data'], data_path=wind_data_path)
+        dataset.generate_dataset(ahead=ahead, mode=False)
 
-        r2persV = r2_score(val_y[ahead:], val_y[0:-ahead])
+        # train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
+        #                                                                   data_path=wind_data_path)
 
-        r2persT = r2_score(test_y[ahead:, 0], test_y[0:-ahead, 0])
+        r2persV = r2_score(dataset.val_y[ahead:], dataset.val_y[0:-ahead])
+        r2persT = r2_score(dataset.test_y[ahead:, 0], dataset.test_y[0:-ahead, 0])
 
         lresults.append((ahead, r2persV, r2persT))
 
@@ -164,7 +252,7 @@ def train_persistence(architecture, config, runconfig):
         if config is not None:
             updateprocess(config, ahead)
 
-        del train_x, train_y, test_x, test_y, val_x, val_y
+        del dataset
 
     return lresults
 
@@ -188,8 +276,11 @@ def train_svm_dirregression(architecture, config, runconfig):
             print('-----------------------------------------------------------------------------')
             print('Steps Ahead = %d ' % ahead)
 
-        train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='svm',
-                                                                          data_path=wind_data_path)
+        dataset = Dataset(config=config['data'], data_path=wind_data_path)
+        dataset.generate_dataset(ahead=ahead, mode='svm')
+
+        # train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='svm',
+        #                                                                   data_path=wind_data_path)
 
         # train_x = np.squeeze(train_x, axis=2)
         # val_x = np.squeeze(val_x, axis=2)
@@ -208,31 +299,30 @@ def train_svm_dirregression(architecture, config, runconfig):
 
         if runconfig.verbose:
             arch.summary()
+            dataset.summary()
 
-            print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape,
-                  test_y.shape)
             print()
 
         ############################################
         # Training
 
-        arch.train(train_x, train_y)
+        arch.train(dataset.train_x, dataset.train_y)
         svmr = SVR(kernel=kernel, C=C, epsilon=epsilon, degree=degree, coef0=coef0)
-        svmr.fit(train_x, train_y)
+        svmr.fit(dataset.train_x, dataset.train_y)
 
         ############################################
         # Results
 
-        lresults.append((ahead, arch.evaluate(val_x, val_y, test_x, test_y)))
+        lresults.append((ahead, arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)))
 
-        val_yp = svmr.predict(val_x)
+        val_yp = svmr.predict(dataset.val_x)
 
-        r2val = r2_score(val_y, val_yp)
-        r2persV = r2_score(val_y[ahead:], val_y[0:-ahead])
+        r2val = r2_score(dataset.val_y, val_yp)
+        r2persV = r2_score(dataset.val_y[ahead:], dataset.val_y[0:-ahead])
 
-        test_yp = svmr.predict(test_x)
-        r2test = r2_score(test_y, test_yp)
-        r2persT = r2_score(test_y[ahead:], test_y[0:-ahead])
+        test_yp = svmr.predict(dataset.test_x)
+        r2test = r2_score(dataset.test_y, test_yp)
+        r2persT = r2_score(dataset.test_y[ahead:], dataset.test_y[0:-ahead])
 
         lresults.append((ahead, r2val, r2persV, r2test, r2persT))
 

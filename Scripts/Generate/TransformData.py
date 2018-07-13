@@ -26,7 +26,6 @@ import argparse
 
 __author__ = 'bejar'
 
-
 def generate_data(dfile, vars, step, mode='average'):
     """
 

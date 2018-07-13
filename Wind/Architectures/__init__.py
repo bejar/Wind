@@ -19,10 +19,12 @@ __init__.py
 
 from .RNNDirRegressionArchitecture import RNNDirRegressionArchitecture
 from .SVMDirRegressionArchitecture import SVMDirRegressionArchitecture
+from .RNNEncoderDecoderS2SArchitecture import RNNEncoderDecoderS2SArchitecture
 
 
 __author__ = 'bejar'
 
 __all__ = [
             'RNNDirRegressionArchitecture',
-            'SVMDirRegressionArchitecture']
+            'SVMDirRegressionArchitecture',
+            'RNNEncoderDecoderS2SArchitecture']

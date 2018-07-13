@@ -214,7 +214,6 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
             early = EarlyStopping(monitor='val_loss', patience=10, verbose=0)
             cbacks.append(early)
 
-
         if optimizer == 'rmsprop':
             if 'lrate' in config['training']:
                 optimizer = RMSprop(lr=config['training']['lrate'])
