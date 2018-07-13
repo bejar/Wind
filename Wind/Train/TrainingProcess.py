@@ -193,17 +193,9 @@ def train_sequence2sequence(architecture, config, runconfig):
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
-        arch.save('-A%d-R%02d' % (ahead, iter))
+        arch.save('-A%d-%d-R%02d' % (ahead[0], ahead[1], iter))
 
-        if not save and best:
-            try:
-                os.remove(modfile)
-            except OSError:
-                pass
-        elif best:
-            os.rename(modfile, 'modelRNNS2S-S%s-A%d-%d-R%02d.h5'%(config['data']['datanames'][0], ahead[0], ahead[1], iter))
     arch.log_result(lresults)
-
 
     return lresults
 
@@ -233,10 +225,13 @@ def train_persistence(architecture, config, runconfig):
         # train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
         #                                                                   data_path=wind_data_path)
 
-        r2persV = r2_score(dataset.val_y[ahead:], dataset.val_y[0:-ahead])
-        r2persT = r2_score(dataset.test_y[ahead:, 0], dataset.test_y[0:-ahead, 0])
+        arch = architecture(config, runconfig)
+        lresults.append((ahead, arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)))
 
-        lresults.append((ahead, r2persV, r2persT))
+        # r2persV = r2_score(dataset.val_y[ahead:], dataset.val_y[0:-ahead])
+        # r2persT = r2_score(dataset.test_y[ahead:, 0], dataset.test_y[0:-ahead, 0])
+        #
+        # lresults.append((ahead, r2persV, r2persT))
 
         print('%s | DNM= %s, DS= %d, AH= %d, R2PV = %3.5f, R2PT = %3.5f' %
               (config['arch']['mode'],
@@ -254,6 +249,7 @@ def train_persistence(architecture, config, runconfig):
 
         del dataset
 
+    arch.log_result(lresults)
     return lresults
 
 

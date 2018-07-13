@@ -110,4 +110,4 @@ class NNArchitecture(Architecture):
             except OSError:
                 pass
         else:
-            os.rename(self.modfile, 'model%s-S%s5s.h5'%(self.modname, self.config['data']['datanames'][0], postfix))
+            os.rename(self.modfile, 'model%s-S%s%s.h5'%(self.modname, self.config['data']['datanames'][0], postfix))

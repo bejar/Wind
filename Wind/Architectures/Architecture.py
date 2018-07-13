@@ -88,3 +88,4 @@ class Architecture:
         Saves model to a file
         :return:
         """
+        raise NameError('Error: Not implemented')
