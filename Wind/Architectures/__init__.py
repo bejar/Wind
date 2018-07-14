@@ -20,11 +20,12 @@ __init__.py
 from .RNNDirRegressionArchitecture import RNNDirRegressionArchitecture
 from .SVMDirRegressionArchitecture import SVMDirRegressionArchitecture
 from .RNNEncoderDecoderS2SArchitecture import RNNEncoderDecoderS2SArchitecture
-
+from .PersistenceArchitecture import PersistenceArchitecture
 
 __author__ = 'bejar'
 
 __all__ = [
             'RNNDirRegressionArchitecture',
             'SVMDirRegressionArchitecture',
-            'RNNEncoderDecoderS2SArchitecture']
+            'RNNEncoderDecoderS2SArchitecture',
+            'PersistenceArchitecture']

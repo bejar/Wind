@@ -228,19 +228,6 @@ def train_persistence(architecture, config, runconfig):
         arch = architecture(config, runconfig)
         lresults.append((ahead, arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)))
 
-        # r2persV = r2_score(dataset.val_y[ahead:], dataset.val_y[0:-ahead])
-        # r2persT = r2_score(dataset.test_y[ahead:, 0], dataset.test_y[0:-ahead, 0])
-        #
-        # lresults.append((ahead, r2persV, r2persT))
-
-        print('%s | DNM= %s, DS= %d, AH= %d, R2PV = %3.5f, R2PT = %3.5f' %
-              (config['arch']['mode'],
-               config['data']['datanames'][0],
-               config['data']['dataset'],
-               ahead,
-               r2persV, r2persT
-               ))
-
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
         # Update result in db
