@@ -122,7 +122,7 @@ def updateprocess(config, ahead, proxy=False):
     :param config:
     :return:
     """
-    if not proxy and _has_mongo:
+    if not proxy and _has_mongo and config['_id'] != '00000000':
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)

@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
     if config is not None:
 
-            print(config)
+            # print(config)
 
         # try:
             print('Running job %s %s %s' % (config['_id'], config['arch']['mode'], strftime('%Y-%m-%d %H:%M:%S')))

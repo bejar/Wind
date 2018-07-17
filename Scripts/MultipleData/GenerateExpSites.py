@@ -32,10 +32,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='configbatchregdir', help='Experiment configuration')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
-    parser.add_argument('--sec', type=int, help='Sites Section')
+    parser.add_argument('--isec', type=int, help='Initial section')
+    parser.add_argument('--fsec', type=int, help='Final section')
     parser.add_argument('--isite', type=int, help='Initial Site')
-    parser.add_argument('--fsite', type=int, help='Final Site')
-    parser.add_argument('--suff', type=int, help='Datafile suffix')
+    parser.add_argument('--suff', type=int, default=12, help='Datafile suffix')
     args = parser.parse_args()
 
     config = load_config_file(args.config)
@@ -43,19 +43,22 @@ if __name__ == '__main__':
 
 
     if args.test:
-        print(len(range(args.isite, args.fsite)))
+        print(500*(args.fsec-args.isec+1))
     else:
+        print(500*(args.fsec-args.isec+1))
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
 
         ids = int(time())
-        for i, site in enumerate(range(args.isite, args.fsite)):
-            config['site'] = '%d-%d' % (args.sec, site)
-            config['data']['datanames'] = ['%d-%d-%d' % (args.sec, site, args.suff)]
-            config['status'] = 'pending'
-            config['result'] = []
-            config['_id'] = "%d%04d" % (ids, i)
-            col.insert_one(config)
-            print(config)
+        for i, sec in enumerate(range(args.isec, args.fsec+1)):
+            for j, site in enumerate(range(args.isite+(i*500), args.isite+ ((i+1)*500))):
+                config['site'] = '%d-%d' % (sec, site)
+                config['data']['datanames'] = ['%d-%d-%d' % (sec, site, args.suff)]
+                config['status'] = 'pending'
+                config['result'] = []
+                config['_id'] = "%d%04d" % (ids, i*500 + j)
+                col.insert_one(config)
+                # print('%d-%d-%d' % (sec, site, args.suff))
+                #print(config)
