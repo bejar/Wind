@@ -220,6 +220,7 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False,
         if remote:
             srv = pysftp.Connection(host="polaris.cs.upc.edu", username="expdata")
             srv.get(data_path + '/%s.npy' % d, data_path + '/%s.npy' % d)
+            srv.close()
         wind[d] = np.load(data_path + '/%s.npy' % d)
         if remote:
             os.remove(data_path + '/%s.npy' % d)

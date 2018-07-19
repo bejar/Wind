@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
             # print(config)
 
-        # try:
+        try:
             print('Running job %s %s %s' % (config['_id'], config['arch']['mode'], strftime('%Y-%m-%d %H:%M:%S')))
 
             if config['arch']['mode'] == 'regdir':
@@ -97,6 +97,6 @@ if __name__ == '__main__':
             else:
                 for res in lresults:
                     print(res)
-        # except Exception:
-            # failconfig(config)
+        except Exception:
+            failconfig(config)
 
