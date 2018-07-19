@@ -113,7 +113,6 @@ def train_convdirregression_architecture(config, verbose, tboard, best, early, m
 
         train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
                                                                           data_path=wind_data_path, remote=remote)
-
         ############################################
         # Model
 
