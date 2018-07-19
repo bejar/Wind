@@ -23,6 +23,7 @@ Data
 from __future__ import print_function
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+import pysftp
 
 __author__ = 'bejar'
 
@@ -175,7 +176,7 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, sli
     return train_x, train_y, val_x, val_y, test_x, test_y
 
 
-def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False, ens_slice=None):
+def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False, ens_slice=None, remote=False):
     """
     Generates the dataset for training, test and validation
 
@@ -186,6 +187,7 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False,
       4 = All sites - all variables stacked
 
 
+    :param remote:
     :param datanames: Name of the wind datafiles
     :param vars: List with the indices of the variables to use
     :param ahead: number of steps ahead for prediction
@@ -214,6 +216,8 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False,
 
     # Reads numpy arrays for all sites and keep only selected columns
     for d in datanames:
+        if remote:
+            srv = pysftp.Connection(host="polaris.cs.upc.edu", username="expdata")
         wind[d] = np.load(data_path + '/%s.npy' % d)
         if vars is not None:
             wind[d] = wind[d][:,vars]
@@ -267,7 +271,8 @@ if __name__ == '__main__':
     mode = 's2s'
     iahead = 7
     fahead = 12
-    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=[iahead,fahead], mode=mode, data_path='../../Data')
+    train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=[iahead, fahead], mode=mode,
+                                                                      data_path='../../Data')
 
     print(train_x.shape)
     # print(train_x[0:5,:])
