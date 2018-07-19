@@ -28,7 +28,7 @@ from sklearn.svm import SVR
 
 __author__ = 'bejar'
 
-def train_svm_dirregression_architecture(config, verbose):
+def train_svm_dirregression_architecture(config, verbose, remote=False):
     """
     Training process for architecture with direct regression of ahead time steps
 
@@ -48,7 +48,7 @@ def train_svm_dirregression_architecture(config, verbose):
             print('Steps Ahead = %d ' % ahead)
 
         train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='svm',
-                                                                          data_path=wind_data_path)
+                                                                          data_path=wind_data_path, remote=remote)
 
         # train_x = np.squeeze(train_x, axis=2)
         # val_x = np.squeeze(val_x, axis=2)

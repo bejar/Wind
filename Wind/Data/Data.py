@@ -24,6 +24,7 @@ from __future__ import print_function
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 import pysftp
+import os
 
 __author__ = 'bejar'
 
@@ -218,7 +219,11 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False,
     for d in datanames:
         if remote:
             srv = pysftp.Connection(host="polaris.cs.upc.edu", username="expdata")
+            srv.get(data_path + '/%s.npy' % d, data_path + '/%s.npy' % d)
         wind[d] = np.load(data_path + '/%s.npy' % d)
+        if remote:
+            os.remove(data_path + '/%s.npy' % d)
+
         if vars is not None:
             wind[d] = wind[d][:,vars]
 

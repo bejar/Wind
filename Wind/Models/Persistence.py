@@ -29,7 +29,7 @@ import os
 __author__ = 'bejar'
 
 
-def train_persistence(config, verbose):
+def train_persistence(config, verbose, remote):
     """
     Training process for architecture with direct regression of ahead time steps
 
@@ -49,7 +49,7 @@ def train_persistence(config, verbose):
             print('Steps Ahead = %d ' % ahead)
 
         train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
-                                                                          data_path=wind_data_path)
+                                                                          data_path=wind_data_path,remote=remote)
 
         r2persV = r2_score(val_y[ahead:], val_y[0:-ahead])
 

@@ -60,7 +60,7 @@ def architectureMLPs2s(idimensions, odimension, activation='linear', rec_reg='l1
     return model
 
 
-def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1, save=False):
+def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1, save=False, remote=False):
     """
      Training process for MLP architecture with regression of ahead time steps
 
@@ -72,7 +72,7 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
     ahead = config['data']['ahead']
 
     train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='mlp',
-                                                                      data_path=wind_data_path)
+                                                                      data_path=wind_data_path, remote=remote)
 
     ############################################
     # Model

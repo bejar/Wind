@@ -144,7 +144,7 @@ def architectureDirRegression(idimensions, neurons, drop, nlayers, activation, a
     return model
 
 
-def train_dirregression_architecture(config, impl, verbose, tboard, best, early, multi=1, proxy=False, save=False):
+def train_dirregression_architecture(config, impl, verbose, tboard, best, early, multi=1, proxy=False, save=False, remote=False):
     """
     Training process for architecture with direct regression of ahead time steps
 
@@ -172,7 +172,7 @@ def train_dirregression_architecture(config, impl, verbose, tboard, best, early,
                 print('Steps Ahead = %d ' % ahead)
 
             train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
-                                                                              data_path=wind_data_path)
+                                                                              data_path=wind_data_path, remote=remote)
 
             ############################################
             # Model

@@ -121,7 +121,7 @@ def architectureS2SAtt(idimensions, odimensions, neurons, neuronsD, drop, nlayer
     return model
 
 
-def train_seq2seqatt_architecture(config, impl, verbose, tboard, best, early, multi=1, save=False):
+def train_seq2seqatt_architecture(config, impl, verbose, tboard, best, early, multi=1, save=False, remote=False):
     """
     Training process for RNN architecture with sequence to sequence regression of ahead time steps
 
@@ -133,7 +133,7 @@ def train_seq2seqatt_architecture(config, impl, verbose, tboard, best, early, mu
         ahead = [1, ahead]
 
     train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='s2s',
-                                                                      data_path=wind_data_path)
+                                                                      data_path=wind_data_path, remote=remote)
 
     ############################################
     # Model

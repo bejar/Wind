@@ -61,7 +61,7 @@ def architectureMLP_dirreg(idimensions, activation='linear', rec_reg='l1', rec_r
 
     return model
 
-def train_MLP_dirreg_architecture(config, verbose, tboard, best, early, multi=1):
+def train_MLP_dirreg_architecture(config, verbose, tboard, best, early, multi=1, remote=False):
     """
     Training process for architecture with direct regression of ahead time steps
 
@@ -81,7 +81,7 @@ def train_MLP_dirreg_architecture(config, verbose, tboard, best, early, multi=1)
             print('Steps Ahead = %d ' % ahead)
 
         train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode=False,
-                                                                          data_path=wind_data_path)
+                                                                          data_path=wind_data_path, remote=remote)
 
         ############################################
         # Model

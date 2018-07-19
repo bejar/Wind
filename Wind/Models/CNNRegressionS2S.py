@@ -91,7 +91,7 @@ def architectureConvos2s(idimensions, odimension, filters, kernel_size, strides,
 
 
 
-def train_convo_regs2s_architecture(config, verbose, tboard, best, early, multi=1):
+def train_convo_regs2s_architecture(config, verbose, tboard, best, early, multi=1, remote=False):
     """
      Training process for MLP architecture with regression of ahead time steps
 
@@ -103,7 +103,7 @@ def train_convo_regs2s_architecture(config, verbose, tboard, best, early, multi=
     ahead = config['data']['ahead']
 
     train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=ahead, mode='s2s',
-                                                                      data_path=wind_data_path)
+                                                                      data_path=wind_data_path, remote=remote)
 
 
     train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
