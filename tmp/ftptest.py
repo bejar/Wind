@@ -25,5 +25,5 @@ import pysftp
 from Wind.Config import wind_data_path
 
 if __name__ == '__main__':
-    srv = pysftp.Connection(host="polaris.cs.upc.edu", username='bejar', private_key='~/.ssh/authorized_keys')
+    srv = pysftp.Connection(host="polaris.cs.upc.edu", username='expdata')
     srv.get(wind_data_path + '0-0-12.py', wind_data_path)
