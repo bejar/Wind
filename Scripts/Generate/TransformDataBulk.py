@@ -61,7 +61,7 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
     if step == 1: # The original data
         ldata = []
         for v in vars:
-            data = np.array(nc_fid.variables[v])
+            data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
             ldata.append(data)
         ldata.append(hour)
         ldata.append(month)
@@ -72,7 +72,7 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
     elif mode == 'average': # Average step points
         ldata = []
         for v in vars:
-            data = np.array(nc_fid.variables[v])
+            data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
             end = data.shape[0]
             length = int(end / step)
             # tmp = data.reshape((length, step)).sum(axis=1)/float(step)
@@ -95,7 +95,7 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
         for i in range(step):
             ldata = []
             for v in vars:
-                data = np.array(nc_fid.variables[v])
+                data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
                 ldata.append(data[i::step])
             ldata.append(hour)
             ldata.append(month)

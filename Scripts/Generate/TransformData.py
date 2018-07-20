@@ -49,18 +49,18 @@ def generate_data(dfile, vars, step, mode='average'):
     if step == 1: # The original data
         ldata = []
         for v in vars:
-            data = nc_fid.variables[v]
+            data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
             ldata.append(data)
         ldata.append(hour)
         ldata.append(month)
 
         data_stack = np.stack(ldata, axis=1)
         print(data_stack.shape)
-        np.save(wind_data_path + '/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
+        np.save(wind_NREL_data_path + '/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
     elif mode == 'average': # Average step points
         ldata = []
         for v in vars:
-            data = nc_fid.variables[v]
+            data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
             end = data.shape[0]
             length = int(end / step)
             data_aver = np.zeros(length)
@@ -83,7 +83,7 @@ def generate_data(dfile, vars, step, mode='average'):
         for i in range(step):
             ldata = []
             for v in vars:
-                data = nc_fid.variables[v]
+                data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
                 ldata.append(data[i::step])
             ldata.append(hour)
             ldata.append(month)
@@ -117,7 +117,7 @@ if __name__ == '__main__':
     #           '11/5793', '11/5794', '11/5795', '11/5796',
     #           '11/5752', '11/5753', '11/5754', '11/5755']
     vars = ['wind_speed', 'density', 'pressure', 'wind_direction']
-    wfiles = [str(args.sec)+'/' + str(i) for i in range(args.isite, args.fsite) ]
+    wfiles = [str(args.sec)+'/' + str(i) for i in range(args.isite, args.fsite)]
 
     for wf in wfiles:
         print("Processing %s" % wf)
