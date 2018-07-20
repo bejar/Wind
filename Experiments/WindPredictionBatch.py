@@ -97,6 +97,7 @@ if __name__ == '__main__':
             else:
                 for res in lresults:
                     print(res)
-        except Exception:
+        except Exception as e:
+            print(e)
             failconfig(config)
 
