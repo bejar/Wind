@@ -100,4 +100,3 @@ if __name__ == '__main__':
         except Exception as e:
             print(e)
             failconfig(config)
-
