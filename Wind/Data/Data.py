@@ -25,6 +25,7 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 import pysftp
 import os
+from Wind.Config.Paths import remote_data
 
 __author__ = 'bejar'
 
@@ -218,7 +219,7 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False,
     # Reads numpy arrays for all sites and keep only selected columns
     for d in datanames:
         if remote is not None:
-            srv = pysftp.Connection(host="polaris.cs.upc.edu", username="expdata")
+            srv = pysftp.Connection(host=remote_data[0], username=remote_data[1])
             srv.get(remote + '/%s.npy' % d, data_path + '/%s.npy' % d)
             srv.close()
         wind[d] = np.load(data_path + '/%s.npy' % d)
