@@ -177,7 +177,7 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, sli
     return train_x, train_y, val_x, val_y, test_x, test_y
 
 
-def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False, ens_slice=None, remote=False):
+def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False, ens_slice=None, remote=None):
     """
     Generates the dataset for training, test and validation
 
@@ -217,9 +217,9 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False,
 
     # Reads numpy arrays for all sites and keep only selected columns
     for d in datanames:
-        if remote:
+        if remote is not None:
             srv = pysftp.Connection(host="polaris.cs.upc.edu", username="expdata")
-            srv.get(data_path + '/%s.npy' % d, data_path + '/%s.npy' % d)
+            srv.get(remote + '/%s.npy' % d, data_path + '/%s.npy' % d)
             srv.close()
         wind[d] = np.load(data_path + '/%s.npy' % d)
         if remote:

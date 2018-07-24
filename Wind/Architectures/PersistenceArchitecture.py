@@ -52,9 +52,10 @@ class PersistenceArchitecture(Architecture):
         Evaluates the training
         :return:
         """
-        r2persV = r2_score(val_y[1:], val_y[0:-1])
-        r2persT = r2_score(test_y[:, 0], test_y[0:-1, 0])
+        r2val = r2_score(val_y[1:], val_y[0:-1])
+        r2test = r2_score(test_y[:, 0], test_y[0:-1, 0])
 
+        return r2val, r2test
 
     def log_result(self, result):
         """

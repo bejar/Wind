@@ -18,10 +18,11 @@ MapSites
 """
 
 from netCDF4 import Dataset
-from Wind.Config import wind_data_path, wind_data_ext, wind_path
+from Wind.Config.Paths import wind_data_path, wind_data_ext, wind_path, wind_NREL_data_path
 from Wind.Maps.Util import MapThis
 import os
 import time
+import numpy as np
 
 
 def explore_files(dir, ds):
@@ -31,20 +32,22 @@ def explore_files(dir, ds):
 
 def map_all(path):
     lds = [v for v in sorted(os.listdir(path)) if v[0] in '0123456789']
-    print(lds)
+    coords = np.zeros((126692, 2))
     for ds in lds:
         print(ds)
-        lcoords = []
-        lfnames = []
+        # lcoords = []
+        # lfnames = []
         for f in explore_files(path, ds):
-            print(f)
             data = Dataset(f, 'r')
-            lcoords.append([data.latitude, data.longitude])
-            lfnames.append(f)
+            pos = int(f.split('/')[-1].split('.')[0])
+            coords[pos][0]= data.latitude
+            coords[pos][1]= data.longitude
 
-        MapThis(lcoords, ds, lfnames)
+            print(pos, [data.latitude, data.longitude])
+        # MapThis(lcoords, ds, lfnames)
+    np.save(wind_data_path+'/coords.npy',coords)
 
 __author__ = 'bejar'
 
 if __name__ == '__main__':
-    map_all(wind_path+'/files')
+    map_all(wind_NREL_data_path)

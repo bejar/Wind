@@ -145,7 +145,7 @@ class Dataset:
         # print('Train Dim =', wind_train.shape)
 
         # Train
-        train = self.lagged_matrix(wind_train, lag=lag, ahead=ahead, mode=mode)
+        train = lagged_matrix(wind_train, lag=lag, ahead=ahead, mode=mode)
         if mode == 's2s':
             train_x, train_y = train[:, :lag], train[:, -slice:, 0]
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
@@ -211,7 +211,7 @@ class Dataset:
         vars = self.config['vars']
         wind = {}
 
-        if (mode == 's2s' or mode == 'mlp') and type(ahead) == list:
+        if (mode == 's2s' or mode == 'mlp') or type(ahead) == list:
             dahead = ahead[1]
             slice = (ahead[1] - ahead[0]) + 1
         else:
@@ -224,7 +224,8 @@ class Dataset:
             if vars is not None:
                 wind[d] = wind[d][:, vars]
 
-        if self.config['dataset'] == 0:
+
+        if (self.config['dataset'] == 0) or (self.config['dataset'] == 'onesiteonevar'):
             if not ensemble:
                 self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
                     self._generate_dataset_one_var(wind[datanames[0]][:, 0].reshape(-1, 1), datasize, testsize,
@@ -235,7 +236,7 @@ class Dataset:
                                                    datasize, testsize,
                                                    lag=lag, ahead=dahead, slice=slice, mode=mode)
 
-        elif self.config['dataset'] == 1:
+        elif (self.config['dataset'] == 1) or (self.config['dataset'] == 'onesitemanyvar'):
             if not ensemble:
                 self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
                     self._generate_dataset_multiple_var(wind[datanames[0]], datasize, testsize,
@@ -246,16 +247,17 @@ class Dataset:
                                                         testsize,
                                                         lag=lag, ahead=dahead, slice=slice, mode=mode)
 
-        elif self.config['dataset'] == 2:
+        elif self.config['dataset'] == 2 or self.config['dataset'] == 'manysiteonevar':
             stacked = np.vstack([wind[d][:, 0] for d in datanames]).T
-            return self._generate_dataset_multiple_var(stacked, datasize, testsize,
+            self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
+                self._generate_dataset_multiple_var(stacked, datasize, testsize,
                                                        lag=lag, ahead=dahead, slice=slice, mode=mode)
-        elif self.config['dataset'] == 3:
+        elif self.config['dataset'] == 3 or self.config['dataset'] == 'manysitemanyvar':
             stacked = np.hstack([wind[d] for d in datanames])
             self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
                 self._generate_dataset_multiple_var(stacked, datasize, testsize,
                                                     lag=lag, ahead=dahead, slice=slice, mode=mode)
-        elif self.config['dataset'] == 4:
+        elif self.config['dataset'] == 4 or self.config['dataset'] == 'manysitemanyvarstack':
             stacked = [self._generate_dataset_multiple_var(wind[d], datasize, testsize,
                                                            lag=lag, ahead=dahead, slice=slice) for d in datanames]
 
@@ -267,8 +269,8 @@ class Dataset:
             self.test_x = stacked[0][4]
             self.test_y = stacked[0][5]
             # return train_x, train_y, val_x, val_y, test_x, test_y
-
-        raise NameError('ERROR: No such dataset type')
+        else:
+            raise NameError('ERROR: No such dataset type')
 
     def summary(self):
         """
@@ -285,3 +287,102 @@ class Dataset:
             print('Dtype=', self.config['dataset'])
             print('Lag=', self.config['lag'])
             print('Vars=', self.config['vars'])
+            print('Ahead=', self.config['ahead'])
+
+
+if __name__ == '__main__':
+    from Wind.Util import load_config_file
+    from Wind.Config import wind_data_path
+    import matplotlib.pyplot as plt
+    config = load_config_file('./config2.json')
+    data_path='../../Data'
+    # print(config)
+    mode = False
+    iahead = 1
+    fahead = 12
+
+    dataset = Dataset(config=config['data'], data_path=wind_data_path)
+
+    dataset.generate_dataset(ahead=[iahead, fahead], mode=mode)
+    dataset.summary()
+
+    train_x = dataset.train_x
+    train_y = dataset.train_y
+    val_x = dataset.val_x
+    val_y = dataset.val_y
+    test_x = dataset.test_x
+    test_y = dataset.test_y
+
+    # train_x, train_y, val_x, val_y, test_x, test_y = generate_dataset(config['data'], ahead=[iahead, fahead], mode=mode,
+    #                                                                   data_path='../../Data')
+
+    # print(train_x.shape)
+    # # print(train_x[0:5,:])
+    #
+    # print(train_y.shape)
+    # # print(train_y[0:5,:])
+    #
+    # print(test_x.shape)
+    # print(test_y.shape)
+    # print(val_x.shape)
+    # print(val_y.shape)
+    # datasize = config['data']['datasize']
+    # testsize = config['data']['testsize'] /2
+    # lag = config['data']['lag']
+    #
+    # d = config['data']['datanames'][0]
+    #
+    # wind = np.load(data_path + '/%s.npy' % d)
+    # scaler = StandardScaler()
+    # wind = scaler.fit_transform(wind)
+    #
+    # fig = plt.figure()
+    #
+    # for i in range(0,10):
+    #     if mode == 's2s':
+    #         axes = fig.add_subplot(1, 1, 1)
+    #         plt.title('Time=%d' % i)
+    #         plt.plot(wind[i:i+lag+fahead,0], 'k--')
+    #         plt.plot(range(train_x.shape[1]), train_x[i,:,0], 'r')
+    #         plt.plot(range(train_x.shape[1]+iahead-1,train_x.shape[1]+train_y.shape[1]+iahead-1), train_y[i,:,0], 'g')
+    #         plt.show()
+    #         plt.title('Time=%d' % i)
+    #         plt.plot(range(val_x.shape[1]), val_x[i,:,0], 'r')
+    #         plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]), val_y[i,:,0], 'g')
+    #         plt.show()
+    #         plt.title('Time=%d' % i)
+    #         plt.plot(range(test_x.shape[1]), test_x[i,:,0], 'r')
+    #         plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]), test_y[i,:,0], 'g')
+    #         plt.show()
+    #     elif mode == 'mlp':
+    #         axes = fig.add_subplot(1, 1, 1)
+    #         plt.title('Time=%d' % i)
+    #         plt.plot(wind[i:i+24,0], 'k--')
+    #         plt.plot(range(train_x.shape[1]), train_x[i,:], 'r')
+    #         plt.plot(range(train_x.shape[1],train_x.shape[1]+train_y.shape[1]), train_y[i,:], 'g')
+    #         plt.show()
+    #         plt.title('Time=%d' % i)
+    #         plt.plot(range(val_x.shape[1]), val_x[i,:], 'r')
+    #         plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]), val_y[i,:], 'g')
+    #         plt.show()
+    #         plt.title('Time=%d' % i)
+    #         plt.plot(range(test_x.shape[1]), test_x[i,:], 'r')
+    #         plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]), test_y[i,:], 'g')
+    #         plt.show()
+    #     elif not mode:
+    #         axes = fig.add_subplot(1, 1, 1)
+    #         plt.title('Time=%d' % i)
+    #         plt.plot(wind[i:i+24,0], 'k--')
+    #         plt.plot(range(train_x.shape[1]), train_x[i,:,0], 'r')
+    #         plt.plot(range(train_x.shape[1],train_x.shape[1]+train_y.shape[1]+1), [train_y[i,:], train_y[i,:]], 'g')
+    #         plt.show()
+    #         plt.title('Time=%d' % i)
+    #         plt.plot(wind[datasize+i:datasize+i+24,0], 'k--')
+    #         plt.plot(range(val_x.shape[1]), val_x[i,:,0], 'r')
+    #         plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]+1), [val_y[i,:],val_y[i,:]], 'g')
+    #         plt.show()
+    #         plt.title('Time=%d' % i)
+    #         plt.plot(wind[(datasize+testsize+i)-6:(datasize+testsize+i)+18,0], 'k--')
+    #         plt.plot(range(test_x.shape[1]), test_x[i,:], 'r')
+    #         plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]+1), [test_y[i,:],test_y[i,:] ], 'g')
+    #         plt.show()
