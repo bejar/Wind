@@ -100,4 +100,4 @@ if __name__ == '__main__':
                     print(res)
         except Exception as e:
             print(e)
-            failconfig(config)
+            failconfig(config, proxy=args.proxy)

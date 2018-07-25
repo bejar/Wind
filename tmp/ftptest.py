@@ -27,4 +27,4 @@ from Wind.Config import wind_data_path
 if __name__ == '__main__':
     srv = pysftp.Connection(host="polaris.cs.upc.edu", username='expdata')
     print(wind_data_path + '0-0-12.py')
-    srv.get(wind_data_path + '0-0-12.npy', wind_data_path + '0-0-12.npy')
+    srv.get(wind_data_path + '39-19971-12.npy', wind_data_path + '39-19971-12.npy')
