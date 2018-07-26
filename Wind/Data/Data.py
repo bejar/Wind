@@ -27,6 +27,12 @@ import pysftp
 import os
 from Wind.Config.Paths import remote_data
 
+
+try:
+   import pysftp
+except Exception:
+    pass
+
 __author__ = 'bejar'
 
 
