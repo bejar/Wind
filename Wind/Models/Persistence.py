@@ -68,8 +68,8 @@ def train_persistence(config, verbose, remote):
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
         # Update result in db
-        if config is not None:
-            updateprocess(config, ahead)
+        # if config is not None:
+        #     updateprocess(config, ahead)
 
 
         del train_x, train_y, test_x, test_y, val_x, val_y

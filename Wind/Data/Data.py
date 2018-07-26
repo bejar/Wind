@@ -23,7 +23,6 @@ Data
 from __future__ import print_function
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-import pysftp
 import os
 from Wind.Config.Paths import remote_data
 
