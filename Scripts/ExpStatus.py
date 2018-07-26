@@ -35,7 +35,7 @@ if __name__ == '__main__':
     print("Working = %d" % len(jobs))
 
     for i, j in enumerate(jobs):
-        if 'btime' in j:
+        if 'btime' in j and 'host' in j:
             print('JOB %d = %s %s'%(i, j['btime'], j['host']))
         else:
             print('JOB %d = ???' % i)

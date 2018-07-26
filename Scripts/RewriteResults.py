@@ -35,11 +35,13 @@ if __name__ == '__main__':
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    configs = col.find({'experiment':'Persistence','status':'working' })
+#    configs = col.find({'experiment':'mlpregs2s','status':'working' })
+    configs = col.find({'experiment':'mlpregs2s','site':{'$regex':'42-21354'},'status':'pending' })
 
     count = 0
     for conf in configs:
-        col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
+        print(conf['site'])
+        col.update({'_id': conf['_id']}, {'$set': {'status': 'working'}})
         count += 1
 
     print(count)
