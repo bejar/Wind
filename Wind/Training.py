@@ -34,7 +34,7 @@ else:
 __author__ = 'bejar'
 
 
-def getconfig(proxy=False, mode=None):
+def getconfig(proxy=False, mode=None, secpat=None):
     """
     Gets a config from the database
     :return:
@@ -45,6 +45,10 @@ def getconfig(proxy=False, mode=None):
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
         query = {'status': 'pending'}
+        if secpat is not None:
+            query['site'] = {'$regex':'%s-.'% secpat}
+            print(query)
+
         # config = col.find_one(query)
 
         lconfig = [c for c in col.find(query, limit=10)]
@@ -132,4 +136,4 @@ def updateprocess(config, ahead, proxy=False):
 
 
 if __name__ == '__main__':
-    print(getconfig(mode='seq2seq'))
+    print(getconfig(rsec='20.'))

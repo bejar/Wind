@@ -21,13 +21,13 @@ from time import strftime
 
 from Wind.Util import load_config_file
 from Wind.Training import getconfig, saveconfig, failconfig
-from Wind.Models import train_dirregression_architecture, train_seq2seq_architecture, train_MLP_regs2s_architecture,\
+from Wind.Models import train_dirregression_architecture, train_seq2seq_architecture, train_MLP_regs2s_architecture, \
     train_ensemble_architecture, train_convdirregression_architecture, train_MLP_dirreg_architecture, \
-    train_svm_dirregression_architecture, train_convo_regs2s_architecture, train_persistence, train_seq2seqatt_architecture
+    train_svm_dirregression_architecture, train_convo_regs2s_architecture, train_persistence, \
+    train_seq2seqatt_architecture
 from Wind.Config.Paths import remote_wind_data_path
 import os
 import argparse
-
 
 __author__ = 'bejar'
 
@@ -47,6 +47,7 @@ if __name__ == '__main__':
     parser.add_argument('--mino', action='store_true', default=False, help='Running in minotauro')
     parser.add_argument('--save', action='store_true', default=False, help='Save Model')
     parser.add_argument('--remote', action='store_true', default=False, help='Use remote data')
+    parser.add_argument('--secpat', default=None, required=False, type=str, help='Sectiom regexp for retrieving configs')
     args = parser.parse_args()
 
     if not args.gpulog:
@@ -56,7 +57,7 @@ if __name__ == '__main__':
     impl = 2 if args.gpu else 1
 
     if args.config is None:
-        config = getconfig(proxy=args.proxy, mode=args.exp)
+        config = getconfig(proxy=args.proxy, mode=args.exp, secpat=args.secpat)
     elif args.mino:
         config = load_config_file(args.config, id=False)
     else:
@@ -64,30 +65,46 @@ if __name__ == '__main__':
 
     if config is not None:
 
-            # print(config)
+        # print(config)
 
         try:
             print('Running job %s %s %s' % (config['_id'], config['arch']['mode'], strftime('%Y-%m-%d %H:%M:%S')))
 
             if config['arch']['mode'] == 'regdir':
                 lresults = train_dirregression_architecture(config, impl, verbose, args.tboard, args.best, args.early,
-                                multi=args.multi, proxy=args.proxy, save=args.save, remote=remote_wind_data_path if args.remote else None)
+                                                            multi=args.multi, proxy=args.proxy, save=args.save,
+                                                            remote=remote_wind_data_path if args.remote else None)
             elif config['arch']['mode'] == 'seq2seq':
-                lresults = train_seq2seq_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save, remote=remote_wind_data_path if args.remote else None)
+                lresults = train_seq2seq_architecture(config, impl, verbose, args.tboard, args.best, args.early,
+                                                      multi=args.multi, save=args.save,
+                                                      remote=remote_wind_data_path if args.remote else None)
             elif config['arch']['mode'] == 'seq2seqa':
-                lresults = train_seq2seqatt_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save, remote=remote_wind_data_path if args.remote else None)
+                lresults = train_seq2seqatt_architecture(config, impl, verbose, args.tboard, args.best, args.early,
+                                                         multi=args.multi, save=args.save,
+                                                         remote=remote_wind_data_path if args.remote else None)
             elif config['arch']['mode'] == 'mlps2s':
-                lresults = train_MLP_regs2s_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save, remote=remote_wind_data_path if args.remote else None)
+                lresults = train_MLP_regs2s_architecture(config, verbose, args.tboard, args.best, args.early,
+                                                         multi=args.multi, save=args.save,
+                                                         remote=remote_wind_data_path if args.remote else None)
             elif config['arch']['mode'] == 'mlpdir':
-                lresults = train_MLP_dirreg_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save, remote=remote_wind_data_path if args.remote else None)
+                lresults = train_MLP_dirreg_architecture(config, verbose, args.tboard, args.best, args.early,
+                                                         multi=args.multi, save=args.save,
+                                                         remote=remote_wind_data_path if args.remote else None)
             elif config['arch']['mode'] == 'convo':
-                lresults = train_convdirregression_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save, remote=remote_wind_data_path if args.remote else None)
+                lresults = train_convdirregression_architecture(config, verbose, args.tboard, args.best, args.early,
+                                                                multi=args.multi, save=args.save,
+                                                                remote=remote_wind_data_path if args.remote else None)
             elif config['arch']['mode'] == 'convos2s':
-                lresults = train_convo_regs2s_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save, remote=remote_wind_data_path if args.remote else None)
+                lresults = train_convo_regs2s_architecture(config, verbose, args.tboard, args.best, args.early,
+                                                           multi=args.multi, save=args.save,
+                                                           remote=remote_wind_data_path if args.remote else None)
             elif 'ens' in config['arch']['mode']:
-                lresults = train_ensemble_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, remote=remote_wind_data_path if args.remote else None)
+                lresults = train_ensemble_architecture(config, verbose, args.tboard, args.best, args.early,
+                                                       multi=args.multi,
+                                                       remote=remote_wind_data_path if args.remote else None)
             elif config['arch']['mode'] == 'svmdir':
-                lresults = train_svm_dirregression_architecture(config, verbose, remote=remote_wind_data_path if args.remote else None)
+                lresults = train_svm_dirregression_architecture(config, verbose,
+                                                                remote=remote_wind_data_path if args.remote else None)
             elif config['arch']['mode'] == 'persistence':
                 lresults = train_persistence(config, verbose, remote=remote_wind_data_path if args.remote else None)
 

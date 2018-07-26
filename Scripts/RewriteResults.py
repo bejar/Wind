@@ -36,12 +36,12 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
 #    configs = col.find({'experiment':'mlpregs2s','status':'working' })
-    configs = col.find({'experiment':'mlpregs2s','site':{'$regex':'42-21354'},'status':'pending' })
+    configs = col.find({'experiment':'mlpregs2s','site':{'$regex':'62-31009'},'status':'working' })
 
     count = 0
     for conf in configs:
         print(conf['site'])
-        col.update({'_id': conf['_id']}, {'$set': {'status': 'working'}})
+        col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
         count += 1
 
     print(count)

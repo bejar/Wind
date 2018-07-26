@@ -53,12 +53,12 @@ if __name__ == '__main__':
 
         ids = int(time())
         for i, sec in enumerate(range(args.isec, args.fsec+1)):
-            for j, site in enumerate(range(args.isite+(i*500), args.isite+ ((i+1)*500))):
+            for site in enumerate(range(args.isite+(i*500), args.isite+ ((i+1)*500))):
                 config['site'] = '%d-%d' % (sec, site)
                 config['data']['datanames'] = ['%d-%d-%d' % (sec, site, args.suff)]
                 config['status'] = 'pending'
                 config['result'] = []
-                config['_id'] = "%d%04d" % (ids, i*500 + j)
+                config['_id'] = "%d%06d" % (ids, site)
                 col.insert_one(config)
                 # print('%d-%d-%d' % (sec, site, args.suff))
                 #print(config)
