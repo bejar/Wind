@@ -54,7 +54,7 @@ if __name__ == '__main__':
         os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
     verbose = 1 if args.verbose else 0
-    impl = 2 if args.gpu else 1
+    impl = 1 if args.gpu else 2
 
     if args.config is None:
         config = getconfig(proxy=args.proxy, mode=args.exp, secpat=args.secpat)
