@@ -1,5 +1,5 @@
 { "_id": "00000000",
-    "experiment": "EWRNNS2S",
+    "experiment": "rnnseq2seq",
   "data": {
     "vars": [0,1,2,3,4,5],
     "datasize": 40912,
@@ -9,8 +9,8 @@
     "ahead": 12
   },
   "arch": {
-    "neurons":64,
-    "neuronsD":256,
+    "neurons":96,
+    "neuronsD":64,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",

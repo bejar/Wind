@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
         ids = int(time())
         for i, sec in enumerate(range(args.isec, args.fsec+1)):
-            for site in enumerate(range(args.isite+(i*500), args.isite+ ((i+1)*500))):
+            for site in range(args.isite+(i*500), args.isite+ ((i+1)*500)):
                 config['site'] = '%d-%d' % (sec, site)
                 config['data']['datanames'] = ['%d-%d-%d' % (sec, site, args.suff)]
                 config['status'] = 'pending'

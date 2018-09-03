@@ -36,7 +36,7 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
 #    configs = col.find({'experiment':'mlpregs2s','status':'working' })
-    configs = col.find({'experiment':'mlpregs2s','site':{'$regex':'62-31009'},'status':'working' })
+    configs = col.find({'experiment':'rnnseq2seq', 'status':'pending', 'site': {'$regex':'3.-.'}})
 
     count = 0
     for conf in configs:
