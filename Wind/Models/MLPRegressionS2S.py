@@ -120,8 +120,10 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
 
         if verbose:
             model.summary()
-            print('lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation)
-            print('Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
+            print(
+            'lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation)
+            print(
+            'Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
             print()
 
         ############################################
@@ -155,10 +157,10 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
 
         if multi == 1:
             model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-                  verbose=verbose, callbacks=cbacks)
+                      verbose=verbose, callbacks=cbacks)
         else:
             pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-                  verbose=verbose, callbacks=cbacks)
+                       verbose=verbose, callbacks=cbacks)
         ############################################
         # Results
         if best:
@@ -166,8 +168,6 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
 
         val_yp = model.predict(val_x, batch_size=batch_size, verbose=0)
         test_yp = model.predict(test_x, batch_size=batch_size, verbose=0)
-
-
 
         for i in range(1, ahead + 1):
             lresults.append((i,
@@ -177,8 +177,6 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
                              # r2_score(test_y[i:, 0], test_y[0:-i, 0])
                              ))
 
-
-
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
         if not save and best:
@@ -187,7 +185,7 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
             except OSError:
                 pass
         elif best:
-            os.rename(modfile, 'modelMLPRegS2S-S%s-A%d-R%02d.h5'%(config['data']['datanames'][0], ahead, iter))
+            os.rename(modfile, 'modelMLPRegS2S-S%s-A%d-R%02d.h5' % (config['data']['datanames'][0], ahead, iter))
 
     for i, r2val, r2test in lresults:
         print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, FL= %s, DR= %3.2f, AF= %s, '

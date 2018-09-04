@@ -18,7 +18,7 @@ NNArchitecture
 
 from Wind.Architectures.Architecture import Architecture
 from keras.models import Sequential, load_model
-from keras.layers import LSTM, GRU,  Bidirectional, Dense
+from keras.layers import LSTM, GRU, Bidirectional, Dense
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -42,11 +42,10 @@ from sklearn.metrics import r2_score
 from time import time
 import os
 
-
 __author__ = 'bejar'
 
-class NNArchitecture(Architecture):
 
+class NNArchitecture(Architecture):
     modfile = None
     modname = ''
 
@@ -84,10 +83,10 @@ class NNArchitecture(Architecture):
 
         if self.runconfig.multi == 1:
             self.model.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-                  verbose=self.runconfig.verbose, callbacks=cbacks)
+                           verbose=self.runconfig.verbose, callbacks=cbacks)
         else:
             pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
-                  verbose=self.runconfig.verbose, callbacks=cbacks)
+                       verbose=self.runconfig.verbose, callbacks=cbacks)
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         batch_size = self.config['training']['batch']
@@ -110,4 +109,4 @@ class NNArchitecture(Architecture):
             except OSError:
                 pass
         else:
-            os.rename(self.modfile, 'model%s-S%s%s.h5'%(self.modname, self.config['data']['datanames'][0], postfix))
+            os.rename(self.modfile, 'model%s-S%s%s.h5' % (self.modname, self.config['data']['datanames'][0], postfix))

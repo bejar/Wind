@@ -19,6 +19,7 @@ Architecture
 
 __author__ = 'bejar'
 
+
 class Architecture:
     config = None
     runconfig = None
@@ -58,7 +59,6 @@ class Architecture:
         """
         raise NameError('ERROR: Not implemented')
 
-
     def summary(self):
         """
         Model summary
@@ -72,7 +72,6 @@ class Architecture:
         :return:
         """
         raise NameError('ERROR: Not implemented')
-
 
     def log_result(self, result):
         """

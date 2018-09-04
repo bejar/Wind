@@ -18,7 +18,7 @@ RNNDirRegressionArchitecture
 """
 
 from Wind.Architectures.NNArchitecture import NNArchitecture
-from keras.models import Sequential, load_model
+from keras.models import Sequential
 from keras.layers import LSTM, GRU,  Bidirectional, Dense
 
 try:
@@ -28,8 +28,6 @@ except ImportError:
 else:
     _has_CuDNN = True
 
-from keras.optimizers import RMSprop
-from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.regularizers import l1, l2
 
 try:
@@ -39,9 +37,7 @@ except ImportError:
 else:
     _has_multigpu = True
 
-from sklearn.metrics import r2_score
-from time import time
-import os
+
 
 __author__ = 'bejar'
 
