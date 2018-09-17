@@ -29,7 +29,7 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
     total = 0
-    for i in range(200,250):
+    for i in range(0,254):
         configs = col.find({'experiment':'rnnseq2seq', 'status':'pending', 'site': {'$regex':'^%s-.'%str(i)}})
         count = 0
         lsites = []
@@ -40,8 +40,8 @@ if __name__ == '__main__':
             #     print(conf['_id'])
             #     col.remove({'_id':conf['_id']})
             # print(conf['site'])
-        for l in sorted(lsites):
-            print(l)
+#        for l in sorted(lsites):
+#            print(l)
         total += count
         print (i, count)
     print(total)

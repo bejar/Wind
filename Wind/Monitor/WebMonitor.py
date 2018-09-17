@@ -47,8 +47,6 @@ def getconfig(mode=None):
     Gets a config from the database
     :return:
     """
-    print mode
-
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)

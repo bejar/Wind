@@ -47,6 +47,9 @@ def getconfig(proxy=False, mode=None, secpat=None):
         query = {'status': 'pending'}
         if secpat is not None:
             query['site'] = {'$regex':'%s-.'% secpat}
+        if mode is not None:
+            query['experiment'] = mode 
+            
 
         # config = col.find_one(query)
 
