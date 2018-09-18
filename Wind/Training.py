@@ -53,7 +53,7 @@ def getconfig(proxy=False, mode=None, secpat=None):
 
         # config = col.find_one(query)
 
-        lconfig = [c for c in col.find(query, limit=10)]
+        lconfig = [c for c in col.find(query, limit=100)]
         config = None
         if len(lconfig) > 0:
             ch = np.random.randint(0,len(lconfig))
