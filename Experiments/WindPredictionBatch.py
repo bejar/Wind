@@ -48,10 +48,15 @@ if __name__ == '__main__':
     parser.add_argument('--save', action='store_true', default=False, help='Save Model')
     parser.add_argument('--remote', action='store_true', default=False, help='Use remote data')
     parser.add_argument('--secpat', default=None, required=False, type=str, help='Sectiom regexp for retrieving configs')
+    parser.add_argument('--dev', default=None, required=False, type=str, help='Select cuda device')
     args = parser.parse_args()
 
     if not args.gpulog:
         os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+    if args.dev is not None:
+        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+        # The GPU id to use
+        os.environ["CUDA_VISIBLE_DEVICES"] = args.dev
 
     verbose = 1 if args.verbose else 0
     impl = 1 if args.gpu else 2

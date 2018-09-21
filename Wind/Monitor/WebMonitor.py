@@ -53,7 +53,7 @@ def getconfig(mode=None):
     col = db[mongoconnection.col]
     query = {'status': 'pending'}
 
-    lconfig = [c for c in col.find(query, limit=10)]
+    lconfig = [c for c in col.find(query, limit=100)]
 
     config = None
     if len(lconfig) > 0:
@@ -63,7 +63,7 @@ def getconfig(mode=None):
                 config = conf
 
     if config is not None:
-        print("Served job %s" % config['_id'])
+        print("Served job %s#%s" % (config['_id'],config['data']['datanames'][0]))
         col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
         col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S')}})
         col.update({'_id': config['_id']}, {'$set': {'host': 'proxy'}})
