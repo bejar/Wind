@@ -29,8 +29,17 @@ import glob
 __author__ = 'bejar'
 
 if __name__ == '__main__':
-    lfiles = glob.glob('res*.json')
-    lfiles = sorted(lfiles)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--pend', action='store_true', default=False, help='change status to pending')
+    args = parser.parse_args()
+
+    if not args.pend:
+        lfiles = glob.glob('res*.json')
+        lfiles = sorted(lfiles)
+    else:
+        lfiles = glob.glob('*.json')
+        lfiles = sorted(lfiles)
+
 
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
@@ -40,14 +49,17 @@ if __name__ == '__main__':
 
     for file in lfiles:
         config = load_config_file(file, upload=True)
-        print(config['_id'])
+        print(config['_id'], args.pend)
 
-        col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
-        col.update({'_id': config['_id']}, {'$set': {'result': config['results']}})
-        col.update({'_id': config['_id']}, {'$set': {'etime': config['etime']}})
-        if 'btime' in config:
-            col.update({'_id': config['_id']}, {'$set': {'btime': config['btime']}})
+        if args.pend:
+             col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
         else:
-            col.update({'_id': config['_id']}, {'$set': {'btime': config['etime']}})
-        col.update({'_id': config['_id']}, {'$set': {'host': 'minotauro'}})
+            col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
+            col.update({'_id': config['_id']}, {'$set': {'result': config['results']}})
+            col.update({'_id': config['_id']}, {'$set': {'etime': config['etime']}})
+            if 'btime' in config:
+                col.update({'_id': config['_id']}, {'$set': {'btime': config['btime']}})
+            else:
+                col.update({'_id': config['_id']}, {'$set': {'btime': config['etime']}})
+            col.update({'_id': config['_id']}, {'$set': {'host': 'minotauro'}})
 
