@@ -21,6 +21,7 @@ from time import strftime
 import socket
 import json
 import numpy as np
+from Wind.Config.Paths import wind_res_path
 
 try:
     from pymongo import MongoClient
@@ -111,7 +112,7 @@ def saveconfig(config, lresults, proxy=False, mino=False):
             config['results'] = lresults
             config['etime'] = strftime('%Y-%m-%d %H:%M:%S')
             sconf = json.dumps(config)
-            fconf = open('res'+config['_id']+'.json', 'w')
+            fconf = open(wind_res_path + '/res'+config['_id']+'.json', 'w')
             fconf.write(sconf + '\n')
             fconf.close()
 

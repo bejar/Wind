@@ -20,6 +20,7 @@ Util
 import json
 import numpy as np
 from time import strftime
+from Wind.Config.Paths import wind_jobs_path
 
 
 try:
@@ -33,7 +34,7 @@ else:
 __author__ = 'bejar'
 
 
-def load_config_file(nfile, abspath=False, id=False, upload=False):
+def load_config_file(nfile, abspath=False, id=False, upload=False, mino=False):
     """
     Read the configuration from a json file
 
@@ -42,7 +43,10 @@ def load_config_file(nfile, abspath=False, id=False, upload=False):
     :return:
     """
     ext = '.json' if 'json' not in nfile else ''
-    pre = '' if abspath else './'
+    if not mino:
+        pre = '' if abspath else './'
+    else:
+        pre = wind_jobs_path
     fp = open(pre + nfile + ext, 'r')
 
     s = ''

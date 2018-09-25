@@ -64,7 +64,7 @@ if __name__ == '__main__':
     if args.config is None:
         config = getconfig(proxy=args.proxy, mode=args.exp, secpat=args.secpat)
     elif args.mino:
-        config = load_config_file(args.config, id=False)
+        config = load_config_file(args.config, id=False, mino=True)
     else:
         config = load_config_file(args.config, id=True)
 

@@ -17,7 +17,7 @@ UploadConfig
 
 """
 
-
+from __future__ import print_function
 import argparse
 from time import time
 import json
@@ -49,11 +49,12 @@ if __name__ == '__main__':
 
     for file in lfiles:
         config = load_config_file(file, upload=True)
-        print(config['_id'], args.pend)
 
         if args.pend:
-             col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
+            print(config['_id'], config['data']['datanames'][0])
+            col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
         else:
+            print(config['_id'], config['data']['datanames'][0], config['results'][0], config['results'][-1])
             col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
             col.update({'_id': config['_id']}, {'$set': {'result': config['results']}})
             col.update({'_id': config['_id']}, {'$set': {'etime': config['etime']}})
