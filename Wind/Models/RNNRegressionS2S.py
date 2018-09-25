@@ -205,7 +205,7 @@ def train_seq2seq_architecture(config, impl, verbose, tboard, best, early, multi
             cbacks.append(tensorboard)
 
         if best:
-            modfile = './model%d.h5' % int(time())
+            modfile = './model-%s.h5' % config['data']['datanames'][0]
             mcheck = ModelCheckpoint(filepath=modfile, monitor='val_loss', verbose=0, save_best_only=True,
                                      save_weights_only=False, mode='auto', period=1)
             cbacks.append(mcheck)
