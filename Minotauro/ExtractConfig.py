@@ -49,7 +49,7 @@ if __name__ == '__main__':
     os.mkdir('%s/Data'%nm)
     os.mkdir('%s/Jobs'%nm)
 
-    jobtime = (args.nconfig//30) +1
+    jobtime = (args.nconfig//30) +2
 
     batchjob = open('%s/windjob%s.cmd'%(nm,nm),'w')
     batchjob.write("""#!/bin/bash

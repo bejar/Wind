@@ -116,7 +116,25 @@ def sel_upper_lower(exp, mode, column, upper=100, lower=100):
 
     return np.array([v[0] for v in lexps]), np.array([v[1] for v in lexps])
 
-
+def SampEn(U, m, r):
+    """
+    Sample entropy, taken from wikipedia, probably can be improved using numpy functions
+    :param U: The time series
+    :param m: The embedding dimension
+    :param r: the radius distance
+    """
+    def _maxdist(x_i, x_j):
+        result = max([abs(ua - va) for ua, va in zip(x_i, x_j)])
+        return result
+  
+    def _phi(m):
+        x = [[U[j] for j in range(i, i + m - 1 + 1)] for i in range(N - m + 1)]
+        C = [len([1 for j in range(len(x)) if i != j and _maxdist(x[i], x[j]) <= r]) for i in range(len(x))]
+        return sum(C)
+ 
+    N = len(U)
+     
+    return -np.log(_phi(m+1) / _phi(m))
 
 
 if __name__ == '__main__':

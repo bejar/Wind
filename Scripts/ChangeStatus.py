@@ -28,6 +28,7 @@ __author__ = 'bejar'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--all', default=None, help='Experiment ID')    
     parser.add_argument('--id', help='Experiment ID')
     parser.add_argument('--status', help='Experiment status')
     args = parser.parse_args()
@@ -37,6 +38,15 @@ if __name__ == '__main__':
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    col.update({'_id': args.id}, {'$set': {'status': args.status}})
+    if args.all is not None:
+        configs = col.find({'status':args.all})
+        count = 0
+        for conf in configs:
+            print(conf['_id'], conf['site'], conf['status'])
+            count += 1
+            col.update({'_id': conf['_id']}, {'$set': {'status': args.status}})
+        print(count)
+    else:
+        col.update({'_id': args.id}, {'$set': {'status': args.status}})
 
 
