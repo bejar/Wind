@@ -1,0 +1,77 @@
+"""
+.. module:: Spatial
+
+Spatial
+*************
+
+:Description: Spatial
+
+    
+
+:Authors: bejar
+    
+
+:Version: 
+
+:Created on: 08/10/2018 9:37 
+
+"""
+
+__author__ = 'bejar'
+
+
+import numpy as np
+from sklearn.neighbors import KDTree
+from Wind.Config.Paths import wind_data_path
+from Wind.Util import find_exp, count_exp, sel_result
+
+try:
+    from pymongo import MongoClient
+    from Wind.Private.DBConfig import mongoconnection
+except ImportError:
+    _has_mongo= False
+else:
+    _has_mongo = True
+
+
+if __name__ == '__main__':
+
+    client = MongoClient(mongoconnection.server)
+    db = client[mongoconnection.db]
+    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    col = db[mongoconnection.col]
+
+
+    coords = np.load(wind_data_path +'/coords.npy')
+    memo = np.zeros(coords.shape[0])
+    query = {'status': 'done', "experiment": "rnnseq2seq", "site": ""}
+    tree = KDTree(coords, leaf_size=1)
+    for i in range(coords.shape[0]):
+
+        # dist= tree.query_radius(coords[0,:].reshape(1, -1), r=0.1, return_distance=True, sort_results=True)
+        dist= tree.query_radius(coords[i,:].reshape(1, -1), r=0.05, count_only=False, return_distance=False)[0]
+        # print(i, dist)
+        if len(dist) > 1:
+            tsum = 0
+            for j in dist:
+                if j!= i:
+                    if memo[j] == 0:
+                        query['site'] = '%d-%d'% (j/500,j)
+                        exp = col.find_one(query)
+                        data = np.array(exp['result'])
+                        vsum = np.sum(data[:,1])
+                        tsum += vsum
+                        memo[j] = vsum
+                    else:
+                        tsum += memo[j]
+
+            tmean = tsum/(len(dist)-1)
+            query['site'] = '%d-%d'% (i/500,i)
+            exp = col.find_one(query)
+            data = np.array(exp['result'])
+            vsum = np.sum(data[:,1])
+            if vsum < (tmean *0.9):
+                print(i, vsum, tmean, len(dist))
+                # print('***')
+
+

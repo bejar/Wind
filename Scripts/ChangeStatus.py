@@ -30,7 +30,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--all', default=None, help='Experiment ID')    
     parser.add_argument('--id', help='Experiment ID')
-    parser.add_argument('--status', help='Experiment status')
+    parser.add_argument('--status', help='Experiment status', default='pending')
     args = parser.parse_args()
 
     client = MongoClient(mongoconnection.server)
