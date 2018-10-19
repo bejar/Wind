@@ -17,11 +17,9 @@ MLPS2SArchitecture
 
 """
 
-from Wind.Architectures.NNArchitecture import NNArchitecture
+from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Activation, Dropout
-from keras.optimizers import RMSprop, SGD
-from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.regularizers import l1, l2
 
 try:
@@ -31,19 +29,16 @@ except ImportError:
 else:
     _has_multigpu = True
 
-import tensorflow as tf
 from sklearn.metrics import mean_squared_error, r2_score
-from Wind.Data import generate_dataset
-from Wind.Config import wind_data_path
-from time import time, strftime
-import os
+
 
 __author__ = 'bejar'
 
 
-class MLPS2SArchitecture(NNArchitecture):
+class MLPS2SArchitecture(NNS2SArchitecture):
     modfile = None
     modname = 'MLPS2S'
+    data_mode = 'mlp'
 
     def generate_model(self):
         """
@@ -61,16 +56,15 @@ class MLPS2SArchitecture(NNArchitecture):
         odimension = self.config['odimensions']
         full_layers = self.config['arch']['full']
 
-        model = Sequential()
-        model.add(Dense(full_layers[0], input_shape=idimensions, activation=activation))
-        model.add(Dropout(rate=dropout))
+        self.model = Sequential()
+        self.model.add(Dense(full_layers[0], input_shape=idimensions, activation=activation))
+        self.model.add(Dropout(rate=dropout))
         for units in full_layers[1:]:
-            model.add(Dense(units=units, activation=activation))
-            model.add(Dropout(rate=dropout))
+            self.model.add(Dense(units=units, activation=activation))
+            self.model.add(Dropout(rate=dropout))
 
-        model.add(Dense(odimension, activation='linear'))
+        self.model.add(Dense(odimension, activation='linear'))
 
-        return model
 
     def summary(self):
         self.model.summary()
@@ -89,7 +83,7 @@ class MLPS2SArchitecture(NNArchitecture):
                   (self.config['arch']['mode'],
                    self.config['data']['datanames'][0],
                    self.config['data']['dataset'],
-                   self.len(self.config['data']['vars']),
+                   len(self.config['data']['vars']),
                    self.config['data']['lag'],
                    i, str(self.config['arch']['full']),
                    self.config['arch']['drop'],

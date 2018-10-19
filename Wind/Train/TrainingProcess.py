@@ -67,7 +67,7 @@ def train_dirregression(architecture, config, runconfig):
                 print('Steps Ahead = %d ' % ahead)
 
             dataset = Dataset(config=config['data'], data_path=wind_data_path)
-            dataset.generate_dataset(ahead=ahead, mode=False)
+            dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
 
             ############################################
             # Model
@@ -126,7 +126,7 @@ def train_sequence2sequence(architecture, config, runconfig):
         ahead = [1, ahead]
 
     dataset = Dataset(config=config['data'], data_path=wind_data_path)
-    dataset.generate_dataset(ahead=ahead, mode=False)
+    dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
 
     if 'iter' in config['training']:
         niter = config['training']['iter']
@@ -163,7 +163,7 @@ def train_sequence2sequence(architecture, config, runconfig):
         ############################################
         # Results
 
-        lresults.append((ahead, arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)))
+        lresults.extend(arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -194,7 +194,7 @@ def train_persistence(architecture, config, runconfig):
             print('Steps Ahead = %d ' % ahead)
 
         dataset = Dataset(config=config['data'], data_path=wind_data_path)
-        dataset.generate_dataset(ahead=ahead, mode=False)
+        dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
 
         arch = architecture(config, runconfig)
         lresults.append((ahead, arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)))
@@ -231,7 +231,7 @@ def train_svm_dirregression(architecture, config, runconfig):
             print('Steps Ahead = %d ' % ahead)
 
         dataset = Dataset(config=config['data'], data_path=wind_data_path)
-        dataset.generate_dataset(ahead=ahead, mode='svm')
+        dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
 
         ############################################
         # Model

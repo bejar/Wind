@@ -33,12 +33,12 @@ class TrainDispatch:
         self.model_dict['regdir'] = (train_dirregression, RNNDirRegressionArchitecture)
         self.model_dict['SVM_dir_reg'] = (train_svm_dirregression, SVMDirRegressionArchitecture)
         self.model_dict['svm'] = (train_svm_dirregression, SVMDirRegressionArchitecture)
-        self.model_dict['RNN_ED_s2s'] = (train_sequence2sequence(), RNNEncoderDecoderS2SArchitecture)
-        self.model_dict['seq2seq'] = (train_sequence2sequence(), RNNEncoderDecoderS2SArchitecture)
-        self.model_dict['MLP_s2s'] = (train_sequence2sequence(), MLPS2SArchitecture)
-        self.model_dict['mlps2s'] = (train_sequence2sequence(), MLPS2SArchitecture)
-        self.model_dict['MLP_dir_reg'] = (train_dirregression(), MLPDirRegressionArchitecture)
-        self.model_dict['mlpdir'] = (train_dirregression(), MLPDirRegressionArchitecture)
+        self.model_dict['RNN_ED_s2s'] = (train_sequence2sequence, RNNEncoderDecoderS2SArchitecture)
+        self.model_dict['seq2seq'] = (train_sequence2sequence, RNNEncoderDecoderS2SArchitecture)
+        self.model_dict['MLP_s2s'] = (train_sequence2sequence, MLPS2SArchitecture)
+        self.model_dict['mlps2s'] = (train_sequence2sequence, MLPS2SArchitecture)
+        self.model_dict['MLP_dir_reg'] = (train_dirregression, MLPDirRegressionArchitecture)
+        self.model_dict['mlpdir'] = (train_dirregression, MLPDirRegressionArchitecture)
         self.model_dict['persistence'] = (train_persistence, PersistenceArchitecture)
 
 

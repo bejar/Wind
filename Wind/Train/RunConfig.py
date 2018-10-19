@@ -29,8 +29,9 @@ class RunConfig:
     multi = False
     proxy = False
     save = False
+    remote = False
     
-    def __init__(self, impl, verbose, tboard, best, early, multi, proxy, save):
+    def __init__(self, impl, verbose, tboard, best, early, multi, proxy, save, remote):
         self.impl = impl
         self.verbose = verbose
         self.tboard = tboard
@@ -39,3 +40,4 @@ class RunConfig:
         self.multi = multi
         self.proxy = proxy
         self.save = save
+        self.remote = remote

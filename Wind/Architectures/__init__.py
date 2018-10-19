@@ -32,5 +32,5 @@ __all__ = [
             'RNNEncoderDecoderS2SArchitecture',
             'PersistenceArchitecture',
             'MLPS2SArchitecture',
-            'MLPDirRegressionArchitecture'
+            'MLPDirRegressionArchitecture',
             ]

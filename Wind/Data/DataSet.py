@@ -19,7 +19,14 @@ DataSet
 
 from __future__ import print_function
 import numpy as np
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+import os
+from Wind.Config.Paths import remote_data
+
+try:
+   import pysftp
+except Exception:
+    pass
 
 __author__ = 'bejar'
 
@@ -77,6 +84,7 @@ class Dataset:
     test_y = None
     data_path = None
     config = None
+    scalers = {'standard':StandardScaler(), 'minmax':MinMaxScaler(feature_range=(-1,1))}
 
     def __init__(self, config, data_path):
         self.config = config
@@ -87,8 +95,12 @@ class Dataset:
         Generates
         :return:
         """
-        scaler = StandardScaler()
-        data = scaler.fit_transform(data)
+        if 'scaler' in self.config and self.config[self.config['scaler']] in self.scalers:
+            scaler = self.scalers['scaler']
+            data = scaler.fit_transform(data)
+        else:
+            scaler = StandardScaler
+            data = scaler.fit_transform(data)
         # print('DATA Dim =', data.shape)
 
         wind_train = data[:datasize, :]
@@ -137,8 +149,12 @@ class Dataset:
         Generates
         :return:
         """
-        scaler = StandardScaler()
-        data = scaler.fit_transform(data)
+        if 'scaler' in self.config and self.config['scaler'] in self.scalers:
+            scaler = self.scalers[self.config['scaler']]
+            data = scaler.fit_transform(data)
+        else:
+            scaler = StandardScaler()
+            data = scaler.fit_transform(data)
         # print('DATA Dim =', data.shape)
 
         wind_train = data[:datasize, :]
@@ -184,7 +200,7 @@ class Dataset:
 
         return train_x, train_y, val_x, val_y, test_x, test_y
 
-    def generate_dataset(self, ahead=1, mode=None, ensemble=False, ens_slice=None):
+    def generate_dataset(self, ahead=1, mode=None, ensemble=False, ens_slice=None, remote=None):
         """
         Generates the dataset for training, test and validation
 
@@ -218,12 +234,18 @@ class Dataset:
             dahead = ahead
             slice = ahead
 
-        # Reads numpy arrays for all sites and keep only selected columns
+        # Reads numpy arrays for all sites and keeps only selected columns
         for d in datanames:
+            if remote:
+                srv = pysftp.Connection(host=remote_data[0], username=remote_data[1])
+                srv.get(remote + '/%s.npy' % d, self.data_path + '/%s.npy' % d)
+                srv.close()
             wind[d] = np.load(self.data_path + '/%s.npy' % d)
-            if vars is not None:
-                wind[d] = wind[d][:, vars]
+            if remote:
+                os.remove(self.data_path + '/%s.npy' % d)
 
+            if vars is not None:
+                wind[d] = wind[d][:,vars]
 
         if (self.config['dataset'] == 0) or (self.config['dataset'] == 'onesiteonevar'):
             if not ensemble:

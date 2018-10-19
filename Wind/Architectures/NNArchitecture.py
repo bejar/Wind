@@ -17,8 +17,7 @@ NNArchitecture
 """
 
 from Wind.Architectures.Architecture import Architecture
-from keras.models import Sequential, load_model
-from keras.layers import LSTM, GRU, Bidirectional, Dense
+from keras.models import load_model
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -29,7 +28,6 @@ else:
 
 from keras.optimizers import RMSprop
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
-from keras.regularizers import l1, l2
 
 try:
     from keras.utils import multi_gpu_model

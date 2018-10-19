@@ -31,7 +31,7 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
     parser = argparse.ArgumentParser()
     parser.add_argument('--fr', help='Experiment status',type=int,default=0)
-    parser.add_argument('--to', help='Experiment status',type=int,default=254)
+    parser.add_argument('--to', help='Experiment status',type=int,default=253)
     parser.add_argument('--status', help='Experiment status',default='pending')
     args = parser.parse_args()
 

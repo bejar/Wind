@@ -23,6 +23,8 @@ __author__ = 'bejar'
 
 class PersistenceArchitecture(Architecture):
 
+    data_mode = False
+
     def generate_model(self):
         """
         Generates the model

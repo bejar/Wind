@@ -103,28 +103,30 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
     else:
         odimension = ahead
 
-    lresults = []
-    for iter in range(niter):
-        if multi == 1:
+    if multi == 1:
+        model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=odimension,
+                                   activation=activation,
+                                   rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
+                                   full_layers=config['arch']['full'])
+    else:
+        with tf.device('/cpu:0'):
             model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=odimension,
                                        activation=activation,
-                                       rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw, dropout=dropout,
+                                       rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
+                                       dropout=dropout,
                                        full_layers=config['arch']['full'])
-        else:
-            with tf.device('/cpu:0'):
-                model = architectureMLPs2s(idimensions=train_x.shape[1:], odimension=odimension,
-                                           activation=activation,
-                                           rec_reg=rec_reg, rec_regw=rec_regw, k_reg=k_reg, k_regw=k_regw,
-                                           dropout=dropout,
-                                           full_layers=config['arch']['full'])
 
-        if verbose:
-            model.summary()
-            print(
+    if verbose:
+        model.summary()
+        print(
             'lag: ', config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation)
-            print(
+        print(
             'Tr:', train_x.shape, train_y.shape, 'Val:', val_x.shape, val_y.shape, 'Ts:', test_x.shape, test_y.shape)
-            print()
+        print()
+
+    lresults = []
+
+    for iter in range(niter):
 
         ############################################
         # Training
@@ -172,9 +174,7 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
         for i in range(1, ahead + 1):
             lresults.append((i,
                              r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
-                             # r2_score(val_y[i:, 0], val_y[0:-i, 0]),
                              r2_score(test_y[:, i - 1], test_yp[:, i - 1])
-                             # r2_score(test_y[i:, 0], test_y[0:-i, 0])
                              ))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
@@ -186,22 +186,20 @@ def train_MLP_regs2s_architecture(config, verbose, tboard, best, early, multi=1,
                 pass
         elif best:
             os.rename(modfile, 'modelMLPRegS2S-S%s-A%d-R%02d.h5' % (config['data']['datanames'][0], ahead, iter))
-
-    for i, r2val, r2test in lresults:
-        print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, FL= %s, DR= %3.2f, AF= %s, '
-              'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-              (config['arch']['mode'],
-               config['data']['datanames'][0],
-               config['data']['dataset'],
-               len(config['data']['vars']),
-               config['data']['lag'],
-               i, str(config['arch']['full']),
-               config['arch']['drop'],
-               config['arch']['activation'],
-               config['training']['optimizer'],
-               r2val,
-               # r2persV,
-               r2test,
-               # r2persT
-               ))
+    print(lresults)
+    # for i, r2val, r2test in lresults:
+    #     print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, FL= %s, DR= %3.2f, AF= %s, '
+    #           'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
+    #           (config['arch']['mode'],
+    #            config['data']['datanames'][0],
+    #            config['data']['dataset'],
+    #            len(config['data']['vars']),
+    #            config['data']['lag'],
+    #            i, str(config['arch']['full']),
+    #            config['arch']['drop'],
+    #            config['arch']['activation'],
+    #            config['training']['optimizer'],
+    #            r2val,
+    #            r2test,
+    #            ))
     return lresults

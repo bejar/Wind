@@ -2,6 +2,7 @@
     "experiment": "MULTIPLE",
   "data": {
     "datanames": ["11-5794-12"],
+    "scaler": "standard",
     "vars": [0,1,2,3,4,5],
     "datasize": 40912,
     "testsize": 20456,

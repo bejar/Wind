@@ -1,7 +1,8 @@
 {"_id": "00000000",
     "experiment": "MULTIPLE",
   "data": {
-    "datanames": ["11-5794-12"],
+      "datanames": ["11-5794-12"],
+      "scaler": "minmax",
       "vars": [0,1,2,3,4,5],
     "datasize": 40912,
     "testsize": 20456,
@@ -29,7 +30,7 @@
       "mode":"mlps2s"
   },
   "training": {
-    "iter":10,
+    "iter":1,
     "batch": 1000,
     "epochs": 150,
       "optimizer": "adamax",

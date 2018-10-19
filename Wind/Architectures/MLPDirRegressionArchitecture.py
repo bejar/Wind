@@ -42,13 +42,13 @@ from Wind.Training import updateprocess
 from time import time, strftime
 import os
 
-
 __author__ = 'bejar'
 
 class MLPDirRegressionArchitecture(NNArchitecture):
 
     modfile = None
     modname = 'MLPDir'
+    data_mode = False
 
     def generate_model(self):
         """
@@ -65,16 +65,15 @@ class MLPDirRegressionArchitecture(NNArchitecture):
         idimensions = self.config['idimensions']
         full_layers = self.config['arch']['full']
 
-        model = Sequential()
-        model.add(Dense(full_layers[0], input_shape=idimensions, activation=activation))
-        model.add(Dropout(rate=dropout))
+        self.model = Sequential()
+        self.model.add(Dense(full_layers[0], input_shape=idimensions, activation=activation))
+        self.model.add(Dropout(rate=dropout))
         for units in full_layers[1:]:
-            model.add(Dense(units=units, activation=activation))
-            model.add(Dropout(rate=dropout))
-        model.add(Flatten())
-        model.add(Dense(1, activation='linear'))
+            self.model.add(Dense(units=units, activation=activation))
+            self.model.add(Dropout(rate=dropout))
+        self.model.add(Flatten())
+        self.model.add(Dense(1, activation='linear'))
 
-        return model
 
     def summary(self):
         self.model.summary()
