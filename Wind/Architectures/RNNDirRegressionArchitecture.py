@@ -46,6 +46,7 @@ class RNNDirRegressionArchitecture(NNArchitecture):
 
     modfile = None
     modname = 'RNNDir'
+    data_mode = False
 
     def generate_model(self):
         """

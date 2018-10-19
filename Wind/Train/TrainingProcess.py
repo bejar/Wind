@@ -94,7 +94,8 @@ def train_dirregression(architecture, config, runconfig):
             ############################################
             # Results
 
-            lresults.append((ahead, arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)))
+            r2val, r2test = arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)
+            lresults.append((ahead, r2val, r2test))
 
             print(strftime('%Y-%m-%d %H:%M:%S'))
 
