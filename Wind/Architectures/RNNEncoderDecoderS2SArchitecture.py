@@ -125,7 +125,7 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
                     self.model.add(RNN(neurons, recurrent_dropout=drop, implementation=impl,
                                   activation=activation, recurrent_activation=activation_r, return_sequences=True,
                                   recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-                self.self.model.add(RNN(neurons, recurrent_dropout=drop, activation=activation,
+                self.model.add(RNN(neurons, recurrent_dropout=drop, activation=activation,
                               recurrent_activation=activation_r, implementation=impl,
                               recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
 

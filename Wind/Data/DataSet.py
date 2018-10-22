@@ -22,6 +22,7 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import os
 from Wind.Config.Paths import remote_data
+from Wind.Spatial.Util import get_all_neighbors
 
 try:
    import pysftp
@@ -197,7 +198,6 @@ class Dataset:
         else:
             val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
             test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
-
         return train_x, train_y, val_x, val_y, test_x, test_y
 
     def generate_dataset(self, ahead=1, mode=None, ensemble=False, ens_slice=None, remote=None):
@@ -234,6 +234,8 @@ class Dataset:
             dahead = ahead
             slice = ahead
 
+        if self.config['dataset'] == 5:
+            datanames = get_all_neighbors(datanames[0],0.05)
         # Reads numpy arrays for all sites and keeps only selected columns
         for d in datanames:
             if remote:
@@ -279,9 +281,9 @@ class Dataset:
             self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
                 self._generate_dataset_multiple_var(stacked, datasize, testsize,
                                                     lag=lag, ahead=dahead, slice=slice, mode=mode)
-        elif self.config['dataset'] == 4 or self.config['dataset'] == 'manysitemanyvarstack':
+        elif self.config['dataset'] == 4 or self.config['dataset'] == 5 or self.config['dataset'] == 'manysitemanyvarstack':
             stacked = [self._generate_dataset_multiple_var(wind[d], datasize, testsize,
-                                                           lag=lag, ahead=dahead, slice=slice) for d in datanames]
+                                                           lag=lag, ahead=dahead, slice=slice, mode=mode) for d in datanames]
 
             self.train_x = np.vstack([x[0] for x in stacked])
             self.train_y = np.vstack([x[1] for x in stacked])
@@ -290,7 +292,6 @@ class Dataset:
             self.val_y = stacked[0][3]
             self.test_x = stacked[0][4]
             self.test_y = stacked[0][5]
-            # return train_x, train_y, val_x, val_y, test_x, test_y
         else:
             raise NameError('ERROR: No such dataset type')
 
@@ -316,7 +317,7 @@ if __name__ == '__main__':
     from Wind.Util import load_config_file
     from Wind.Config import wind_data_path
     import matplotlib.pyplot as plt
-    config = load_config_file('./config2.json')
+    config = load_config_file('./configrnnseq2seqexp.json')
     data_path='../../Data'
     # print(config)
     mode = False

@@ -19,7 +19,7 @@ MapSites
 
 from netCDF4 import Dataset
 from Wind.Config.Paths import wind_data_path, wind_data_ext, wind_path, wind_NREL_data_path
-from Wind.Maps.Util import MapThis
+from Wind.Spatial.Util import MapThis
 import os
 import time
 import numpy as np

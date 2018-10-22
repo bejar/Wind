@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import glob
 from Wind.Config import wind_data_path, wind_data_ext, wind_path
-from Wind.Maps.Util import MapThis
+from Wind.Spatial.Util import MapThis
 import os
 import time
 import datetime as dt

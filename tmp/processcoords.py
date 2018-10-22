@@ -41,6 +41,6 @@ for i in range(1000):
 vcoord = np.array(lcoords)
 
 
-print vcoord[:,1:].shape
+print(vcoord[:,1:].shape)
 
 np.save('../Data/coords.npy', vcoord[:,1:])
