@@ -23,6 +23,7 @@ from .RNNEncoderDecoderS2SArchitecture import RNNEncoderDecoderS2SArchitecture
 from .PersistenceArchitecture import PersistenceArchitecture
 from .MLPS2SArchitecture import MLPS2SArchitecture
 from .MLPDirRegressionArchitecture import MLPDirRegressionArchitecture
+from .CNNS2SArchitecture import CNNS2SArchitecture
 
 __author__ = 'bejar'
 
@@ -33,4 +34,5 @@ __all__ = [
             'PersistenceArchitecture',
             'MLPS2SArchitecture',
             'MLPDirRegressionArchitecture',
+            'CNNS2SArchitecture'
             ]

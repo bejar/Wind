@@ -41,7 +41,7 @@ def lagged_vector(data, lag=1, ahead=0, mode=None):
     :return:
     """
     lvect = []
-    if mode in ['s2s', 'mlp']:
+    if mode in ['s2s', 'mlp', 'cnn']:
         for i in range(lag + ahead):
             lvect.append(data[i: -lag - ahead + i])
     else:
@@ -63,7 +63,7 @@ def lagged_matrix(data, lag=1, ahead=0, mode=None):
     """
     lvect = []
 
-    if mode in ['s2s', 'mlp']:
+    if mode in ['s2s', 'mlp', 'cnn']:
         for i in range(lag + ahead):
             lvect.append(data[i: -lag - ahead + i, :])
     else:
@@ -117,6 +117,9 @@ class Dataset:
         elif mode == 'svm':
             train_x, train_y = train[:, :lag], np.ravel(train[:, -1:, 0])
             train_x = np.reshape(train_x, (train_y.shape[0], train_y.shape[1]))
+        elif mode == 'cnn':
+            train_x, train_y = train[:, :lag], train[:, -slice:, 0]
+            train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
         else:
             train_x, train_y = train[:, :lag], train[:, -1:, 0]
 
@@ -139,6 +142,11 @@ class Dataset:
             test_x, test_y = test[half_test:, :lag], np.ravel(test[half_test:, -1:, 0])
             val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1]))
             test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1]))
+        elif mode == 'cnn':
+            val_x, val_y = test[:half_test, :lag], test[:half_test, -slice:, 0]
+            test_x, test_y = test[half_test:, :lag], test[half_test:, -slice:, 0]
+            val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1]))
+            test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
         else:
             val_x, val_y = test[:half_test, :lag], test[:half_test, -1:, 0]
             test_x, test_y = test[half_test:, :lag], test[half_test:, -1:, 0]
@@ -166,6 +174,9 @@ class Dataset:
         if mode == 's2s':
             train_x, train_y = train[:, :lag], train[:, -slice:, 0]
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
+        elif mode == 'cnn':
+            train_x, train_y = train[:, :lag], train[:, -slice:, 0]
+            train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
         elif mode == 'mlp':
             train_x, train_y = train[:, :lag], train[:, -slice:, 0]
             train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1] * train_x.shape[2]))
@@ -185,6 +196,11 @@ class Dataset:
             test_x, test_y = test[half_test:, :lag], test[half_test:, -slice:, 0]
             val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
             test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
+        elif mode == 'cnn':
+            val_x, val_y = test[:half_test, :lag], test[:half_test, -slice:, 0]
+            test_x, test_y = test[half_test:, :lag], test[half_test:, -slice:, 0]
+            val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1]))
+            test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
         elif mode == 'mlp':
             val_x, val_y = test[:half_test, :lag], test[:half_test, -slice:, 0]
             test_x, test_y = test[half_test:, :lag], test[half_test:, -slice:, 0]

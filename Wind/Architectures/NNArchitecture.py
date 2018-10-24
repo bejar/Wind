@@ -64,7 +64,11 @@ class NNArchitecture(Architecture):
             cbacks.append(mcheck)
 
         if self.runconfig.early:
-            early = EarlyStopping(monitor='val_loss', patience=5, verbose=0)
+            if 'patience' in self.config['training']:
+                patience = self.config['training']['patience']
+            else:
+                patience = 5
+            early = EarlyStopping(monitor='val_loss', patience=patience, verbose=0)
             cbacks.append(early)
 
         if optimizer == 'rmsprop':

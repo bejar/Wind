@@ -64,7 +64,7 @@ def train_dirregression(architecture, config, runconfig):
 
             if runconfig.verbose:
                 print('-----------------------------------------------------------------------------')
-                print('Steps Ahead = %d ' % ahead)
+                print(f"Steps Ahead = {ahead}")
 
             dataset = Dataset(config=config['data'], data_path=wind_data_path)
             dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
@@ -191,8 +191,8 @@ def train_persistence(architecture, config, runconfig):
     for ahead in range(iahead, sahead + 1):
 
         if runconfig.verbose:
-            print('-----------------------------------------------------------------------------')
-            print('Steps Ahead = %d ' % ahead)
+            print("-----------------------------------------------------------------------------")
+            print(f"Steps Ahead = {ahead}")
 
         dataset = Dataset(config=config['data'], data_path=wind_data_path)
         dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
@@ -229,7 +229,7 @@ def train_svm_dirregression(architecture, config, runconfig):
 
         if runconfig.verbose:
             print('-----------------------------------------------------------------------------')
-            print('Steps Ahead = %d ' % ahead)
+            print(f'Steps Ahead = {ahead} ')
 
         dataset = Dataset(config=config['data'], data_path=wind_data_path)
         dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
@@ -237,11 +237,11 @@ def train_svm_dirregression(architecture, config, runconfig):
         ############################################
         # Model
 
-        kernel = config['arch']['kernel']
-        C = config['arch']['C']
-        epsilon = config['arch']['epsilon']
-        degree = config['arch']['degree']
-        coef0 = config['arch']['coef0']
+        # kernel = config['arch']['kernel']
+        # C = config['arch']['C']
+        # epsilon = config['arch']['epsilon']
+        # degree = config['arch']['degree']
+        # coef0 = config['arch']['coef0']
 
         arch = architecture(config, runconfig)
 
@@ -283,3 +283,4 @@ def train_svm_dirregression(architecture, config, runconfig):
     arch.log_result(lresults)
 
     return lresults
+

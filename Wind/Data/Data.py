@@ -147,6 +147,10 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, sli
     if mode == 's2s':
         train_x, train_y = train[:, :lag], train[:, -slice:, 0]
         train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
+    if mode == 'cnn':
+        train_x, train_y = train[:, :lag], train[:, -slice:, 0]
+        train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
+        train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
     elif mode == 'mlp':
         train_x, train_y = train[:, :lag], train[:, -slice:, 0]
         train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1] * train_x.shape[2]))
@@ -166,6 +170,13 @@ def _generate_dataset_multiple_var(data, datasize, testsize, lag=1, ahead=1, sli
         test_x, test_y = test[half_test:, :lag], test[half_test:, -slice:, 0]
         val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
         test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
+    elif mode == 'cnn':
+        val_x, val_y = test[:half_test, :lag], test[:half_test, -slice:, 0]
+        test_x, test_y = test[half_test:, :lag], test[half_test:, -slice:, 0]
+        val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
+        test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
+        test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
+        val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1]))
     elif mode == 'mlp':
         val_x, val_y = test[:half_test, :lag], test[:half_test, -slice:, 0]
         test_x, test_y = test[half_test:, :lag], test[half_test:, -slice:, 0]
