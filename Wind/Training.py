@@ -109,7 +109,7 @@ def saveconfig(config, lresults, proxy=False, mino=False):
                 col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
         else:
             config['status'] = 'done'
-            config['results'] = lresults
+            config['result'] = lresults
             config['etime'] = strftime('%Y-%m-%d %H:%M:%S')
             sconf = json.dumps(config)
             fconf = open(wind_res_path + '/res'+config['_id']+'.json', 'w')
@@ -118,7 +118,7 @@ def saveconfig(config, lresults, proxy=False, mino=False):
 
 
     else:
-        config['results'] = lresults
+        config['result'] = lresults
         requests.post('http://polaris.cs.upc.edu:9073/Proxy', params={'res': json.dumps(config)})
 
 

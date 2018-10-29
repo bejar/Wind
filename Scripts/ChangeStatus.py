@@ -28,7 +28,7 @@ __author__ = 'bejar'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--all', default=None, help='Experiment ID')    
+    parser.add_argument('--all', default='zz',  help='Experiment ID')    
     parser.add_argument('--id', help='Experiment ID')
     parser.add_argument('--status', help='Experiment status', default='pending')
     args = parser.parse_args()
@@ -42,7 +42,10 @@ if __name__ == '__main__':
         configs = col.find({'status':args.all})
         count = 0
         for conf in configs:
-            print(conf['_id'], conf['site'], conf['status'])
+            if 'site' in conf:
+                print(conf['_id'], conf['site'], conf['status'])
+            else:
+                print(conf['_id'], conf['status'])
             count += 1
             col.update({'_id': conf['_id']}, {'$set': {'status': args.status}})
         print(count)

@@ -83,7 +83,11 @@ def count_exp(query):
 def sel_result(lexp, ncol):
     ldata = []
     for exp in lexp:
-        data = np.array(exp['result'])
+        if 'result' in exp:
+            data = np.array(exp['result'])
+        elif 'results' in exp:
+            data = np.array(exp['results'])
+
         ldata.append((int(exp['data']['datanames'][0].split('-')[1]), data[:, ncol]))
     ldata = sorted(ldata, key=lambda x: x[0])
 
@@ -106,7 +110,11 @@ def sel_upper_lower(exp, mode, column, upper=100, lower=100):
 
     lexps = []
     for e in exps:
-        lexps.append((np.sum(np.array(e['result'])[:, column]), e['site'], np.array(e['result'])[:, column]))
+        if 'result' in e:
+            lexps.append((np.sum(np.array(e['result'])[:, column]), e['site'], np.array(e['result'])[:, column]))
+        elif 'results' in e:
+            lexps.append((np.sum(np.array(e['results'])[:, column]), e['site'], np.array(e['results'])[:, column]))
+
 
     lupper = [(v.split('-')[1], s) for _, v, s in sorted(lexps, reverse=True)][:upper]
     llower = [(v.split('-')[1], s)  for _, v, s in sorted(lexps, reverse=False)][:lower]

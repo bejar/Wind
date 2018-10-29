@@ -32,12 +32,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--fr', help='Experiment status',type=int,default=0)
     parser.add_argument('--to', help='Experiment status',type=int,default=253)
+    parser.add_argument('--exp', help='Experiment status',default='convos2s')
     parser.add_argument('--status', help='Experiment status',default='pending')
     args = parser.parse_args()
 
     total = 0
     for i in range(args.fr,args.to+1):
-        configs = col.find({'experiment':'rnnseq2seq', 'status':args.status, 'site': {'$regex':'^%s-.'%str(i)}})
+        configs = col.find({'experiment':args.exp, 'status':args.status, 'site': {'$regex':'^%s-.'%str(i)}})
         count = 0
         lsites = []
         for conf in configs:

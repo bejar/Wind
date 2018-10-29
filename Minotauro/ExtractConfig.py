@@ -30,7 +30,8 @@ __author__ = 'bejar'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--nconfig', type=int, help='number of configs')
+    parser.add_argument('--nconfig', type=int, default=200, help='number of configs')
+    parser.add_argument('--jph', type=int, default=30, help='number of configs')
     args = parser.parse_args()
 
 
@@ -44,12 +45,12 @@ if __name__ == '__main__':
     # config = col.find_one(query)
 
     lconfig = [c for c in col.find(query, limit=args.nconfig)]
-    nm = strftime('%Y%m%d%H%M')
+    nm = strftime('%Y%m%d%H%M%S')
     os.mkdir(nm)
     os.mkdir('%s/Data'%nm)
     os.mkdir('%s/Jobs'%nm)
 
-    jobtime = (args.nconfig//30) +2
+    jobtime = (args.nconfig//args.jph) +2
 
     batchjob = open('%s/windjob%s.cmd'%(nm,nm),'w')
     batchjob.write("""#!/bin/bash
@@ -81,7 +82,7 @@ export PYTHONPATH
             fconf.close()
             copy(wind_data_path +'/'+ config['data']['datanames'][0]+'.npy', './%s/Data/'%nm)
             batchjob.write(
-                    'python WindPredictionBatch.py --best --early --gpu --mino --config %s\n' % config['_id'])
+                    'python WindExperimentBatch.py --best --early --gpu --mino --config %s\n' % config['_id'])
             col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
     batchjob.close()
 

@@ -55,12 +55,17 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='configbatchregdir', help='Experiment configuration')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
+    parser.add_argument('--exp', required=True, help='Experiment Name')
+    
     args = parser.parse_args()
 
     configB = load_config_file(args.config, upload=True)
 
     if args.test:
-        len(generate_configs(configB))
+        conf = generate_configs(configB)
+        len(conf)
+        print(conf[0])
+        
     else:
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
@@ -69,6 +74,7 @@ if __name__ == '__main__':
 
         ids = int(time())
         for i, config in enumerate(generate_configs(configB)):
+            config['experiment'] = args.exp
             config['status'] = 'pending'
             config['result'] = []
             config['_id'] = str(ids + i)

@@ -19,7 +19,7 @@ UploadResults
 
 import argparse
 from time import time
-
+import numpy as np
 from Wind.Util import load_config_file
 from Wind.Data import generate_dataset
 from Wind.Private.DBConfig import mongoconnection
@@ -36,13 +36,17 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
 #    configs = col.find({'experiment':'mlpregs2s','status':'working' })
-    configs = col.find({'experiment':'rnnseq2seq', 'status':'pending', 'site': {'$regex':'3.-.'}})
+    configs = col.find({'experiment':'convos2s', 'status':'done'})
 
     count = 0
     for conf in configs:
-        print(conf['site'])
-        col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
-        count += 1
+        #print(conf['site'])
+        data = np.array(conf['result'])
+        vsum = np.sum(data[:,1])
+        if vsum <4:
+            print(conf['site'],vsum)
+            col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
+            count += 1
 
     print(count)
 

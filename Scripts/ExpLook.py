@@ -40,5 +40,8 @@ if __name__ == '__main__':
     lsites = []
     for conf in configs:
         count += 1
-        lsites.append(conf['site'])
+        if 'site' in conf:
+            lsites.append(conf['site'])
+        else:
+            lsites.append(conf['_id'])
     print (args.status, count)

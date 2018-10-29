@@ -120,7 +120,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
     def log_result(self, result):
         for i, r2val, r2test in result:
             print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, FL= %s, DR= %3.2f, AF= %s, '
-                  'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
+                  'ACNN= %s, FIL=%s, KS=%s, STR=%s, OPT= %s, R2V = %3.5f, R2T = %3.5f' %
                   (self.config['arch']['mode'],
                    self.config['data']['datanames'][0],
                    self.config['data']['dataset'],
@@ -128,7 +128,11 @@ class CNNS2SArchitecture(NNS2SArchitecture):
                    self.config['data']['lag'],
                    i, str(self.config['arch']['full']),
                    self.config['arch']['drop'],
+                   self.config['arch']['activationfl'],
                    self.config['arch']['activation'],
+        	   str(self.config['arch']['filters']),
+        	   str(self.config['arch']['kernel_size']),
+        	   str(self.config['arch']['strides']),
                    self.config['training']['optimizer'],
                    r2val,
                    r2test,
