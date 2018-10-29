@@ -27,9 +27,7 @@ from copy import deepcopy
 from pymongo import MongoClient
 import json
 
-
 __author__ = 'bejar'
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -45,4 +43,3 @@ if __name__ == '__main__':
 
     for line in resfile:
         col.insert(json.loads(line))
-

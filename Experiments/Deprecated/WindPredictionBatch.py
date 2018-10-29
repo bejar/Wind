@@ -21,7 +21,7 @@ from time import strftime
 
 from Wind.Util import load_config_file
 from Wind.Training import getconfig, saveconfig, failconfig
-from Wind.Models import train_dirregression_architecture, train_seq2seq_architecture, train_MLP_regs2s_architecture, \
+from Wind.Deprecated.Models import train_dirregression_architecture, train_seq2seq_architecture, train_MLP_regs2s_architecture, \
     train_ensemble_architecture, train_convdirregression_architecture, train_MLP_dirreg_architecture, \
     train_svm_dirregression_architecture, train_convo_regs2s_architecture, train_persistence, \
     train_seq2seqatt_architecture

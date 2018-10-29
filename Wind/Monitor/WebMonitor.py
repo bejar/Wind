@@ -26,6 +26,7 @@ from time import time, strftime
 import json
 import StringIO
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
@@ -33,6 +34,7 @@ import logging
 
 import base64
 import numpy as np
+
 __author__ = 'bejar'
 
 # Configuration stuff
@@ -57,18 +59,19 @@ def getconfig(mode=None):
 
     config = None
     if len(lconfig) > 0:
-        ch = np.random.randint(0,len(lconfig))
+        ch = np.random.randint(0, len(lconfig))
         for i, conf in enumerate(lconfig):
             if i == ch:
                 config = conf
 
     if config is not None:
-        print("Served job %s#%s" % (config['_id'],config['data']['datanames'][0]))
+        print("Served job %s#%s" % (config['_id'], config['data']['datanames'][0]))
         col.update({'_id': config['_id']}, {'$set': {'status': 'working'}})
         col.update({'_id': config['_id']}, {'$set': {'btime': strftime('%Y-%m-%d %H:%M:%S')}})
         col.update({'_id': config['_id']}, {'$set': {'host': 'proxy'}})
 
     return config
+
 
 def saveconfig(config):
     """
@@ -88,6 +91,7 @@ def saveconfig(config):
     else:
         col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
 
+
 @app.route('/Monitor')
 def info():
     """
@@ -101,7 +105,6 @@ def info():
     exp = col.find({'status': 'done'})
     done = len([v for v in exp])
 
-
     exp = col.find({'status': 'working'})
     work = {}
     for v in exp:
@@ -112,9 +115,10 @@ def info():
                           'ahead': v['ahead'] if 'ahead' in v else 0}
 
     exp = col.find({'status': 'pending'})
-    pend= len([v for v in exp])
+    pend = len([v for v in exp])
 
     return render_template('Monitor.html', done=done, pend=pend, work=work)
+
 
 @app.route('/Proxy', methods=['GET', 'POST'])
 def proxy():
@@ -131,6 +135,7 @@ def proxy():
         saveconfig(res)
         return "OK"
 
+
 @app.route('/Done', methods=['GET', 'POST'])
 def done():
     """
@@ -142,11 +147,11 @@ def done():
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    exp = col.find({'status': 'done', 'data.dataset':int(request.form['problem'])})
+    exp = col.find({'status': 'done', 'data.dataset': int(request.form['problem'])})
     done = {}
     for v in exp:
         done[v['_id']] = {'data': v['data']['datanames'][0],
-                          'dataset':v['data']['dataset'],
+                          'dataset': v['data']['dataset'],
                           'vars': len(v['data']['vars']),
                           'lag': v['data']['lag'],
                           'rnn': v['arch']['rnn'],
@@ -160,13 +165,15 @@ def done():
 
     return render_template('Done.html', done=done, prob=request.form['problem'])
 
+
 @app.route('/Elist', methods=['GET', 'POST'])
 def iface():
     """
     Interfaz con el cliente a traves de una pagina de web
     """
-    probtypes = [0,1,2,3]
+    probtypes = [0, 1, 2, 3]
     return render_template('ExpList.html', types=probtypes)
+
 
 @app.route('/Experiment/<exp>')
 def experiment(exp):
@@ -189,10 +196,10 @@ def experiment(exp):
 
     axes = fig.add_subplot(1, 1, 1)
 
-    axes.plot(data[:,0], data[:,1],color='r')
-    axes.plot(data[:,0], data[:,2],color='r',linestyle='--')
-    axes.plot(data[:,0], data[:,3],color='g')
-    axes.plot(data[:,0], data[:,4],color='g',linestyle='--')
+    axes.plot(data[:, 0], data[:, 1], color='r')
+    axes.plot(data[:, 0], data[:, 2], color='r', linestyle='--')
+    axes.plot(data[:, 0], data[:, 3], color='g')
+    axes.plot(data[:, 0], data[:, 4], color='g', linestyle='--')
 
     plt.savefig(img, format='png')
     img.seek(0)

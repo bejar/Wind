@@ -22,12 +22,11 @@ import numpy as np
 from time import strftime
 from Wind.Config.Paths import wind_jobs_path
 
-
 try:
     from pymongo import MongoClient
     from Wind.Private.DBConfig import mongoconnection
 except ImportError:
-    _has_mongo= False
+    _has_mongo = False
 else:
     _has_mongo = True
 
@@ -115,14 +114,14 @@ def sel_upper_lower(exp, mode, column, upper=100, lower=100):
         elif 'results' in e:
             lexps.append((np.sum(np.array(e['results'])[:, column]), e['site'], np.array(e['results'])[:, column]))
 
-
     lupper = [(v.split('-')[1], s) for _, v, s in sorted(lexps, reverse=True)][:upper]
-    llower = [(v.split('-')[1], s)  for _, v, s in sorted(lexps, reverse=False)][:lower]
+    llower = [(v.split('-')[1], s) for _, v, s in sorted(lexps, reverse=False)][:lower]
     lexps = []
     lexps.extend(lupper)
     lexps.extend(llower)
 
     return np.array([v[0] for v in lexps]), np.array([v[1] for v in lexps])
+
 
 def SampEn(U, m, r):
     """
@@ -131,20 +130,21 @@ def SampEn(U, m, r):
     :param m: The embedding dimension
     :param r: the radius distance
     """
+
     def _maxdist(x_i, x_j):
         result = max([abs(ua - va) for ua, va in zip(x_i, x_j)])
         return result
-  
+
     def _phi(m):
         x = [[U[j] for j in range(i, i + m - 1 + 1)] for i in range(N - m + 1)]
         C = [len([1 for j in range(len(x)) if i != j and _maxdist(x[i], x[j]) <= r]) for i in range(len(x))]
         return sum(C)
- 
+
     N = len(U)
-     
-    return -np.log(_phi(m+1) / _phi(m))
+
+    return -np.log(_phi(m + 1) / _phi(m))
 
 
 if __name__ == '__main__':
-    sites1, coord1 = sel_upper_lower('eastwest9597', 'seq2seq',1)
+    sites1, coord1 = sel_upper_lower('eastwest9597', 'seq2seq', 1)
     print(sites1)

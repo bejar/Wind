@@ -24,9 +24,7 @@ from Wind.Util import load_config_file
 from Wind.Private.DBConfig import mongoconnection
 from pymongo import MongoClient
 
-
 __author__ = 'bejar'
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -40,19 +38,17 @@ if __name__ == '__main__':
 
     config = load_config_file(args.config)
 
-
-
     if args.test:
-        print(args.fsite-args.isite+1)
+        print(args.fsite - args.isite + 1)
     else:
-        print(args.fsite-args.isite+1)
+        print(args.fsite - args.isite + 1)
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
 
         ids = int(time())
-        for j, site in enumerate(range(args.isite, args.fsite+1)):
+        for j, site in enumerate(range(args.isite, args.fsite + 1)):
             config['site'] = '%d-%d' % (args.sec, site)
             config['data']['datanames'] = ['%d-%d-%d' % (args.sec, site, args.suff)]
             config['status'] = 'pending'
@@ -60,4 +56,4 @@ if __name__ == '__main__':
             config['_id'] = "%d%06d" % (ids, site)
             col.insert_one(config)
             # print('%d-%d-%d' % (sec, site, args.suff))
-            #print(config)
+            # print(config)

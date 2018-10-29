@@ -61,7 +61,6 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         idimensions = self.config['idimensions']
         odimensions = self.config['odimensions']
 
-
         if k_reg == 'l1':
             k_regularizer = l1(k_regw)
         elif k_reg == 'l2':
@@ -72,16 +71,16 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         self.model = Sequential()
 
         self.model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                         activation=activation, padding='causal',
-                         kernel_regularizer=k_regularizer))
+                              activation=activation, padding='causal',
+                              kernel_regularizer=k_regularizer))
 
         if drop != 0:
             self.model.add(Dropout(rate=drop))
 
         for i in range(1, len(filters)):
             self.model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                             activation=activation, padding='causal',
-                             kernel_regularizer=k_regularizer))
+                                  activation=activation, padding='causal',
+                                  kernel_regularizer=k_regularizer))
             if drop != 0:
                 self.model.add(Dropout(rate=drop))
 
@@ -130,9 +129,9 @@ class CNNS2SArchitecture(NNS2SArchitecture):
                    self.config['arch']['drop'],
                    self.config['arch']['activationfl'],
                    self.config['arch']['activation'],
-        	   str(self.config['arch']['filters']),
-        	   str(self.config['arch']['kernel_size']),
-        	   str(self.config['arch']['strides']),
+                   str(self.config['arch']['filters']),
+                   str(self.config['arch']['kernel_size']),
+                   str(self.config['arch']['strides']),
                    self.config['training']['optimizer'],
                    r2val,
                    r2test,

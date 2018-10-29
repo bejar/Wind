@@ -19,8 +19,8 @@ RunConfig
 
 __author__ = 'bejar'
 
+
 class RunConfig:
-    
     impl = 1
     verbose = False
     tboard = False
@@ -30,7 +30,7 @@ class RunConfig:
     proxy = False
     save = False
     remote = False
-    
+
     def __init__(self, impl, verbose, tboard, best, early, multi, proxy, save, remote):
         self.impl = impl
         self.verbose = verbose

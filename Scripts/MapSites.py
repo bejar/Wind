@@ -30,6 +30,7 @@ def explore_files(dir, ds):
         if v[0] in '0123456789':
             yield dir + '/' + ds + '/' + v
 
+
 def map_all(path):
     lds = [v for v in sorted(os.listdir(path)) if v[0] in '0123456789']
     coords = np.zeros((126692, 2))
@@ -40,12 +41,13 @@ def map_all(path):
         for f in explore_files(path, ds):
             data = Dataset(f, 'r')
             pos = int(f.split('/')[-1].split('.')[0])
-            coords[pos][0]= data.latitude
-            coords[pos][1]= data.longitude
+            coords[pos][0] = data.latitude
+            coords[pos][1] = data.longitude
 
             print(pos, [data.latitude, data.longitude])
         # MapThis(lcoords, ds, lfnames)
-    np.save(wind_data_path+'/coords.npy',coords)
+    np.save(wind_data_path + '/coords.npy', coords)
+
 
 __author__ = 'bejar'
 

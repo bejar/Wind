@@ -29,14 +29,13 @@ if __name__ == '__main__':
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-
     exp = col.find({'status': 'working'})
     jobs = [v for v in exp]
     print("Working = %d" % len(jobs))
 
     for i, j in enumerate(jobs):
         if 'btime' in j and 'host' in j:
-            print('JOB %d = %s %s %s %s'%(i, j['_id'], j['btime'], j['site'], j['host']))
+            print('JOB %d = %s %s %s %s' % (i, j['_id'], j['btime'], j['site'], j['host']))
         else:
             print('JOB %d = ???' % i)
 
@@ -50,5 +49,3 @@ if __name__ == '__main__':
 #            print('JOB %d = %s'%(i, j['etime']))
 #        else:
 #            print('JOB %d = ???' % i)
-
-

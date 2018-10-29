@@ -21,8 +21,8 @@ from sklearn.metrics import r2_score
 
 __author__ = 'bejar'
 
-class PersistenceArchitecture(Architecture):
 
+class PersistenceArchitecture(Architecture):
     data_mode = False
 
     def generate_model(self):
@@ -40,7 +40,6 @@ class PersistenceArchitecture(Architecture):
         :return:
         """
         pass
-
 
     def summary(self):
         """
@@ -74,7 +73,6 @@ class PersistenceArchitecture(Architecture):
                    i,
                    r2val, r2test
                    ))
-
 
     def save(self, postfix):
         """

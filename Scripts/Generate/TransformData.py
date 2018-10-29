@@ -26,6 +26,7 @@ import argparse
 
 __author__ = 'bejar'
 
+
 def generate_data(dfile, vars, step, mode='average'):
     """
 
@@ -45,8 +46,7 @@ def generate_data(dfile, vars, step, mode='average'):
         [t.tm_hour * 60 + t.tm_min for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
     month = np.array([t.tm_mon for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
 
-
-    if step == 1: # The original data
+    if step == 1:  # The original data
         ldata = []
         for v in vars:
             data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
@@ -57,7 +57,7 @@ def generate_data(dfile, vars, step, mode='average'):
         data_stack = np.stack(ldata, axis=1)
         print(data_stack.shape)
         np.save(wind_NREL_data_path + '/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
-    elif mode == 'average': # Average step points
+    elif mode == 'average':  # Average step points
         ldata = []
         for v in vars:
             data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
@@ -79,7 +79,7 @@ def generate_data(dfile, vars, step, mode='average'):
         data_stack = np.stack(ldata, axis=1)
         print(data_stack.shape)
         np.save(wind_data_path + '/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
-    elif mode == 'split': # split in n step files
+    elif mode == 'split':  # split in n step files
         for i in range(step):
             ldata = []
             for v in vars:
@@ -90,8 +90,7 @@ def generate_data(dfile, vars, step, mode='average'):
 
             data_stack = np.stack(ldata, axis=1)
             print(data_stack.shape)
-            np.save(wind_data_path + '/%s-%02d-%02d.npy' % (wf.replace('/', '-'), step, i+1), data_stack)
-
+            np.save(wind_data_path + '/%s-%02d-%02d.npy' % (wf.replace('/', '-'), step, i + 1), data_stack)
 
 
 if __name__ == '__main__':
@@ -117,7 +116,7 @@ if __name__ == '__main__':
     #           '11/5793', '11/5794', '11/5795', '11/5796',
     #           '11/5752', '11/5753', '11/5754', '11/5755']
     vars = ['wind_speed', 'density', 'pressure', 'wind_direction']
-    wfiles = [str(args.sec)+'/' + str(i) for i in range(args.isite, args.fsite)]
+    wfiles = [str(args.sec) + '/' + str(i) for i in range(args.isite, args.fsite)]
 
     for wf in wfiles:
         print("Processing %s" % wf)

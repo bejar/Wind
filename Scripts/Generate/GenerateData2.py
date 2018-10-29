@@ -24,7 +24,6 @@ import time
 
 __author__ = 'bejar'
 
-
 if __name__ == '__main__':
 
     # Grupos de 5 minutos
@@ -47,7 +46,8 @@ if __name__ == '__main__':
         nint = nc_fid.dimensions['time'].size
         stime = nc_fid.getncattr('start_time')
         samp = nc_fid.getncattr('sample_period')
-        hour = np.array([t.tm_hour * 60 + t.tm_min for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
+        hour = np.array(
+            [t.tm_hour * 60 + t.tm_min for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
         month = np.array([t.tm_mon for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
 
         ldata = []
@@ -56,7 +56,7 @@ if __name__ == '__main__':
             print(data.shape)
 
             end = data.shape[0]
-            length = int(end/step)
+            length = int(end / step)
             print(length)
             data_aver = np.zeros(length)
 
@@ -70,4 +70,3 @@ if __name__ == '__main__':
         data_stack = np.stack(ldata, axis=1)
         print(data_stack.shape)
         np.save('/home/bejar/%s.npy' % wf.replace('/', '-'), data_stack)
-

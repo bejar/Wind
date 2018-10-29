@@ -25,7 +25,7 @@ from Wind.Config.Paths import remote_data
 from Wind.Spatial.Util import get_all_neighbors
 
 try:
-   import pysftp
+    import pysftp
 except Exception:
     pass
 
@@ -85,7 +85,7 @@ class Dataset:
     test_y = None
     data_path = None
     config = None
-    scalers = {'standard':StandardScaler(), 'minmax':MinMaxScaler(feature_range=(-1,1))}
+    scalers = {'standard': StandardScaler(), 'minmax': MinMaxScaler(feature_range=(-1, 1))}
 
     def __init__(self, config, data_path):
         self.config = config
@@ -251,7 +251,7 @@ class Dataset:
             slice = ahead
 
         if self.config['dataset'] == 5:
-            datanames = get_all_neighbors(datanames[0],0.05)
+            datanames = get_all_neighbors(datanames[0], 0.05)
         # Reads numpy arrays for all sites and keeps only selected columns
         for d in datanames:
             if remote:
@@ -263,7 +263,7 @@ class Dataset:
                 os.remove(self.data_path + '/%s.npy' % d)
 
             if vars is not None:
-                wind[d] = wind[d][:,vars]
+                wind[d] = wind[d][:, vars]
 
         if (self.config['dataset'] == 0) or (self.config['dataset'] == 'onesiteonevar'):
             if not ensemble:
@@ -291,15 +291,17 @@ class Dataset:
             stacked = np.vstack([wind[d][:, 0] for d in datanames]).T
             self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
                 self._generate_dataset_multiple_var(stacked, datasize, testsize,
-                                                       lag=lag, ahead=dahead, slice=slice, mode=mode)
+                                                    lag=lag, ahead=dahead, slice=slice, mode=mode)
         elif self.config['dataset'] == 3 or self.config['dataset'] == 'manysitemanyvar':
             stacked = np.hstack([wind[d] for d in datanames])
             self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
                 self._generate_dataset_multiple_var(stacked, datasize, testsize,
                                                     lag=lag, ahead=dahead, slice=slice, mode=mode)
-        elif self.config['dataset'] == 4 or self.config['dataset'] == 5 or self.config['dataset'] == 'manysitemanyvarstack':
+        elif self.config['dataset'] == 4 or self.config['dataset'] == 5 or self.config[
+            'dataset'] == 'manysitemanyvarstack':
             stacked = [self._generate_dataset_multiple_var(wind[d], datasize, testsize,
-                                                           lag=lag, ahead=dahead, slice=slice, mode=mode) for d in datanames]
+                                                           lag=lag, ahead=dahead, slice=slice, mode=mode) for d in
+                       datanames]
 
             self.train_x = np.vstack([x[0] for x in stacked])
             self.train_y = np.vstack([x[1] for x in stacked])
@@ -333,8 +335,9 @@ if __name__ == '__main__':
     from Wind.Util import load_config_file
     from Wind.Config import wind_data_path
     import matplotlib.pyplot as plt
+
     config = load_config_file('./configrnnseq2seqexp.json')
-    data_path='../../Data'
+    data_path = '../../Data'
     # print(config)
     mode = False
     iahead = 1

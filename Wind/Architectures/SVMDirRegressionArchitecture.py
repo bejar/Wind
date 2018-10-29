@@ -23,8 +23,8 @@ from sklearn.metrics import r2_score
 
 __author__ = 'bejar'
 
-class SVMDirRegressionArchitecture(Architecture):
 
+class SVMDirRegressionArchitecture(Architecture):
     data_mode = 'svm'
 
     def generate_model(self):
@@ -41,7 +41,6 @@ class SVMDirRegressionArchitecture(Architecture):
 
         self.model = SVR(kernel=kernel, C=C, epsilon=epsilon, degree=degree, coef0=coef0)
 
-
     def train(self, train_x, train_y, val_x, val_y):
         """
         Trains the model
@@ -49,7 +48,6 @@ class SVMDirRegressionArchitecture(Architecture):
         :return:
         """
         self.model.fit(train_x, train_y)
-
 
     def summary(self):
         """
@@ -62,8 +60,8 @@ class SVMDirRegressionArchitecture(Architecture):
         degree = self.config['arch']['degree']
         coef0 = self.config['arch']['coef0']
 
-        print('lag: ', self.config['data']['lag'], '/kernel: ', kernel, '/C: ', C, '/epsilon:', epsilon, '/degree:', degree)
-
+        print(
+        'lag: ', self.config['data']['lag'], '/kernel: ', kernel, '/C: ', C, '/epsilon:', epsilon, '/degree:', degree)
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         """
@@ -79,7 +77,6 @@ class SVMDirRegressionArchitecture(Architecture):
 
         return r2val, r2test
 
-
     def log_result(self, result):
         """
         logs a result from the model
@@ -89,14 +86,14 @@ class SVMDirRegressionArchitecture(Architecture):
         """
         for r in result:
             print('%s |  AH=%d, KRNL= %s, C= %3.5f, EPS= %3.5f, DEG=%d, COEF0= %d, R2V = %3.5f, R2T = %3.5f' %
-                    (self.config['arch']['mode'], r[0],
-                     self.config['arch']['kernel'],
-                     self.config['arch']['C'],
-                     self.config['arch']['epsilon'],
-                     self.config['arch']['degree'],
-                     self.config['arch']['coef0'],
-                     r[1], r[2]
-                     ))
+                  (self.config['arch']['mode'], r[0],
+                   self.config['arch']['kernel'],
+                   self.config['arch']['C'],
+                   self.config['arch']['epsilon'],
+                   self.config['arch']['degree'],
+                   self.config['arch']['coef0'],
+                   r[1], r[2]
+                   ))
 
     def save(self, postfix):
         """

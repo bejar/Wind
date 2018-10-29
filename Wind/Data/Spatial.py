@@ -6,7 +6,7 @@ Spatial
 
 :Description: Spatial
 
-    
+    Experiments with geographical distribution of siter
 
 :Authors: bejar
     
@@ -32,7 +32,6 @@ except ImportError:
     _has_mongo= False
 else:
     _has_mongo = True
-
 
 if __name__ == '__main__':
 

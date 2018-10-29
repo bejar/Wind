@@ -19,7 +19,7 @@ Dispatch
 
 __author__ = 'bejar'
 
-from Wind.Train.TrainingProcess import train_dirregression, train_persistence, train_svm_dirregression, \
+from Wind.Deprecated.Train.TrainingProcess import train_dirregression, train_persistence, train_svm_dirregression, \
     train_sequence2sequence
 from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArchitecture, \
     PersistenceArchitecture, RNNEncoderDecoderS2SArchitecture, MLPS2SArchitecture, MLPDirRegressionArchitecture, \

@@ -19,7 +19,7 @@ RNNDirRegressionArchitecture
 
 from Wind.Architectures.NNArchitecture import NNArchitecture
 from keras.models import Sequential
-from keras.layers import LSTM, GRU,  Bidirectional, Dense
+from keras.layers import LSTM, GRU, Bidirectional, Dense
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -37,13 +37,10 @@ except ImportError:
 else:
     _has_multigpu = True
 
-
-
 __author__ = 'bejar'
 
 
 class RNNDirRegressionArchitecture(NNArchitecture):
-
     modfile = None
     modname = 'RNNDir'
     data_mode = False
@@ -67,9 +64,9 @@ class RNNDirRegressionArchitecture(NNArchitecture):
         bidirectional = self.config['arch']['bidirectional']
         bimerge = self.config['arch']['bimerge']
 
-        rnntype=self.config['arch']['rnn']
-        CuDNN=self.config['arch']['CuDNN']
-        full=self.config['arch']['full']
+        rnntype = self.config['arch']['rnn']
+        CuDNN = self.config['arch']['CuDNN']
+        full = self.config['arch']['full']
 
         # Extra added from training function
         idimensions = self.config['idimensions']
@@ -98,10 +95,10 @@ class RNNDirRegressionArchitecture(NNArchitecture):
                         kernel_regularizer=k_regularizer))
             else:
                 self.model.add(RNN(neurons, input_shape=(idimensions), return_sequences=True,
-                              recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+                                   recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
                 for i in range(1, nlayers - 1):
                     self.model.add(RNN(neurons, return_sequences=True, recurrent_regularizer=rec_regularizer,
-                                  kernel_regularizer=k_regularizer))
+                                       kernel_regularizer=k_regularizer))
                 self.model.add(RNN(neurons, recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
             for l in full:
                 self.model.add(Dense(l))
@@ -130,32 +127,34 @@ class RNNDirRegressionArchitecture(NNArchitecture):
                                       input_shape=(idimensions), merge_mode=bimerge))
                     for i in range(1, nlayers - 1):
                         self.model.add(Bidirectional(RNN(neurons, recurrent_dropout=drop, implementation=impl,
-                                                    activation=activation, recurrent_activation=activation_r,
-                                                    return_sequences=True,
-                                                    recurrent_regularizer=rec_regularizer,
-                                                    kernel_regularizer=k_regularizer), merge_mode=bimerge))
+                                                         activation=activation, recurrent_activation=activation_r,
+                                                         return_sequences=True,
+                                                         recurrent_regularizer=rec_regularizer,
+                                                         kernel_regularizer=k_regularizer), merge_mode=bimerge))
                     self.model.add(Bidirectional(RNN(neurons, recurrent_dropout=drop, activation=activation,
-                                                recurrent_activation=activation_r, implementation=impl,
-                                                recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer),
-                                            merge_mode=bimerge))
+                                                     recurrent_activation=activation_r, implementation=impl,
+                                                     recurrent_regularizer=rec_regularizer,
+                                                     kernel_regularizer=k_regularizer),
+                                                 merge_mode=bimerge))
                 self.model.add(Dense(1))
             else:
                 if nlayers == 1:
                     self.model.add(RNN(neurons, input_shape=(idimensions), implementation=impl,
-                                  recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                                  recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+                                       recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+                                       recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
                 else:
                     self.model.add(RNN(neurons, input_shape=(idimensions), implementation=impl,
-                                  recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                                  return_sequences=True, recurrent_regularizer=rec_regularizer,
-                                  kernel_regularizer=k_regularizer))
+                                       recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+                                       return_sequences=True, recurrent_regularizer=rec_regularizer,
+                                       kernel_regularizer=k_regularizer))
                     for i in range(1, nlayers - 1):
                         self.model.add(RNN(neurons, recurrent_dropout=drop, implementation=impl,
-                                      activation=activation, recurrent_activation=activation_r, return_sequences=True,
-                                      recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+                                           activation=activation, recurrent_activation=activation_r,
+                                           return_sequences=True,
+                                           recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
                     self.model.add(RNN(neurons, recurrent_dropout=drop, activation=activation,
-                                  recurrent_activation=activation_r, implementation=impl,
-                                  recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+                                       recurrent_activation=activation_r, implementation=impl,
+                                       recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
                 for l in full:
                     self.model.add(Dense(l))
 
@@ -168,29 +167,29 @@ class RNNDirRegressionArchitecture(NNArchitecture):
         activation = self.config['arch']['activation']
         activation_r = self.config['arch']['activation_r']
         print('lag: ', self.config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:',
-         activation, activation_r)
-
+              activation, activation_r)
 
     def log_result(self, result):
         for r in result:
-            print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
-              'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-              (self.config['arch']['mode'],
-               self.config['data']['datanames'][0],
-               self.config['data']['dataset'],
-               len(self.config['data']['vars']),
-               self.config['data']['lag'],
-               r[0],
-               self.config['arch']['rnn'],
-               self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no',
-               self.config['arch']['nlayers'],
-               self.config['arch']['neurons'],
-               self.config['arch']['drop'],
-               self.config['arch']['activation'],
-               self.config['arch']['activation_r'],
-               self.config['training']['optimizer'],
-               r[1], r[2]
-               ))
+            print(
+                        '%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
+                        'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
+                        (self.config['arch']['mode'],
+                         self.config['data']['datanames'][0],
+                         self.config['data']['dataset'],
+                         len(self.config['data']['vars']),
+                         self.config['data']['lag'],
+                         r[0],
+                         self.config['arch']['rnn'],
+                         self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no',
+                         self.config['arch']['nlayers'],
+                         self.config['arch']['neurons'],
+                         self.config['arch']['drop'],
+                         self.config['arch']['activation'],
+                         self.config['arch']['activation_r'],
+                         self.config['training']['optimizer'],
+                         r[1], r[2]
+                         ))
 
     # def save(self, postfix):
     #     if not self.runconfig.save and self.runconfig.best:

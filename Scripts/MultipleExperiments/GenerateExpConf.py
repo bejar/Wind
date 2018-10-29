@@ -27,6 +27,7 @@ from pymongo import MongoClient
 
 __author__ = 'bejar'
 
+
 def generate_configs(config):
     """
     Generates all possible individual configs from the fields with multiple values
@@ -56,7 +57,7 @@ if __name__ == '__main__':
     parser.add_argument('--config', default='configbatchregdir', help='Experiment configuration')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
     parser.add_argument('--exp', required=True, help='Experiment Name')
-    
+
     args = parser.parse_args()
 
     configB = load_config_file(args.config, upload=True)
@@ -65,7 +66,7 @@ if __name__ == '__main__':
         conf = generate_configs(configB)
         len(conf)
         print(conf[0])
-        
+
     else:
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
@@ -79,4 +80,3 @@ if __name__ == '__main__':
             config['result'] = []
             config['_id'] = str(ids + i)
             col.insert_one(config)
-

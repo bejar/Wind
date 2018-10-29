@@ -41,7 +41,6 @@ if __name__ == '__main__':
         lfiles = glob.glob('*.json')
         lfiles = sorted(lfiles)
 
-
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
@@ -56,17 +55,17 @@ if __name__ == '__main__':
             col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
         else:
             if 'results' in config:
-                print(config['_id'], config['data']['datanames'][0], np.sum([v for _,v,_ in config['results']]))
+                print(config['_id'], config['data']['datanames'][0], np.sum([v for _, v, _ in config['results']]))
             elif 'result' in config:
-                print(config['_id'], config['data']['datanames'][0], np.sum([v for _,v,_ in config['result']]))
-            
+                print(config['_id'], config['data']['datanames'][0], np.sum([v for _, v, _ in config['result']]))
+
             col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
-            
+
             if 'results' in config:
                 col.update({'_id': config['_id']}, {'$set': {'result': config['results']}})
             elif 'result' in config:
                 col.update({'_id': config['_id']}, {'$set': {'result': config['result']}})
-                
+
             col.update({'_id': config['_id']}, {'$set': {'etime': config['etime']}})
             if 'btime' in config:
                 col.update({'_id': config['_id']}, {'$set': {'btime': config['btime']}})

@@ -35,20 +35,17 @@ if __name__ == '__main__':
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-#    configs = col.find({'experiment':'mlpregs2s','status':'working' })
-    configs = col.find({'experiment':'convos2s', 'status':'done'})
+    #    configs = col.find({'experiment':'mlpregs2s','status':'working' })
+    configs = col.find({'experiment': 'convos2s', 'status': 'done'})
 
     count = 0
     for conf in configs:
-        #print(conf['site'])
+        # print(conf['site'])
         data = np.array(conf['result'])
-        vsum = np.sum(data[:,1])
-        if vsum <4:
-            print(conf['site'],vsum)
+        vsum = np.sum(data[:, 1])
+        if vsum < 4:
+            print(conf['site'], vsum)
             col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
             count += 1
 
     print(count)
-
-
-

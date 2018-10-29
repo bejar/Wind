@@ -6,7 +6,7 @@ Util
 
 :Description: Util
 
-    
+    Utilities for spatial distribution of sites
 
 :Authors: bejar
     
@@ -19,7 +19,7 @@ Util
 try:
     import folium
 except ImportError:
-    _has_folium= False
+    _has_folium = False
 else:
     _has_folium = True
 # from geojson import LineString, FeatureCollection, Feature
@@ -39,9 +39,9 @@ def get_direct_neighbors(site, radius):
     :param site:
     :return:
     """
-    coords = np.load(wind_data_path +'/coords.npy')
+    coords = np.load(wind_data_path + '/coords.npy')
     tree = KDTree(coords, leaf_size=1)
-    neigh = tree.query_radius(coords[site,:].reshape(1, -1), r=radius, count_only=False, return_distance=False)[0]
+    neigh = tree.query_radius(coords[site, :].reshape(1, -1), r=radius, count_only=False, return_distance=False)[0]
     return neigh
 
 
@@ -75,9 +75,10 @@ def get_all_neighbors(site, radius):
     lneighbor = sorted(sneigh)
     lneighbor.remove(isite)
     tmp = [site]
-    tmp.extend(["%d-%d-%d" % (v//500, v, agg) for v in lneighbor])
+    tmp.extend(["%d-%d-%d" % (v // 500, v, agg) for v in lneighbor])
 
     return tmp
+
 
 def MapThis(coords, ds, lfnames):
     coords = np.array(coords)
@@ -89,7 +90,7 @@ def MapThis(coords, ds, lfnames):
     for c, f in zip(coords, lfnames):
         folium.Marker(c, popup=str(c) + '\n' + f).add_to(mymap)
 
-    mymap.save(wind_path + 'Results/map%s.html'%ds)
+    mymap.save(wind_path + 'Results/map%s.html' % ds)
 
 
 if __name__ == '__main__':
@@ -97,4 +98,4 @@ if __name__ == '__main__':
 
     lneighbor = [4961]
 
-    print(get_all_neighbors("9-4961-12",0.05))
+    print(get_all_neighbors("9-4961-12", 0.05))

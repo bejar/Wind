@@ -27,10 +27,9 @@ try:
     from pymongo import MongoClient
     from Wind.Private.DBConfig import mongoconnection
 except ImportError:
-    _has_mongo= False
+    _has_mongo = False
 else:
     _has_mongo = True
-
 
 __author__ = 'bejar'
 
@@ -47,17 +46,16 @@ def getconfig(proxy=False, mode=None, secpat=None):
         col = db[mongoconnection.col]
         query = {'status': 'pending'}
         if secpat is not None:
-            query['site'] = {'$regex':'%s-.'% secpat}
+            query['site'] = {'$regex': '%s-.' % secpat}
         if mode is not None:
-            query['experiment'] = mode 
-            
+            query['experiment'] = mode
 
-        # config = col.find_one(query)
+            # config = col.find_one(query)
 
         lconfig = [c for c in col.find(query, limit=100)]
         config = None
         if len(lconfig) > 0:
-            ch = np.random.randint(0,len(lconfig))
+            ch = np.random.randint(0, len(lconfig))
             for i, conf in enumerate(lconfig):
                 if i == ch:
                     config = conf
@@ -112,7 +110,7 @@ def saveconfig(config, lresults, proxy=False, mino=False):
             config['result'] = lresults
             config['etime'] = strftime('%Y-%m-%d %H:%M:%S')
             sconf = json.dumps(config)
-            fconf = open(wind_res_path + '/res'+config['_id']+'.json', 'w')
+            fconf = open(wind_res_path + '/res' + config['_id'] + '.json', 'w')
             fconf.write(sconf + '\n')
             fconf.close()
 

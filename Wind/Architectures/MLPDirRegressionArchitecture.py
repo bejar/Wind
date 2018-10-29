@@ -18,11 +18,9 @@ MLPDirRegressionArchitecture
 """
 from Wind.Architectures.NNArchitecture import NNArchitecture
 
-
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Activation, Dropout
 from keras.layers import Flatten
-
 
 try:
     from keras.utils import multi_gpu_model
@@ -44,8 +42,8 @@ import os
 
 __author__ = 'bejar'
 
-class MLPDirRegressionArchitecture(NNArchitecture):
 
+class MLPDirRegressionArchitecture(NNArchitecture):
     modfile = None
     modname = 'MLPDir'
     data_mode = False
@@ -73,7 +71,6 @@ class MLPDirRegressionArchitecture(NNArchitecture):
             self.model.add(Dropout(rate=dropout))
         self.model.add(Flatten())
         self.model.add(Dense(1, activation='linear'))
-
 
     def summary(self):
         self.model.summary()

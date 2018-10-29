@@ -34,12 +34,10 @@ if __name__ == '__main__':
     parser.add_argument('--jph', type=int, default=30, help='number of configs')
     args = parser.parse_args()
 
-
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
-
 
     query = {'status': 'pending'}
     # config = col.find_one(query)
@@ -47,12 +45,12 @@ if __name__ == '__main__':
     lconfig = [c for c in col.find(query, limit=args.nconfig)]
     nm = strftime('%Y%m%d%H%M%S')
     os.mkdir(nm)
-    os.mkdir('%s/Data'%nm)
-    os.mkdir('%s/Jobs'%nm)
+    os.mkdir('%s/Data' % nm)
+    os.mkdir('%s/Jobs' % nm)
 
-    jobtime = (args.nconfig//args.jph) +2
+    jobtime = (args.nconfig // args.jph) + 2
 
-    batchjob = open('%s/windjob%s.cmd'%(nm,nm),'w')
+    batchjob = open('%s/windjob%s.cmd' % (nm, nm), 'w')
     batchjob.write("""#!/bin/bash
 # @ job_name = windjob
 # @ initialdir = /gpfs/projects/bsc28/bsc28642/Wind/Experiments
@@ -63,26 +61,25 @@ if __name__ == '__main__':
 # @ cpus_per_task = 1
 # @ features = k80
 """ +
-"# @ wall_clock_limit = %d:30:00\n" %jobtime
-+
-"""module purge
-module purge; module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
-PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/
-export PYTHONPATH
-
-"""
+                   "# @ wall_clock_limit = %d:30:00\n" % jobtime
+                   +
+                   """module purge
+                   module purge; module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
+                   PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/
+                   export PYTHONPATH
+                   
+                   """
                    )
 
     if len(lconfig) > 0:
         for config in lconfig:
             sconf = json.dumps(config)
             print(config['_id'])
-            fconf = open('./%s/Jobs/' %nm + config['_id']+'.json', 'w')
+            fconf = open('./%s/Jobs/' % nm + config['_id'] + '.json', 'w')
             fconf.write(sconf + '\n')
             fconf.close()
-            copy(wind_data_path +'/'+ config['data']['datanames'][0]+'.npy', './%s/Data/'%nm)
+            copy(wind_data_path + '/' + config['data']['datanames'][0] + '.npy', './%s/Data/' % nm)
             batchjob.write(
-                    'python WindExperimentBatch.py --best --early --gpu --mino --config %s\n' % config['_id'])
+                'python WindExperimentBatch.py --best --early --gpu --mino --config %s\n' % config['_id'])
             col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
     batchjob.close()
-

@@ -24,13 +24,12 @@ import time
 
 __author__ = 'bejar'
 
-
 if __name__ == '__main__':
 
     # Grupos de 5 minutos
     step = 12
 
-    wfiles = ['90/45142', '90/45143','90/45229','90/45230']
+    wfiles = ['90/45142', '90/45143', '90/45229', '90/45230']
     vars = ['wind_speed', 'density', 'pressure', 'wind_direction']
     mdata = {}
     for d, wf in enumerate(wfiles):
@@ -40,7 +39,8 @@ if __name__ == '__main__':
             nint = nc_fid.dimensions['time'].size
             stime = nc_fid.getncattr('start_time')
             samp = nc_fid.getncattr('sample_period')
-            hour = np.array([t.tm_hour * 60 + t.tm_min for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
+            hour = np.array(
+                [t.tm_hour * 60 + t.tm_min for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
             month = np.array([t.tm_mon for t in [time.gmtime(stime + (i * samp)) for i in range(0, nint, step)]])
         ldata = []
         for v in vars:
@@ -48,12 +48,12 @@ if __name__ == '__main__':
             print(data.shape)
 
             end = data.shape[0]
-            length = int(end/step)
+            length = int(end / step)
             print(length)
             data30 = np.zeros((length))
 
             for i in range(0, end, step):
-                data30[i/step] = np.sum(data[i: i+step])/step
+                data30[i / step] = np.sum(data[i: i + step]) / step
 
             ldata.append((data30))
         if d == 0:
@@ -63,5 +63,4 @@ if __name__ == '__main__':
         data30 = np.stack(ldata, axis=1)
         print(data30.shape)
         mdata[wf.replace('/', '-')] = data30
-    np.savez_compressed('/home/bejar/Wind%d.npz' % (step*5), **mdata)
-
+    np.savez_compressed('/home/bejar/Wind%d.npz' % (step * 5), **mdata)
