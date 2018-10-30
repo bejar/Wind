@@ -32,6 +32,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--nconfig', type=int, default=200, help='number of configs')
     parser.add_argument('--jph', type=int, default=30, help='number of configs')
+    parser.add_argument('--exp', default='convos2s', help='number of configs')
+    parser.add_argument('--nocopy', action='store_true', default=False, help='copy files')
+
     args = parser.parse_args()
 
     client = MongoClient(mongoconnection.server)
@@ -39,7 +42,7 @@ if __name__ == '__main__':
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    query = {'status': 'pending'}
+    query = {'status': 'pending', 'experiment':args.exp}
     # config = col.find_one(query)
 
     lconfig = [c for c in col.find(query, limit=args.nconfig)]
@@ -73,13 +76,15 @@ if __name__ == '__main__':
 
     if len(lconfig) > 0:
         for config in lconfig:
-            sconf = json.dumps(config)
-            print(config['_id'])
-            fconf = open('./%s/Jobs/' % nm + config['_id'] + '.json', 'w')
-            fconf.write(sconf + '\n')
-            fconf.close()
-            copy(wind_data_path + '/' + config['data']['datanames'][0] + '.npy', './%s/Data/' % nm)
+            if not args.nocopy:
+                print(config['_id'])
+                sconf = json.dumps(config)
+                fconf = open('./%s/Jobs/' % nm + config['_id'] + '.json', 'w')
+                fconf.write(sconf + '\n')
+                fconf.close()
+                copy(wind_data_path + '/' + config['data']['datanames'][0] + '.npy', './%s/Data/' % nm)
             batchjob.write(
                 'python WindExperimentBatch.py --best --early --gpu --mino --config %s\n' % config['_id'])
             col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
     batchjob.close()
+    print(f"NCONF= {len(lconfig)}")

@@ -100,7 +100,7 @@ class Dataset:
             scaler = self.scalers['scaler']
             data = scaler.fit_transform(data)
         else:
-            scaler = StandardScaler
+            scaler = StandardScaler()
             data = scaler.fit_transform(data)
         # print('DATA Dim =', data.shape)
 

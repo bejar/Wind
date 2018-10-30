@@ -1,0 +1,39 @@
+{
+  "data": {
+    "datanames": [
+      "95-47500-12"
+    ],
+    "vars": [0,1,2,3,4,5],
+    "datasize": 40912,
+    "testsize": 20456,
+    "dataset": 0,
+    "lag": 12,
+    "ahead": [1,12]
+  },
+  "arch": {
+    "neurons":96,
+    "neuronsD":64,
+    "k_reg": "None",
+    "k_regw": 0.1,
+    "rec_reg": "None",
+    "rec_regw": 0.1,
+    "drop": 0.3,
+    "nlayers": 2,
+    "nlayersE": 1,
+    "nlayersD": 1,
+    "activation": "relu",
+    "activation_r": "hard_sigmoid",
+    "CuDNN": false,
+    "bidirectional": false,
+    "bimerge":"ave",
+    "rnn": "GRU",
+      "full": [1],
+    "mode": "seq2seq"
+  },
+  "training": {
+    "iter": 1,
+    "batch": 1000,
+    "epochs": 100,
+    "optimizer": "nadam"
+  }
+}

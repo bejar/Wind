@@ -1,3 +1,5 @@
 netCDF4
 tensorflow
 keras
+matplotlib
+seaborn
