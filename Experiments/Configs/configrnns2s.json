@@ -1,17 +1,17 @@
-{
+{ "_id": "00000000",
+    "experiment": "MULTIPLE",
   "data": {
-    "datanames": [
-      "95-47500-12"
-    ],
+    "datanames": ["10-5308-12"],
+    "scaler": "standard",
     "vars": [0,1,2,3,4,5],
     "datasize": 40912,
     "testsize": 20456,
-    "dataset": 0,
-    "lag": 12,
-    "ahead": [1,12]
+    "dataset": 5,
+    "lag": 18,
+    "ahead": 12
   },
   "arch": {
-    "neurons":64,
+    "neurons":96,
     "neuronsD":64,
     "k_reg": "None",
     "k_regw": 0.1,
@@ -27,13 +27,14 @@
     "bidirectional": false,
     "bimerge":"ave",
     "rnn": "GRU",
-      "full": [1],
-    "mode": "seq2seq"
+      "full": [256],
+    "mode": "RNN_s2s"
   },
   "training": {
-    "iter": 1,
+    "iter":1,
     "batch": 1000,
-    "epochs": 100,
-    "optimizer": "nadam"
+    "epochs": 150,
+    "optimizer": "adamax",
+    "lrate": 0.001
   }
 }

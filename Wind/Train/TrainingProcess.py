@@ -237,12 +237,6 @@ def train_svm_dirregression(architecture, config, runconfig):
         ############################################
         # Model
 
-        # kernel = config['arch']['kernel']
-        # C = config['arch']['C']
-        # epsilon = config['arch']['epsilon']
-        # degree = config['arch']['degree']
-        # coef0 = config['arch']['coef0']
-
         arch = architecture(config, runconfig)
 
         if runconfig.verbose:
@@ -256,24 +250,11 @@ def train_svm_dirregression(architecture, config, runconfig):
 
         arch.train(dataset.train_x, dataset.train_y)
 
-        # svmr = SVR(kernel=kernel, C=C, epsilon=epsilon, degree=degree, coef0=coef0)
-        # svmr.fit(dataset.train_x, dataset.train_y)
 
         ############################################
         # Results
 
         lresults.append((ahead, arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)))
-
-        # val_yp = svmr.predict(dataset.val_x)
-        #
-        # r2val = r2_score(dataset.val_y, val_yp)
-        # r2persV = r2_score(dataset.val_y[ahead:], dataset.val_y[0:-ahead])
-        #
-        # test_yp = svmr.predict(dataset.test_x)
-        # r2test = r2_score(dataset.test_y, test_yp)
-        # r2persT = r2_score(dataset.test_y[ahead:], dataset.test_y[0:-ahead])
-        #
-        # lresults.append((ahead, r2val, r2persV, r2test, r2persT))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 

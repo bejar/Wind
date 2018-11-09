@@ -18,7 +18,7 @@ __init__.py
 """
 
 from .TrainDispatch import TrainDispatch
-from Wind.Deprecated.Train.TrainingProcess import train_dirregression, train_persistence, train_sequence2sequence, train_svm_dirregression
+from Wind.Train.TrainingProcess import train_dirregression, train_persistence, train_sequence2sequence, train_svm_dirregression
 from .RunConfig import RunConfig
 
 __author__ = 'bejar'

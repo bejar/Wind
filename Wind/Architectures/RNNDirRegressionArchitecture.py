@@ -171,31 +171,39 @@ class RNNDirRegressionArchitecture(NNArchitecture):
 
     def log_result(self, result):
         for r in result:
-            print(
-                        '%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
-                        'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-                        (self.config['arch']['mode'],
-                         self.config['data']['datanames'][0],
-                         self.config['data']['dataset'],
-                         len(self.config['data']['vars']),
-                         self.config['data']['lag'],
-                         r[0],
-                         self.config['arch']['rnn'],
-                         self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no',
-                         self.config['arch']['nlayers'],
-                         self.config['arch']['neurons'],
-                         self.config['arch']['drop'],
-                         self.config['arch']['activation'],
-                         self.config['arch']['activation_r'],
-                         self.config['training']['optimizer'],
-                         r[1], r[2]
-                         ))
+            print(f"{self.config['arch']['mode']} |"
+                  f" DNM= {self.config['data']['datanames'][0]},"
+                  f" DS= {self.config['data']['dataset']},"
+                  f" V= {len(self.config['data']['vars'])},"
+                  f" LG= {self.config['data']['lag']},"
+                  f" AH= {r[0]},"
+                  f" RNN= {self.config['arch']['rnn']},"
+                  f" Bi={self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no'},"
+                  f" LY= {self.config['arch']['nlayers']},"
+                  f" NN= {self.config['arch']['neurons']},"
+                  f" DR= {self.config['arch']['drop']:3.2f},"
+                  f" AF= {self.config['arch']['activation']},"
+                  f" RAF= {self.config['arch']['activation_r']},"
+                  f" OPT= {self.config['training']['optimizer']},"
+                  f" R2V = {r[1]:3.5f}, R2T = {r[2]:3.5f}")
 
-    # def save(self, postfix):
-    #     if not self.runconfig.save and self.runconfig.best:
-    #         try:
-    #             os.remove(self.modfile)
-    #         except OSError:
-    #             pass
-    #     else:
-    #         os.rename(self.modfile, 'modelRNNDir-S%s5s.h5'%(self.config['data']['datanames'][0], postfix))
+            # print(
+            #             '%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '
+            #             'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
+            #             (self.config['arch']['mode'],
+            #              self.config['data']['datanames'][0],
+            #              self.config['data']['dataset'],
+            #              len(self.config['data']['vars']),
+            #              self.config['data']['lag'],
+            #              r[0],
+            #              self.config['arch']['rnn'],
+            #              self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no',
+            #              self.config['arch']['nlayers'],
+            #              self.config['arch']['neurons'],
+            #              self.config['arch']['drop'],
+            #              self.config['arch']['activation'],
+            #              self.config['arch']['activation_r'],
+            #              self.config['training']['optimizer'],
+            #              r[1], r[2]
+            #              ))
+

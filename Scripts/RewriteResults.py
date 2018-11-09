@@ -33,7 +33,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--thres', type=float, default=2.0,  help='Rewriting threshold')    
     parser.add_argument('--exp', default='convos2s',  help='Experiment Type')    
-    parser.add_argument('--status', default='done',  help='Experiment status')    
+    parser.add_argument('--status', default='done',  help='Experiment status')
+    parser.add_argument('--noupdate', action='store_true', default=False, help='copy files')
     args = parser.parse_args()
 
     client = MongoClient(mongoconnection.server)
@@ -51,7 +52,8 @@ if __name__ == '__main__':
         vsum = np.sum(data[:, 1])
         if vsum < args.thres:
             print(conf['site'], vsum)
-            col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
+            if not args.noupdate:
+                col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
             count += 1
 
     print(count)

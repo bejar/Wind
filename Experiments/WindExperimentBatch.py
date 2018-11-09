@@ -82,25 +82,6 @@ if __name__ == '__main__':
 
         lresults = train_process(architecture, config, run_config)
 
-        # if config['arch']['mode'] == 'regdir':
-        #     lresults = train_dirregression_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi, proxy=args.proxy, save=args.save)
-        # elif config['arch']['mode'] == 'seq2seq':
-        #     lresults = train_seq2seq_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
-        # elif config['arch']['mode'] == 'seq2seqa':
-        #     lresults = train_seq2seqatt_architecture(config, impl, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
-        # elif config['arch']['mode'] == 'mlps2s':
-        #     lresults = train_MLP_regs2s_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
-        # elif config['arch']['mode'] == 'mlpdir':
-        #     lresults = train_MLP_dirreg_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
-        # elif config['arch']['mode'] == 'convo':
-        #     lresults = train_convdirregression_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
-        # elif config['arch']['mode'] == 'convos2s':
-        #     lresults = train_convo_regs2s_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi, save=args.save)
-        # elif 'ens' in config['arch']['mode']:
-        #     lresults = train_ensemble_architecture(config, verbose, args.tboard, args.best, args.early, multi=args.multi)
-        # elif config['arch']['mode'] == 'svmdir':
-        #     lresults = train_svm_dirregression_architecture(config, verbose)
-
         if args.config is None:
             saveconfig(config, lresults, proxy=args.proxy)
         elif args.mino:

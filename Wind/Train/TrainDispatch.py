@@ -19,11 +19,11 @@ Dispatch
 
 __author__ = 'bejar'
 
-from Wind.Deprecated.Train.TrainingProcess import train_dirregression, train_persistence, train_svm_dirregression, \
+from Wind.Train.TrainingProcess import train_dirregression, train_persistence, train_svm_dirregression, \
     train_sequence2sequence
 from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArchitecture, \
     PersistenceArchitecture, RNNEncoderDecoderS2SArchitecture, MLPS2SArchitecture, MLPDirRegressionArchitecture, \
-    CNNS2SArchitecture
+    CNNS2SArchitecture, RNNS2SArchitecture
 
 class TrainDispatch:
 
@@ -38,6 +38,8 @@ class TrainDispatch:
 
         self.model_dict['RNN_ED_s2s'] = (train_sequence2sequence, RNNEncoderDecoderS2SArchitecture)
         self.model_dict['seq2seq'] = (train_sequence2sequence, RNNEncoderDecoderS2SArchitecture)
+
+        self.model_dict['RNN_s2s'] = (train_sequence2sequence, RNNS2SArchitecture)
 
         self.model_dict['MLP_s2s'] = (train_sequence2sequence, MLPS2SArchitecture)
         self.model_dict['mlps2s'] = (train_sequence2sequence, MLPS2SArchitecture)

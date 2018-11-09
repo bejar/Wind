@@ -24,6 +24,7 @@ from .PersistenceArchitecture import PersistenceArchitecture
 from .MLPS2SArchitecture import MLPS2SArchitecture
 from .MLPDirRegressionArchitecture import MLPDirRegressionArchitecture
 from .CNNS2SArchitecture import CNNS2SArchitecture
+from .RNNS2SArchitecture import RNNS2SArchitecture
 
 __author__ = 'bejar'
 
@@ -34,5 +35,6 @@ __all__ = [
             'PersistenceArchitecture',
             'MLPS2SArchitecture',
             'MLPDirRegressionArchitecture',
-            'CNNS2SArchitecture'
+            'CNNS2SArchitecture',
+            'RNNS2SArchitecture'
             ]
