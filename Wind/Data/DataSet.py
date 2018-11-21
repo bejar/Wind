@@ -96,8 +96,8 @@ class Dataset:
         Generates
         :return:
         """
-        if 'scaler' in self.config and self.config[self.config['scaler']] in self.scalers:
-            scaler = self.scalers['scaler']
+        if 'scaler' in self.config and self.config['scaler'] in self.scalers:
+            scaler = self.scalers[self.config['scaler']]
             data = scaler.fit_transform(data)
         else:
             scaler = StandardScaler()

@@ -3,31 +3,32 @@
   "data": {
     "datanames": ["10-5308-12"],
     "scaler": "standard",
-    "vars": [0,1,2,3,4,5],
+      "vars": [0,1,2,3,4,5],
     "datasize": 40912,
     "testsize": 20456,
-    "dataset": 5,
+    "dataset": 1,
     "lag": 18,
     "ahead": 12
   },
   "arch": {
-    "neurons":96,
+    "neurons":128,
     "neuronsD":64,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",
     "rec_regw": 0.1,
-    "drop": 0.3,
-    "nlayers": 2,
+    "drop": 0.0,
+    "nlayers": 1,
     "nlayersE": 1,
     "nlayersD": 1,
-    "activation": "relu",
+    "activation": "tanh",
     "activation_r": "hard_sigmoid",
     "CuDNN": false,
     "bidirectional": false,
     "bimerge":"ave",
     "rnn": "GRU",
-      "full": [256],
+    "full": [64, 32],
+    "fulldrop": 0.05,
     "mode": "RNN_s2s"
   },
   "training": {
@@ -35,6 +36,7 @@
     "batch": 1000,
     "epochs": 150,
     "optimizer": "adamax",
-    "lrate": 0.001
+      "lrate": 0.001,
+      "patience":5
   }
 }

@@ -42,7 +42,7 @@ class MLPS2SArchitecture(NNS2SArchitecture):
 
     def generate_model(self):
         """
-        Model for RNN multiple regression (s2s)
+        Model for MLP multiple regression (s2s)
 
         :return:
         """

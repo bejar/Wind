@@ -18,7 +18,7 @@ RNNS2SArchitecture
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model
-from keras.layers import LSTM, GRU, Bidirectional, Dense, TimeDistributed, Flatten, RepeatVector
+from keras.layers import LSTM, GRU, Bidirectional, Dense, TimeDistributed, Flatten, RepeatVector, Dropout
 from sklearn.metrics import r2_score
 
 try:
@@ -43,7 +43,7 @@ __author__ = 'bejar'
 class RNNS2SArchitecture(NNS2SArchitecture):
     modfile = None
 
-    data_mode = 's2s'
+    data_mode = 'cnn'
 
     def generate_model(self):
         """
@@ -67,6 +67,7 @@ class RNNS2SArchitecture(NNS2SArchitecture):
         neuronsD = self.config['arch']['neuronsD']
 
         full = self.config['arch']['full']
+        fulldrop = self.config['arch']['fulldrop']
 
         # Extra added from training function
         idimensions = self.config['idimensions']
@@ -108,13 +109,15 @@ class RNNS2SArchitecture(NNS2SArchitecture):
                                recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
 
         self.model.add(Flatten())
-        self.model.add(RepeatVector(odimensions))
+        #self.model.add(RepeatVector(odimensions))
 
 
         for nn in full:
-            self.model.add(Dense(nn, activation='relu'))
+            self.model.add(Dense(nn, activation=activation))
+            self.model.add(Dropout(rate=fulldrop))
 
-        self.model.add(Dense(1))
+        #self.model.add(Dense(1))
+        self.model.add(Dense(odimensions))
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         batch_size = self.config['training']['batch']
@@ -140,15 +143,16 @@ class RNNS2SArchitecture(NNS2SArchitecture):
         neuronsD = self.config['arch']['neuronsD']
         nlayersE = self.config['arch']['nlayersE']  # >= 1
         nlayersD = self.config['arch']['nlayersD']  # >= 1
+        full = self.config['arch']['full']
         activation = self.config['arch']['activation']
         activation_r = self.config['arch']['activation_r']
-        print('lag: ', self.config['data']['lag'], '/Neurons: ', neurons, neuronsD, '/Layers: ', nlayersE, nlayersD,
+        print('lag: ', self.config['data']['lag'], '/Neurons: ', neurons, str(full), '/EncLayers: ', nlayersE, 
               '/Activation:', activation, activation_r)
 
     def log_result(self, result):
         for i, r2val, r2test in result:
             print(
-                    '%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d %d, DR= %3.2f, AF= %s, RAF= %s, '
+                    '%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d %s, DR= %3.2f, AF= %s, RAF= %s, '
                     'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
                     (self.config['arch']['mode'],
                      self.config['data']['datanames'][0],
@@ -158,8 +162,8 @@ class RNNS2SArchitecture(NNS2SArchitecture):
                      i,
                      self.config['arch']['rnn'],
                      self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no',
-                     self.config['arch']['nlayersE'], self.config['arch']['nlayersD'],
-                     self.config['arch']['neurons'], self.config['arch']['neuronsD'],
+                     self.config['arch']['nlayersE'],
+                     self.config['arch']['neurons'], str(self.config['arch']['full']),
                      self.config['arch']['drop'],
                      self.config['arch']['activation'],
                      self.config['arch']['activation_r'],

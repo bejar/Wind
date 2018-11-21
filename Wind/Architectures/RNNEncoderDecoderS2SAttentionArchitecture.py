@@ -20,6 +20,7 @@ from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
 from keras.layers import LSTM, GRU, Bidirectional, Dense, TimeDistributed, Flatten, RepeatVector, Input
 from sklearn.metrics import r2_score
+from keras.layers import Activation, dot, concatenate
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -89,64 +90,37 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
 
         RNN = LSTM if rnntype == 'LSTM' else GRU
 
+        # Encoder RNN
         enc_input = Input(shape=(idimensions))
-
         encoder = RNN(neurons, implementation=impl,
-                               recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+                               recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r, unroll=True,
                                recurrent_regularizer=rec_regularizer,return_sequences=True, kernel_regularizer=k_regularizer)(enc_input)
 
         encoder_last = encoder[:,-1,:]
 
+        # Decoder RNN
         dec_input = Input(shape=(odimensions))
+        init_state = [encoder_last, encoder_last] if rnntype == 'LSTM' else [encoder_last]
+        decoder = RNN(neuronsD, implementation=impl,
+                      recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+                      unroll=True, recurrent_regularizer=rec_regularizer,return_sequences=True,
+                      kernel_regularizer=k_regularizer)(dec_input, initial_state=init_state)
+
+        attention = dot([decoder, encoder], axes=[2, 2])
+        attention = Activation('softmax', name='attention')(attention)
+
+        context = dot([attention, encoder], axes=[2,1])
+        print('context', context)
+
+        decoder_combined_context = concatenate([context, decoder])
+        print('decoder_combined_context', decoder_combined_context)
 
 
-        # last_encoder = encoder [:,-1,:]
-        # repeat_enc = RepeatVector(odimensions)(encoder)
-        #
-        #
-        # decoder = RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
-        #                        activation=activation, recurrent_activation=activation_r,
-        #                        return_sequences=True, recurrent_regularizer=rec_regularizer,
-        #                        kernel_regularizer=k_regularizer)(repeat_enc)
+        output = TimeDistributed(Dense(64, activation="tanh"))(decoder_combined_context)
+        output = TimeDistributed(Dense(odimensions, activation="softmax"))(output)
 
-        print(input)
-        print(encoder)
-        # print(last_encoder)
-        # print(decoder)
-        #
-        # tdist = TimeDistributed(Dense(1))(decoder)
+        self.model = Model(inputs=[enc_input, dec_input], outputs=output)
 
-        # print(tdist)
-        self.model = Model(inputs=input, outputs=encoder)
-
-
-        # self.model = Sequential()
-        # if nlayersE == 1:
-        #     self.model.add(RNN(neurons, input_shape=(idimensions), implementation=impl,
-        #                        recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-        #                        recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-        # else:
-        #     self.model.add(RNN(neurons, input_shape=(idimensions), implementation=impl,
-        #                        recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-        #                        return_sequences=True, recurrent_regularizer=rec_regularizer,
-        #                        kernel_regularizer=k_regularizer))
-        #     for i in range(1, nlayersE - 1):
-        #         self.model.add(RNN(neurons, recurrent_dropout=drop, implementation=impl,
-        #                            activation=activation, recurrent_activation=activation_r, return_sequences=True,
-        #                            recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-        #     self.model.add(RNN(neurons, recurrent_dropout=drop, activation=activation,
-        #                        recurrent_activation=activation_r, implementation=impl,
-        #                        recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-        #
-        # self.model.add(RepeatVector(odimensions))
-        #
-        # for i in range(nlayersD):
-        #     self.model.add(RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
-        #                        activation=activation, recurrent_activation=activation_r,
-        #                        return_sequences=True, recurrent_regularizer=rec_regularizer,
-        #                        kernel_regularizer=k_regularizer))
-
-        # self.model.add(TimeDistributed(Dense(1)))
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         batch_size = self.config['training']['batch']

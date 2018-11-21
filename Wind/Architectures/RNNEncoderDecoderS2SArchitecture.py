@@ -91,7 +91,7 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
             if nlayersE == 1:
 
                 self.model.add(
-                    RNN(neurons, input_shape=(idimensions),
+                    RNN(neurons, input_shape=(idimensions), #kernel_initializer='zeros',
                         recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
             else:
                 self.model.add(RNN(neurons, input_shape=(idimensions), return_sequences=True,
@@ -113,6 +113,7 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
             self.model = Sequential()
             if nlayersE == 1:
                 self.model.add(RNN(neurons, input_shape=(idimensions), implementation=impl,
+                                   #kernel_initializer='zeros',
                                    recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
                                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
             else:
@@ -131,7 +132,7 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
             self.model.add(RepeatVector(odimensions))
 
             for i in range(nlayersD):
-                self.model.add(RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
+                self.model.add(RNN(neuronsD, recurrent_dropout=drop, implementation=impl,kernel_initializer='zeros',
                                    activation=activation, recurrent_activation=activation_r,
                                    return_sequences=True, recurrent_regularizer=rec_regularizer,
                                    kernel_regularizer=k_regularizer))
