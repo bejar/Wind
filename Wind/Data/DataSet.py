@@ -21,7 +21,7 @@ from __future__ import print_function
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import os
-from Wind.Config.Paths import remote_data
+from Wind.Config.Paths import remote_data, remote_wind_data_path
 from Wind.Spatial.Util import get_all_neighbors
 
 try:
@@ -256,7 +256,7 @@ class Dataset:
         for d in datanames:
             if remote:
                 srv = pysftp.Connection(host=remote_data[0], username=remote_data[1])
-                srv.get(remote + '/%s.npy' % d, self.data_path + '/%s.npy' % d)
+                srv.get(remote_wind_data_path + '/%s.npy' % d, self.data_path + '/%s.npy' % d)
                 srv.close()
             wind[d] = np.load(self.data_path + '/%s.npy' % d)
             if remote:
