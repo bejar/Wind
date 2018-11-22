@@ -31,7 +31,30 @@ import numpy as np
 from sklearn.neighbors import KDTree
 from Wind.Config.Paths import wind_data_path
 
+
 __author__ = 'bejar'
+
+class SitesCoords:
+    coords = None
+    tree = None
+
+    def __init__(self):
+        self.coords = np.load(wind_data_path + '/coords.npy')
+        self.tree = KDTree(self.coords, leaf_size=1)
+
+
+    def get_coords(self, site):
+         return(self.coords[site])
+
+
+    def get_direct_neighbors(self, site, radius):
+        """
+        return direct neighbors inside a radius
+        :param site:
+        :return:
+        """
+        neigh = self.tree.query_radius(self.coords[site, :].reshape(1, -1), r=radius, count_only=False, return_distance=False)[0]
+        return neigh
 
 
 def get_direct_neighbors(site, radius):
@@ -49,6 +72,7 @@ def get_direct_neighbors(site, radius):
 def get_all_neighbors(site, radius):
     """
     Returns all site neighbors of a site inside a cluster
+
     site is the string of the datafile
 
     :param site:
