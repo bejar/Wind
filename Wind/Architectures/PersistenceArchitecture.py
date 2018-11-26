@@ -23,7 +23,7 @@ __author__ = 'bejar'
 
 
 class PersistenceArchitecture(Architecture):
-    data_mode = False
+    data_mode = (False, '1D') #False
 
     def generate_model(self):
         """
@@ -53,8 +53,8 @@ class PersistenceArchitecture(Architecture):
         Evaluates the training
         :return:
         """
-        r2val = r2_score(val_y[1:], val_y[0:-1])
-        r2test = r2_score(test_y[:, 0], test_y[0:-1, 0])
+        r2val = r2_score(val_x[:, -1], val_y[:, 0])
+        r2test = r2_score(test_x[:, -1], test_y[:, 0])
 
         return r2val, r2test
 

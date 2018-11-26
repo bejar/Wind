@@ -18,6 +18,7 @@ NNArchitecture
 
 from Wind.Architectures.Architecture import Architecture
 from keras.models import load_model
+from keras.utils import plot_model
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -91,6 +92,16 @@ class NNArchitecture(Architecture):
                        verbose=self.runconfig.verbose, callbacks=cbacks)
 
     def evaluate(self, val_x, val_y, test_x, test_y):
+        """
+        Evaluates a trained model, loads the best if it is configured to do so
+        Computes the R² for validation and test
+
+        :param val_x:
+        :param val_y:
+        :param test_x:
+        :param test_y:
+        :return:
+        """
         batch_size = self.config['training']['batch']
 
         if self.runconfig.best:
@@ -105,10 +116,24 @@ class NNArchitecture(Architecture):
         return r2val, r2test
 
     def save(self, postfix):
-        if not self.runconfig.save and self.runconfig.best:
+        """
+        Saves and renames the last/best model if it is configured to do so, otherwise the file is deleted
+        :param postfix:
+        :return:
+        """
+        if not self.runconfig.save:# or not self.runconfig.best):
             try:
                 os.remove(self.modfile)
             except OSError:
                 pass
         else:
             os.rename(self.modfile, 'model%s-S%s%s.h5' % (self.modname, self.config['data']['datanames'][0], postfix))
+
+    def plot(self):
+        """
+        Plots the model as a png file
+        :return:
+        """
+        plot_model(self.model, show_shapes=True, to_file=f'{self.modname}.png')
+
+

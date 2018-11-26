@@ -43,7 +43,7 @@ __author__ = 'bejar'
 class RNNDirRegressionArchitecture(NNArchitecture):
     modfile = None
     modname = 'RNNDir'
-    data_mode = False
+    data_mode = (False, '1D') # False
 
     def generate_model(self):
         """
@@ -170,13 +170,13 @@ class RNNDirRegressionArchitecture(NNArchitecture):
               activation, activation_r)
 
     def log_result(self, result):
-        for r in result:
+        for i, r2val, r2test in result:
             print(f"{self.config['arch']['mode']} |"
                   f" DNM= {self.config['data']['datanames'][0]},"
                   f" DS= {self.config['data']['dataset']},"
                   f" V= {len(self.config['data']['vars'])},"
                   f" LG= {self.config['data']['lag']},"
-                  f" AH= {r[0]},"
+                  f" AH= {i},"
                   f" RNN= {self.config['arch']['rnn']},"
                   f" Bi={self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no'},"
                   f" LY= {self.config['arch']['nlayers']},"
@@ -185,7 +185,7 @@ class RNNDirRegressionArchitecture(NNArchitecture):
                   f" AF= {self.config['arch']['activation']},"
                   f" RAF= {self.config['arch']['activation_r']},"
                   f" OPT= {self.config['training']['optimizer']},"
-                  f" R2V = {r[1]:3.5f}, R2T = {r[2]:3.5f}")
+                  f" R2V = {r2val:3.5f}, R2T = {r2test:3.5f}")
 
             # print(
             #             '%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d, NN= %d, DR= %3.2f, AF= %s, RAF= %s, '

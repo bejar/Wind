@@ -68,7 +68,7 @@ class Architecture:
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         """
-        Evaluates the training
+        Evaluates the trained model for validation and test
         :return:
         """
         raise NameError('ERROR: Not implemented')
@@ -88,3 +88,10 @@ class Architecture:
         :return:
         """
         raise NameError('Error: Not implemented')
+
+    def plot(self):
+        """
+        Plots the model architecture
+        :return:
+        """
+        pass

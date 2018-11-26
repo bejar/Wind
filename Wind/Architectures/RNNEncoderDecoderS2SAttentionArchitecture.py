@@ -43,8 +43,8 @@ __author__ = 'bejar'
 
 class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
     modfile = None
-
-    data_mode = 's2s'
+    modname = 'RNNEDS2SATT'
+    data_mode = (False, '3D') # 's2s'
 
     def generate_model(self):
         """

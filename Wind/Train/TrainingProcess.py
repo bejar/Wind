@@ -67,7 +67,7 @@ def train_dirregression(architecture, config, runconfig):
                 print(f"Steps Ahead = {ahead}")
 
             dataset = Dataset(config=config['data'], data_path=wind_data_path)
-            dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
+            dataset.generate_dataset(ahead=[ahead,ahead], mode=architecture.data_mode, remote=runconfig.remote)
 
             ############################################
             # Model
@@ -84,6 +84,7 @@ def train_dirregression(architecture, config, runconfig):
 
             if runconfig.verbose:
                 arch.summary()
+                arch.plot()
                 dataset.summary()
                 print()
 
@@ -154,6 +155,7 @@ def train_sequence2sequence(architecture, config, runconfig):
 
         if runconfig.verbose:
             arch.summary()
+            arch.plot()
             dataset.summary()
             print()
 
@@ -195,10 +197,15 @@ def train_persistence(architecture, config, runconfig):
             print(f"Steps Ahead = {ahead}")
 
         dataset = Dataset(config=config['data'], data_path=wind_data_path)
-        dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
+        dataset.generate_dataset(ahead=[ahead,ahead], mode=architecture.data_mode, remote=runconfig.remote)
 
         arch = architecture(config, runconfig)
-        lresults.append((ahead, arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)))
+
+        if runconfig.verbose:
+            dataset.summary()
+
+        val_r2, test_r2 = arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)
+        lresults.append((ahead, val_r2, test_r2))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 

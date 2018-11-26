@@ -25,7 +25,7 @@ __author__ = 'bejar'
 
 
 class SVMDirRegressionArchitecture(Architecture):
-    data_mode = 'svm'
+    data_mode = ('2D', '0D') #'svm'
 
     def generate_model(self):
         """

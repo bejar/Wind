@@ -35,7 +35,11 @@ class NNS2SArchitecture(NNArchitecture):
         val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
         test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
 
-        ahead = self.config['data']['ahead']
+        # Maintained to be compatible with old configuration files
+        if type(self.config['data']['ahead'])==list:
+            ahead = self.config['data']['ahead'][1]
+        else:
+            ahead = self.config['data']['ahead']
 
         lresults = []
         for i in range(1, ahead + 1):
