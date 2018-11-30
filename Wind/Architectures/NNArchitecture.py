@@ -70,10 +70,8 @@ class NNArchitecture(Architecture):
             cbacks.append(mcheck)
 
         if self.runconfig.early:
-            if 'patience' in self.config['training']:
-                patience = self.config['training']['patience']
-            else:
-                patience = 5
+            patience = self.config['training']['patience'] if 'patience' in self.config['training'] else 5
+
             early = EarlyStopping(monitor='val_loss', patience=patience, verbose=0)
             cbacks.append(early)
 
@@ -119,6 +117,8 @@ class NNArchitecture(Architecture):
         r2test = r2_score(test_y, test_yp)
 
         return r2val, r2test
+
+
 
     def save(self, postfix):
         """

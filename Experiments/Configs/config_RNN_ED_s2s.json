@@ -9,11 +9,11 @@
     "dataset": 1,
     "lag": 18,
     "ahead": [1,12],
-    "fraction": 0.6
+    "fraction": 0.8
   },
   "arch": {
     "neurons":32,
-    "neuronsD":16,
+    "neuronsD":32,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",
@@ -33,8 +33,8 @@
   },
   "training": {
     "iter":1,
-    "batch": 1000,
-    "epochs": 5,
+    "batch": 1024,
+    "epochs": 200,
     "patience": 10,
     "optimizer": "adamax",
     "lrate": 0.001

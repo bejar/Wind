@@ -26,6 +26,7 @@ from .MLPDirRegressionArchitecture import MLPDirRegressionArchitecture
 from .CNNS2SArchitecture import CNNS2SArchitecture
 from .RNNS2SArchitecture import RNNS2SArchitecture
 from .RNNEncoderDecoderS2SAttentionArchitecture import RNNEncoderDecoderS2SAttentionArchitecture
+from .MLPS2SRecursiveArchirecture import MLPS2SRecursiveArchitecture
 
 __author__ = 'bejar'
 
@@ -38,5 +39,6 @@ __all__ = [
             'MLPDirRegressionArchitecture',
             'CNNS2SArchitecture',
             'RNNS2SArchitecture',
-            'RNNEncoderDecoderS2SAttentionArchitecture'
+            'RNNEncoderDecoderS2SAttentionArchitecture',
+            'MLPS2SRecursiveArchirecture'
             ]

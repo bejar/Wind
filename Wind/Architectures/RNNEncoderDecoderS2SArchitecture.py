@@ -113,7 +113,7 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
             self.model = Sequential()
             if nlayersE == 1:
                 self.model.add(RNN(neurons, input_shape=(idimensions), implementation=impl,
-                                   kernel_initializer='lecun_normal',
+                                  # kernel_initializer='lecun_normal',
                                    recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
                                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
             else:
@@ -133,7 +133,7 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
 
             for i in range(nlayersD):
                 self.model.add(RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
-                                   kernel_initializer='lecun_normal',
+                                  # kernel_initializer='lecun_normal',
                                    activation=activation, recurrent_activation=activation_r,
                                    return_sequences=True, recurrent_regularizer=rec_regularizer,
                                    kernel_regularizer=k_regularizer))
@@ -148,7 +148,10 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
         val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
         test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
 
-        ahead = self.config['data']['ahead']
+        if type(self.config['data']['ahead'])== list:
+            ahead = self.config['data']['ahead'][1]
+        else:
+            ahead = self.config['data']['ahead']
 
         lresults = []
         for i in range(1, ahead + 1):

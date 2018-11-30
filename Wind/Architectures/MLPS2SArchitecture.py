@@ -29,9 +29,6 @@ except ImportError:
 else:
     _has_multigpu = True
 
-from sklearn.metrics import mean_squared_error, r2_score
-
-
 __author__ = 'bejar'
 
 
@@ -48,13 +45,12 @@ class MLPS2SArchitecture(NNS2SArchitecture):
         """
 
         activation = self.config['arch']['activation']
-
         dropout = self.config['arch']['drop']
+        full_layers = self.config['arch']['full']
 
         # Extra added from training function
         idimensions = self.config['idimensions']
         odimension = self.config['odimensions']
-        full_layers = self.config['arch']['full']
 
         self.model = Sequential()
         self.model.add(Dense(full_layers[0], input_shape=idimensions, activation=activation))
@@ -68,12 +64,10 @@ class MLPS2SArchitecture(NNS2SArchitecture):
 
     def summary(self):
         self.model.summary()
-        neurons = self.config['arch']['neurons']
         activation = self.config['arch']['activation']
-        nlayers = self.config['arch']['nlayers']
         print(
-        'lag: ', self.config['data']['lag'], '/Neurons: ', neurons, '/Layers: ', nlayers, '/Activation:', activation)
-        print('/full layers:', self.config['arch']['full'])
+        f"lag: {self.config['data']['lag']} /Layers: {str(self.config['arch']['full'])} /Activation: {activation}")
+
         print()
 
     def log_result(self, result):

@@ -37,13 +37,15 @@ class NNS2SArchitecture(NNArchitecture):
 
         # Maintained to be compatible with old configuration files
         if type(self.config['data']['ahead'])==list:
-            ahead = self.config['data']['ahead'][1]
+            iahead = self.config['data']['ahead'][0]
+            ahead = (self.config['data']['ahead'][1] - self.config['data']['ahead'][0]) + 1
         else:
+            iahead = 1
             ahead = self.config['data']['ahead']
 
         lresults = []
-        for i in range(1, ahead + 1):
-            lresults.append((i,
+        for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
+            lresults.append((p,
                              r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
                              r2_score(test_y[:, i - 1], test_yp[:, i - 1])
                              ))

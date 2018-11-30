@@ -20,10 +20,10 @@ Dispatch
 __author__ = 'bejar'
 
 from Wind.Train.TrainingProcess import train_dirregression, train_persistence, train_svm_dirregression, \
-    train_sequence2sequence,train_sequence2sequence_tf
+    train_sequence2sequence,train_sequence2sequence_tf, train_recursive_multi_sequence2sequence
 from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArchitecture, \
     PersistenceArchitecture, RNNEncoderDecoderS2SArchitecture, MLPS2SArchitecture, MLPDirRegressionArchitecture, \
-    CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture
+    CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture, MLPS2SRecursiveArchirecture
 
 class TrainDispatch:
 
@@ -57,6 +57,7 @@ class TrainDispatch:
         self.model_dict['convos2s'] = (train_sequence2sequence, CNNS2SArchitecture)
         self.model_dict['CNN_s2s'] = (train_sequence2sequence, CNNS2SArchitecture)
 
+        self.model_dict['MLP_s2s_rec'] = (train_recursive_multi_sequence2sequence, MLPS2SRecursiveArchirecture)
 
     def dispatch(self, mode):
         """

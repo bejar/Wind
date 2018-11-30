@@ -36,6 +36,7 @@ from Wind.Data.DataSet import Dataset
 from Wind.Config import wind_data_path
 from time import strftime
 from Wind.Training import updateprocess
+import numpy as np
 
 __author__ = 'bejar'
 
@@ -67,7 +68,7 @@ def train_dirregression(architecture, config, runconfig):
                 print(f"Steps Ahead = {ahead}")
 
             dataset = Dataset(config=config['data'], data_path=wind_data_path)
-            dataset.generate_dataset(ahead=[ahead,ahead], mode=architecture.data_mode, remote=runconfig.remote)
+            dataset.generate_dataset(ahead=[ahead, ahead], mode=architecture.data_mode, remote=runconfig.remote)
 
             ############################################
             # Model
@@ -113,19 +114,119 @@ def train_dirregression(architecture, config, runconfig):
     return lresults
 
 
-def train_sequence2sequence(architecture, config, runconfig):
+def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
     """
-    Training process for sequence 2 sequence architectures
+    Training process for sequence 2 sequence architectures with multi step recursive training
 
     :param architecture:
     :param config:
     :param runconfig:
     :return:
     """
-    ahead = config['data']['ahead']
+    if type(config['data']['ahead']) == list:
+        iahead, sahead = config['data']['ahead']
+    else:
+        iahead, sahead = 1, config['data']['ahead']
 
-    if not type(ahead) == list:
-        ahead = [1, ahead]
+    slice = config['data']['slice']
+
+    if 'iter' in config['training']:
+        niter = config['training']['iter']
+    else:
+        niter = 1
+
+    lresults = []
+    lmodels = []
+    steps = [[i,j] for i,j in zip(range(iahead, iahead+1, slice), range(slice, iahead+slice+1,slice))]
+    steps[-1][1] = sahead
+
+    ### Accumulated recursive predictions for train, validation and test
+    rec_train_pred_x = None
+    rec_val_pred_x = None
+    rec_test_pred_x = None
+
+    for iter in range(niter):
+        for ahead in steps:
+
+            if runconfig.verbose:
+                print('-----------------------------------------------------------------------------')
+                print(f"Steps Ahead = {ahead}")
+
+            dataset = Dataset(config=config['data'], data_path=wind_data_path)
+            dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
+
+            ############################################
+            # Model
+
+            config['idimensions'] = dataset.train_x.shape[1:]
+            config['odimensions'] = ahead[1] - ahead[0]
+            config['rdimensions'] = ahead[0] - 1
+
+            arch = architecture(config, runconfig)
+
+            if runconfig.multi == 1:
+                arch.generate_model()
+            else:
+                with tf.device('/cpu:0'):
+                    arch.generate_model()
+
+            if runconfig.verbose:
+                arch.summary()
+                arch.plot()
+                dataset.summary()
+                print()
+
+           ############################################
+            # Training
+            if config['rdimensions'] == 0:
+                arch.train(dataset.train_x, dataset.train_y, dataset.val_x, dataset.val_y)
+            else:
+                # Train using the predictions of the previous iteration
+                arch.train([dataset.train_x, rec_train_pred_x], dataset.train_y, [dataset.val_x, rec_val_pred_x], dataset.val_y)
+
+
+            ############################################
+            # Results and Add the new predictions to the saved ones
+            if config['rdimensions'] == 0:
+                lresults.extend(arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y))
+                rec_train_pred_x = arch.predict(dataset.train_x)
+                rec_val_pred_x = arch.predict(dataset.val_x)
+                rec_test_pred_x = arch.predict(dataset.test_x)
+
+            else:
+                lresults.extend(arch.evaluate([dataset.val_x, rec_val_pred_x], dataset.val_y,
+                                              [dataset.test_x, rec_test_pred_x], dataset.test_y))
+                rec_train_pred_x = np.concatenate((rec_train_pred_x, arch.predict(dataset.train_x)))
+                rec_val_pred_x = np.concatenate((rec_val_pred_x, arch.predict(dataset.val_x)))
+                rec_test_pred_x = np.concatenate((rec_test_pred_x, arch.predict(dataset.test_x)))
+
+            print(strftime('%Y-%m-%d %H:%M:%S'))
+
+            arch.save(f"-{ahead[0]}-{ahead[1]}-R{iter:02d}")
+
+    arch.log_result(lresults)
+
+    return lresults
+
+
+def train_sequence2sequence(architecture, config, runconfig):
+    """
+    Training process for sequence 2 sequence architectures
+
+    Mutihorizon MIMO/DIRJOINT strategy
+
+    :param architecture:
+    :param config:
+    :param runconfig:
+    :return:
+    """
+
+    # if type(config['data']['ahead']) == list:
+    #     iahead, sahead = config['data']['ahead']
+    # else:
+    #     iahead, sahead = 1, config['data']['ahead']
+
+    ahead = config['data']['ahead'] if not type(ahead) == list else ahead = [1, config['data']['ahead']]
 
     dataset = Dataset(config=config['data'], data_path=wind_data_path)
     dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
@@ -197,7 +298,7 @@ def train_persistence(architecture, config, runconfig):
             print(f"Steps Ahead = {ahead}")
 
         dataset = Dataset(config=config['data'], data_path=wind_data_path)
-        dataset.generate_dataset(ahead=[ahead,ahead], mode=architecture.data_mode, remote=runconfig.remote)
+        dataset.generate_dataset(ahead=[ahead, ahead], mode=architecture.data_mode, remote=runconfig.remote)
 
         arch = architecture(config, runconfig)
 
@@ -257,7 +358,6 @@ def train_svm_dirregression(architecture, config, runconfig):
 
         arch.train(dataset.train_x, dataset.train_y)
 
-
         ############################################
         # Results
 
@@ -271,6 +371,7 @@ def train_svm_dirregression(architecture, config, runconfig):
     arch.log_result(lresults)
 
     return lresults
+
 
 def train_sequence2sequence_tf(architecture, config, runconfig):
     """
@@ -322,7 +423,8 @@ def train_sequence2sequence_tf(architecture, config, runconfig):
 
         ############################################
         # Training
-        arch.train([dataset.train_x, dataset.train_y_tf], dataset.train_y, [dataset.val_x, dataset.val_y_tf], dataset.val_y)
+        arch.train([dataset.train_x, dataset.train_y_tf], dataset.train_y, [dataset.val_x, dataset.val_y_tf],
+                   dataset.val_y)
 
         ############################################
         # Results

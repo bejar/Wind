@@ -55,12 +55,12 @@ class MLPDirRegressionArchitecture(NNArchitecture):
         :return:
         """
         activation = self.config['arch']['activation']
-
         dropout = self.config['arch']['drop']
+        full_layers = self.config['arch']['full']
 
         # Extra added from training function
         idimensions = self.config['idimensions']
-        full_layers = self.config['arch']['full']
+
 
         self.model = Sequential()
         self.model.add(Dense(full_layers[0], input_shape=idimensions, activation=activation))
@@ -74,8 +74,9 @@ class MLPDirRegressionArchitecture(NNArchitecture):
     def summary(self):
         self.model.summary()
         activation = self.config['arch']['activation']
-        nlayers = self.config['arch']['nlayers']
-        print('lag: ', self.config['data']['lag'], '/Layers: ', nlayers, '/Activation:', activation)
+        print(
+        f"lag: {self.config['data']['lag']} /Layers: {str(self.config['arch']['full'])} /Activation: {activation}")
+
         print()
 
     def log_result(self, result):

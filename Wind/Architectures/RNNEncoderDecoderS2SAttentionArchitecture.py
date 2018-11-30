@@ -18,7 +18,7 @@ RNNEncoderDecoderS2SArchitecture
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
-from keras.layers import LSTM, GRU, Bidirectional, Dense, TimeDistributed, Flatten, RepeatVector, Input
+from keras.layers import LSTM, GRU, Dense, TimeDistributed, Input
 from sklearn.metrics import r2_score
 from keras.layers import Activation, dot, concatenate
 import numpy as np
@@ -108,11 +108,7 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
 
         # Decoder RNN - Second input (Teacher Forcing)
         dec_input = Input(shape=(None,1))
-        init_state = [encoder_last, encoder_last] if rnntype == 'LSTM' else [encoder_last]
- #       decoder = RNN(neurons, implementation=impl,
- #                     recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
- #                     recurrent_regularizer=rec_regularizer, return_sequences=True,
- #                     kernel_regularizer=k_regularizer)(dec_input, initial_state=init_state)
+
         decoder = RNN(neurons, implementation=impl,
                       recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
                       recurrent_regularizer=rec_regularizer, return_sequences=True,
@@ -186,8 +182,8 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
         nlayersD = self.config['arch']['nlayersD']  # >= 1
         activation = self.config['arch']['activation']
         activation_r = self.config['arch']['activation_r']
-        print('lag: ', self.config['data']['lag'], '/Neurons: ', neurons, neuronsD, '/Layers: ', nlayersE, nlayersD,
-              '/Activation:', activation, activation_r)
+        print(f"lag: {self.config['data']['lag']}, /Neurons: {neurons}, {neuronsD}, /Layers: {nlayersE} {nlayersD}"
+              f"/Activation: {activation}, {activation_r}")
 
     def log_result(self, result):
         for i, r2val, r2test in result:
