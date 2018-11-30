@@ -20,16 +20,19 @@ Dispatch
 __author__ = 'bejar'
 
 from Wind.Train.TrainingProcess import train_dirregression, train_persistence, train_svm_dirregression, \
-    train_sequence2sequence
+    train_sequence2sequence,train_sequence2sequence_tf
 from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArchitecture, \
     PersistenceArchitecture, RNNEncoderDecoderS2SArchitecture, MLPS2SArchitecture, MLPDirRegressionArchitecture, \
-    CNNS2SArchitecture, RNNS2SArchitecture
+    CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture
 
 class TrainDispatch:
 
     model_dict = {}
 
     def __init__(self):
+        """
+        Fills the model dictionary with pairs (training algorithm, architecture)
+        """
         self.model_dict['RNN_dir_reg'] = (train_dirregression, RNNDirRegressionArchitecture)
         self.model_dict['regdir'] = (train_dirregression, RNNDirRegressionArchitecture)
 
@@ -38,6 +41,8 @@ class TrainDispatch:
 
         self.model_dict['RNN_ED_s2s'] = (train_sequence2sequence, RNNEncoderDecoderS2SArchitecture)
         self.model_dict['seq2seq'] = (train_sequence2sequence, RNNEncoderDecoderS2SArchitecture)
+
+        self.model_dict['RNN_ED_s2s_att'] = (train_sequence2sequence_tf, RNNEncoderDecoderS2SAttentionArchitecture)
 
         self.model_dict['RNN_s2s'] = (train_sequence2sequence, RNNS2SArchitecture)
 
@@ -54,6 +59,11 @@ class TrainDispatch:
 
 
     def dispatch(self, mode):
+        """
+        Returns the corresponding (training algorithm, architecture)
+        :param mode:
+        :return:
+        """
         if mode in self.model_dict:
             return self.model_dict[mode]
         else:

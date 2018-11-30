@@ -108,7 +108,11 @@ class Dataset:
         # print('DATA Dim =', data.shape)
         mode_x, mode_y = mode
 
-        wind_train = data[:datasize, :]
+        if 'fraction' in self.config:
+            isize = int((1-self.config['fraction']) * datasize)
+            wind_train = data[isize:datasize, :]
+        else:
+            wind_train = data[:datasize, :]
         # print('Train Dim =', wind_train.shape)
 
         train = lagged_vector(wind_train, lag=lag, ahead=ahead, mode=mode)
@@ -222,7 +226,11 @@ class Dataset:
 
         mode_x, mode_y = mode
 
-        wind_train = data[:datasize, :]
+        if 'fraction' in self.config:
+            isize = int((1-self.config['fraction']) * datasize)
+            wind_train = data[isize:datasize, :]
+        else:
+            wind_train = data[:datasize, :]
         # print('Train Dim =', wind_train.shape)
 
         # Train
@@ -431,6 +439,24 @@ class Dataset:
         else:
             raise NameError('ERROR: No such dataset type')
 
+    def teacher_forcing(self):
+        """
+        Prepares the data matrices for teacher forcing/attention
+        :return:
+        """
+        tmp = self.train_x[:,-1,1]
+        tmp = tmp.reshape(tmp.shape[0],1,1)
+        self.train_y_tf = np.concatenate((tmp, self.train_y[:,:-1,:]), axis=1)
+
+        tmp = self.test_x[:,-1,1]
+        tmp = tmp.reshape(tmp.shape[0],1,1)
+        self.test_y_tf = np.concatenate((tmp, self.test_y[:,:-1,:]), axis=1)
+
+        tmp = self.val_x[:,-1,1]
+        tmp = tmp.reshape(tmp.shape[0],1,1)
+        tmp = np.concatenate((tmp, self.val_y[:,:-1,:]), axis=1)
+        self.val_y_tf = tmp #tmp.reshape((tmp.shape[0], tmp.shape[1]))
+
     def summary(self):
         """
         Dataset Summary
@@ -441,6 +467,8 @@ class Dataset:
             raise NameError('Data not loaded yet')
         else:
             print('Tr:', self.train_x.shape, self.train_y.shape)
+            if hasattr(self,'train_y_tf'):
+                print('Tr(tf):', self.train_y_tf.shape)
             print('Val:', self.val_x.shape, self.val_y.shape)
             print('Ts:', self.test_x.shape, self.test_y.shape)
             print('Dtype=', self.config['dataset'])
@@ -454,31 +482,38 @@ if __name__ == '__main__':
     from Wind.Config import wind_data_path
     import matplotlib.pyplot as plt
 
-    cfile = "config_persistence"
+    cfile = "config_RNN_ED_s2s"
     config = load_config_file(f"../TestConfigs/{cfile}.json")
 
     # print(config)
-    mode = (False, '1D')
-    for j in range(1,5):
-        iahead = j
-        fahead = j
+    mode = (False, '3D')
+    dataset = Dataset(config=config['data'], data_path=wind_data_path)
 
-        dataset = Dataset(config=config['data'], data_path=wind_data_path)
-
-        dataset.generate_dataset(ahead=[iahead, fahead], mode=mode)
-        dataset.summary()
-
-        train_x = dataset.train_x
-        train_y = dataset.train_y
-        val_x = dataset.val_x
-        val_y = dataset.val_y
-        test_x = dataset.test_x
-        test_y = dataset.test_y
+    dataset.generate_dataset(ahead=[1, 12], mode=mode)
+    dataset.teacher_forcing()
+    dataset.summary()
 
 
-        for i in range(5):
-            #print(f"X={train_x[i,:,1]}")
-            print(f"Y={train_y[i,:]}")
+    # for j in range(1,5):
+    #     iahead = j
+    #     fahead = j
+    #
+    #     dataset = Dataset(config=config['data'], data_path=wind_data_path)
+    #
+    #     dataset.generate_dataset(ahead=[iahead, fahead], mode=mode)
+    #     dataset.summary()
+    #
+    #     train_x = dataset.train_x
+    #     train_y = dataset.train_y
+    #     val_x = dataset.val_x
+    #     val_y = dataset.val_y
+    #     test_x = dataset.test_x
+    #     test_y = dataset.test_y
+    #
+    #
+    #     for i in range(5):
+    #         #print(f"X={train_x[i,:,1]}")
+    #         print(f"Y={train_y[i,:]}")
 
 
     #

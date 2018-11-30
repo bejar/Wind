@@ -18,7 +18,12 @@ NNArchitecture
 
 from Wind.Architectures.Architecture import Architecture
 from keras.models import load_model
-from keras.utils import plot_model
+#try:
+#    from keras.utils import plot_model
+#except ImportError:
+#    _has_pydot = False
+#else:
+#    _has_pydot = True
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -134,6 +139,8 @@ class NNArchitecture(Architecture):
         Plots the model as a png file
         :return:
         """
-        plot_model(self.model, show_shapes=True, to_file=f'{self.modname}.png')
+        pass
+        #if _has_pydot:
+        #    plot_model(self.model, show_shapes=True, to_file=f'{self.modname}.png')
 
 

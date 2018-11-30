@@ -272,3 +272,67 @@ def train_svm_dirregression(architecture, config, runconfig):
 
     return lresults
 
+def train_sequence2sequence_tf(architecture, config, runconfig):
+    """
+    Training process for sequence 2 sequence architectures with teacher forcing/attention
+
+    :param architecture:
+    :param config:
+    :param runconfig:
+    :return:
+    """
+    ahead = config['data']['ahead']
+
+    if not type(ahead) == list:
+        ahead = [1, ahead]
+
+    dataset = Dataset(config=config['data'], data_path=wind_data_path)
+    dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
+    # Reorganize data for teacher forcing
+    dataset.teacher_forcing()
+
+    if 'iter' in config['training']:
+        niter = config['training']['iter']
+    else:
+        niter = 1
+
+    if type(ahead) == list:
+        odimensions = ahead[1] - ahead[0] + 1
+    else:
+        odimensions = ahead
+
+    lresults = []
+    for iter in range(niter):
+
+        config['idimensions'] = dataset.train_x.shape[1:]
+        config['odimensions'] = odimensions
+        arch = architecture(config, runconfig)
+
+        if runconfig.multi == 1:
+            arch.generate_model()
+        else:
+            with tf.device('/cpu:0'):
+                arch.generate_model()
+
+        if runconfig.verbose:
+            arch.summary()
+            arch.plot()
+            dataset.summary()
+            print()
+
+        ############################################
+        # Training
+        arch.train([dataset.train_x, dataset.train_y_tf], dataset.train_y, [dataset.val_x, dataset.val_y_tf], dataset.val_y)
+
+        ############################################
+        # Results
+
+        lresults.extend(arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y))
+
+        print(strftime('%Y-%m-%d %H:%M:%S'))
+
+        arch.save('-A%d-%d-R%02d' % (ahead[0], ahead[1], iter))
+
+    arch.log_result(lresults)
+
+    return lresults

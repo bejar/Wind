@@ -11,7 +11,7 @@
     "ahead": [1,12]
   },
   "arch": {
-    "neurons":32,
+    "neurons":128,
     "neuronsD":16,
     "k_reg": "None",
     "k_regw": 0.1,
@@ -28,12 +28,12 @@
     "bimerge":"ave",
     "rnn": "GRU",
     "full": [1],
-    "mode": "RNN_ED_s2s"
+    "mode": "RNN_ED_s2s_att"
   },
   "training": {
     "iter":1,
     "batch": 1000,
-    "epochs": 5,
+    "epochs": 20,
     "patience": 10,
     "optimizer": "adamax",
     "lrate": 0.001

@@ -229,11 +229,11 @@ scl = [0, "rgb(150,0,90)"], [0.125, "rgb(0, 0, 200)"], [0.25, "rgb(0, 25, 255)"]
 if __name__ == '__main__':
 
     scoords = SitesCoords()
-    sites_i = 39000
+    sites_i = 31265
     sites_f = 12100
     nc = 50
     mutual = True
-    lsites = scoords.get_direct_neighbors(sites_i, 0.65)
+    lsites = scoords.get_direct_neighbors(sites_i, 0.35)
     # lsites = range(sites_i, sites_f)
     lclust = compute_clusterings(lsites, nc, mutual=mutual)
     mdist = compute_distance_matrix(lclust, mutual=mutual)
@@ -244,6 +244,6 @@ if __name__ == '__main__':
     #kmeans = KMeans(n_clusters=cs)
     #labels = kmeans.fit_predict(tdata)
 
-    gmm = BayesianGaussianMixture(n_components=10, covariance_type='full')
+    gmm = BayesianGaussianMixture(n_components=10, covariance_type='full', max_iter=1000, n_init=10, tol=0.00001)
     labels = gmm.fit_predict(tdata)
     create_plot(data_plot(lsites, labels), str(sites_i))
