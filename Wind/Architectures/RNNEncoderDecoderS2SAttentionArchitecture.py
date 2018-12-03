@@ -159,8 +159,8 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
 
         lresults = []
         for i in range(1, ahead + 1):
-            val_yp = self.model.predict([val_x, val_x_tf], batch_size=batch_size, verbose=0)
-            test_yp = self.model.predict([test_x, test_x_tf], batch_size=batch_size, verbose=0)
+            val_yp = self.model.predict([val_x[0], val_x_tf], batch_size=batch_size, verbose=0)
+            test_yp = self.model.predict([test_x[0], test_x_tf], batch_size=batch_size, verbose=0)
 
             val_x_tf = np.concatenate((val_x_tfi, val_yp), axis=1)
             test_x_tf = np.concatenate((test_x_tfi, test_yp), axis=1)

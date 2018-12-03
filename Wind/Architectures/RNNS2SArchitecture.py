@@ -146,8 +146,8 @@ class RNNS2SArchitecture(NNS2SArchitecture):
         full = self.config['arch']['full']
         activation = self.config['arch']['activation']
         activation_r = self.config['arch']['activation_r']
-        print('lag: ', self.config['data']['lag'], '/Neurons: ', neurons, str(full), '/EncLayers: ', nlayersE, 
-              '/Activation:', activation, activation_r)
+        print(f"lag: {self.config['data']['lag']}/Neurons: {neurons} {str(full)} /EncLayers: {nlayersE} " 
+              f"/Activation: {activation} {activation_r}")
 
     def log_result(self, result):
         for i, r2val, r2test in result:

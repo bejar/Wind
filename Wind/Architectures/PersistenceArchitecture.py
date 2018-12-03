@@ -66,13 +66,17 @@ class PersistenceArchitecture(Architecture):
         :return:
         """
         for i, r2val, r2test in result:
-            print('%s | DNM= %s, DS= %d, AH= %d, R2PV = %3.5f, R2PT = %3.5f' %
-                  (self.config['arch']['mode'],
-                   self.config['data']['datanames'][0],
-                   self.config['data']['dataset'],
-                   i,
-                   r2val, r2test
-                   ))
+            print(f"{self.config['arch']['mode']} | DNM= {self.config['data']['datanames'][0]} "
+                  f"DS= {self.config['data']['dataset']} AH= {i} "
+                  f"R2PV = {r2val:3.5f} R2PT = {r2test:3.5f}")
+
+            # print('%s | DNM= %s, DS= %d, AH= %d, R2PV = %3.5f, R2PT = %3.5f' %
+            #       (self.config['arch']['mode'],
+            #        self.config['data']['datanames'][0],
+            #        self.config['data']['dataset'],
+            #        i,
+            #        r2val, r2test
+            #        ))
 
     def save(self, postfix):
         """

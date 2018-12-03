@@ -91,11 +91,6 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
 
         # Dependent variable input
         enc_Dep_input = Input(shape=(idimensions[0]))
-
-        # rec_Dep_input = RNN(neurons, implementation=impl,
-        #       recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-        #       recurrent_regularizer=rec_regularizer, return_sequences=False, kernel_regularizer=k_regularizer)(enc_Dep_input)
-
         rec_Dep_input = recurrent_encoder_functional(RNN, nlayersE,
                                                     neuronsE, impl, drop,
                                                     activation, activation_r,
@@ -103,9 +98,6 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
 
         # Auxiliary variables input
         enc_Aux_input = Input(shape=(idimensions[1]))
-        # rec_Aux_input = RNN(neurons, implementation=impl,
-        #       recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-        #       recurrent_regularizer=rec_regularizer, return_sequences=False, kernel_regularizer=k_regularizer)(enc_Aux_input)
         rec_Aux_input = recurrent_encoder_functional(RNN, nlayersE,
                                                     neuronsE, impl, drop,
                                                     activation, activation_r,
@@ -168,7 +160,7 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
                   f" RNN= {self.config['arch']['rnn']},"
                   f" Bi={self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no'},"
                   f" LY= {self.config['arch']['nlayersE']} {self.config['arch']['nlayersD']},"
-                  f" NN= {self.config['arch']['neurons']} {self.config['arch']['neuronsD']},"
+                  f" NN= {self.config['arch']['neuronsE']} {self.config['arch']['neuronsD']},"
                   f" DR= {self.config['arch']['drop']:3.2f},"
                   f" AF= {self.config['arch']['activation']},"
                   f" RAF= {self.config['arch']['activation_r']},"

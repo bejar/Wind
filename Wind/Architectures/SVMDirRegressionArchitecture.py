@@ -84,16 +84,21 @@ class SVMDirRegressionArchitecture(Architecture):
         :param result:
         :return:
         """
-        for r in result:
-            print('%s |  AH=%d, KRNL= %s, C= %3.5f, EPS= %3.5f, DEG=%d, COEF0= %d, R2V = %3.5f, R2T = %3.5f' %
-                  (self.config['arch']['mode'], r[0],
-                   self.config['arch']['kernel'],
-                   self.config['arch']['C'],
-                   self.config['arch']['epsilon'],
-                   self.config['arch']['degree'],
-                   self.config['arch']['coef0'],
-                   r[1], r[2]
-                   ))
+        for i, r2val, r2test in result:
+            print(f"{self.config['arch']['mode']} | AH={i} KRNL={self.config['arch']['kernel']}  C={self.config['arch']['C']:3.5f} "
+                  f"EPS={self.config['arch']['epsilon']:3.5f} DEG={self.config['arch']['degree']} "
+                  f"COEF0={self.config['arch']['coef0']} "
+                  f"R2V = {r2val:3.5f}, R2T = {r2test:3.5f}"
+                  )
+            # print('%s |  AH=%d, KRNL= %s, C= %3.5f, EPS= %3.5f, DEG=%d, COEF0= %d, R2V = %3.5f, R2T = %3.5f' %
+            #       (self.config['arch']['mode'], i,
+            #        self.config['arch']['kernel'],
+            #        self.config['arch']['C'],
+            #        self.config['arch']['epsilon'],
+            #        self.config['arch']['degree'],
+            #        self.config['arch']['coef0'],
+            #        r2val, r2test
+            #        ))
 
     def save(self, postfix):
         """
