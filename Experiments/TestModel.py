@@ -41,8 +41,8 @@ if __name__ == '__main__':
     parser.add_argument('--meandev', action='store_true', default=False, help='Visualize mean and deviation')
 
     args = parser.parse_args()
-    print('Config file: /%s/%s/%s' % (args.sec, args.site, args.config))
-    config = load_config_file(wind_models_path + '/%s/%s/%s' % (args.sec, args.site, args.config), id=True,
+    print(f"Config file: /{args.sec}/{args.site}/{args.config}")
+    config = load_config_file(wind_models_path + f"/{args.sec}/{args.site}/{args.config}", id=True,
                               abspath=True)
 
     if config['arch']['mode'] == 'regdir':
@@ -71,14 +71,14 @@ if __name__ == '__main__':
     for iter in range(niter):
 
         if type(ahead) == list:
-            fmodel = 'model%s-S%s-A%d-%d-R%02d' %(arch, config['data']['datanames'][0], ahead[0], ahead[1], iter)
+            fmodel = f"model{arch}-S{config['data']['datanames'][0]}-A{ahead[0]}-{ahead[1]}-R{iter:02d}"
         else:
-            fmodel = 'model%s-S%s-A%d-R%02d' %(arch, config['data']['datanames'][0], ahead, iter)
+            fmodel = f"model%{arch}-S{config['data']['datanames'][0]}-A{ahead}-R{iter:02d}"
 
 
-        print('Testing: %s' % fmodel)
+        print(f"Testing: {fmodel}")
         model = load_model(
-            wind_models_path + '/%s/%s/%s.h5' % (args.sec, args.site, fmodel))
+            wind_models_path + f"/{args.sec}/{args.site}/{fmodel}.h5")
         lpreds.append(model.predict(val_x, batch_size=batch_size, verbose=0))
 
 
@@ -94,7 +94,7 @@ if __name__ == '__main__':
             fig = plt.figure()
 
             axes = fig.add_subplot(1, 1, 1)
-            plt.title('%s AHEAD=%d'%(fmodel,  i))
+            plt.title(f"{fmodel} AHEAD={i}")
             plt.plot(vals, 'r--')
 
             plt.plot(np.max(pred, axis=0), 'b')
@@ -115,7 +115,7 @@ if __name__ == '__main__':
             fig = plt.figure()
 
             axes = fig.add_subplot(1, 1, 1)
-            plt.title('%s AHEAD=%d'%(fmodel,  i))
+            plt.title(f"{fmodel} AHEAD={i}'")
             plt.plot(range(vals_x.shape[0]), vals_x, 'r')
             plt.plot(range(vals_x.shape[0],vals_x.shape[0]+vals.shape[0]), vals, 'r--')
 
