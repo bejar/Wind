@@ -45,3 +45,4 @@ if __name__ == '__main__':
     # run_test("config_RNN_ED_s2s")
     # run_test("config_RNN_s2s")
     run_test("config_RNN_ED_s2s_att")
+    #run_test("config_RNN_ED_s2s_dep")

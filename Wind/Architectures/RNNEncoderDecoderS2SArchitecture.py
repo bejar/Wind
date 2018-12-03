@@ -113,7 +113,6 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
             self.model = Sequential()
             if nlayersE == 1:
                 self.model.add(RNN(neurons, input_shape=(idimensions), implementation=impl,
-                                  # kernel_initializer='lecun_normal',
                                    recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
                                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
             else:
@@ -169,8 +168,8 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
         nlayersD = self.config['arch']['nlayersD']  # >= 1
         activation = self.config['arch']['activation']
         activation_r = self.config['arch']['activation_r']
-        print('lag: ', self.config['data']['lag'], '/Neurons: ', neurons, neuronsD, '/Layers: ', nlayersE, nlayersD,
-              '/Activation:', activation, activation_r)
+        print(f"lag: {self.config['data']['lag']} /Neurons: {neurons} {neuronsD} /Layers: ', {nlayersE,}{nlayersD}"
+              f"/Activation: {activation} {activation_r}")
 
     def log_result(self, result):
         for i, r2val, r2test in result:

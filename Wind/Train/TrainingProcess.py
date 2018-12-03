@@ -91,12 +91,13 @@ def train_dirregression(architecture, config, runconfig):
 
             ############################################
             # Training
-            arch.train(dataset.train_x, dataset.train_y, dataset.val_x, dataset.val_y)
+            train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+            arch.train(train_x, train_y, val_x, val_y)
 
             ############################################
             # Results
 
-            r2val, r2test = arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)
+            r2val, r2test = arch.evaluate(val_x, val_y, test_x, test_y)
             lresults.append((ahead, r2val, r2test))
 
             print(strftime('%Y-%m-%d %H:%M:%S'))
@@ -226,7 +227,7 @@ def train_sequence2sequence(architecture, config, runconfig):
     # else:
     #     iahead, sahead = 1, config['data']['ahead']
 
-    ahead = config['data']['ahead'] if not type(ahead) == list else ahead = [1, config['data']['ahead']]
+    ahead = config['data']['ahead'] if (type(config['data']['ahead']) == list) else [1, config['data']['ahead']]
 
     dataset = Dataset(config=config['data'], data_path=wind_data_path)
     dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
@@ -244,7 +245,12 @@ def train_sequence2sequence(architecture, config, runconfig):
     lresults = []
     for iter in range(niter):
 
-        config['idimensions'] = dataset.train_x.shape[1:]
+        train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+
+        if type(train_x) != list:
+            config['idimensions'] = train_x.shape[1:]
+        else:
+            config['idimensions'] = [d.shape[1:] for d in train_x]
         config['odimensions'] = odimensions
         arch = architecture(config, runconfig)
 
@@ -262,12 +268,12 @@ def train_sequence2sequence(architecture, config, runconfig):
 
         ############################################
         # Training
-        arch.train(dataset.train_x, dataset.train_y, dataset.val_x, dataset.val_y)
+        arch.train(train_x, train_y, val_x, val_y)
 
         ############################################
         # Results
 
-        lresults.extend(arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y))
+        lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -305,7 +311,8 @@ def train_persistence(architecture, config, runconfig):
         if runconfig.verbose:
             dataset.summary()
 
-        val_r2, test_r2 = arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)
+        train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+        val_r2, test_r2 = arch.evaluate(val_x, val_y, test_x, test_y)
         lresults.append((ahead, val_r2, test_r2))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
@@ -356,12 +363,13 @@ def train_svm_dirregression(architecture, config, runconfig):
         ############################################
         # Training
 
-        arch.train(dataset.train_x, dataset.train_y)
+        train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+        arch.train(train_x, train_y)
 
         ############################################
         # Results
 
-        lresults.append((ahead, arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y)))
+        lresults.append((ahead, arch.evaluate(val_x, val_y, test_x, test_y)))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -388,9 +396,13 @@ def train_sequence2sequence_tf(architecture, config, runconfig):
         ahead = [1, ahead]
 
     dataset = Dataset(config=config['data'], data_path=wind_data_path)
+    if not dataset.is_teacher_force():
+        raise NameError("S2S teacher force: invalid data matrix")
+
     dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
+
     # Reorganize data for teacher forcing
-    dataset.teacher_forcing()
+    # dataset.teacher_forcing()
 
     if 'iter' in config['training']:
         niter = config['training']['iter']
@@ -404,8 +416,12 @@ def train_sequence2sequence_tf(architecture, config, runconfig):
 
     lresults = []
     for iter in range(niter):
+        train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+        if type(train_x) != list:
+            config['idimensions'] = train_x.shape[1:]
+        else:
+            config['idimensions'] = [d.shape[1:] for d in train_x]
 
-        config['idimensions'] = dataset.train_x.shape[1:]
         config['odimensions'] = odimensions
         arch = architecture(config, runconfig)
 
@@ -423,13 +439,14 @@ def train_sequence2sequence_tf(architecture, config, runconfig):
 
         ############################################
         # Training
-        arch.train([dataset.train_x, dataset.train_y_tf], dataset.train_y, [dataset.val_x, dataset.val_y_tf],
-                   dataset.val_y)
+
+
+        arch.train(train_x, train_y, val_x, val_y)
 
         ############################################
         # Results
 
-        lresults.extend(arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y))
+        lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 

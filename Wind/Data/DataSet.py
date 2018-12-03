@@ -94,6 +94,21 @@ class Dataset:
         self.config = config
         self.data_path = data_path
 
+    def is_teacher_force(self):
+        """
+
+        :return:
+        """
+        return self.config['dmatrix'] == 'teach_force'
+
+    def is_dependent_auxiliary(self):
+        """
+
+        :return:
+        """
+        return self.config['dmatrix'] == 'dep_aux'
+
+
     def _generate_dataset_one_var(self, data, datasize, testsize, lag=1, ahead=1, slice=1, mode=None):
         """
         Generates
@@ -109,7 +124,7 @@ class Dataset:
         mode_x, mode_y = mode
 
         if 'fraction' in self.config:
-            isize = int((1-self.config['fraction']) * datasize)
+            isize = int((1 - self.config['fraction']) * datasize)
             wind_train = data[isize:datasize, :]
         else:
             wind_train = data[:datasize, :]
@@ -182,7 +197,6 @@ class Dataset:
             val_y = test[:half_test, -1:, 0]
             test_y = test[half_test:, -1:, 0]
 
-
         #######################################
 
         # if mode == 's2s':
@@ -227,7 +241,7 @@ class Dataset:
         mode_x, mode_y = mode
 
         if 'fraction' in self.config:
-            isize = int((1-self.config['fraction']) * datasize)
+            isize = int((1 - self.config['fraction']) * datasize)
             wind_train = data[isize:datasize, :]
         else:
             wind_train = data[:datasize, :]
@@ -439,23 +453,53 @@ class Dataset:
         else:
             raise NameError('ERROR: No such dataset type')
 
-    def teacher_forcing(self):
+    def get_data_matrices(self):
         """
-        Prepares the data matrices for teacher forcing/attention
+        Returns the data matrices for training, validation and test
         :return:
         """
-        tmp = self.train_x[:,-1,1]
-        tmp = tmp.reshape(tmp.shape[0],1,1)
-        self.train_y_tf = np.concatenate((tmp, self.train_y[:,:-1,:]), axis=1)
 
-        tmp = self.test_x[:,-1,1]
-        tmp = tmp.reshape(tmp.shape[0],1,1)
-        self.test_y_tf = np.concatenate((tmp, self.test_y[:,:-1,:]), axis=1)
+        if self.config['dmatrix'] == 'teach_force':
+            return self.teacher_forcing()
+        if self.config['dmatrix'] == 'dep_aux':
+            return self.dependent_auxiliary()
+        else:
+            return self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y
 
-        tmp = self.val_x[:,-1,1]
-        tmp = tmp.reshape(tmp.shape[0],1,1)
-        tmp = np.concatenate((tmp, self.val_y[:,:-1,:]), axis=1)
-        self.val_y_tf = tmp #tmp.reshape((tmp.shape[0], tmp.shape[1]))
+    def teacher_forcing(self):
+        """
+        returns data matrices for teacher forcing/attention
+        :return:
+        """
+        # Use the last element of wind traininig data as the first of teacher forcing
+        tmp = self.train_x[:, -1, 0]
+        tmp = tmp.reshape(tmp.shape[0], 1, 1)
+        train_y_tf = np.concatenate((tmp, self.train_y[:, :-1, :]), axis=1)
+
+        tmp = self.test_x[:, -1, 0]
+        tmp = tmp.reshape(tmp.shape[0], 1, 1)
+        test_y_tf = np.concatenate((tmp, self.test_y[:, :-1, :]), axis=1)
+
+        tmp = self.val_x[:, -1, 0]
+        tmp = tmp.reshape(tmp.shape[0], 1, 1)
+        val_y_tf = np.concatenate((tmp, self.val_y[:, :-1, :]), axis=1)
+        return [self.train_x, train_y_tf], self.train_y, \
+               [self.val_x, val_y_tf], self.val_y, \
+               [self.test_x, test_y_tf], self.test_y
+
+
+    def dependent_auxiliary(self):
+        """
+        return data matrices separating dependent variable from the rest
+
+        This is for two headed architecture with dependent and auxiliary
+        variables in separated units
+        :return:
+        """
+
+        return [self.train_x[:, :, 0].reshape(self.train_x.shape[0], self.train_x.shape[1], 1), self.train_x[:, :, 1:]], self.train_y, \
+               [self.val_x[:, :, 0].reshape(self.val_x.shape[0], self.val_x.shape[1], 1), self.val_x[:, :, 1:]], self.val_y, \
+               [self.test_x[:, :, 0].reshape(self.test_x.shape[0], self.test_x.shape[1], 1), self.test_x[:, :, 1:]], self.test_y
 
     def summary(self):
         """
@@ -467,14 +511,17 @@ class Dataset:
             raise NameError('Data not loaded yet')
         else:
             print('Tr:', self.train_x.shape, self.train_y.shape)
-            if hasattr(self,'train_y_tf'):
-                print('Tr(tf):', self.train_y_tf.shape)
+            # if hasattr(self, 'train_y_tf'):
+            #     print('Tr(tf):', self.train_y_tf.shape)
             print('Val:', self.val_x.shape, self.val_y.shape)
             print('Ts:', self.test_x.shape, self.test_y.shape)
             print('Dtype=', self.config['dataset'])
             print('Lag=', self.config['lag'])
             print('Vars=', self.config['vars'])
             print('Ahead=', self.config['ahead'])
+
+
+
 
 
 if __name__ == '__main__':
@@ -492,7 +539,6 @@ if __name__ == '__main__':
     dataset.generate_dataset(ahead=[1, 12], mode=mode)
     dataset.teacher_forcing()
     dataset.summary()
-
 
     # for j in range(1,5):
     #     iahead = j
@@ -514,7 +560,6 @@ if __name__ == '__main__':
     #     for i in range(5):
     #         #print(f"X={train_x[i,:,1]}")
     #         print(f"Y={train_y[i,:]}")
-
 
     #
     # fig = plt.figure()

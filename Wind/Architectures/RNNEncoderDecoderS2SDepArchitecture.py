@@ -4,9 +4,9 @@
 RNNEncoderDecoderS2SArchitecture
 ******
 
-:Description: RNNEncoderDecoderS2SAttentionArchitecture
+:Description: RNNEncoderDecoderS2SArchitecture
 
-    Encoder-decoder S2S with attention
+    RNN Encoder Decoder separating the encoder for dependent variables and auxiliary variables
 
 :Authors:
     bejar
@@ -17,11 +17,10 @@ RNNEncoderDecoderS2SArchitecture
 """
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind.Architectures.Util import recurrent_encoder_functional, recurrent_decoder_functional
 from keras.models import Sequential, load_model, Model
-from keras.layers import LSTM, GRU, Dense, TimeDistributed, Input
+from keras.layers import LSTM, GRU, Bidirectional, Dense, TimeDistributed, Flatten, RepeatVector, Input, concatenate
 from sklearn.metrics import r2_score
-from keras.layers import Activation, dot, concatenate
-import numpy as np
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -42,25 +41,24 @@ else:
 __author__ = 'bejar'
 
 
-class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
+class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
     modfile = None
-    modname = 'RNNEDS2SATT'
-    data_mode = (False, '3D')  # 's2s'
+    modname = 'RNNEDS2SDep'
+    data_mode = (False, '3D') #'s2s'
 
     def generate_model(self):
         """
-        Model for RNN with Encoder Decoder for S2S with attention
+        Model for RNN with Encoder Decoder for S2S
 
         :return:
         """
-        neurons = self.config['arch']['neurons']
+        neuronsE = self.config['arch']['neuronsE']
         drop = self.config['arch']['drop']
         nlayersE = self.config['arch']['nlayersE']  # >= 1
         nlayersD = self.config['arch']['nlayersD']  # >= 1
 
         activation = self.config['arch']['activation']
         activation_r = self.config['arch']['activation_r']
-        activation_fl = self.config['arch']['activation_fl']
         rec_reg = self.config['arch']['rec_reg']
         rec_regw = self.config['arch']['rec_regw']
         k_reg = self.config['arch']['k_reg']
@@ -68,7 +66,6 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
         rnntype = self.config['arch']['rnn']
         CuDNN = self.config['arch']['CuDNN']
         neuronsD = self.config['arch']['neuronsD']
-        full_layers = self.config['arch']['full']
 
         # Extra added from training function
         idimensions = self.config['idimensions']
@@ -89,100 +86,76 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
         else:
             k_regularizer = None
 
+
         RNN = LSTM if rnntype == 'LSTM' else GRU
 
-        # Encoder RNN - First Input
-        enc_input = Input(shape=(idimensions[0]))
-        encoder = RNN(neurons, implementation=impl,
-                      recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                      recurrent_regularizer=rec_regularizer, return_sequences=True, kernel_regularizer=k_regularizer)(
-            enc_input)
+        # Dependent variable input
+        enc_Dep_input = Input(shape=(idimensions[0]))
 
-        for i in range(1, nlayersE):
-            encoder = RNN(neurons, implementation=impl,
-                          recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                          recurrent_regularizer=rec_regularizer, return_sequences=True,
-                          kernel_regularizer=k_regularizer)(
-                encoder)
+        # rec_Dep_input = RNN(neurons, implementation=impl,
+        #       recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+        #       recurrent_regularizer=rec_regularizer, return_sequences=False, kernel_regularizer=k_regularizer)(enc_Dep_input)
 
-        encoder_last = encoder[:, -1, :]
+        rec_Dep_input = recurrent_encoder_functional(RNN, nlayersE,
+                                                    neuronsE, impl, drop,
+                                                    activation, activation_r,
+                                                    rec_regularizer, k_regularizer, enc_Dep_input)
 
-        # Decoder RNN - Second input (Teacher Forcing)
-        dec_input = Input(shape=(None, 1))
+        # Auxiliary variables input
+        enc_Aux_input = Input(shape=(idimensions[1]))
+        # rec_Aux_input = RNN(neurons, implementation=impl,
+        #       recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+        #       recurrent_regularizer=rec_regularizer, return_sequences=False, kernel_regularizer=k_regularizer)(enc_Aux_input)
+        rec_Aux_input = recurrent_encoder_functional(RNN, nlayersE,
+                                                    neuronsE, impl, drop,
+                                                    activation, activation_r,
+                                                    rec_regularizer, k_regularizer, enc_Aux_input)
 
-        decoder = RNN(neurons, implementation=impl,
-                      recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                      recurrent_regularizer=rec_regularizer, return_sequences=True,
-                      kernel_regularizer=k_regularizer)(dec_input)
 
-        for i in range(1, nlayersD):
-            decoder = RNN(neurons, implementation=impl,
-                          recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                          recurrent_regularizer=rec_regularizer, return_sequences=True,
-                          kernel_regularizer=k_regularizer)(decoder)
+        enc_input = concatenate([rec_Dep_input, rec_Aux_input])
 
-        # Attention Layer
-        attention = dot([decoder, encoder], axes=[2, 2])
-        attention = Activation('softmax', name='attention')(attention)
+        output = RepeatVector(odimensions)(enc_input)
 
-        context = dot([attention, encoder], axes=[2, 1])
-        print('context', context)
+        output = recurrent_decoder_functional(RNN, nlayersD,
+                                                    neuronsD, impl, drop,
+                                                    activation, activation_r,
+                                                    rec_regularizer, k_regularizer, output)
 
-        decoder_combined_context = concatenate([context, decoder])
-        print('decoder_combined_context', decoder_combined_context)
+        output = TimeDistributed(Dense(1))(output)
 
-        output = TimeDistributed(Dense(full_layers[0], activation=activation_fl))(decoder_combined_context)
-        for l in full_layers[1:]:
-            output = TimeDistributed(Dense(l, activation=activation_fl))(output)
-
-        output = TimeDistributed(Dense(1, activation="linear"))(output)
-
-        self.model = Model(inputs=[enc_input, dec_input], outputs=output)
+        self.model = Model(inputs=[enc_Dep_input, enc_Aux_input], outputs=output)
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         batch_size = self.config['training']['batch']
 
         if self.runconfig.best:
             self.model = load_model(self.modfile)
+        val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
+        test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
 
-        if type(self.config['data']['ahead']) == list:
+        if type(self.config['data']['ahead'])== list:
             ahead = self.config['data']['ahead'][1]
         else:
             ahead = self.config['data']['ahead']
 
-        val_x_tfi = val_x[0][:, -1, 0]
-        val_x_tfi = val_x_tfi.reshape(val_x_tfi.shape[0], 1, 1)
-        test_x_tfi = test_x[0][:, -1, 0]
-        test_x_tfi = test_x_tfi.reshape(test_x_tfi.shape[0], 1, 1)
-        val_x_tf = val_x_tfi.copy()
-        test_x_tf = test_x_tfi.copy()
-
         lresults = []
-        for i in range(1, ahead + 1):
-            val_yp = self.model.predict([val_x, val_x_tf], batch_size=batch_size, verbose=0)
-            test_yp = self.model.predict([test_x, test_x_tf], batch_size=batch_size, verbose=0)
-
-            val_x_tf = np.concatenate((val_x_tfi, val_yp), axis=1)
-            test_x_tf = np.concatenate((test_x_tfi, test_yp), axis=1)
-
         for i in range(1, ahead + 1):
             lresults.append((i,
                              r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
                              r2_score(test_y[:, i - 1], test_yp[:, i - 1])
                              ))
-
         return lresults
 
     def summary(self):
         self.model.summary()
-        neurons = self.config['arch']['neurons']
+        neuronsE = self.config['arch']['neuronsE']
         neuronsD = self.config['arch']['neuronsD']
         nlayersE = self.config['arch']['nlayersE']  # >= 1
         nlayersD = self.config['arch']['nlayersD']  # >= 1
         activation = self.config['arch']['activation']
         activation_r = self.config['arch']['activation_r']
-        print(f"lag: {self.config['data']['lag']}, /Neurons: {neurons}, {neuronsD}, /Layers: {nlayersE} {nlayersD}"
-              f"/Activation: {activation}, {activation_r}")
+        print(f"lag: {self.config['data']['lag']} /Neurons: {neuronsE} {neuronsD} /Layers: ', {nlayersE,}{nlayersD}"
+              f"/Activation: {activation} {activation_r}")
 
     def log_result(self, result):
         for i, r2val, r2test in result:
