@@ -8,7 +8,7 @@
     "testsize": 17534,
     "dataset": 1,
       "dmatrix": "dep_aux",
-     "lag": 256,
+     "lag": 18,
     "ahead": [1,12],
     "fraction": 1
   },

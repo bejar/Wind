@@ -129,7 +129,7 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
 
         enc_input = concatenate([rec_Dep_input, rec_Aux_input])
 
-        #enc_input = BatchNormalization()(enc_input)
+        enc_input = BatchNormalization()(enc_input)
 
         output = RepeatVector(odimensions)(enc_input)
 
