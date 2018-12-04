@@ -455,12 +455,15 @@ class Dataset:
         :return:
         """
 
-        if self.config['dmatrix'] == 'teach_force':
+        if not 'dmatrix' in self.config or self.config['dmatrix'] == 'normal':
+            return self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y
+        elif self.config['dmatrix'] == 'teach_force':
             return self.teacher_forcing()
-        if self.config['dmatrix'] == 'dep_aux':
+        elif self.config['dmatrix'] == 'dep_aux':
             return self.dependent_auxiliary()
         else:
-            return self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y
+            raise NameError("DataSet: No such dmatrix type")
+
 
     def teacher_forcing(self):
         """

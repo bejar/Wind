@@ -148,7 +148,7 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
         val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
         test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
 
-        if type(self.config['data']['ahead'])== list:
+        if type(self.config['data']['ahead']) == list:
             ahead = self.config['data']['ahead'][1]
         else:
             ahead = self.config['data']['ahead']
