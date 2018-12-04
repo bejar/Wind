@@ -24,6 +24,8 @@ class Architecture:
     config = None
     runconfig = None
     model = None
+    modname = None
+    data_mode = None
 
     def __init__(self, config, runconfig):
         """
@@ -59,12 +61,23 @@ class Architecture:
         """
         raise NameError('ERROR: Not implemented')
 
+    # def summary(self):
+    #     """
+    #     Model summary
+    #     :return:
+    #     """
+    #     raise NameError('ERROR: Not implemented')
+
     def summary(self):
         """
         Model summary
         :return:
         """
-        raise NameError('ERROR: Not implemented')
+        print("--------- Architecture parameters -------")
+        print(f"{self.modname}")
+        for c in self.config['arch']:
+            print(f"# {c} = {self.config['arch'][c]}")
+        print("---------------------------------------")
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         """
@@ -75,11 +88,16 @@ class Architecture:
 
     def log_result(self, result):
         """
-        logs a result from the model
+        logs a result from the model (basic results)
 
         :param result:
         :return:
         """
+        for i, r2val, r2test in result:
+            print(f"{self.config['arch']['mode']} | AH={i}"
+                  f"R2V = {r2val:3.5f}, R2T = {r2test:3.5f}"
+                  )
+
         raise NameError('Error: Not implemented')
 
     def save(self, postfix):
@@ -87,7 +105,7 @@ class Architecture:
         Saves model to a file
         :return:
         """
-        raise NameError('Error: Not implemented')
+        pass
 
     def plot(self):
         """

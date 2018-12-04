@@ -1,0 +1,20 @@
+{ "_id": "00000000",
+    "experiment": "TEST",
+  "data": {
+    "datanames": ["10-5308-12"],
+    "scaler": "standard",
+     "vars": [0,1,2,3,4,5],
+    "datasize": 43834,
+    "testsize": 17534,
+      "dataset": 1,
+      "dmatrix": "normal",
+    "lag": 18,
+      "ahead": 12,
+      "fraction": 1
+  },
+  "arch": {
+      "n_neighbors" : 5,
+      "weights":"distance",
+    "mode": "KNN_dir_reg"
+  }
+}

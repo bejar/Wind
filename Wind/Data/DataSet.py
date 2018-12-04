@@ -89,6 +89,7 @@ class Dataset:
     data_path = None
     config = None
     scalers = {'standard': StandardScaler(), 'minmax': MinMaxScaler(feature_range=(-1, 1))}
+    dataset_type = ['onesiteonevar', 'onesitemanyvar', 'manysiteonevar', 'manysitemanyvar', 'manysitemanyvarstack', 'manysitemanyvarstackneigh']
 
     def __init__(self, config, data_path):
         self.config = config
@@ -260,10 +261,7 @@ class Dataset:
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
         elif mode_y == '2D':
             train_y = train[:, -slice:, 0]
-            print(train_y.shape)
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
-            print(train_y.shape)
-
         elif mode_y == '1D':
             train_y = train[:, -1:, 0]
         elif mode_y == '0D':
@@ -396,11 +394,11 @@ class Dataset:
         for d in datanames:
             if remote:
                 srv = pysftp.Connection(host=remote_data[0], username=remote_data[1])
-                srv.get(remote_wind_data_path + '/%s.npy' % d, self.data_path + '/%s.npy' % d)
+                srv.get(remote_wind_data_path + f"/{d}.npy", self.data_path + f"/{d}.npy")
                 srv.close()
-            wind[d] = np.load(self.data_path + '/%s.npy' % d)
+            wind[d] = np.load(self.data_path + f"/{d}.npy")
             if remote:
-                os.remove(self.data_path + '/%s.npy' % d)
+                os.remove(self.data_path + f"/{d}.npy")
 
             if vars is not None:
                 wind[d] = wind[d][:, vars]
@@ -437,8 +435,8 @@ class Dataset:
             self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
                 self._generate_dataset_multiple_var(stacked, datasize, testsize,
                                                     lag=lag, ahead=dahead, slice=slice, mode=mode)
-        elif self.config['dataset'] == 4 or self.config['dataset'] == 5 or self.config[
-            'dataset'] == 'manysitemanyvarstack':
+        elif self.config['dataset'] == 4 or self.config['dataset'] == 5 or \
+                self.config['dataset'] == 'manysitemanyvarstack':
             stacked = [self._generate_dataset_multiple_var(wind[d], datasize, testsize,
                                                            lag=lag, ahead=dahead, slice=slice, mode=mode) for d in
                        datanames]
@@ -510,15 +508,22 @@ class Dataset:
         if self.train_x is None:
             raise NameError('Data not loaded yet')
         else:
-            print('Tr:', self.train_x.shape, self.train_y.shape)
-            # if hasattr(self, 'train_y_tf'):
-            #     print('Tr(tf):', self.train_y_tf.shape)
-            print('Val:', self.val_x.shape, self.val_y.shape)
-            print('Ts:', self.test_x.shape, self.test_y.shape)
-            print('Dtype=', self.config['dataset'])
-            print('Lag=', self.config['lag'])
-            print('Vars=', self.config['vars'])
-            print('Ahead=', self.config['ahead'])
+            print("--- Dataset Configuration-----------")
+            print(f"Dataset name:  {self.config['datanames']}")
+            print(f"Data fraction:  {self.config['fraction']}")
+            print(f"Training:   X={self.train_x.shape} Y={self.train_y.shape}")
+            print(f"Validation: X={self.val_x.shape} Y={self.val_y.shape}")
+            print(f"Tests:      X={self.test_x.shape} T={self.test_y.shape}")
+            if type(self.config['dataset'])==int:
+                print(f"Dataset type= {self.dataset_type[self.config['dataset']]}")
+            else:
+                print(f"Dataset type= {self.config['dataset']}")
+            print(f"Scaler= {self.config['scaler']}")
+            print(f"Data matrix configuration= {self.config['dmatrix']}")
+            print(f"Vars= {self.config['vars']}")
+            print(f"Lag= {self.config['lag']}")
+            print(f"Ahead= {self.config['ahead']}")
+            print("------------------------------------")
 
 
 

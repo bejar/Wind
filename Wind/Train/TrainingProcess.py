@@ -67,13 +67,14 @@ def train_dirregression(architecture, config, runconfig):
                 print('-----------------------------------------------------------------------------')
                 print(f"Steps Ahead = {ahead}")
 
+            # Dataset
             dataset = Dataset(config=config['data'], data_path=wind_data_path)
             dataset.generate_dataset(ahead=[ahead, ahead], mode=architecture.data_mode, remote=runconfig.remote)
+            train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
 
             ############################################
             # Model
-
-            config['idimensions'] = dataset.train_x.shape[1:]
+            config['idimensions'] = train_x.shape[1:]
 
             arch = architecture(config, runconfig)
 
@@ -91,7 +92,6 @@ def train_dirregression(architecture, config, runconfig):
 
             ############################################
             # Training
-            train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
             arch.train(train_x, train_y, val_x, val_y)
 
             ############################################
@@ -153,13 +153,15 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
                 print('-----------------------------------------------------------------------------')
                 print(f"Steps Ahead = {ahead}")
 
+            # Dataset
             dataset = Dataset(config=config['data'], data_path=wind_data_path)
             dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
+            train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
 
             ############################################
             # Model
 
-            config['idimensions'] = dataset.train_x.shape[1:]
+            config['idimensions'] = train_x.shape[1:]
             config['odimensions'] = ahead[1] - ahead[0]
             config['rdimensions'] = ahead[0] - 1
 
@@ -180,26 +182,26 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
            ############################################
             # Training
             if config['rdimensions'] == 0:
-                arch.train(dataset.train_x, dataset.train_y, dataset.val_x, dataset.val_y)
+                arch.train(train_x, train_y, val_x, val_y)
             else:
                 # Train using the predictions of the previous iteration
-                arch.train([dataset.train_x, rec_train_pred_x], dataset.train_y, [dataset.val_x, rec_val_pred_x], dataset.val_y)
+                arch.train([train_x, rec_train_pred_x], train_y, [val_x, rec_val_pred_x], val_y)
 
 
             ############################################
             # Results and Add the new predictions to the saved ones
             if config['rdimensions'] == 0:
-                lresults.extend(arch.evaluate(dataset.val_x, dataset.val_y, dataset.test_x, dataset.test_y))
-                rec_train_pred_x = arch.predict(dataset.train_x)
-                rec_val_pred_x = arch.predict(dataset.val_x)
-                rec_test_pred_x = arch.predict(dataset.test_x)
+                lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
+                rec_train_pred_x = arch.predict(train_x)
+                rec_val_pred_x = arch.predict(val_x)
+                rec_test_pred_x = arch.predict(test_x)
 
             else:
-                lresults.extend(arch.evaluate([dataset.val_x, rec_val_pred_x], dataset.val_y,
-                                              [dataset.test_x, rec_test_pred_x], dataset.test_y))
-                rec_train_pred_x = np.concatenate((rec_train_pred_x, arch.predict(dataset.train_x)))
-                rec_val_pred_x = np.concatenate((rec_val_pred_x, arch.predict(dataset.val_x)))
-                rec_test_pred_x = np.concatenate((rec_test_pred_x, arch.predict(dataset.test_x)))
+                lresults.extend(arch.evaluate([val_x, rec_val_pred_x], val_y,
+                                              [test_x, rec_test_pred_x], dataset.test_y))
+                rec_train_pred_x = np.concatenate((rec_train_pred_x, arch.predict(train_x)))
+                rec_val_pred_x = np.concatenate((rec_val_pred_x, arch.predict(val_x)))
+                rec_test_pred_x = np.concatenate((rec_test_pred_x, arch.predict(test_x)))
 
             print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -303,15 +305,18 @@ def train_persistence(architecture, config, runconfig):
             print("-----------------------------------------------------------------------------")
             print(f"Steps Ahead = {ahead}")
 
+        # Dataset
         dataset = Dataset(config=config['data'], data_path=wind_data_path)
         dataset.generate_dataset(ahead=[ahead, ahead], mode=architecture.data_mode, remote=runconfig.remote)
+        train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
 
+        # Architecture
         arch = architecture(config, runconfig)
 
         if runconfig.verbose:
             dataset.summary()
 
-        train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+
         val_r2, test_r2 = arch.evaluate(val_x, val_y, test_x, test_y)
         lresults.append((ahead, val_r2, test_r2))
 
@@ -327,7 +332,7 @@ def train_persistence(architecture, config, runconfig):
     return lresults
 
 
-def train_svm_dirregression(architecture, config, runconfig):
+def train_sckit_dirregression(architecture, config, runconfig):
     """
     Training process for architecture with direct regression of ahead time steps
 
@@ -346,30 +351,31 @@ def train_svm_dirregression(architecture, config, runconfig):
             print('-----------------------------------------------------------------------------')
             print(f'Steps Ahead = {ahead} ')
 
+
+        # Dataset
         dataset = Dataset(config=config['data'], data_path=wind_data_path)
         dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
+        train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
 
         ############################################
         # Model
 
         arch = architecture(config, runconfig)
+        arch.generate_model()
 
         if runconfig.verbose:
             arch.summary()
             dataset.summary()
-
             print()
 
         ############################################
         # Training
-
-        train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
-        arch.train(train_x, train_y)
+        arch.train(train_x, train_y, val_x, val_y)
 
         ############################################
         # Results
-
-        lresults.append((ahead, arch.evaluate(val_x, val_y, test_x, test_y)))
+        val_r2, test_r2 = arch.evaluate(val_x, val_y, test_x, test_y)
+        lresults.append((ahead, val_r2, test_r2))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
