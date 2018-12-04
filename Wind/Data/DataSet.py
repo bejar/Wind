@@ -520,7 +520,8 @@ class Dataset:
             else:
                 print(f"Dataset type= {self.config['dataset']}")
             print(f"Scaler= {self.config['scaler']}")
-            print(f"Data matrix configuration= {self.config['dmatrix']}")
+            if 'dmatrix' in self.config:
+                print(f"Data matrix configuration= {self.config['dmatrix']}")
             print(f"Vars= {self.config['vars']}")
             print(f"Lag= {self.config['lag']}")
             print(f"Ahead= {self.config['ahead']}")
