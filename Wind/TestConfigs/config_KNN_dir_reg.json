@@ -13,7 +13,7 @@
       "fraction": 1
   },
   "arch": {
-      "n_neighbors" : 1,
+      "n_neighbors" : 9,
       "weights":"distance",
     "mode": "KNN_dir_reg"
   }
