@@ -34,7 +34,7 @@ def recurrent_encoder_functional(RNN, nlayers, neurons, impl, drop, activation, 
                       recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
                       recurrent_regularizer=rec_regularizer, return_sequences=True, kernel_regularizer=k_regularizer)(input)
 
-        for i in range(1, nlayers):
+        for i in range(1, nlayers-1):
             encoder = RNN(neurons, implementation=impl,
                           recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
                           recurrent_regularizer=rec_regularizer, return_sequences=True,

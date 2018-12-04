@@ -254,7 +254,6 @@ def train_sequence2sequence(architecture, config, runconfig):
     lresults = []
     for iter in range(niter):
 
-
         arch = architecture(config, runconfig)
 
         if runconfig.multi == 1:

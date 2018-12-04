@@ -129,9 +129,6 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
 
         enc_input = concatenate([rec_Dep_input, rec_Aux_input])
 
-        # if self.config['arch']['batchnormalization']:
-        #     enc_input = BatchNormalization()(enc_input)
-
         output = RepeatVector(odimensions)(enc_input)
 
         output = recurrent_decoder_functional(RNN, nlayersD,
@@ -164,8 +161,9 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
                              ))
         return lresults
 
-    # def summary(self):
-    #     self.model.summary()
+    def summary(self):
+        self.model.summary()
+        super().summary()
     #     neuronsE = self.config['arch']['neuronsE']
     #     neuronsD = self.config['arch']['neuronsD']
     #     nlayersE = self.config['arch']['nlayersE']  # >= 1
