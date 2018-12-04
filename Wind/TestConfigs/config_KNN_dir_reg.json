@@ -14,7 +14,7 @@
   },
   "arch": {
       "n_neighbors" : 13,
-      "weights":"distance",
+      "weights":"uniform",
     "mode": "KNN_dir_reg"
   }
 }
