@@ -1,0 +1,42 @@
+{ "_id": "00000000",
+    "experiment": "MULTIPLE",
+  "data": {
+    "datanames": ["11-5794-12"],
+    "scaler": "standard",
+      "vars": [0,1,2,3,4,5],
+    "datasize": 43834,
+    "testsize": 17534,
+    "dataset": 1,
+      "dmatrix": "dep_aux",
+     "lag": 256,
+    "ahead": [1,12],
+    "fraction": 1
+  },
+  "arch": {
+    "neuronsE":128,
+    "neuronsD":64,
+    "k_reg": "None",
+    "k_regw": 0.1,
+    "rec_reg": "None",
+    "rec_regw": 0.1,
+    "drop": 0.3,
+    "nlayersE": 1,
+    "nlayersD": 1,
+    "activation": "relu",
+    "activation_r": "hard_sigmoid",
+    "CuDNN": false,
+    "bidirectional": false,
+    "bimerge":"ave",
+    "rnn": "GRU",
+    "full": [1],
+    "mode": "RNN_ED_s2s_dep"
+  },
+  "training": {
+    "iter":1,
+    "batch": 1024,
+    "epochs": 200,
+    "patience": 5,
+    "optimizer": "adamax",
+    "lrate": 0.001
+  }
+}
