@@ -187,7 +187,6 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
                 # Train using the predictions of the previous iteration
                 arch.train([train_x, rec_train_pred_x], train_y, [val_x, rec_val_pred_x], val_y)
 
-
             ############################################
             # Results and Add the new predictions to the saved ones
             if config['rdimensions'] == 0:
@@ -231,9 +230,6 @@ def train_sequence2sequence(architecture, config, runconfig):
 
     ahead = config['data']['ahead'] if (type(config['data']['ahead']) == list) else [1, config['data']['ahead']]
 
-    dataset = Dataset(config=config['data'], data_path=wind_data_path)
-    dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
-
     if 'iter' in config['training']:
         niter = config['training']['iter']
     else:
@@ -244,16 +240,21 @@ def train_sequence2sequence(architecture, config, runconfig):
     else:
         odimensions = ahead
 
+    # Dataset
+    dataset = Dataset(config=config['data'], data_path=wind_data_path)
+    dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
+    train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+
+    if type(train_x) != list:
+        config['idimensions'] = train_x.shape[1:]
+    else:
+        config['idimensions'] = [d.shape[1:] for d in train_x]
+    config['odimensions'] = odimensions
+
     lresults = []
     for iter in range(niter):
 
-        train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
 
-        if type(train_x) != list:
-            config['idimensions'] = train_x.shape[1:]
-        else:
-            config['idimensions'] = [d.shape[1:] for d in train_x]
-        config['odimensions'] = odimensions
         arch = architecture(config, runconfig)
 
         if runconfig.multi == 1:
@@ -348,9 +349,8 @@ def train_sckit_dirregression(architecture, config, runconfig):
     for ahead in range(iahead, sahead + 1):
 
         if runconfig.verbose:
-            print('-----------------------------------------------------------------------------')
+            print('************************************************************')
             print(f'Steps Ahead = {ahead} ')
-
 
         # Dataset
         dataset = Dataset(config=config['data'], data_path=wind_data_path)

@@ -19,7 +19,8 @@ RNNEncoderDecoderS2SArchitecture
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from Wind.Architectures.Util import recurrent_encoder_functional, recurrent_decoder_functional
 from keras.models import Sequential, load_model, Model
-from keras.layers import LSTM, GRU, Bidirectional, Dense, TimeDistributed, Flatten, RepeatVector, Input, concatenate
+from keras.layers import LSTM, GRU, Bidirectional, Dense, TimeDistributed, Flatten, RepeatVector,\
+    Input, concatenate, BatchNormalization
 from sklearn.metrics import r2_score
 
 try:
@@ -48,11 +49,35 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
 
     def generate_model(self):
         """
-        Model for RNN with Encoder Decoder for S2S
+        Model for RNN with Encoder Decoder for S2S separating the dependent variable from the auxiliary variables
 
+        -------------
+        json config:
+
+        "arch": {
+            "neuronsE":128,
+            "neuronsD":64,
+            "k_reg": "None",
+            "k_regw": 0.1,
+            "rec_reg": "None",
+            "rec_regw": 0.1,
+            "drop": 0.3,
+            "nlayersE": 1,
+            "nlayersD": 1,
+            "activation": "relu",
+            "activation_r": "hard_sigmoid",
+            #"CuDNN": false,
+            #"bidirectional": false,
+            #"bimerge":"ave",
+            "rnn": "GRU",
+            "full": [1],
+            "mode": "RNN_ED_s2s_dep"
+        }
+        ------------
         :return:
         """
         neuronsE = self.config['arch']['neuronsE']
+        neuronsD = self.config['arch']['neuronsD']
         drop = self.config['arch']['drop']
         nlayersE = self.config['arch']['nlayersE']  # >= 1
         nlayersD = self.config['arch']['nlayersD']  # >= 1
@@ -64,9 +89,8 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
         k_reg = self.config['arch']['k_reg']
         k_regw = self.config['arch']['k_regw']
         rnntype = self.config['arch']['rnn']
-        CuDNN = self.config['arch']['CuDNN']
-        neuronsD = self.config['arch']['neuronsD']
 
+        CuDNN = self.config['arch']['CuDNN']
         # Extra added from training function
         idimensions = self.config['idimensions']
         odimensions = self.config['odimensions']
@@ -86,7 +110,6 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
         else:
             k_regularizer = None
 
-
         RNN = LSTM if rnntype == 'LSTM' else GRU
 
         # Dependent variable input
@@ -105,6 +128,8 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
 
 
         enc_input = concatenate([rec_Dep_input, rec_Aux_input])
+
+        #enc_input = BatchNormalization()(enc_input)
 
         output = RepeatVector(odimensions)(enc_input)
 
@@ -166,23 +191,3 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
                   f" RAF= {self.config['arch']['activation_r']},"
                   f" OPT= {self.config['training']['optimizer']},"
                   f" R2V = {r2val:3.5f}, R2T = {r2test:3.5f}")
-
-            # print(
-            #         '%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d %d, DR= %3.2f, AF= %s, RAF= %s, '
-            #         'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-            #         (self.config['arch']['mode'],
-            #          self.config['data']['datanames'][0],
-            #          self.config['data']['dataset'],
-            #          len(self.config['data']['vars']),
-            #          self.config['data']['lag'],
-            #          i,
-            #          self.config['arch']['rnn'],
-            #          self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no',
-            #          self.config['arch']['nlayersE'], self.config['arch']['nlayersD'],
-            #          self.config['arch']['neurons'], self.config['arch']['neuronsD'],
-            #          self.config['arch']['drop'],
-            #          self.config['arch']['activation'],
-            #          self.config['arch']['activation_r'],
-            #          self.config['training']['optimizer'],
-            #          r2val, r2test
-            #          ))

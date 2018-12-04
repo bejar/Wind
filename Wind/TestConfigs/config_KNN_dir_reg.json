@@ -6,14 +6,14 @@
      "vars": [0,1,2,3,4,5],
     "datasize": 43834,
     "testsize": 17534,
-      "dataset": 1,
+      "dataset": 0,
       "dmatrix": "normal",
     "lag": 18,
       "ahead": 12,
       "fraction": 1
   },
   "arch": {
-      "n_neighbors" : 5,
+      "n_neighbors" : 1,
       "weights":"distance",
     "mode": "KNN_dir_reg"
   }

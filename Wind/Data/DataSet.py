@@ -372,8 +372,6 @@ class Dataset:
         vars = self.config['vars']
         wind = {}
 
-        print(ahead)
-
         if type(ahead) == list:
             dahead = ahead[1]
             slice = (ahead[1] - ahead[0]) + 1
@@ -542,7 +540,6 @@ if __name__ == '__main__':
     dataset = Dataset(config=config['data'], data_path=wind_data_path)
 
     dataset.generate_dataset(ahead=[1, 12], mode=mode)
-    dataset.teacher_forcing()
     dataset.summary()
 
     # for j in range(1,5):

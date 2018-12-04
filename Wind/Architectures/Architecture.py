@@ -77,6 +77,9 @@ class Architecture:
         print(f"{self.modname}")
         for c in self.config['arch']:
             print(f"# {c} = {self.config['arch'][c]}")
+        print("--------- Training parameters -------")
+        for c in self.config['training']:
+            print(f"# {c} = {self.config['training'][c]}")
         print("---------------------------------------")
 
     def evaluate(self, val_x, val_y, test_x, test_y):
@@ -93,12 +96,12 @@ class Architecture:
         :param result:
         :return:
         """
-        for i, r2val, r2test in result:
-            print(f"{self.config['arch']['mode']} | AH={i}"
-                  f"R2V = {r2val:3.5f}, R2T = {r2test:3.5f}"
-                  )
+        if self.runconfig.verbose:
+            self.summary()
 
-        raise NameError('Error: Not implemented')
+        for i, r2val, r2test in result:
+            print(f"{self.config['arch']['mode']} | AH={i} R2V = {r2val:3.5f} R2T = {r2test:3.5f}"
+                  )
 
     def save(self, postfix):
         """
