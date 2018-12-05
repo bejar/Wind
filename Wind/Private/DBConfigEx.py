@@ -6,7 +6,7 @@ DBConfig
 
 :Description: DBConfig
 
-
+  Use this as example to generate the sc
 
 :Authors: bejar
 

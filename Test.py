@@ -141,9 +141,9 @@ if __name__ == '__main__':
 
     v = np.array([(t.tm_hour * 60 + t.tm_min, t.tm_mon) for t in [time.gmtime(stime + (i * samp)) for i in range(0, 100, 12)]])
 
-    print time.gmtime(stime)
-    print samp
-    print np.array(v)
+    # print time.gmtime(stime)
+    # print samp
+    # print np.array(v)
 
 
 

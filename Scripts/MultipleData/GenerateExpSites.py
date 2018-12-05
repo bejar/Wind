@@ -24,6 +24,9 @@ from Wind.Util import load_config_file
 from Wind.Private.DBConfig import mongoconnection
 from pymongo import MongoClient
 
+def main
+
+
 __author__ = 'bejar'
 
 if __name__ == '__main__':

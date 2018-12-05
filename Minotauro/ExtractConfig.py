@@ -37,8 +37,8 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--nconfig', type=int, default=200, help='number of configs')
-    parser.add_argument('--jph', type=int, default=30, help='number of configs')
-    parser.add_argument('--exp', default='convos2s', help='number of configs')
+    parser.add_argument('--jph', type=int, default=30, help='Number of jobs per hour')
+    parser.add_argument('--exp', default='convos2s', help='Type of configs')
     parser.add_argument('--nocopy', action='store_true', default=False, help='copy files')
 
     args = parser.parse_args()
@@ -84,7 +84,7 @@ def main():
             if not args.nocopy:
                 print(config['_id'])
                 sconf = json.dumps(config)
-                fconf = open('./%s/Jobs/' % nm + config['_id'] + '.json', 'w')
+                fconf = open(f"./{nm}/Jobs/{config['_id']}.json", 'w')
                 fconf.write(sconf + '\n')
                 fconf.close()
                 copy(f"{wind_data_path}/{config['data']['datanames'][0]}.npy", f"./{nm}/Data/")
