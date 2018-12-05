@@ -6,7 +6,8 @@ ExtractConfig
 
 :Description: ExtractConfig
 
-    
+    Extracts a list of configurations from mongoDB, copies the data (if told so) and generates a script to be
+    executed at minotauro
 
 :Authors: bejar
     
@@ -28,7 +29,12 @@ import os
 
 __author__ = 'bejar'
 
-if __name__ == '__main__':
+
+def main():
+    """Extracts configurations from the DB
+
+    :return:
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--nconfig', type=int, default=200, help='number of configs')
     parser.add_argument('--jph', type=int, default=30, help='number of configs')
@@ -42,18 +48,18 @@ if __name__ == '__main__':
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    query = {'status': 'pending', 'experiment':args.exp}
+    query = {'status': 'pending', 'experiment': args.exp}
     # config = col.find_one(query)
 
     lconfig = [c for c in col.find(query, limit=args.nconfig)]
     nm = strftime('%Y%m%d%H%M%S')
     os.mkdir(nm)
-    os.mkdir('%s/Data' % nm)
-    os.mkdir('%s/Jobs' % nm)
+    os.mkdir(f"{nm}/Data")
+    os.mkdir(f"{nm}/Jobs")
 
     jobtime = (args.nconfig // args.jph) + 2
 
-    batchjob = open('%s/windjob%s.cmd' % (nm, nm), 'w')
+    batchjob = open(f"'{nm}/windjob{nm}.cmd'", 'w')
     batchjob.write("""#!/bin/bash
 # @ job_name = windjob
 # @ initialdir = /gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Experiments
@@ -64,15 +70,14 @@ if __name__ == '__main__':
 # @ cpus_per_task = 1
 # @ features = k80
 """ +
-                   "# @ wall_clock_limit = %d:30:00\n" % jobtime
+                   f"# @ wall_clock_limit = {jobtime}:30:00\n"
                    +
                    """module purge
                    module purge; module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
                    PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
                    export PYTHONPATH
                    
-                   """
-                   )
+                   """)
 
     if len(lconfig) > 0:
         for config in lconfig:
@@ -82,9 +87,13 @@ if __name__ == '__main__':
                 fconf = open('./%s/Jobs/' % nm + config['_id'] + '.json', 'w')
                 fconf.write(sconf + '\n')
                 fconf.close()
-                copy(wind_data_path + '/' + config['data']['datanames'][0] + '.npy', './%s/Data/' % nm)
+                copy(f"{wind_data_path}/{config['data']['datanames'][0]}.npy", f"./{nm}/Data/")
             batchjob.write(
-                'python WindExperimentBatch.py --best --early --gpu --mino --config %s\n' % config['_id'])
+                f"python WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
             col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
     batchjob.close()
     print(f"NCONF= {len(lconfig)}")
+
+
+if __name__ == '__main__':
+    main()

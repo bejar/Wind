@@ -24,8 +24,11 @@ import time
 
 __author__ = 'bejar'
 
-if __name__ == '__main__':
+def main():
+    """Genera un fichero de datos con los sites y variables indicadas con una resolucion indicada por step
 
+    :return:
+    """
     # Grupos de 5 minutos
     step = 12
 
@@ -64,3 +67,7 @@ if __name__ == '__main__':
         print(data30.shape)
         mdata[wf.replace('/', '-')] = data30
     np.savez_compressed('/home/bejar/Wind%d.npz' % (step * 5), **mdata)
+
+
+if __name__ == '__main__':
+    main()

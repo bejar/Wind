@@ -6,7 +6,7 @@ KNNDirRegressionArchitecture
 
 :Description: KNNDirRegressionArchitecture
 
-    Architecture based on K-nearest neigbours
+    Direct regression architecture based on K-nearest neigbours
 
 :Authors: bejar
     
@@ -23,6 +23,8 @@ from sklearn.neighbors import KNeighborsRegressor
 __author__ = 'bejar'
 
 class KNNDirRegressionArchitecture(SCKArchitecture):
+    """Direct regression architecture based on K-nearest neigbours
+    """
     data_mode = ('2D', '0D')  #
     modname = 'KNNDIRREG'
 

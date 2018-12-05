@@ -4,9 +4,11 @@
 CNNS2SArchitecture
 *************
 
+
 :Description: CNNS2SArchitecture
 
-    
+    Class for convolutional sequence to sequence architecture
+
 
 :Authors: bejar
     
@@ -35,14 +37,18 @@ __author__ = 'bejar'
 
 
 class CNNS2SArchitecture(NNS2SArchitecture):
+    """
+    Class for convolutional sequence to sequence architecture
+
+    """
     modfile = None
     modname = 'CNNS2S'
     data_mode = (False, '2D') #'cnn'
 
     def generate_model(self):
         """
-        Model for RNN with Encoder Decoder for S2S
-        -------------
+        Model for CNN with Encoder Decoder for S2S
+
         json config:
 
         "arch": {

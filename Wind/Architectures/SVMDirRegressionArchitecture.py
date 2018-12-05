@@ -6,7 +6,7 @@ SVMDirRegressionArchitecture
 
 :Description: SVMDirRegressionArchitecture
 
-    
+    SVM direct regression architecture
 
 :Authors: bejar
     
@@ -24,6 +24,9 @@ __author__ = 'bejar'
 
 
 class SVMDirRegressionArchitecture(SCKArchitecture):
+    """SVM direct regression architecture
+
+    """
     data_mode = ('2D', '0D') #'svm'
     modname = 'SVMDIRREG'
 
@@ -55,19 +58,19 @@ class SVMDirRegressionArchitecture(SCKArchitecture):
     #     print(
     #     f"lag: {self.config['data']['lag']} /kernel: {kernel} /C: {C} /epsilon: {epsilon} /degree: {degree} /coef0 {coef0}")
 
-    def log_result(self, result):
-        """
-        logs a result from the model
-
-        :param result:
-        :return:
-        """
-        for i, r2val, r2test in result:
-            print(f"{self.config['arch']['mode']} | AH={i} KRNL={self.config['arch']['kernel']}  C={self.config['arch']['C']:3.5f} "
-                  f"EPS={self.config['arch']['epsilon']:3.5f} DEG={self.config['arch']['degree']} "
-                  f"COEF0={self.config['arch']['coef0']} "
-                  f"R2V = {r2val:3.5f}, R2T = {r2test:3.5f}"
-                  )
+    # def log_result(self, result):
+    #     """
+    #     logs a result from the model
+    #
+    #     :param result:
+    #     :return:
+    #     """
+    #     for i, r2val, r2test in result:
+    #         print(f"{self.config['arch']['mode']} | AH={i} KRNL={self.config['arch']['kernel']}  C={self.config['arch']['C']:3.5f} "
+    #               f"EPS={self.config['arch']['epsilon']:3.5f} DEG={self.config['arch']['degree']} "
+    #               f"COEF0={self.config['arch']['coef0']} "
+    #               f"R2V = {r2val:3.5f}, R2T = {r2test:3.5f}"
+    #               )
             # print('%s |  AH=%d, KRNL= %s, C= %3.5f, EPS= %3.5f, DEG=%d, COEF0= %d, R2V = %3.5f, R2T = %3.5f' %
             #       (self.config['arch']['mode'], i,
             #        self.config['arch']['kernel'],

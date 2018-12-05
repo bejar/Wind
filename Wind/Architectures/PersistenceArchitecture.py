@@ -6,7 +6,7 @@ PersistenceArchitecture
 
 :Description: PersistenceArchitecture
 
-    Different Auxiliary functions used for different purposes
+    Class for persistence model
 
 :Authors:
     bejar
@@ -23,6 +23,9 @@ __author__ = 'bejar'
 
 
 class PersistenceArchitecture(Architecture):
+    """Class for persistence model
+
+    """
     data_mode = (False, '1D') #False
 
     def generate_model(self):
@@ -58,17 +61,17 @@ class PersistenceArchitecture(Architecture):
 
         return r2val, r2test
 
-    def log_result(self, result):
-        """
-        logs a result from the model
-
-        :param result:
-        :return:
-        """
-        for i, r2val, r2test in result:
-            print(f"{self.config['arch']['mode']} | DNM= {self.config['data']['datanames'][0]} "
-                  f"DS= {self.config['data']['dataset']} AH= {i} "
-                  f"R2PV = {r2val:3.5f} R2PT = {r2test:3.5f}")
+    # def log_result(self, result):
+    #     """
+    #     logs a result from the model
+    #
+    #     :param result:
+    #     :return:
+    #     """
+    #     for i, r2val, r2test in result:
+    #         print(f"{self.config['arch']['mode']} | DNM= {self.config['data']['datanames'][0]} "
+    #               f"DS= {self.config['data']['dataset']} AH= {i} "
+    #               f"R2PV = {r2val:3.5f} R2PT = {r2test:3.5f}")
 
             # print('%s | DNM= %s, DS= %d, AH= %d, R2PV = %3.5f, R2PT = %3.5f' %
             #       (self.config['arch']['mode'],
@@ -78,9 +81,9 @@ class PersistenceArchitecture(Architecture):
             #        r2val, r2test
             #        ))
 
-    def save(self, postfix):
-        """
-        Saves model to a file
-        :return:
-        """
-        pass
+    # def save(self, postfix):
+    #     """
+    #     Saves model to a file
+    #     :return:
+    #     """
+    #     pass

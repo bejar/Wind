@@ -29,7 +29,11 @@ import numpy as np
 
 __author__ = 'bejar'
 
-if __name__ == '__main__':
+def main():
+    """Uploads configuration to the DB
+
+    :return:
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--pend', action='store_true', default=False, help='change status to pending')
     args = parser.parse_args()
@@ -75,3 +79,7 @@ if __name__ == '__main__':
 
         count += 1
     print(count, 'Processed')
+
+
+if __name__ == '__main__':
+    main()

@@ -6,7 +6,7 @@ TransformData
 
 :Description: TransformData
 
-    
+    Transforma un conjunto de datos de una seccion de ficheros
 
 :Authors: bejar
     
@@ -115,9 +115,9 @@ if __name__ == '__main__':
     #           '11/5836', '11/5837', '11/5838', '11/5839',
     #           '11/5793', '11/5794', '11/5795', '11/5796',
     #           '11/5752', '11/5753', '11/5754', '11/5755']
-    vars = ['wind_speed', 'density', 'pressure', 'wind_direction']
-    wfiles = [str(args.sec) + '/' + str(i) for i in range(args.isite, args.fsite)]
+    vars = ['wind_speed', 'temperature', 'density', 'pressure', 'wind_direction']
+    wfiles = [f"{args.sec}/{i}" for i in range(args.isite, args.fsite)]
 
     for wf in wfiles:
-        print("Processing %s" % wf)
+        print(f"Processing {wf}")
         generate_data(wf, vars, step, mode=args.mode)
