@@ -11,7 +11,7 @@
     "ahead": [1,12]
   },
   "arch": {
-    "neurons":32,
+    "neuronsE":32,
     "neuronsD":16,
     "k_reg": "None",
     "k_regw": 0.1,
