@@ -6,7 +6,7 @@ DataSet
 
 :Description: DataSet
 
-    
+    Generates a dataset from the data matrix
 
 :Authors: bejar
     
