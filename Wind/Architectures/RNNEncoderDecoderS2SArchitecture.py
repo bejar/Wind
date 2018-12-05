@@ -160,16 +160,16 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
                              ))
         return lresults
 
-    def summary(self):
-        self.model.summary()
-        neurons = self.config['arch']['neurons']
-        neuronsD = self.config['arch']['neuronsD']
-        nlayersE = self.config['arch']['nlayersE']  # >= 1
-        nlayersD = self.config['arch']['nlayersD']  # >= 1
-        activation = self.config['arch']['activation']
-        activation_r = self.config['arch']['activation_r']
-        print(f"lag: {self.config['data']['lag']} /Neurons: {neurons} {neuronsD} /Layers: ', {nlayersE,}{nlayersD}"
-              f"/Activation: {activation} {activation_r}")
+    # def summary(self):
+    #     self.model.summary()
+    #     neurons = self.config['arch']['neurons']
+    #     neuronsD = self.config['arch']['neuronsD']
+    #     nlayersE = self.config['arch']['nlayersE']  # >= 1
+    #     nlayersD = self.config['arch']['nlayersD']  # >= 1
+    #     activation = self.config['arch']['activation']
+    #     activation_r = self.config['arch']['activation_r']
+    #     print(f"lag: {self.config['data']['lag']} /Neurons: {neurons} {neuronsD} /Layers: ', {nlayersE} {nlayersD}"
+    #           f"/Activation: {activation} {activation_r}")
 
     def log_result(self, result):
         for i, r2val, r2test in result:
