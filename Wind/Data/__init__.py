@@ -19,7 +19,7 @@ __init__.py
 
 __author__ = 'bejar'
 
-from Wind.Deprecated.Data.Data import lagged_matrix, lagged_vector, generate_dataset
+from Deprecated.Data.Data import lagged_matrix, lagged_vector, generate_dataset
 from .DataSet import Dataset
 
 __all__ = ['lagged_vector', 'lagged_matrix', 'generate_dataset',
