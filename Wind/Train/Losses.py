@@ -42,6 +42,6 @@ def linear_weighted_mse(odimensions):
     """
     # weights = K.ones(odimensions)
     # l = ([1]*(odimensions-1)) + [odimensions]
-    weights = K.constant(([1]*(odimensions-1)) + [odimensions*2])
+    weights = K.constant(([1]*(odimensions-1)) + [odimensions/2])
     weights = K.reshape(weights, (1,-1, 1))
     return wrapped_partial(losses.mean_squared_error, weights=weights)
