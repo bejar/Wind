@@ -19,8 +19,6 @@ __init__.py
 
 __author__ = 'bejar'
 
-from Deprecated.Data.Data import lagged_matrix, lagged_vector, generate_dataset
 from .DataSet import Dataset
 
-__all__ = ['lagged_vector', 'lagged_matrix', 'generate_dataset',
-           'Dataset']
+__all__ = ['Dataset']
