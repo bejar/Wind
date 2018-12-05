@@ -9,10 +9,10 @@
     "dataset": 1,
     "lag": 18,
     "ahead": [1,12],
-    "fraction": 0.8
+    "fraction": 1
   },
   "arch": {
-    "neurons":32,
+    "neurons":128,
     "neuronsD":32,
     "k_reg": "None",
     "k_regw": 0.1,
@@ -25,7 +25,10 @@
     "activation": "relu",
     "activation_r": "hard_sigmoid",
     "CuDNN": false,
+    "bidirectional": false,
+    "bimerge":"ave",
     "rnn": "GRU",
+    "full": [1],
     "mode": "RNN_ED_s2s"
   },
   "training": {
@@ -33,7 +36,8 @@
     "batch": 1024,
     "epochs": 200,
     "patience": 10,
-    "optimizer": "adamax",
+      "optimizer": "adamax",
+      "loss":"wmse",
     "lrate": 0.001
   }
 }
