@@ -24,10 +24,7 @@
     "activation": "relu",
     "activation_r": "hard_sigmoid",
     "CuDNN": false,
-    "bidirectional": false,
-    "bimerge":"ave",
     "rnn": "GRU",
-    "full": [1],
     "mode": "RNN_ED_s2s"
   },
   "training": {

@@ -12,8 +12,7 @@
     "ahead": [1,12]
   },
   "arch": {
-    "neurons":128,
-    "neuronsD":64,
+    "neuronsE":128,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",
@@ -25,10 +24,8 @@
     "activation_r": "hard_sigmoid",
     "activation_fl":"relu",
     "CuDNN": false,
-    "bidirectional": false,
-    "bimerge":"ave",
     "rnn": "GRU",
-      "full": [64, 32],
+    "full": [64, 32],
     "mode": "RNN_ED_s2s_att"
   },
   "training": {

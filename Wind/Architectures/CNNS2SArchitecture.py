@@ -61,8 +61,6 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             "mode":"CNN_s2s"
         }
 
-
-
         :return:
         """
         drop = self.config['arch']['drop']

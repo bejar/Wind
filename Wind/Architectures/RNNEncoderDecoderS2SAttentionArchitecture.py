@@ -50,6 +50,26 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
     def generate_model(self):
         """
         Model for RNN with Encoder Decoder for S2S with attention
+        -------------
+        json config:
+
+        "arch": {
+            "neuronsE":32,
+            "k_reg": "None",
+            "k_regw": 0.1,
+            "rec_reg": "None",
+            "rec_regw": 0.1,
+            "drop": 0.3,
+            "nlayers": 2,
+            "nlayersE": 1,
+            "nlayersD": 1,
+            "activation": "relu",
+            "activation_r": "hard_sigmoid",
+            "CuDNN": false,
+            "rnn": "GRU",
+            "full": [64, 32],
+            "mode": "RNN_ED_s2s"
+        }
 
         :return:
         """
