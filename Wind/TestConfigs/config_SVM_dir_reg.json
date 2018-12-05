@@ -8,11 +8,13 @@
     "testsize": 17534,
     "dataset": 1,
     "lag": 18,
-    "ahead": 12
+    "ahead": 12,
+        "fraction": 1,
+     "dmatrix": "normal"
   },
   "arch": {
     "kernel" : "rbf",
-    "C" : 1,
+    "C" : 0.01,
     "epsilon": 0.01,
     "degree": 2,
     "coef0": 1,

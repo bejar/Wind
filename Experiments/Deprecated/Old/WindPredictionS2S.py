@@ -37,7 +37,7 @@ import json
 import argparse
 from time import time
 
-from Wind.Util import load_config_file
+from Wind.Miscelanea import load_config_file
 from Wind.Data import lagged_vector
 
 __author__ = 'bejar'

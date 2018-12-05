@@ -31,7 +31,7 @@ import json
 import argparse
 from time import time
 
-from Wind.Util import load_config_file
+from Wind.Miscelanea import load_config_file
 
 __author__ = 'bejar'
 

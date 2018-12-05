@@ -26,7 +26,7 @@ from statsmodels.tsa.arima_model import ARIMA, ARMA
 from statsmodels.tsa.ar_model import AR
 import json
 import argparse
-from Wind.Util import load_config_file
+from Wind.Miscelanea import load_config_file
 from sklearn.metrics import mean_squared_error, r2_score
 
 __author__ = 'bejar'

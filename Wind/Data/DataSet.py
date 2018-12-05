@@ -510,8 +510,11 @@ class Dataset:
             raise NameError('Data not loaded yet')
         else:
             print("--- Dataset Configuration-----------")
-            print(f"Dataset name:  {self.config['datanames']}")
-            print(f"Data fraction:  {self.config['fraction']}")
+            print(f"Dataset name: {self.config['datanames']}")
+            if 'fraction' in self.config:
+                print(f"Data fraction: {self.config['fraction']}")
+            else:
+                print(f"Data fraction: 2")
             print(f"Training:   X={self.train_x.shape} Y={self.train_y.shape}")
             print(f"Validation: X={self.val_x.shape} Y={self.val_y.shape}")
             print(f"Tests:      X={self.test_x.shape} T={self.test_y.shape}")
@@ -532,7 +535,7 @@ class Dataset:
 
 
 if __name__ == '__main__':
-    from Wind.Util import load_config_file
+    from Wind.Miscelanea import load_config_file
     from Wind.Config import wind_data_path
     import matplotlib.pyplot as plt
 

@@ -6,7 +6,7 @@
      "vars": [0,1,2,3,4,5],
     "datasize": 43834,
     "testsize": 17534,
-      "dataset": 1,
+      "dataset": 0,
       "dmatrix": "normal",
     "lag": 18,
       "ahead": 12,
@@ -16,5 +16,8 @@
       "n_neighbors" : 13,
       "weights":"uniform",
     "mode": "KNN_dir_reg"
+  },
+  "training":{
+
   }
 }

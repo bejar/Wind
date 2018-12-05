@@ -36,7 +36,7 @@ import tensorflow as tf
 from sklearn.metrics import mean_squared_error, r2_score
 from Wind.Data import generate_dataset
 from Wind.Config import wind_data_path
-from Wind.Training import updateprocess
+from Wind.DataBaseConfigurations import updateprocess
 from time import time, strftime
 import os
 

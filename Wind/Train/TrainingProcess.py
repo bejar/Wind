@@ -35,7 +35,7 @@ import tensorflow as tf
 from Wind.Data.DataSet import Dataset
 from Wind.Config import wind_data_path
 from time import strftime
-from Wind.Training import updateprocess
+from Wind.DataBaseConfigurations import updateprocess
 import numpy as np
 
 __author__ = 'bejar'
@@ -104,7 +104,7 @@ def train_dirregression(architecture, config, runconfig):
 
             # Update result in db
             if config is not None and not runconfig.proxy:
-                from Wind.Training import updateprocess
+                from Wind.DataBaseConfigurations import updateprocess
                 updateprocess(config, ahead)
 
             arch.save('-A%d-R%02d' % (ahead, iter))

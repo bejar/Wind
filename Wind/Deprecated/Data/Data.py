@@ -286,7 +286,7 @@ def generate_dataset(config, ahead=1, mode=None, data_path=None, ensemble=False,
 
 
 if __name__ == '__main__':
-    from Wind.Util import load_config_file
+    from Wind.Miscelanea import load_config_file
     import matplotlib.pyplot as plt
     config = load_config_file('./config2.json')
     data_path='../../Data'

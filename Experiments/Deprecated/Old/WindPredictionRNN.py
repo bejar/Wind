@@ -35,7 +35,7 @@ import tensorflow as tf
 import argparse
 from time import time
 
-from Wind.Util import load_config_file
+from Wind.Miscelanea import load_config_file
 from Wind.Data import generate_dataset
 __author__ = 'bejar'
 

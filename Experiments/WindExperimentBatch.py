@@ -19,8 +19,8 @@ from __future__ import print_function
 
 from time import strftime
 
-from Wind.Util import load_config_file
-from Wind.Training import getconfig, saveconfig
+from Wind.Miscelanea import load_config_file
+from Wind.DataBaseConfigurations import getconfig, saveconfig
 from Wind.Train import TrainDispatch, RunConfig
 
 import os

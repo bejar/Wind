@@ -18,7 +18,7 @@ DataSetTest
 
 """
 
-from Wind.Util import load_config_file
+from Wind.Miscelanea import load_config_file
 from Wind.Train import TrainDispatch, RunConfig
 __author__ = 'bejar'
 
@@ -42,9 +42,9 @@ if __name__ == '__main__':
     # run_test("config_MLP_s2s")
     # run_test("config_persistence")
     # run_test("config_RNN_dir_reg")
-    # run_test("config_RNN_ED_s2s")
+    run_test("config_RNN_ED_s2s")
     # run_test("config_RNN_s2s")
     # run_test("config_RNN_ED_s2s_att")
     # run_test("config_RNN_ED_s2s_dep")
-    # run_test("config_SVM_dir_reg")
-    run_test("config_KNN_dir_reg")
+    #run_test("config_SVM_dir_reg")
+    #run_test("config_KNN_dir_reg")

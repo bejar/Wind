@@ -18,6 +18,8 @@ NNArchitecture
 
 from Wind.Architectures.Architecture import Architecture
 from keras.models import load_model
+from keras import backend as K
+
 #try:
 #    from keras.utils import plot_model
 #except ImportError:
@@ -45,6 +47,9 @@ else:
 from sklearn.metrics import r2_score
 from time import time
 import os
+
+from Wind.Train.Losses import linear_weighted_mse
+
 
 __author__ = 'bejar'
 
@@ -81,8 +86,18 @@ class NNArchitecture(Architecture):
             else:
                 optimizer = RMSprop(lr=0.001)
 
+        if 'loss' in self.config['training']:
+            if self.config['training']['loss'] == 'wmse':
+                loss = linear_weighted_mse(self.config['odimensions'])
+            else:
+                loss = 'mean_squared_error'
+        else:
+            loss = 'mean_squared_error'
+
         if self.runconfig.multi == 1:
-            self.model.compile(loss='mean_squared_error', optimizer=optimizer)
+            # self.model.compile(loss='mean_squared_error', optimizer=optimizer)
+            self.model.compile(loss=loss, optimizer=optimizer)
+
         else:
             pmodel = multi_gpu_model(self.model, gpus=self.runconfig.multi)
             pmodel.compile(loss='mean_squared_error', optimizer=optimizer)

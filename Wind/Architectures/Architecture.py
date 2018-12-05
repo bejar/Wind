@@ -77,10 +77,11 @@ class Architecture:
         print(f"{self.modname}")
         for c in self.config['arch']:
             print(f"# {c} = {self.config['arch'][c]}")
-        print("--------- Training parameters -------")
-        for c in self.config['training']:
-            print(f"# {c} = {self.config['training'][c]}")
-        print("---------------------------------------")
+        if 'training' in self.config:
+            print("--------- Training parameters -------")
+            for c in self.config['training']:
+                print(f"# {c} = {self.config['training'][c]}")
+            print("---------------------------------------")
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         """
