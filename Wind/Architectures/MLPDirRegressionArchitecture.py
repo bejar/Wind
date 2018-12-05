@@ -18,8 +18,8 @@ MLPDirRegressionArchitecture
 """
 from Wind.Architectures.NNArchitecture import NNArchitecture
 
-from keras.models import Sequential, load_model
-from keras.layers import Dense, Activation, Dropout
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
 from keras.layers import Flatten
 
 try:

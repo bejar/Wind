@@ -17,7 +17,7 @@ RNNEncoderDecoderS2SArchitecture
 """
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model, Model
+from keras.models import load_model, Model
 from keras.layers import LSTM, GRU, Dense, TimeDistributed, Input
 from sklearn.metrics import r2_score
 from keras.layers import Activation, dot, concatenate

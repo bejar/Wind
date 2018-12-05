@@ -18,8 +18,8 @@ MLPS2SArchitecture
 """
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model
-from keras.layers import Dense, Activation, Dropout
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
 from keras.regularizers import l1, l2
 
 try:

@@ -18,8 +18,8 @@ MLPS2SRecursiveArchirecture
 """
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model, Model
-from keras.layers import Dense, Activation, Dropout, Input, concatenate, Flatten
+from keras.models import load_model, Model
+from keras.layers import Dense, Dropout, Input, concatenate, Flatten
 
 try:
     from keras.utils import multi_gpu_model

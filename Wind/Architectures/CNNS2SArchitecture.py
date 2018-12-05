@@ -21,7 +21,7 @@ CNNS2SArchitecture
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model
-from keras.layers import Dense, RepeatVector, Dropout, Conv1D, Flatten
+from keras.layers import Dense, Dropout, Conv1D, Flatten
 from sklearn.metrics import r2_score
 
 from keras.regularizers import l1, l2

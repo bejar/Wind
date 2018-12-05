@@ -18,7 +18,7 @@ RNNEncoderDecoderS2SArchitecture
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model
-from keras.layers import LSTM, GRU, Bidirectional, Dense, TimeDistributed, Flatten, RepeatVector
+from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector
 from sklearn.metrics import r2_score
 
 try:

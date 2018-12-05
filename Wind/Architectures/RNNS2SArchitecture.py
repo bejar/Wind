@@ -18,7 +18,7 @@ RNNS2SArchitecture
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model
-from keras.layers import LSTM, GRU, Bidirectional, Dense, TimeDistributed, Flatten, RepeatVector, Dropout
+from keras.layers import LSTM, GRU, Dense, Flatten, Dropout
 from sklearn.metrics import r2_score
 
 try:
