@@ -61,13 +61,6 @@ class Architecture:
         """
         raise NameError('ERROR: Not implemented')
 
-    # def summary(self):
-    #     """
-    #     Model summary
-    #     :return:
-    #     """
-    #     raise NameError('ERROR: Not implemented')
-
     def summary(self):
         """
         Model summary
