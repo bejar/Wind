@@ -18,7 +18,6 @@
     "rec_reg": "None",
     "rec_regw": 0.1,
     "drop": 0.3,
-    "nlayers": 2,
     "nlayersE": 1,
     "nlayersD": 1,
     "activation": "relu",
