@@ -23,7 +23,7 @@
     "nlayersD": 1,
     "activation": "relu",
     "activation_r": "hard_sigmoid",
-    "bimerge":"ave",
+    "CuDNN": false,
     "rnn": "GRU",
     "mode": "RNN_ED_s2s"
   },
