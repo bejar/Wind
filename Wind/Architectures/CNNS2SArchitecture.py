@@ -42,6 +42,26 @@ class CNNS2SArchitecture(NNS2SArchitecture):
     def generate_model(self):
         """
         Model for RNN with Encoder Decoder for S2S
+        -------------
+        json config:
+
+        "arch": {
+            "filters": [32],
+            "strides": [1],
+            "kernel_size": [3],
+            "k_reg": "None",
+            "k_regw": 0.1,
+            "rec_reg": "None",
+            "rec_regw": 0.1,
+            "drop": 0,
+            "nlayers": 1,
+            "activation": "relu",
+            "activationfl": "linear",
+            "full": [16,8],
+            "mode":"CNN_s2s"
+        }
+
+
 
         :return:
         """
@@ -90,13 +110,13 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         self.model.add(Dense(odimensions, activation='linear'))
 
-    def summary(self):
-        self.model.summary()
-        print(f"LAG={self.config['data']['lag']} STRIDES={self.config['arch']['strides']} "
-              f"KER_S={self.config['arch']['kernel_size']} FILT={self.config['arch']['filters']} "
-              f"DROP={self.config['arch']['drop']}")
-
-        print()
+    # def summary(self):
+    #     self.model.summary()
+    #     print(f"LAG={self.config['data']['lag']} STRIDES={self.config['arch']['strides']} "
+    #           f"KER_S={self.config['arch']['kernel_size']} FILT={self.config['arch']['filters']} "
+    #           f"DROP={self.config['arch']['drop']}")
+    #
+    #     print()
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         batch_size = self.config['training']['batch']

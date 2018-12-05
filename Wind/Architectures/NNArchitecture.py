@@ -59,6 +59,15 @@ class NNArchitecture(Architecture):
     modname = ''
 
     def train(self, train_x, train_y, val_x, val_y):
+        """
+        Trainin process for a NN
+
+        :param train_x:
+        :param train_y:
+        :param val_x:
+        :param val_y:
+        :return:
+        """
         batch_size = self.config['training']['batch']
         nepochs = self.config['training']['epochs']
         optimizer = self.config['training']['optimizer']
@@ -132,8 +141,6 @@ class NNArchitecture(Architecture):
         r2test = r2_score(test_y, test_yp)
 
         return r2val, r2test
-
-
 
     def save(self, postfix):
         """
