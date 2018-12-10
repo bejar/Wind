@@ -20,8 +20,6 @@ UploadResults
 import argparse
 from time import time
 
-from Wind.Util import load_config_file
-from Wind.Data import generate_dataset
 from Wind.Private.DBConfig import mongoconnection
 from copy import deepcopy
 from pymongo import MongoClient

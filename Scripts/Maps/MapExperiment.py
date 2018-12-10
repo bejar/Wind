@@ -17,21 +17,11 @@ GenerateExpConf
 
 """
 
-import matplotlib
-from matplotlib.colors import to_hex
-import matplotlib.pyplot as plt
-import numpy as np
-from sklearn.decomposition import PCA
-from mpl_toolkits.mplot3d import Axes3D
-from sklearn.cluster import DBSCAN
-from sklearn.mixture import BayesianGaussianMixture
-from pylab import *
-from matplotlib import rc
-import matplotlib.ticker as ticker
-import seaborn as sn
-import folium
 
-from Wind.Util import find_exp, count_exp, sel_result
+from pylab import *
+
+
+from Wind.Misc import find_exp, count_exp, sel_result
 from Wind.Config.Paths import wind_data_path
 
 import plotly.offline as py

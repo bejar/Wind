@@ -1,12 +1,14 @@
 """
-.. module:: GenerateExpSites
+.. module:: GenerateExpRangeSections
 
 GenerateExpSites
 *************
 
-:Description: GenerateExpSites
+:Description: GenerateRangeSections
 
-    
+    Generates and uploads to the DB configurations using --config configuration
+    it begin at files at lat/log --igeo and ends at files ar lat/log --fgeo
+    It uses files with suffix --suff
 
 :Authors: bejar
     
@@ -20,24 +22,27 @@ GenerateExpSites
 import argparse
 from time import time
 
-from Wind.Util import load_config_file
+from Wind.Misc import load_config_file
 from Wind.Private.DBConfig import mongoconnection
 from pymongo import MongoClient
-
-def main
-
-
+from Wind.Config.Paths import wind_data_path
+import numpy as np
 __author__ = 'bejar'
 
-if __name__ == '__main__':
+
+def main():
+    """
+
+    :return:
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='configbatchregdir', help='Experiment configuration')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
-    parser.add_argument('--isec', type=int, help='Initial section')
-    parser.add_argument('--fsec', type=int, help='Final section')
-    parser.add_argument('--isite', type=int, help='Initial Site')
+    parser.add_argument('--igeo', type=int, help='Initial lat/lon')
+    parser.add_argument('--fgeo', type=int, help='Final lat/lon')
     parser.add_argument('--suff', type=int, default=12, help='Datafile suffix')
     args = parser.parse_args()
+    coords = np.load(wind_data_path + '/coords.npy')
 
     config = load_config_file(args.config)
 
@@ -52,12 +57,13 @@ if __name__ == '__main__':
 
         ids = int(time())
         for i, sec in enumerate(range(args.isec, args.fsec + 1)):
-            for site in range(args.isite + (i * 500), args.isite + ((i + 1) * 500)):
-                config['site'] = '%d-%d' % (sec, site)
-                config['data']['datanames'] = ['%d-%d-%d' % (sec, site, args.suff)]
+            for site in range(i * 500, (i + 1) * 500):
+                config['site'] = f"{sec}-{site}"
+                config['data']['datanames'] = [f"{sec}-{site}-{args.suff}"]
                 config['status'] = 'pending'
                 config['result'] = []
-                config['_id'] = "%d%06d" % (ids, site)
+                config['_id'] = f"{ids}{site:06d}"
                 col.insert_one(config)
-                # print('%d-%d-%d' % (sec, site, args.suff))
-                # print(config)
+
+if __name__ == '__main__':
+    main()

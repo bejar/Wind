@@ -18,7 +18,7 @@ DataSetTest
 
 """
 
-from Wind.Miscelanea import load_config_file
+from Wind.Misc import load_config_file
 from Wind.Train import TrainDispatch, RunConfig
 __author__ = 'bejar'
 

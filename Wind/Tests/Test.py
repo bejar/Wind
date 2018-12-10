@@ -18,7 +18,7 @@ Test
 """
 
 from Wind.Architectures.RNNS2SArchitecture import RNNS2SArchitecture
-from Wind.Miscelanea import load_config_file
+from Wind.Misc import load_config_file
 from Wind.Train import RunConfig
 
 __author__ = 'bejar'

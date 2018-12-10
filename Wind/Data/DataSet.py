@@ -535,7 +535,7 @@ class Dataset:
 
 
 if __name__ == '__main__':
-    from Wind.Miscelanea import load_config_file
+    from Wind.Misc import load_config_file
     from Wind.Config import wind_data_path
     import matplotlib.pyplot as plt
 

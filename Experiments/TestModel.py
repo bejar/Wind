@@ -20,7 +20,7 @@ TestModel
 from keras.models import Sequential, load_model
 import os
 import argparse
-from Wind.Miscelanea import load_config_file
+from Wind.Misc import load_config_file
 from Wind.Data import generate_dataset
 from Wind.Config import wind_models_path, wind_data_path
 import matplotlib.pyplot as plt

@@ -4,9 +4,12 @@
 GenerateExpSites
 *************
 
-:Description: GenerateExpSites
+:Description: GenerateExpSitesSelect
 
-    
+    Generates and uploads to the DB configurations using --config for the sites with the --upper best and --lower worst results for
+    the experiment --exp with architecture --mode
+
+    The purpose is to rerun the best/worst experiments
 
 :Authors: bejar
     
@@ -20,17 +23,25 @@ GenerateExpSites
 import argparse
 from time import time
 
-from Wind.Util import load_config_file
+from Wind.Misc import load_config_file
 from Wind.Private.DBConfig import mongoconnection
 from pymongo import MongoClient
 import numpy as np
 
 __author__ = 'bejar'
 
-if __name__ == '__main__':
+def main():
+    """
+    Generates configurations using --config for the sites with the --upper best and --lower worst results for
+    the experiment --exp with architecture --mode
+
+    The purpose is to rerun the best/worst experiments
+
+    :return:
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='configrnnseq2seq', help='Experiment configuration')
-    parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
+    parser.add_argument('--test', action='store_true', default=False, help='Only print the number of configurations and exit')
     parser.add_argument('--upper', type=int, help='Select upper best', default=100)
     parser.add_argument('--lower', type=int, help='Select lower worst', default=100)
     parser.add_argument('--exp', help='Experiment type', default="eastwest9597")
@@ -56,19 +67,20 @@ if __name__ == '__main__':
     lexps = []
     lexps.extend(lupper)
     lexps.extend(llower)
-    print(len(lexps))
 
     if args.test:
         for i, e in enumerate(lexps):
             print(i, e)
-
     else:
         ids = int(time())
         for i, site in enumerate(lexps):
             config['site'] = site
-            config['data']['datanames'] = ['%s-%s' % (site, args.suff)]
+            config['data']['datanames'] = [f"{site}-{args.suff}"]
             config['status'] = 'pending'
             config['result'] = []
-            config['_id'] = "%d%04d" % (ids, i)
+            config['_id'] = f"{ids}{i:04d}%d%"
             col.insert_one(config)
-            print(config)
+
+
+if __name__ == '__main__':
+    main()

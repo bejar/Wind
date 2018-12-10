@@ -23,7 +23,7 @@ __author__ = 'bejar'
 import numpy as np
 from sklearn.neighbors import KDTree
 from Wind.Config.Paths import wind_data_path
-from Wind.Miscelanea import find_exp, count_exp, sel_result
+from Wind.Misc import find_exp, count_exp, sel_result
 
 try:
     from pymongo import MongoClient
