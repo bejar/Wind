@@ -31,3 +31,7 @@ class MongoData:
 
 mongoconnection = MongoData('mongodb://localhost:27017/', 'Database', 'User', 'Password',
                             'Collection')
+
+# Mongo local connection
+mongolocal = MongoData('mongodb://localhost:27017/', 'Database', 'User', 'Password',
+                            'Collection')

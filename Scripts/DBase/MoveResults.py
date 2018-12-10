@@ -16,7 +16,7 @@ MoveResults
 :Created on: 10/12/2018 7:13 
 
 """
-from Wind.Private.DBConfig import mongoconnection, MongoData
+from Wind.Private.DBConfig import mongoconnection, mongolocal
 from pymongo import MongoClient
 import argparse
 
@@ -37,7 +37,6 @@ if __name__ == '__main__':
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    mongolocal = MongoData('mongodb://localhost:27017/','Wind', None, None, 'Wind')
     clientlocal = MongoClient(mongolocal.server)
     dblocal = clientlocal[mongolocal.db]
     collocal = dblocal[mongolocal.col]

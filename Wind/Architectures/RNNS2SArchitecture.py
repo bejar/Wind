@@ -47,14 +47,35 @@ class RNNS2SArchitecture(NNS2SArchitecture):
 
     def generate_model(self):
         """
-        Model for RNN with Encoder Decoder for S2S
+        Model for RNN for S2S multiple regression
+
+        -------------
+        json config:
+
+        "arch": {
+            "neurons":128,
+            "k_reg": "None",
+            "k_regw": 0.1,
+            "rec_reg": "None",
+            "rec_regw": 0.1,
+            "drop": 0.3,
+            "nlayers": 1,
+            "activation": "tanh",
+            "activation_r": "hard_sigmoid",
+            "CuDNN": false,
+            "bidirectional": false,
+            "bimerge":"ave",
+            "rnn": "GRU",
+            "full": [64, 32],
+            "fulldrop": 0.05,
+            "mode": "RNN_s2s"
+        }
 
         :return:
         """
         neurons = self.config['arch']['neurons']
         drop = self.config['arch']['drop']
-        nlayersE = self.config['arch']['nlayersE']  # >= 1
-        nlayersD = self.config['arch']['nlayersD']  # >= 1
+        nlayersE = self.config['arch']['nlayers']  # >= 1
 
         activation = self.config['arch']['activation']
         activation_r = self.config['arch']['activation_r']
@@ -63,8 +84,6 @@ class RNNS2SArchitecture(NNS2SArchitecture):
         k_reg = self.config['arch']['k_reg']
         k_regw = self.config['arch']['k_regw']
         rnntype = self.config['arch']['rnn']
-        CuDNN = self.config['arch']['CuDNN']
-        neuronsD = self.config['arch']['neuronsD']
 
         full = self.config['arch']['full']
         fulldrop = self.config['arch']['fulldrop']
@@ -109,14 +128,12 @@ class RNNS2SArchitecture(NNS2SArchitecture):
                                recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
 
         self.model.add(Flatten())
-        #self.model.add(RepeatVector(odimensions))
 
 
         for nn in full:
             self.model.add(Dense(nn, activation=activation))
             self.model.add(Dropout(rate=fulldrop))
 
-        #self.model.add(Dense(1))
         self.model.add(Dense(odimensions))
 
     def evaluate(self, val_x, val_y, test_x, test_y):
