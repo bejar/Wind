@@ -32,6 +32,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--verbose', help="Verbose output (enables Keras verbose output)", action='store_true',
                         default=False)
+    parser.add_argument('--info', help="Outputs architecture and training info)", action='store_true',
+                        default=False)
     parser.add_argument('--gpu', help="Use LSTM/GRU gpu implementation", action='store_true', default=False)
     parser.add_argument('--best', help="Save weights best in test", action='store_true', default=False)
     parser.add_argument('--early', help="Early stopping when no improving", action='store_true', default=True)
@@ -67,7 +69,7 @@ if __name__ == '__main__':
         config = load_config_file(args.config, id=True)
 
     run_config = RunConfig(impl, verbose, args.tboard, args.best, args.early, args.multi, args.proxy, args.save,
-                           args.remote)
+                           args.remote, args.info)
 
     dispatch = TrainDispatch()
 

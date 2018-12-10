@@ -30,8 +30,9 @@ class RunConfig:
     proxy = False
     save = False
     remote = False
+    info = False
 
-    def __init__(self, impl, verbose, tboard, best, early, multi, proxy, save, remote):
+    def __init__(self, impl, verbose, tboard, best, early, multi, proxy, save, remote, info):
         self.impl = impl
         self.verbose = verbose
         self.tboard = tboard
@@ -41,3 +42,4 @@ class RunConfig:
         self.proxy = proxy
         self.save = save
         self.remote = remote
+        self.info = info

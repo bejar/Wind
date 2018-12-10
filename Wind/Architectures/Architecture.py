@@ -90,7 +90,7 @@ class Architecture:
         :param result:
         :return:
         """
-        if self.runconfig.verbose:
+        if self.runconfig.info:
             self.summary()
 
         for i, r2val, r2test in result:
