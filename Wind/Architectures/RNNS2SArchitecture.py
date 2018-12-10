@@ -67,6 +67,7 @@ class RNNS2SArchitecture(NNS2SArchitecture):
             "bimerge":"ave",
             "rnn": "GRU",
             "full": [64, 32],
+            "activation_full": "sigmoid",
             "fulldrop": 0.05,
             "mode": "RNN_s2s"
         }
@@ -87,6 +88,7 @@ class RNNS2SArchitecture(NNS2SArchitecture):
 
         full = self.config['arch']['full']
         fulldrop = self.config['arch']['fulldrop']
+        activation_Full = self.config['arch']['activation_full']
 
         # Extra added from training function
         idimensions = self.config['idimensions']
@@ -131,7 +133,7 @@ class RNNS2SArchitecture(NNS2SArchitecture):
 
 
         for nn in full:
-            self.model.add(Dense(nn, activation=activation))
+            self.model.add(Dense(nn, activation=activation_full))
             self.model.add(Dropout(rate=fulldrop))
 
         self.model.add(Dense(odimensions))
