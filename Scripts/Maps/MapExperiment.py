@@ -21,6 +21,7 @@ from pylab import *
 
 from Wind.Misc import find_exp, count_exp, sel_result
 from Wind.Config.Paths import wind_data_path
+from Wind.Results import DBResults
 
 import plotly.offline as py
 import plotly.graph_objs as go
@@ -98,48 +99,70 @@ def create_plot(df, title):
     py.plot(fig, filename='./' + title + '.html')
 
 
-cpal = plt.get_cmap('Reds')
+def fill_dataframe(coords, results, query, column):
+    """
+    Fills a dataframe with results to be plotted
+    :param coords:
+    :return:
+    """
+    sites1, coord1 = results.sel_result(query, column)
 
-scl = [0, "rgb(150,0,90)"], [0.125, "rgb(0, 0, 200)"], [0.25, "rgb(0, 25, 255)"], \
-      [0.375, "rgb(0, 152, 255)"], [0.5, "rgb(44, 255, 150)"], [0.625, "rgb(151, 255, 0)"], \
-      [0.75, "rgb(255, 234, 0)"], [0.875, "rgb(255, 111, 0)"], [1, "rgb(255, 0, 0)"]
+    valsum = np.sum(coord1, axis=1)
+    minsum = np.min(valsum)
+    rangesum = np.max(valsum) - minsum
+    df = pd.DataFrame({'Lon': np.append(coords[sites1, 0], [0, 0]),
+                       'Lat': np.append(coords[sites1, 1], [0, 0]),
+                       'Val': np.append(np.sum(coord1, axis=1), [10, 1]),
+                       'Site': np.append(sites1, [0, 0])})
+
+    return df
+
 
 if __name__ == '__main__':
+    cpal = plt.get_cmap('Reds')
+
+    scl = [0, "rgb(150,0,90)"], [0.125, "rgb(0, 0, 200)"], [0.25, "rgb(0, 25, 255)"], \
+          [0.375, "rgb(0, 152, 255)"], [0.5, "rgb(44, 255, 150)"], [0.625, "rgb(151, 255, 0)"], \
+          [0.75, "rgb(255, 234, 0)"], [0.875, "rgb(255, 111, 0)"], [1, "rgb(255, 0, 0)"]
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--exp', default='Persistence', help='experiment')
     args = parser.parse_args()
 
     coords = np.load(wind_data_path + '/Coords.npy')
+    results = DBResults()
 
     query1 = {'status': 'done', "experiment": args.exp, "site": {"$regex": "."}}
 
-    print(f"Results ={count_exp(query1)}")
+    print(f"Results ={results.count_exp(query1)}")
 
     # Map TEST data
-    res1 = find_exp(query1)
-    sites1, coord1 = sel_result(res1, 1)
+    # res1 = find_exp(query1)
+    # sites1, coord1 = results.sel_result(query1, 1)
+    #
+    # valsum = np.sum(coord1, axis=1)
+    # minsum = np.min(valsum)
+    # rangesum = np.max(valsum) - minsum
+    # df = pd.DataFrame({'Lon': np.append(coords[sites1, 0], [0, 0]),
+    #                    'Lat': np.append(coords[sites1, 1], [0, 0]),
+    #                    'Val': np.append(np.sum(coord1, axis=1), [10, 1]),
+    #                    'Site': np.append(sites1, [0, 0])})
 
-    valsum = np.sum(coord1, axis=1)
-    minsum = np.min(valsum)
-    rangesum = np.max(valsum) - minsum
-    df = pd.DataFrame({'Lon': np.append(coords[sites1, 0], [0, 0]),
-                       'Lat': np.append(coords[sites1, 1], [0, 0]),
-                       'Val': np.append(np.sum(coord1, axis=1), [10, 1]),
-                       'Site': np.append(sites1, [0, 0])})
 
-    create_plot(df, args.exp + '1')
+    create_plot(fill_dataframe(coords, results, query1, 1), args.exp + '1')
 
     # Map VALIDATION data
-    res1 = find_exp(query1)
-    sites1, coord1 = sel_result(res1, 2)
+    # res1 = find_exp(query1)
+    # sites1, coord1 = sel_result(res1, 2)
+    #
+    # valsum = np.sum(coord1, axis=1)
+    # minsum = np.min(valsum)
+    # rangesum = np.max(valsum) - minsum
+    #
+    # df = pd.DataFrame({'Lon': np.append(coords[sites1, 0], [0, 0]),
+    #                    'Lat': np.append(coords[sites1, 1], [0, 0]),
+    #                    'Val': np.append(np.sum(coord1, axis=1), [10, 1]),
+    #                    'Site': np.append(sites1, [0, 0])})
 
-    valsum = np.sum(coord1, axis=1)
-    minsum = np.min(valsum)
-    rangesum = np.max(valsum) - minsum
-
-    df = pd.DataFrame({'Lon': np.append(coords[sites1, 0], [0, 0]),
-                       'Lat': np.append(coords[sites1, 1], [0, 0]),
-                       'Val': np.append(np.sum(coord1, axis=1), [10, 1]),
-                       'Site': np.append(sites1, [0, 0])})
-
-    create_plot(df, args.exp + '2')
+    # create_plot(df, args.exp + '2')
+    create_plot(fill_dataframe(coords, results, query1, 2), args.exp + '2')

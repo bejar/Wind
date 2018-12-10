@@ -35,7 +35,7 @@ __author__ = 'bejar'
 
 def load_config_file(nfile, abspath=False, id=False, upload=False, mino=False):
     """
-    Read the configuration from a json file
+    Reads a configuration from a json file
 
     :param abspath:
     :param nfile:
@@ -64,6 +64,12 @@ def load_config_file(nfile, abspath=False, id=False, upload=False, mino=False):
 
 
 def find_exp(query):
+    """
+    Returns all the experiments in the DB that match the query
+
+    :param query:
+    :return:
+    """
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.passwd is not None:
@@ -73,6 +79,12 @@ def find_exp(query):
 
 
 def count_exp(query):
+    """
+    Counts how many experiments in the DB match the query
+
+    :param query:
+    :return:
+    """
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.passwd is not None:
@@ -82,8 +94,17 @@ def count_exp(query):
 
 
 def sel_result(lexp, ncol):
+    """
+    Selects from a list of configurations with results the result in the column 0 (test) or 1 (validation)
+
+    :param lexp:
+    :param ncol:
+    :return:
+    """
     ldata = []
     for exp in lexp:
+
+        # To maintain backwards compatibility
         if 'result' in exp:
             data = np.array(exp['result'])
         elif 'results' in exp:
@@ -97,7 +118,9 @@ def sel_result(lexp, ncol):
 
 def sel_upper_lower(exp, mode, column, upper=100, lower=100):
     """
+    Selects a number of experiment with the best and worst accuracy
 
+    column selects test (0) and validation (1)
     :param up:
     :param low:
     :return:

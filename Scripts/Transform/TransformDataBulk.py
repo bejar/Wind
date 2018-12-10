@@ -118,8 +118,8 @@ if __name__ == '__main__':
 
     hour, month = generate_time_vars(f"{args.isec}/{args.isec*500}")
 
-    for site in range(args.isec, args.fsec + 1):
+    for site in tqdm(range(args.isec, args.fsec + 1), desc='Section'):
         wfiles = [f"{site}/{i}" for i in range(site * 500, (site+1) * 500)]
 
-        for wf in tqdm(wfiles):
+        for wf in tqdm(wfiles, desc='Site'):
             generate_data(wf, vars, step, mode=args.mode, hour=hour, month=month)

@@ -36,20 +36,20 @@ from .Architecture import Architecture
 
 __author__ = 'bejar'
 
-__all__ = [ 'Architecture',
-            'RNNDirRegressionArchitecture',
-            'SVMDirRegressionArchitecture',
-            'RNNEncoderDecoderS2SArchitecture',
-            'PersistenceArchitecture',
-            'MLPS2SArchitecture',
-            'MLPDirRegressionArchitecture',
-            'CNNS2SArchitecture',
-            'RNNS2SArchitecture',
-            'RNNEncoderDecoderS2SAttentionArchitecture',
-            'MLPS2SRecursiveArchirecture',
-            'RNNEncoderDecoderS2SDepArchitecture',
-            'KNNDirRegressionArchitecture',
-            'NNArchitecture',
-            'NNS2SArchitecture',
-            'SCKArchitecture'
-            ]
+__all__ = ['Architecture',
+           'RNNDirRegressionArchitecture',
+           'SVMDirRegressionArchitecture',
+           'RNNEncoderDecoderS2SArchitecture',
+           'PersistenceArchitecture',
+           'MLPS2SArchitecture',
+           'MLPDirRegressionArchitecture',
+           'CNNS2SArchitecture',
+           'RNNS2SArchitecture',
+           'RNNEncoderDecoderS2SAttentionArchitecture',
+           'MLPS2SRecursiveArchitecture',
+           'RNNEncoderDecoderS2SDepArchitecture',
+           'KNNDirRegressionArchitecture',
+           'NNArchitecture',
+           'NNS2SArchitecture',
+           'SCKArchitecture'
+           ]
