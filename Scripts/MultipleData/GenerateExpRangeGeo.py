@@ -59,12 +59,10 @@ def main():
         flon = ilon
         ilon = tmp
 
-    # if not(-125 <= ilon <= -68) or not(-125 <= flon <= -68) or not(20 <= ilat <= 50) or not(20 <= flat <= 50):
-    #     raise NameError("Coordinates outside range, use longitude in [-125,-68] and latitude in [20, 50]")
+    if not(-130 <= ilon <= -63) or not(-130 <= flon <= -63) or not(20 <= ilat <= 50) or not(20 <= flat <= 50):
+        raise NameError("Coordinates outside range, use longitude in [-130,-63] and latitude in [20, 50]")
 
-    print(ilat, ilon, flat, flon)
-
-    lsites = [i for i in range(coords.shape[0]) if (ilat <= coords[i][0] <= flat) and (ilon <= coords[i][1] <= flon)]
+    lsites = [i for i in range(coords.shape[0]) if (ilat <= coords[i][1] <= flat) and (ilon <= coords[i][0] <= flon)]
 
     config = load_config_file(args.config)
 

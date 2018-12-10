@@ -6,7 +6,9 @@ GenerateCoordinatesFile
 
 :Description: GenerateCoordinatesFile
 
-    Extracts the longitude and latitude from the files and saves in the file coords.npy
+    Extracts the longitude and latitude from the files and saves in the file Coords.npy
+
+    Coords.py is a numpy array with longitude,latitude, the row corresponds with the site
 
 :Authors: bejar
     

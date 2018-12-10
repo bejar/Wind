@@ -39,7 +39,7 @@ class SitesCoords:
     tree = None
 
     def __init__(self):
-        self.coords = np.load(wind_data_path + '/coords.npy')
+        self.coords = np.load(wind_data_path + '/Coords.npy')
         self.tree = KDTree(self.coords, leaf_size=1)
 
 
@@ -63,7 +63,7 @@ def get_direct_neighbors(site, radius):
     :param site:
     :return:
     """
-    coords = np.load(wind_data_path + '/coords.npy')
+    coords = np.load(wind_data_path + '/Coords.npy')
     tree = KDTree(coords, leaf_size=1)
     neigh = tree.query_radius(coords[site, :].reshape(1, -1), r=radius, count_only=False, return_distance=False)[0]
     return neigh

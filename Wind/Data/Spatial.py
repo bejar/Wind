@@ -42,7 +42,7 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
 
-    coords = np.load(wind_data_path +'/coords.npy')
+    coords = np.load(wind_data_path +'/Coords.npy')
     memo = np.zeros(coords.shape[0])
     query = {"experiment": "rnnseq2seq", "site": ""}
     tree = KDTree(coords, leaf_size=1)
