@@ -88,7 +88,7 @@ class RNNS2SArchitecture(NNS2SArchitecture):
 
         full = self.config['arch']['full']
         fulldrop = self.config['arch']['fulldrop']
-        activation_Full = self.config['arch']['activation_full']
+        activation_full = self.config['arch']['activation_full']
 
         # Extra added from training function
         idimensions = self.config['idimensions']
