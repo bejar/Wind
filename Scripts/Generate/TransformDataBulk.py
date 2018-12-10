@@ -56,7 +56,7 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
         'split' the data steps in separated files
     :return:
     """
-    nc_fid = Dataset(wind_NREL_data_path + "/%s.nc" % dfile, 'r')
+    nc_fid = Dataset(wind_NREL_data_path + f"/{dfile}.nc", 'r')
 
     if step == 1:  # The original data
         ldata = []
@@ -68,14 +68,13 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
 
         data_stack = np.stack(ldata, axis=1)
         print(data_stack.shape)
-        np.save(wind_data_path + '/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
+        np.save(wind_data_path + f"/{wf.replace('/', '-')}-{step:02d}.npy", data_stack)
     elif mode == 'average':  # Average step points
         ldata = []
         for v in vars:
             data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
             end = data.shape[0]
             length = int(end / step)
-            # tmp = data.reshape((length, step)).sum(axis=1)/float(step)
 
             data_aver = np.zeros(length)
             for i in range(step):
@@ -89,7 +88,7 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
         data_stack = np.stack(ldata, axis=1)
         print(data_stack.shape)
 
-        np.save(wind_data_path + '/%s-%02d.npy' % (wf.replace('/', '-'), step), data_stack)
+        np.save(wind_data_path + f"/{wf.replace('/', '-')}-{step:02d}.npy", data_stack)
 
     elif mode == 'split':  # split in n step files
         for i in range(step):
@@ -102,7 +101,7 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
 
             data_stack = np.stack(ldata, axis=1)
             print(data_stack.shape)
-            np.save(wind_data_path + '/%s-%02d-%02d.npy' % (wf.replace('/', '-'), step, i + 1), data_stack)
+            np.save(wind_data_path + f"/{wf.replace('/', '-')}-{step:02d}-{(i+1):02d}.npy", data_stack)
 
 
 if __name__ == '__main__':

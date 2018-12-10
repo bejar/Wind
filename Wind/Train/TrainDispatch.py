@@ -50,7 +50,7 @@ class TrainDispatch:
 
         self.model_dict['RNN_ED_s2s'] = self.model_dict['seq2seq'] = (train_sequence2sequence, RNNEncoderDecoderS2SArchitecture)
 
-        self.model_dict['RNN_ED_s2s'] = (train_sequence2sequence, RNNEncoderDecoderS2SArchitecture)
+        # self.model_dict['RNN_ED_s2s'] = (train_sequence2sequence, RNNEncoderDecoderS2SArchitecture)
 
         self.model_dict['RNN_ED_s2s_dep'] = (train_sequence2sequence, RNNEncoderDecoderS2SDepArchitecture)
 
