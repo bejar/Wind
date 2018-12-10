@@ -22,11 +22,12 @@ __author__ = 'bejar'
 from netCDF4 import Dataset
 import numpy as np
 from Wind.Config.Paths import wind_data_path, wind_NREL_data_path
+from tqdm import tqdm
 
 if __name__ == '__main__':
     lsites = []
-    for dfile in range(126692):
+    for dfile in tqdm(range(126692)):
         nc_fid = Dataset(f"{wind_NREL_data_path}/{dfile//500}/{dfile}.nc", 'r')
-        lsites.append([dfile, nc_fid.getncattr('latitude'), nc_fid.getncattr('longitude')])
+        lsites.append([dfile, nc_fid.getncattr('longitude'), nc_fid.getncattr('latitude')])
     vcoords = np.array(sorted(lsites, key=lambda x : x[0]))
     np.save(f"{wind_data_path}/Coords.npy", vcoords[:,1:])

@@ -17,9 +17,7 @@ GenerateExpConf
 
 """
 
-
 from pylab import *
-
 
 from Wind.Misc import find_exp, count_exp, sel_result
 from Wind.Config.Paths import wind_data_path
@@ -72,7 +70,8 @@ def create_plot(df, title):
             showcountries=True,
             resolution=50,
             projection=dict(
-                type='conic conformal',
+                # type='conic conformal',
+                type='mercator',
                 rotation=dict(
                     lon=-100
                 )
@@ -101,7 +100,6 @@ def create_plot(df, title):
 
 cpal = plt.get_cmap('Reds')
 
-
 scl = [0, "rgb(150,0,90)"], [0.125, "rgb(0, 0, 200)"], [0.25, "rgb(0, 25, 255)"], \
       [0.375, "rgb(0, 152, 255)"], [0.5, "rgb(44, 255, 150)"], [0.625, "rgb(151, 255, 0)"], \
       [0.75, "rgb(255, 234, 0)"], [0.875, "rgb(255, 111, 0)"], [1, "rgb(255, 0, 0)"]
@@ -111,7 +109,7 @@ if __name__ == '__main__':
     parser.add_argument('--exp', default='Persistence', help='experiment')
     args = parser.parse_args()
 
-    coords = np.load(wind_data_path + '/coords.npy')
+    coords = np.load(wind_data_path + '/Coords.npy')
 
     query1 = {'status': 'done', "experiment": args.exp, "site": {"$regex": "."}}
 
@@ -124,8 +122,8 @@ if __name__ == '__main__':
     valsum = np.sum(coord1, axis=1)
     minsum = np.min(valsum)
     rangesum = np.max(valsum) - minsum
-    df = pd.DataFrame({'Lat': np.append(coords[sites1, 0], [0, 0]),
-                       'Lon': np.append(coords[sites1, 1], [0, 0]),
+    df = pd.DataFrame({'Lon': np.append(coords[sites1, 0], [0, 0]),
+                       'Lat': np.append(coords[sites1, 1], [0, 0]),
                        'Val': np.append(np.sum(coord1, axis=1), [10, 1]),
                        'Site': np.append(sites1, [0, 0])})
 
@@ -139,8 +137,8 @@ if __name__ == '__main__':
     minsum = np.min(valsum)
     rangesum = np.max(valsum) - minsum
 
-    df = pd.DataFrame({'Lat': np.append(coords[sites1, 0], [0, 0]),
-                       'Lon': np.append(coords[sites1, 1], [0, 0]),
+    df = pd.DataFrame({'Lon': np.append(coords[sites1, 0], [0, 0]),
+                       'Lat': np.append(coords[sites1, 1], [0, 0]),
                        'Val': np.append(np.sum(coord1, axis=1), [10, 1]),
                        'Site': np.append(sites1, [0, 0])})
 

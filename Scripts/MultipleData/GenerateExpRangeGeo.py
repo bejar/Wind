@@ -38,24 +38,40 @@ def main():
     :return:
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='configbatchregdir', help='Experiment configuration')
+    parser.add_argument('--config', default='configregdir', help='Experiment configuration')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
-    parser.add_argument('--igeo', type=list, nargs=2, help='Initial lat/lon')
-    parser.add_argument('--fgeo', type=list, nargs=2, help='Final lat/lon')
+    parser.add_argument('--igeo', type=float, nargs=2, help='Initial lon/lat')
+    parser.add_argument('--fgeo', type=float, nargs=2, help='Final lon/lat')
     parser.add_argument('--suff', type=int, default=12, help='Datafile suffix')
     args = parser.parse_args()
-    coords = np.load(wind_data_path + '/coords.npy')
-    ilat, ilon = args.igeo
-    flat, flon = args.fgeo
+    coords = np.load(wind_data_path + '/Coords.npy')
+    print(coords.shape)
+    ilon, ilat = args.igeo
+    flon, flat = args.fgeo
+
+    if ilat > flat:
+        tmp = flat
+        flat = ilat
+        ilat = tmp
+
+    if ilon > flon:
+        tmp = flon
+        flon = ilon
+        ilon = tmp
+
+    # if not(-125 <= ilon <= -68) or not(-125 <= flon <= -68) or not(20 <= ilat <= 50) or not(20 <= flat <= 50):
+    #     raise NameError("Coordinates outside range, use longitude in [-125,-68] and latitude in [20, 50]")
+
+    print(ilat, ilon, flat, flon)
 
     lsites = [i for i in range(coords.shape[0]) if (ilat <= coords[i][0] <= flat) and (ilon <= coords[i][1] <= flon)]
 
     config = load_config_file(args.config)
 
     if args.test:
-        print(f"Num Sites{len(lsites)}")
+        print(f"Num Sites= {len(lsites)}")
     else:
-        print(f"Num Sites{len(lsites)}")
+        print(f"Num Sites= {len(lsites)}")
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         if mongoconnection.passwd is not None:
