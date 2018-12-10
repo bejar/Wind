@@ -26,7 +26,7 @@ from time import time
 from Wind.Misc import load_config_file
 from Wind.Private.DBConfig import mongoconnection
 from pymongo import MongoClient
-
+from tqdm import tqdm
 __author__ = 'bejar'
 
 if __name__ == '__main__':
@@ -45,11 +45,12 @@ if __name__ == '__main__':
     else:
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
-        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+        if mongoconnection.passwd is not None:
+            db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
 
         ids = int(time())
-        for j, site in enumerate(range(args.isite, args.fsite + 1)):
+        for site in tqdm(range(args.isite, args.fsite + 1)):
             config['site'] = '%d-%d' % (args.sec, site)
             config['data']['datanames'] = ['%d-%d-%d' % (site//500, site, args.suff)]
             config['status'] = 'pending'

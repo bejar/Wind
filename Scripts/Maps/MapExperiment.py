@@ -95,7 +95,6 @@ def create_plot(df, title):
         title=title,
     )
     fig = {'data': data, 'layout': layout}
-    # py.init_notebook_mode(connected=True)
 
     py.plot(fig, filename='./' + title + '.html')
 
@@ -109,15 +108,14 @@ scl = [0, "rgb(150,0,90)"], [0.125, "rgb(0, 0, 200)"], [0.25, "rgb(0, 25, 255)"]
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--exp', default='Persitence', help='experiment')
+    parser.add_argument('--exp', default='Persistence', help='experiment')
     args = parser.parse_args()
 
     coords = np.load(wind_data_path + '/coords.npy')
 
     query1 = {'status': 'done', "experiment": args.exp, "site": {"$regex": "."}}
 
-
-    count_exp(query1)
+    print(f"Results ={count_exp(query1)}")
 
     # Map TEST data
     res1 = find_exp(query1)

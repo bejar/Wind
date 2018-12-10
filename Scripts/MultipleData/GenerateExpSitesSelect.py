@@ -27,6 +27,7 @@ from Wind.Misc import load_config_file
 from Wind.Private.DBConfig import mongoconnection
 from pymongo import MongoClient
 import numpy as np
+from tqdm import tqdm
 
 __author__ = 'bejar'
 
@@ -53,7 +54,8 @@ def main():
 
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    if mongoconnection.passwd is not None:
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
     exps = col.find({'experiment': args.exp, 'arch.mode': args.mode})
@@ -73,7 +75,7 @@ def main():
             print(i, e)
     else:
         ids = int(time())
-        for i, site in enumerate(lexps):
+        for i, site in tqdm(enumerate(lexps)):
             config['site'] = site
             config['data']['datanames'] = [f"{site}-{args.suff}"]
             config['status'] = 'pending'

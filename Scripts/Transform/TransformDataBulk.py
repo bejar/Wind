@@ -24,6 +24,7 @@ import time
 from Wind.Config.Paths import wind_data_path, wind_path, wind_NREL_data_path
 import argparse
 from time import strftime
+from tqdm import tqdm
 
 __author__ = 'bejar'
 
@@ -34,8 +35,8 @@ def generate_time_vars(dfile):
 
     :return:
     """
-    nc_fid = Dataset(wind_NREL_data_path + "/%s.nc" % dfile, 'r')
-    print("Read %s" % strftime('%Y-%m-%d %H:%M:%S'))
+    nc_fid = Dataset(f"{wind_NREL_data_path}/{dfile}.nc", 'r')
+    print(f"Read {strftime('%Y-%m-%d %H:%M:%S')}")
     nint = nc_fid.dimensions['time'].size
     stime = nc_fid.getncattr('start_time')
     samp = nc_fid.getncattr('sample_period')
@@ -67,7 +68,6 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
         ldata.append(month)
 
         data_stack = np.stack(ldata, axis=1)
-        print(data_stack.shape)
         np.save(wind_data_path + f"/{wf.replace('/', '-')}-{step:02d}.npy", data_stack)
     elif mode == 'average':  # Average step points
         ldata = []
@@ -86,7 +86,6 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
         ldata.append(month)
 
         data_stack = np.stack(ldata, axis=1)
-        print(data_stack.shape)
 
         np.save(wind_data_path + f"/{wf.replace('/', '-')}-{step:02d}.npy", data_stack)
 
@@ -100,7 +99,6 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
             ldata.append(month)
 
             data_stack = np.stack(ldata, axis=1)
-            print(data_stack.shape)
             np.save(wind_data_path + f"/{wf.replace('/', '-')}-{step:02d}-{(i+1):02d}.npy", data_stack)
 
 
@@ -109,30 +107,19 @@ if __name__ == '__main__':
 
     parser.add_argument('--isec', type=int, help='Sites Section')
     parser.add_argument('--fsec', type=int, help='Initial Site')
-    parser.add_argument('--isite', type=int, help='Final Site')
     parser.add_argument('--step', default=12, type=int, help='Grouping step')
     parser.add_argument('--mode', default='average', choices=['average', 'split'], help='Grouping mode')
     args = parser.parse_args()
 
-    # Grupos de 5 minutos
+    # Grupos de step minutos
     step = args.step
 
-    # wfiles = ['90/45142', '90/45143',
-    #           '90/45229','90/45230']
-    # wfiles = ['1/741', '1/742', '1/743',
-    #           '1/703', '1/704', '1/705',
-    #           '1/668', '1/669', '1/670']
-    # wfiles = ['11/5883', '11/5884', '11/5885', '11/5886',
-    #           '11/5836', '11/5837', '11/5838', '11/5839',
-    #           '11/5793', '11/5794', '11/5795', '11/5796',
-    #           '11/5752', '11/5753', '11/5754', '11/5755']
     vars = ['wind_speed', 'temperature', 'density', 'pressure', 'wind_direction']
 
-    hour, month = generate_time_vars(str(args.isec) + '/' + str(args.isite))
+    hour, month = generate_time_vars(f"{args.isec}/{args.isec*500}")
 
-    for c, site in enumerate(range(args.isec, args.fsec + 1)):
-        wfiles = [str(site) + '/' + str(i) for i in range(args.isite + (c * 500), args.isite + 500 + (c * 500))]
+    for site in range(args.isec, args.fsec + 1):
+        wfiles = [f"{site}/{i}" for i in range(site * 500, (site+1) * 500)]
 
-        for wf in wfiles:
-            print(f"Processing {wf}")
+        for wf in tqdm(wfiles):
             generate_data(wf, vars, step, mode=args.mode, hour=hour, month=month)

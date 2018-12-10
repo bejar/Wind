@@ -25,6 +25,7 @@ from time import time
 from Wind.Misc import load_config_file
 from Wind.Private.DBConfig import mongoconnection
 from pymongo import MongoClient
+from tqdm import tqdm
 
 __author__ = 'bejar'
 
@@ -50,7 +51,8 @@ def main():
         print(500 * (args.fsec - args.isec + 1))
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
-        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+        if mongoconnection.passwd is not None:
+            db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
 
         ids = int(time())

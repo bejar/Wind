@@ -66,7 +66,8 @@ def load_config_file(nfile, abspath=False, id=False, upload=False, mino=False):
 def find_exp(query):
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    if mongoconnection.passwd is not None:
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
     return col.find(query)
 
@@ -74,7 +75,8 @@ def find_exp(query):
 def count_exp(query):
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    if mongoconnection.passwd is not None:
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
     print(col.count(query))
 
@@ -102,7 +104,8 @@ def sel_upper_lower(exp, mode, column, upper=100, lower=100):
     """
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    if mongoconnection.passwd is not None:
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
     exps = col.find({'experiment': exp, 'arch.mode': mode})
@@ -146,5 +149,5 @@ def SampEn(U, m, r):
 
 
 if __name__ == '__main__':
-    sites1, coord1 = sel_upper_lower('eastwest9597', 'seq2seq', 1)
-    print(sites1)
+
+    count_exp({'experiment':'Persistence'})

@@ -4,3 +4,4 @@ keras
 matplotlib
 seaborn
 scikit-learn
+tqdm
