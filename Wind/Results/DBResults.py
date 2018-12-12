@@ -219,6 +219,17 @@ class DBResults:
 
         return self.exp_result['sites'].shape[0]
 
+    def selected_size(self):
+        """
+        Returns the number of results obtained
+
+        :return:
+        """
+        if not self.exp_result:
+            raise NameError("No results yet retrieved")
+
+        return len(self.selected)
+
     def retrieve_results(self, query):
         """
         Retrieves results from the DB for a query
@@ -288,6 +299,30 @@ class DBResults:
         # self.exp_result['test'] = self.exp_result['test'][sel]
         # self.exp_result['validation'] = self.exp_result['validation'][sel]
 
+    def select_geo(self, igeo, fgeo):
+        """
+        Selects the sites inside a pair of longitude/latitude coordinates
+        :return:
+        """
+        ilon, ilat =igeo
+        flon, flat = fgeo
+
+        if ilat > flat:
+            tmp = flat
+            flat = ilat
+            ilat = tmp
+
+        if ilon > flon:
+            tmp = flon
+            flon = ilon
+            ilon = tmp
+
+        if not(-130 <= ilon <= -63) or not(-130 <= flon <= -63) or not(20 <= ilat <= 50) or not(20 <= flat <= 50):
+            raise NameError("Coordinates outside range, use longitude in [-130,-63] and latitude in [20, 50]")
+
+        self.selection = [i for i in self.osel if (ilat <= self.coords[i][1] <= flat) and (ilon <= self.coords[i][0] <= flon)]
+
+
     def sample(self, percentage):
         """
         Picks a random sample from the results
@@ -300,9 +335,6 @@ class DBResults:
             sel = np.random.choice(self.osel,
                                    int(len(self.osel) * percentage), replace=False)
             self.selection = sel
-            # self.exp_result['sites'] = self.exp_result['sites'][sel]
-            # self.exp_result['test'] = self.exp_result['test'][sel]
-            # self.exp_result['validation'] = self.exp_result['validation'][sel]
         else:
             raise NameError("percentage must be in range (0-1]")
 
@@ -344,7 +376,7 @@ class DBResults:
             testdf =  pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
                                   'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
                                   'Val': np.append(sumtest, extra),
-                                  'Site': np.append(self.exp_result['sites'], [0, 0])})
+                                  'Site': np.append(self.exp_result['sites'][self.selection], [0, 0])})
         if 'val' in dset:
             valdf = pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
                                   'Lat': np.append(self.coords[self.selection, 1], [0, 0]),

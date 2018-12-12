@@ -45,7 +45,6 @@ def main():
     parser.add_argument('--suff', type=int, default=12, help='Datafile suffix')
     args = parser.parse_args()
     coords = np.load(wind_data_path + '/Coords.npy')
-    print(coords.shape)
     ilon, ilat = args.igeo
     flon, flat = args.fgeo
 
