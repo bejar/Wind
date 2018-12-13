@@ -480,8 +480,8 @@ class DBResults:
         elif summary == 'sum':
             sumtest = np.sum(self.exp_result['test'][self.selection], axis=1)
             sumval = np.sum(self.exp_result['validation'][self.selection], axis=1)
-            sumtest2 = np.sum(self.exp_result['test'][self.selection], axis=1)
-            sumval2 = np.sum(self.exp_result['validation'][self.selection], axis=1)
+            sumtest2 = np.sum(self.exp_result2['test'][self.selection], axis=1)
+            sumval2 = np.sum(self.exp_result2['validation'][self.selection], axis=1)
         else:
             sumtest = self.exp_result['test'][self.selection, 0]
             sumval = self.exp_result['validation'][self.selection, 0]
