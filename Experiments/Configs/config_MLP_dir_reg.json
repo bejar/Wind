@@ -11,20 +11,15 @@
     "ahead": [1,12]
   },
   "arch": {
-    "k_reg": "None",
-    "k_regw": 0.1,
-    "rec_reg": "None",
-    "rec_regw": 0.1,
     "drop": 0,
-    "nlayers": 2,
     "activation": "relu",
       "full": [32, 16],
     "mode": "MLP_dir_reg"
   },
   "training": {
     "iter": 1,
-    "batch": 1000,
-    "epochs": 5,
+    "batch": 1024,
+    "epochs": 200,
     "optimizer": "adamax",
     "lrate": 0.001,
     "patience": 10

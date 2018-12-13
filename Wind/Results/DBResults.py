@@ -190,6 +190,7 @@ class DBResults:
 
     # Stores the results for test and validation as numpy arrays
     exp_result = {}
+    exp_result2 = {}
 
     def __init__(self, conn=mongoconnection, test=""):
         """
@@ -206,29 +207,6 @@ class DBResults:
             self.db.authenticate(conn.user, password=conn.passwd)
         self.col = self.db[conn.col + test]
         self.coords = np.load(wind_data_path + '/Coords.npy')
-
-
-    def size(self):
-        """
-        Returns the number of results obtained
-
-        :return:
-        """
-        if not self.exp_result:
-            raise NameError("No results yet retrieved")
-
-        return self.exp_result['sites'].shape[0]
-
-    def selected_size(self):
-        """
-        Returns the number of results obtained
-
-        :return:
-        """
-        if not self.exp_result:
-            raise NameError("No results yet retrieved")
-
-        return len(self.selected)
 
     def retrieve_results(self, query):
         """
@@ -257,9 +235,82 @@ class DBResults:
         self.osel = list(range(self.exp_result['sites'].shape[0]))
         self.selection = list(range(self.exp_result['sites'].shape[0]))
 
+    def retrieve_results_compare(self, query1, query2):
+        """
+        Retrieves two sets of results to compare them
+
+        :param query1:
+        :param query2:
+        :return:
+        """
+        # Result 1
+        self.query = query1
+        lexp = self.col.find(query1)
+        ldata = []
+        for exp in lexp:
+            # To maintain backwards compatibility
+            if 'result' in exp:
+                data = np.array(exp['result'])
+            elif 'results' in exp:
+                data = np.array(exp['results'])
+
+            # gets the number of the site and the columns with the results
+            ldata.append((int(exp['data']['datanames'][0].split('-')[1]), data[:, 1], data[:, 2]))
+        ldata = sorted(ldata, key=lambda x: x[0])
+        self.exp_result['sites'] = np.array([v[0] for v in ldata])
+        self.exp_result['test'] = np.array([v[1] for v in ldata])
+        self.exp_result['validation'] = np.array([v[2] for v in ldata])
+        self.osel = list(range(self.exp_result['sites'].shape[0]))
+        self.selection = list(range(self.exp_result['sites'].shape[0]))
+
+        # Result 2
+        self.query2 = query2
+        lexp = self.col.find(query2)
+        ldata = []
+        for exp in lexp:
+            # To maintain backwards compatibility
+            if 'result' in exp:
+                data = np.array(exp['result'])
+            elif 'results' in exp:
+                data = np.array(exp['results'])
+
+            # gets the number of the site and the columns with the results
+            ldata.append((int(exp['data']['datanames'][0].split('-')[1]), data[:, 1], data[:, 2]))
+
+        ldata = sorted(ldata, key=lambda x: x[0])
+        # Check that all the sites in one result set are in the other
+        if len(self.exp_result['sites']) != len(list(range(self.exp_result['sites'].shape[0]))):
+            raise NameError('Results not comparable, sites do not match')
+        else:
+            self.exp_result2['test'] = np.array([v[1] for v in ldata])
+            self.exp_result2['validation'] = np.array([v[2] for v in ldata])
+
+    def size(self):
+        """
+        Returns the number of results obtained
+
+        :return:
+        """
+        if not self.exp_result:
+            raise NameError("No results yet retrieved")
+
+        return self.exp_result['sites'].shape[0]
+
+    def selected_size(self):
+        """
+        Returns the number of results obtained
+
+        :return:
+        """
+        if not self.exp_result:
+            raise NameError("No results yet retrieved")
+
+        return len(self.selection)
+
+
     def reset_selection(self):
         """
-        Resets the selection of the results to show to all the data
+        Resets the selection of the results to show all the data
         :return:
         """
         self.selection = list(range(self.exp_result['sites'].shape[0]))
@@ -402,6 +453,81 @@ class DBResults:
                     f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
                 )
 
+    def plot_map_compare(self, summary='sum', notebook=False, compare='diff', cmap=scl, mapbox=False, dset=('val', 'test'), figsize=(800,400)):
+        """
+        generates an html map with the results
+
+        :param summary: Type of summary function
+        :param notebook: If it is for a jupyter notebook
+        :param cmap: colormap to apply
+        :param mapbox: if it is a mapbix plot (needs access token to matplot)
+        :param dset: If plots for validation/test set (must be a list)
+        :return:
+        """
+        if not self.exp_result:
+            raise NameError("No results yet retrieved")
+
+        if 'experiment' in self.query:
+            title = self.query['experiment'] + '-vs-' + self.query2['experiment']
+        else:
+            title = 'NonSpecific'
+
+        if type(summary) == int:
+            sumtest = self.exp_result['test'][self.selection, summary]
+            sumval = self.exp_result['validation'][self.selection, summary]
+            sumtest2 = self.exp_result2['test'][self.selection, summary]
+            sumval2 = self.exp_result2['validation'][self.selection, summary]
+        elif summary == 'sum':
+            sumtest = np.sum(self.exp_result['test'][self.selection], axis=1)
+            sumval = np.sum(self.exp_result['validation'][self.selection], axis=1)
+            sumtest2 = np.sum(self.exp_result['test'][self.selection], axis=1)
+            sumval2 = np.sum(self.exp_result['validation'][self.selection], axis=1)
+        else:
+            sumtest = self.exp_result['test'][self.selection, 0]
+            sumval = self.exp_result['validation'][self.selection, 0]
+            sumtest2 = self.exp_result2['test'][self.selection, 0]
+            sumval2 = self.exp_result2['validation'][self.selection, 0]
+
+        if compare == 'diff':
+            difftest = sumtest - sumtest2
+            diffval  = sumval - sumval2
+            extra = [max(np.max(difftest), np.max(diffval)), min(np.min(difftest), np.min(diffval))]
+        else:
+            difftest = sumtest - sumtest2
+            diffval  = sumval - sumval2
+            extra = [max(np.max(difftest), np.max(diffval)), min(np.min(difftest), np.min(diffval))]
+
+        if 'test' in dset:
+            testdf =  pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
+                                  'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
+                                  'Val': np.append(difftest, extra),
+                                  'Site': np.append(self.exp_result['sites'][self.selection], [0, 0])})
+        if 'val' in dset:
+            valdf = pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
+                                  'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
+                                  'Val': np.append(diffval, extra),
+                                  'Site': np.append(self.exp_result['sites'][self.selection], [0, 0])})
+
+        if mapbox:
+            if 'test' in dset:
+                create_mapbox_plot(testdf,
+                    f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                )
+            if 'val' in dset:
+                create_mapbox_plot(valdf,
+                    f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                )
+        else:
+            if 'test' in dset:
+                create_plot(testdf,
+                    f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                )
+            if 'val' in dset:
+                create_plot(valdf,
+                    f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                )
+
+
     def plot_distplot(self, summary='sum', notebook=False, dset=('val', 'test'), figsize=(800,400)):
         """
         Generates a distplot of the results
@@ -441,6 +567,69 @@ class DBResults:
         if 'val' in dset:
             data.append(np.append(sumval,extra))
             labels.append('val')
+
+        fig = ff.create_distplot(data, labels, bin_size=.05)
+        fig.layout.width =  figsize[0]
+        fig.layout.height = figsize[1]
+        if notebook:
+            py.iplot(fig)
+        else:
+            py.iplot(fig, filename=f"./{title}-distplot.html")
+
+    def plot_distplot_compare(self, summary='sum', compare='diff', notebook=False, dset=('val', 'test'), figsize=(800,400)):
+        """
+        Generates a distplot for the comparison of the results results
+
+        :param compare:
+        :param summary: Type of summary function
+        :param notebook: If it is for a jupyter notebook
+        :param cmap: colormap to apply
+        :param mapbox: if it is a mapbix plot (needs access token to matplot)
+        :param dset: If plots for validation/test set (must be a list)
+        :return:
+        """
+        if not self.exp_result or not self.exp_result2:
+            raise NameError("No results yet retrieved")
+        if 'experiment' in self.query:
+            title = self.query['experiment'] + '-vs-' + self.query2['experiment']
+        else:
+            title = 'NonSpecific'
+
+        if type(summary) == int:
+            sumtest = self.exp_result['test'][self.selection, summary]
+            sumval = self.exp_result['validation'][self.selection, summary]
+            sumtest2 = self.exp_result2['test'][self.selection, summary]
+            sumval2 = self.exp_result2['validation'][self.selection, summary]
+
+        elif summary == 'sum':
+            sumtest = np.sum(self.exp_result['test'][self.selection], axis=1)
+            sumval = np.sum(self.exp_result['validation'][self.selection], axis=1)
+            sumtest2 = np.sum(self.exp_result2['test'][self.selection], axis=1)
+            sumval2 = np.sum(self.exp_result2['validation'][self.selection], axis=1)
+
+        else:
+            sumtest = self.exp_result['test'][self.selection, 0]
+            sumval = self.exp_result['validation'][self.selection, 0]
+            sumtest2 = self.exp_result2['test'][self.selection, 0]
+            sumval2 = self.exp_result2['validation'][self.selection, 0]
+
+        if compare == 'diff':
+            difftest = sumtest - sumtest2
+            diffval  = sumval - sumval2
+            extra = [max(np.max(difftest), np.max(diffval)), min(np.min(difftest), np.min(diffval))]
+        else:
+            difftest = sumtest - sumtest2
+            diffval  = sumval - sumval2
+            extra = [max(np.max(difftest), np.max(diffval)), min(np.min(difftest), np.min(diffval))]
+
+        data = []
+        labels = []
+        if 'test' in dset:
+            data.append(np.append(difftest,extra))
+            labels.append('test '+title)
+        if 'val' in dset:
+            data.append(np.append(diffval,extra))
+            labels.append('val '+title)
 
         fig = ff.create_distplot(data, labels, bin_size=.05)
         fig.layout.width =  figsize[0]
@@ -540,8 +729,9 @@ class DBResults:
 
 if __name__ == '__main__':
 
-    query = {'status': 'done', "experiment": 'Persistence', "site": {"$regex": "."}}
+    query = {"experiment": 'RNN_ED_s2s'}
     results = DBResults()
     results.retrieve_results(query)
     if results.size() > 0:
-        print(results.select_best_worst_sum_accuracy(summary=None))
+        results.sample(0.1)
+        results.plot_2DKDEplot()
