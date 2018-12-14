@@ -180,7 +180,7 @@ def create_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(1200, 800
 
 class DBResults:
     """
-    Access to results in a mongoDB
+    Access to results in a mongoDB and different plots and analysis
     """
     connection = None
     client = None
@@ -284,7 +284,9 @@ class DBResults:
 
         ldata = sorted(ldata, key=lambda x: x[0])
         # Check that all the sites in one result set are in the other
-        if len(self.exp_result['sites']) != len(list(range(self.exp_result['sites'].shape[0]))):
+        s1 = set(self.exp_result['sites'])
+        s2 = set([v[0] for v in ldata])
+        if s1-s2:
             raise NameError('Results not comparable, sites do not match')
         else:
             self.exp_result2['test'] = np.array([v[1] for v in ldata])
@@ -699,15 +701,13 @@ class DBResults:
 
         plt.show()
 
-    def compare_ks_2samp(self, summary='sum', sample=0.1, dset=('val', 'test')):
+    def compare_ks_2samp(self, summary='sum',dset=('val', 'test')):
         """
         Computes a 2 sided kolmogorov-smirnov test for equality of distribution
 
         Given that the results are large a subsample should be used
         :return:
         """
-        self.sample(sample)
-
         if not self.exp_result or not self.exp_result2:
             raise NameError("No results yet retrieved")
 
