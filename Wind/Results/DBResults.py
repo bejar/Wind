@@ -40,6 +40,8 @@ scl = [0, "rgb(150,0,90)"], [0.125, "rgb(0, 0, 200)"], [0.25, "rgb(0, 25, 255)"]
       [0.375, "rgb(0, 152, 255)"], [0.5, "rgb(44, 255, 150)"], [0.625, "rgb(151, 255, 0)"], \
       [0.75, "rgb(255, 234, 0)"], [0.875, "rgb(255, 111, 0)"], [1, "rgb(255, 0, 0)"]
 
+sclbi = [0, "rgb(0,255,255)"],[0.49999, "rgb(0, 0, 255)"],  [0.5, "rgb(0, 0, 0)"], [0.50001, "rgb(255, 0, 0)"], [1, "rgb(255, 255, 0)"]
+
 # Plotly colorscales
 #
 # [‘Blackbody’, ‘Bluered’, ‘Blues’, ‘Earth’, ‘Electric’, ‘Greens’, ‘Greys’, ‘Hot’, ‘Jet’,
@@ -453,7 +455,7 @@ class DBResults:
                     f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
                 )
 
-    def plot_map_compare(self, summary='sum', notebook=False, compare='diff', cmap=scl, mapbox=False, dset=('val', 'test'), figsize=(800,400)):
+    def plot_map_compare(self, summary='sum', notebook=False, compare='diff', cmap=sclbi, mapbox=False, dset=('val', 'test'), figsize=(800,400)):
         """
         generates an html map with the results
 
@@ -491,12 +493,16 @@ class DBResults:
         if compare == 'diff':
             difftest = sumtest - sumtest2
             diffval  = sumval - sumval2
-            extra = [max(np.max(difftest), np.max(diffval)), min(np.min(difftest), np.min(diffval))]
+            mx = max(np.abs(max(np.max(difftest), np.max(diffval))),
+                     np.abs(min(np.min(difftest), np.min(diffval))))
+            extra = [mx, -mx]
         else:
             difftest = sumtest - sumtest2
             diffval  = sumval - sumval2
-            extra = [max(np.max(difftest), np.max(diffval)), min(np.min(difftest), np.min(diffval))]
-
+            mx = max(np.abs(max(np.max(difftest), np.max(diffval))),
+                     np.abs(min(np.min(difftest), np.min(diffval))))
+            extra = [mx, -mx]
+ 
         if 'test' in dset:
             testdf =  pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
                                   'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
