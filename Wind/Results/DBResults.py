@@ -23,6 +23,7 @@ import pandas as pd
 import plotly.figure_factory as ff
 import seaborn as sns
 import matplotlib.pyplot as plt
+from scipy.stats import ks_2samp
 
 from Wind.Config.Paths import wind_data_path
 
@@ -40,14 +41,16 @@ scl = [0, "rgb(150,0,90)"], [0.125, "rgb(0, 0, 200)"], [0.25, "rgb(0, 25, 255)"]
       [0.375, "rgb(0, 152, 255)"], [0.5, "rgb(44, 255, 150)"], [0.625, "rgb(151, 255, 0)"], \
       [0.75, "rgb(255, 234, 0)"], [0.875, "rgb(255, 111, 0)"], [1, "rgb(255, 0, 0)"]
 
-sclbi = [0, "rgb(0,255,255)"],[0.49999, "rgb(0, 0, 255)"],  [0.5, "rgb(0, 0, 0)"], [0.50001, "rgb(255, 0, 0)"], [1, "rgb(255, 255, 0)"]
+sclbi = [0, "rgb(0,255,255)"], [0.49999, "rgb(0, 0, 255)"], [0.5, "rgb(0, 0, 0)"], [0.50001, "rgb(255, 0, 0)"], [1,
+                                                                                                                 "rgb(255, 255, 0)"]
+
 
 # Plotly colorscales
 #
 # [‘Blackbody’, ‘Bluered’, ‘Blues’, ‘Earth’, ‘Electric’, ‘Greens’, ‘Greys’, ‘Hot’, ‘Jet’,
 # ‘Picnic’, ‘Portland’, ‘Rainbow’, ‘RdBu’, ‘Reds’, ‘Viridis’, ‘YlGnBu’, ‘YlOrRd’]
 
-def create_mapbox_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(1200,800)):
+def create_mapbox_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(1200, 800)):
     """
     Maps using mapbox
     :return:
@@ -103,7 +106,7 @@ def create_mapbox_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(12
         py.plot(fig, filename=f"./{title}.html")
 
 
-def create_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(1200,800)):
+def create_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(1200, 800)):
     """
     Creates an HTML file with the map
     """
@@ -200,7 +203,7 @@ class DBResults:
         :param DB:
         """
         if not _has_mongo:
-            raise("No pymongo library available")
+            raise ("No pymongo library available")
 
         self.connection = conn
         self.client = MongoClient(conn.server)
@@ -309,7 +312,6 @@ class DBResults:
 
         return len(self.selection)
 
-
     def reset_selection(self):
         """
         Resets the selection of the results to show all the data
@@ -357,7 +359,7 @@ class DBResults:
         Selects the sites inside a pair of longitude/latitude coordinates
         :return:
         """
-        ilon, ilat =igeo
+        ilon, ilat = igeo
         flon, flat = fgeo
 
         if ilat > flat:
@@ -370,11 +372,11 @@ class DBResults:
             flon = ilon
             ilon = tmp
 
-        if not(-130 <= ilon <= -63) or not(-130 <= flon <= -63) or not(20 <= ilat <= 50) or not(20 <= flat <= 50):
+        if not (-130 <= ilon <= -63) or not (-130 <= flon <= -63) or not (20 <= ilat <= 50) or not (20 <= flat <= 50):
             raise NameError("Coordinates outside range, use longitude in [-130,-63] and latitude in [20, 50]")
 
-        self.selection = [i for i in self.osel if (ilat <= self.coords[i][1] <= flat) and (ilon <= self.coords[i][0] <= flon)]
-
+        self.selection = [i for i in self.osel if
+                          (ilat <= self.coords[i][1] <= flat) and (ilon <= self.coords[i][0] <= flon)]
 
     def sample(self, percentage):
         """
@@ -391,7 +393,7 @@ class DBResults:
         else:
             raise NameError("percentage must be in range (0-1]")
 
-    def plot_map(self, summary='sum', notebook=False, cmap=scl, mapbox=False, dset=('val', 'test'), figsize=(800,400)):
+    def plot_map(self, summary='sum', notebook=False, cmap=scl, mapbox=False, dset=('val', 'test'), figsize=(800, 400)):
         """
         generates an html map with the results
 
@@ -426,10 +428,10 @@ class DBResults:
             extra = [1, 0]
 
         if 'test' in dset:
-            testdf =  pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
-                                  'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
-                                  'Val': np.append(sumtest, extra),
-                                  'Site': np.append(self.exp_result['sites'][self.selection], [0, 0])})
+            testdf = pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
+                                   'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
+                                   'Val': np.append(sumtest, extra),
+                                   'Site': np.append(self.exp_result['sites'][self.selection], [0, 0])})
         if 'val' in dset:
             valdf = pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
                                   'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
@@ -439,23 +441,24 @@ class DBResults:
         if mapbox:
             if 'test' in dset:
                 create_mapbox_plot(testdf,
-                    f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
-                )
+                                   f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                                   )
             if 'val' in dset:
                 create_mapbox_plot(valdf,
-                    f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
-                )
+                                   f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                                   )
         else:
             if 'test' in dset:
                 create_plot(testdf,
-                    f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
-                )
+                            f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                            )
             if 'val' in dset:
                 create_plot(valdf,
-                    f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
-                )
+                            f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                            )
 
-    def plot_map_compare(self, summary='sum', notebook=False, compare='diff', cmap=sclbi, mapbox=False, dset=('val', 'test'), figsize=(800,400)):
+    def plot_map_compare(self, summary='sum', notebook=False, compare='diff', cmap=sclbi, mapbox=False,
+                         dset=('val', 'test'), figsize=(800, 400)):
         """
         generates an html map with the results
 
@@ -492,22 +495,22 @@ class DBResults:
 
         if compare == 'diff':
             difftest = sumtest - sumtest2
-            diffval  = sumval - sumval2
+            diffval = sumval - sumval2
             mx = max(np.abs(max(np.max(difftest), np.max(diffval))),
                      np.abs(min(np.min(difftest), np.min(diffval))))
             extra = [mx, -mx]
         else:
             difftest = sumtest - sumtest2
-            diffval  = sumval - sumval2
+            diffval = sumval - sumval2
             mx = max(np.abs(max(np.max(difftest), np.max(diffval))),
                      np.abs(min(np.min(difftest), np.min(diffval))))
             extra = [mx, -mx]
- 
+
         if 'test' in dset:
-            testdf =  pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
-                                  'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
-                                  'Val': np.append(difftest, extra),
-                                  'Site': np.append(self.exp_result['sites'][self.selection], [0, 0])})
+            testdf = pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
+                                   'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
+                                   'Val': np.append(difftest, extra),
+                                   'Site': np.append(self.exp_result['sites'][self.selection], [0, 0])})
         if 'val' in dset:
             valdf = pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
                                   'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
@@ -517,24 +520,23 @@ class DBResults:
         if mapbox:
             if 'test' in dset:
                 create_mapbox_plot(testdf,
-                    f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
-                )
+                                   f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                                   )
             if 'val' in dset:
                 create_mapbox_plot(valdf,
-                    f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
-                )
+                                   f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                                   )
         else:
             if 'test' in dset:
                 create_plot(testdf,
-                    f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
-                )
+                            f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                            )
             if 'val' in dset:
                 create_plot(valdf,
-                    f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
-                )
+                            f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                            )
 
-
-    def plot_distplot(self, summary='sum', notebook=False, dset=('val', 'test'), figsize=(800,400)):
+    def plot_distplot(self, summary='sum', notebook=False, dset=('val', 'test'), figsize=(800, 400)):
         """
         Generates a distplot of the results
 
@@ -568,21 +570,22 @@ class DBResults:
         data = []
         labels = []
         if 'test' in dset:
-            data.append(np.append(sumtest,extra))
+            data.append(np.append(sumtest, extra))
             labels.append('test')
         if 'val' in dset:
-            data.append(np.append(sumval,extra))
+            data.append(np.append(sumval, extra))
             labels.append('val')
 
         fig = ff.create_distplot(data, labels, bin_size=.05)
-        fig.layout.width =  figsize[0]
+        fig.layout.width = figsize[0]
         fig.layout.height = figsize[1]
         if notebook:
             py.iplot(fig)
         else:
             py.iplot(fig, filename=f"./{title}-distplot.html")
 
-    def plot_distplot_compare(self, summary='sum', compare='diff', notebook=False, dset=('val', 'test'), figsize=(800,400)):
+    def plot_distplot_compare(self, summary='sum', compare='diff', notebook=False, dset=('val', 'test'),
+                              figsize=(800, 400)):
         """
         Generates a distplot for the comparison of the results results
 
@@ -619,34 +622,41 @@ class DBResults:
             sumtest2 = self.exp_result2['test'][self.selection, 0]
             sumval2 = self.exp_result2['validation'][self.selection, 0]
 
-        if compare == 'diff':
-            difftest = sumtest - sumtest2
-            diffval  = sumval - sumval2
-            extra = [max(np.max(difftest), np.max(diffval)), min(np.min(difftest), np.min(diffval))]
-        else:
-            difftest = sumtest - sumtest2
-            diffval  = sumval - sumval2
-            extra = [max(np.max(difftest), np.max(diffval)), min(np.min(difftest), np.min(diffval))]
-
         data = []
         labels = []
-        if 'test' in dset:
-            data.append(np.append(difftest,extra))
-            labels.append('test '+title)
-        if 'val' in dset:
-            data.append(np.append(diffval,extra))
-            labels.append('val '+title)
+        if compare == 'diff':
+            difftest = sumtest - sumtest2
+            diffval = sumval - sumval2
+            extra = [max(np.max(difftest), np.max(diffval)), min(np.min(difftest), np.min(diffval))]
+            if 'test' in dset:
+                data.append(np.append(difftest, extra))
+                labels.append('test ' + title)
+            if 'val' in dset:
+                data.append(np.append(diffval, extra))
+                labels.append('val ' + title)
+        else:
+
+            extra = [max(np.max(sumtest), np.max(sumval)), min(np.min(sumtest), np.min(sumval))]
+            if 'test' in dset:
+                data.append(np.append(sumtest, extra))
+                data.append(np.append(sumtest2, extra))
+                labels.append('test ' + self.query['experiment'])
+                labels.append('test ' + self.query2['experiment'])
+            if 'val' in dset:
+                data.append(np.append(sumval, extra))
+                data.append(np.append(sumval2, extra))
+                labels.append('val ' + self.query['experiment'])
+                labels.append('val ' + self.query2['experiment'])
 
         fig = ff.create_distplot(data, labels, bin_size=.05)
-        fig.layout.width =  figsize[0]
+        fig.layout.width = figsize[0]
         fig.layout.height = figsize[1]
         if notebook:
             py.iplot(fig)
         else:
             py.iplot(fig, filename=f"./{title}-distplot.html")
 
-
-    def plot_2DKDEplot(self, summary='sum', notebook=False, dset=('val', 'test'), figsize=(800,400)):
+    def plot_2DKDEplot(self, summary='sum', notebook=False, dset=('val', 'test'), figsize=(800, 400)):
         """
         Plots a 2D KDE plot with seaborn
         It shows the summary accuracy density per longitude and latitude
@@ -681,13 +691,52 @@ class DBResults:
 
         f, axes = plt.subplots(1, 2, figsize=figsize, sharex=False, sharey=True)
 
-        sns.kdeplot(self.coords[self.selection,0], sumval,
-                         cmap="Reds", shade=True, shade_lowest=False, ax=axes.flat[0],cbar=True)
+        sns.kdeplot(self.coords[self.selection, 0], sumval,
+                    cmap="Reds", shade=True, shade_lowest=False, ax=axes.flat[0], cbar=True)
 
-        sns.kdeplot(self.coords[self.selection,1], sumval,
-                         cmap="Reds", shade=True, shade_lowest=False, ax=axes.flat[1],cbar=True)
+        sns.kdeplot(self.coords[self.selection, 1], sumval,
+                    cmap="Reds", shade=True, shade_lowest=False, ax=axes.flat[1], cbar=True)
 
         plt.show()
+
+    def compare_ks_2samp(self, summary='sum', sample=0.1, dset=('val', 'test')):
+        """
+        Computes a 2 sided kolmogorov-smirnov test for equality of distribution
+
+        Given that the results are large a subsample should be used
+        :return:
+        """
+        self.sample(sample)
+
+        if not self.exp_result or not self.exp_result2:
+            raise NameError("No results yet retrieved")
+
+        if type(summary) == int:
+            sumtest = self.exp_result['test'][self.selection, summary]
+            sumval = self.exp_result['validation'][self.selection, summary]
+            sumtest2 = self.exp_result2['test'][self.selection, summary]
+            sumval2 = self.exp_result2['validation'][self.selection, summary]
+
+        elif summary == 'sum':
+            sumtest = np.sum(self.exp_result['test'][self.selection], axis=1)
+            sumval = np.sum(self.exp_result['validation'][self.selection], axis=1)
+            sumtest2 = np.sum(self.exp_result2['test'][self.selection], axis=1)
+            sumval2 = np.sum(self.exp_result2['validation'][self.selection], axis=1)
+
+        else:
+            sumtest = self.exp_result['test'][self.selection, 0]
+            sumval = self.exp_result['validation'][self.selection, 0]
+            sumtest2 = self.exp_result2['test'][self.selection, 0]
+            sumval2 = self.exp_result2['validation'][self.selection, 0]
+
+        res = {}
+        if 'test' in dset:
+            res['test'] = ks_2samp(sumtest, sumtest2)
+        if 'val' in dset:
+            res['val'] = ks_2samp(sumval, sumval2)
+
+        return res
+
     # ---------------------------------
 
     def find_exp(self, query):
