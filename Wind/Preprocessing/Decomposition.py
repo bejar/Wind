@@ -78,7 +78,7 @@ class SSA:
     # TODO: error checking
     def decomposition(self, groups):
         """
-        groups is a list of list that defines
+        groups is a list of list that defines the decomposition
         :param groups:
         :return:
         """
@@ -112,7 +112,7 @@ class SSA:
                     tmp[k] = val / (self.length - Xg.shape[1])
             ldecomp.append(tmp)
         self.components = np.array(ldecomp)
-        return ldecomp
+        return self.components
 
     def reconstruct(self, n):
         """
@@ -121,3 +121,12 @@ class SSA:
         :return:
         """
         return np.sum(self.components[0:n, ], axis=0)
+
+    def reconstruct_all(self):
+        """
+        Reconstructs the signal using n components
+        :param n:
+        :return:
+        """
+
+        return np.sum(self.components, axis=0)

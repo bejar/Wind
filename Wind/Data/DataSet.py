@@ -23,6 +23,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import os
 from Wind.Config.Paths import remote_data, remote_wind_data_path
 from Wind.Spatial.Util import get_all_neighbors
+from Wind.Preprocessing.Normalization import tanh_normalization
 
 try:
     import pysftp
@@ -88,7 +89,7 @@ class Dataset:
     test_y = None
     data_path = None
     config = None
-    scalers = {'standard': StandardScaler(), 'minmax': MinMaxScaler(feature_range=(-1, 1))}
+    scalers = {'standard': StandardScaler(), 'minmax': MinMaxScaler(feature_range=(-1, 1)), 'tanh':tanh_normalization()}
     dataset_type = ['onesiteonevar', 'onesitemanyvar', 'manysiteonevar', 'manysitemanyvar', 'manysitemanyvarstack', 'manysitemanyvarstackneigh']
 
     def __init__(self, config, data_path):

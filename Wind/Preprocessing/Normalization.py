@@ -41,10 +41,10 @@ class tanh_normalization:
         :param X:
         :return:
         """
-        mu = np.mean(X, axis=1)
-        sigma = np.std(X, axis=1)
+        self.mu = np.mean(X, axis=0)
+        self.sigma = np.std(X, axis=0)
 
-    def transform(self,X):
+    def transform(self, X):
         """
         Computes the tanh transformation
         :param X:
@@ -89,7 +89,9 @@ class sigmoid_normalization:
         :param X:
         :return:
         """
-        return 1.0/(1.0 - np.exp(X))
+        tmp = np.exp(-X)
+        print(tmp.shape)
+        return 1.0/(1.0 - tmp)
 
     def fit_transform(self, X):
         """
