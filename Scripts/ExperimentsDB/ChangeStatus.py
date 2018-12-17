@@ -19,7 +19,7 @@ TransformData
 
 
 import argparse
-from Wind.Private.DBConfig import  mongolocaltest
+from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 from pymongo import MongoClient
 
 
@@ -31,9 +31,12 @@ if __name__ == '__main__':
     parser.add_argument('--all', default='zz',  help='Experiment ID')    
     parser.add_argument('--id', help='Experiment ID')
     parser.add_argument('--status', help='Experiment status', default='pending')
+    parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     args = parser.parse_args()
 
-    mongoconnection = mongolocaltest
+    if args.testdb:
+        mongoconnection = mongolocaltest
+
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.user is not None:

@@ -17,23 +17,28 @@ ExpCheck
 
 """
 from __future__ import print_function
-from Wind.Private.DBConfig import mongoconnection
+from Wind.Private.DBConfig import mongolocaltest, mongoconnection
 from pymongo import MongoClient
 import argparse
 
 __author__ = 'bejar'
 
 if __name__ == '__main__':
-    client = MongoClient(mongoconnection.server)
-    db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-    col = db[mongoconnection.col]
     parser = argparse.ArgumentParser()
     parser.add_argument('--fr', help='Experiment status', type=int, default=0)
     parser.add_argument('--to', help='Experiment status', type=int, default=253)
     parser.add_argument('--exp', help='Experiment status', default='convos2s')
     parser.add_argument('--status', help='Experiment status', default='pending')
+    parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     args = parser.parse_args()
+
+    if args.testdb:
+        mongoconnection = mongolocaltest
+    client = MongoClient(mongoconnection.server)
+    db = client[mongoconnection.db]
+    if mongoconnection.user is not None:
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    col = db[mongoconnection.col]
 
     total = 0
     for i in range(args.fr, args.to + 1):

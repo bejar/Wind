@@ -17,13 +17,19 @@ ExpStatus.py
 
 """
 from __future__ import print_function
-from Wind.Private.DBConfig import mongolocaltest
+from Wind.Private.DBConfig import mongolocaltest, mongoconnection
 from pymongo import MongoClient
+import argparse
 
 __author__ = 'bejar'
 
 if __name__ == '__main__':
-    mongoconnection = mongolocaltest
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
+    args = parser.parse_args()
+
+    if args.testdb:
+        mongoconnection = mongolocaltest
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.user is not None:

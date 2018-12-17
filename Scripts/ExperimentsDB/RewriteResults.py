@@ -19,7 +19,7 @@ UploadResults
 
 import argparse
 import numpy as np
-from Wind.Private.DBConfig import mongoconnection
+from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 from pymongo import MongoClient
 
 
@@ -31,8 +31,12 @@ if __name__ == '__main__':
     parser.add_argument('--exp', default='convos2s',  help='Experiment Type')    
     parser.add_argument('--status', default='done',  help='Experiment status')
     parser.add_argument('--noupdate', action='store_true', default=False, help='copy files')
+    parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
+
     args = parser.parse_args()
 
+    if args.testdb:
+        mongoconnection = mongolocaltest
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
