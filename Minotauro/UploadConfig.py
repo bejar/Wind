@@ -21,7 +21,7 @@ from __future__ import print_function
 import argparse
 from time import time
 import json
-from Wind.Util import load_config_file
+from Wind.Misc import load_config_file
 from Wind.Private.DBConfig import mongoconnection
 from pymongo import MongoClient
 import glob
@@ -47,7 +47,8 @@ def main():
 
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    if mongoconnection.user is not None:
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
     count = 0

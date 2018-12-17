@@ -62,42 +62,25 @@ class MLPS2SArchitecture(NNS2SArchitecture):
         self.model.add(Dense(odimension, activation='linear'))
 
 
-    def summary(self):
-        self.model.summary()
-        activation = self.config['arch']['activation']
-        print(
-        f"lag: {self.config['data']['lag']} /Layers: {str(self.config['arch']['full'])} /Activation: {activation}")
+    # def summary(self):
+    #     self.model.summary()
+    #     activation = self.config['arch']['activation']
+    #     print(
+    #     f"lag: {self.config['data']['lag']} /Layers: {str(self.config['arch']['full'])} /Activation: {activation}")
+    #     print()
 
-        print()
-
-    def log_result(self, result):
-        for i, r2val, r2test in result:
-            print(f"{self.config['arch']['mode']} |"
-                  f"DNM={self.config['data']['datanames'][0]},"
-                  f"DS={self.config['data']['dataset']},"
-                  f"V={len(self.config['data']['vars'])},"
-                  f"LG={self.config['data']['lag']},"
-                  f"AH={i},"
-                  f"FL={str(self.config['arch']['full'])},"
-                  f"DR={self.config['arch']['drop']},"
-                  f"AF={self.config['arch']['activation']},"             
-                  f"OPT={self.config['training']['optimizer']},"
-                  f"R2V={r2val:3.5f},"
-                  f"R2T={r2test:3.5f}"
-                  )
-
-
-            # print('%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, FL= %s, DR= %3.2f, AF= %s, '
-            #       'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-            #       (self.config['arch']['mode'],
-            #        self.config['data']['datanames'][0],
-            #        self.config['data']['dataset'],
-            #        len(self.config['data']['vars']),
-            #        self.config['data']['lag'],
-            #        i, str(self.config['arch']['full']),
-            #        self.config['arch']['drop'],
-            #        self.config['arch']['activation'],
-            #        self.config['training']['optimizer'],
-            #        r2val,
-            #        r2test,
-            #        ))
+    # def log_result(self, result):
+    #     for i, r2val, r2test in result:
+    #         print(f"{self.config['arch']['mode']} |"
+    #               f"DNM={self.config['data']['datanames'][0]},"
+    #               f"DS={self.config['data']['dataset']},"
+    #               f"V={len(self.config['data']['vars'])},"
+    #               f"LG={self.config['data']['lag']},"
+    #               f"AH={i},"
+    #               f"FL={str(self.config['arch']['full'])},"
+    #               f"DR={self.config['arch']['drop']},"
+    #               f"AF={self.config['arch']['activation']},"
+    #               f"OPT={self.config['training']['optimizer']},"
+    #               f"R2V={r2val:3.5f},"
+    #               f"R2T={r2test:3.5f}"
+    #               )

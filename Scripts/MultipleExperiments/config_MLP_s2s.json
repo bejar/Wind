@@ -2,25 +2,24 @@
   "experiment": "TEST",
   "data": {
       "datanames": ["11-5794-12"],
-      "scaler": "minmax",
-      "vars": [0,1,2,3,4,5,6],
+      "scaler": "standard",
+      "vars": [0,1,2,3,4],
     "datasize": 43834,
     "testsize": 17534,
       "dataset": 1,
       "lag": 18,
-      "fraction": 1,
-      "ahead": [10,12]
+      "ahead": [1,12]
   },
   "arch": {
-      "drop": 0.1,
-      "activation": "relu",
-      "full": [1024, 64],
+      "drop": 0.3,
+    "activation": "relu",
+      "full": [256, 128],
       "mode":"MLP_s2s"
   },
   "training": {
     "iter":1,
     "batch": 1024,
-    "epochs": 200,
+    "epochs": 5,
           "patience":10,
       "optimizer": "adamax",
     "lrate": 0.001

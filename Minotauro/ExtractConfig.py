@@ -20,7 +20,7 @@ ExtractConfig
 
 import argparse
 import json
-from Wind.Private.DBConfig import mongoconnection
+from Wind.Private.DBConfig import mongolocaltest
 from pymongo import MongoClient
 from shutil import copy
 from Wind.Config import wind_data_path
@@ -39,15 +39,17 @@ def main():
     parser.add_argument('--nconfig', type=int, default=200, help='number of configs')
     parser.add_argument('--jph', type=int, default=30, help='Number of jobs per hour')
     parser.add_argument('--exp', default='convos2s', help='Type of configs')
-    parser.add_argument('--nocopy', action='store_true', default=False, help='copy files')
+    parser.add_argument('--nocopy', action='store_true', default=False, help='Do not copy data files')
     parser.add_argument('--machine', default='mino', help='Machine the scripts are for')
 
 
     args = parser.parse_args()
 
+    mongoconnection = mongolocaltest
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    if mongoconnection.user is not None:
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
     query = {'status': 'pending', 'experiment': args.exp}
@@ -63,7 +65,7 @@ def main():
 
     if args.machine == 'mino':
 
-        batchjob = open(f"'{nm}/windjob{nm}.cmd'", 'w')
+        batchjob = open(f"{nm}/windjob{nm}.cmd", 'w')
         batchjob.write("""#!/bin/bash
 # @ job_name = windjob
 # @ initialdir = /gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Experiments
@@ -77,20 +79,20 @@ def main():
                        f"# @ wall_clock_limit = {jobtime}:30:00\n"
                        +
                        """module purge
-                       module load K80 cuda/8.0 mkl/2017.1 CUDNN/5.1.10-cuda_8.0 intel-opencl/2016 python/3.6.0+_ML
-                       PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
-                       export PYTHONPATH
-                       
-                       """)
+module load K80 cuda/8.0 mkl/2017.1 CUDNN/5.1.10-cuda_8.0 intel-opencl/2016 python/3.6.0+_ML
+PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
+export PYTHONPATH
+
+""")
 
         if len(lconfig) > 0:
             for config in lconfig:
+                print(config['_id'])
+                sconf = json.dumps(config)
+                fconf = open(f"./{nm}/Jobs/{config['_id']}.json", 'w')
+                fconf.write(sconf + '\n')
+                fconf.close()
                 if not args.nocopy:
-                    print(config['_id'])
-                    sconf = json.dumps(config)
-                    fconf = open(f"./{nm}/Jobs/{config['_id']}.json", 'w')
-                    fconf.write(sconf + '\n')
-                    fconf.close()
                     copy(f"{wind_data_path}/{config['data']['datanames'][0]}.npy", f"./{nm}/Data/")
                 batchjob.write(
                     f"python WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")

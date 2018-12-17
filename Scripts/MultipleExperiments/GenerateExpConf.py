@@ -6,7 +6,11 @@ GenerateExpConf
 
 :Description: GenerateExpConf
 
-    
+    The configuration file has lists of values for all theparameters instead of just the value
+
+    Uploads to the DB the cartesian product of all the values of the lists parameters
+
+    WARNING!!! use the test flag to know how many configurations are generated
 
 :Authors: bejar
     
@@ -21,7 +25,7 @@ import argparse
 from time import time
 
 from Wind.Misc import load_config_file
-from Wind.Private.DBConfig import mongoconnection
+from Wind.Private.DBConfig import mongolocaltest
 from copy import deepcopy
 from pymongo import MongoClient
 
@@ -31,6 +35,7 @@ __author__ = 'bejar'
 def generate_configs(config):
     """
     Generates all possible individual configs from the fields with multiple values
+
     :param config:
     :return:
     """
@@ -47,14 +52,18 @@ def generate_configs(config):
                     else:
                         cp[f1] = {f2: v}
                     lnconf.append(cp)
+
             lconf = lnconf
     print('%d Configurations' % len(lconf))
     return lconf
 
 
+
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='configbatchregdir', help='Experiment configuration')
+    parser.add_argument('--config', default='Mconfig_MLP_s2s', help='Experiment configuration')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
     parser.add_argument('--exp', required=True, help='Experiment Name')
 
@@ -62,21 +71,27 @@ if __name__ == '__main__':
 
     configB = load_config_file(args.config, upload=True)
 
+
+
+
     if args.test:
         conf = generate_configs(configB)
-        len(conf)
-        print(conf[0])
-
+        for c in conf:
+            print(c)
     else:
+        mongoconnection = mongolocaltest
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
-        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+        if mongoconnection.user is not None:
+            db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
         col = db[mongoconnection.col]
 
         ids = int(time())
         for i, config in enumerate(generate_configs(configB)):
             config['experiment'] = args.exp
             config['status'] = 'pending'
+            site = config['data']['datanames'][0].split('-')
+            config['site'] = '-'.join(site[:2])
             config['result'] = []
-            config['_id'] = str(ids + i)
+            config['_id'] = f"{ids}{i:05d}{int(site[1]):06d}"
             col.insert_one(config)

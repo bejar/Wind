@@ -2,7 +2,7 @@
   "experiment": "TEST",
   "data": {
       "datanames": ["11-5794-12"],
-      "scaler": "minmax",
+      "scaler": "standard",
       "vars": [0,1,2,3,4,5,6],
     "datasize": 43834,
     "testsize": 17534,
@@ -11,21 +11,8 @@
       "ahead": [1,12]
   },
   "arch": {
-      "neurons": 128,
-    "k_reg": "None",
-      "k_regw": 0.1,
-    "rec_reg": "None",
-    "rec_regw": 0.1,
       "drop": 0.3,
-    "nlayers": 2,
-    "nlayersE": 1,
-    "nlayersD": 1,
     "activation": "relu",
-    "activation_r": "hard_sigmoid",
-    "CuDNN": false,
-    "bidirectional": false,
-    "bimerge":"ave",
-    "rnn": "GRU",
       "full": [256, 128],
       "mode":"MLP_s2s"
   },
