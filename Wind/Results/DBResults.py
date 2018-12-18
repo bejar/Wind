@@ -196,6 +196,7 @@ class DBResults:
     # Stores the results for test and validation as numpy arrays
     exp_result = {}
     exp_result2 = {}
+    exp_df = None
 
     def __init__(self, conn=mongoconnection, test=""):
         """
@@ -292,16 +293,68 @@ class DBResults:
             self.exp_result2['test'] = np.array([v[1] for v in ldata])
             self.exp_result2['validation'] = np.array([v[2] for v in ldata])
 
+    def retrieve_results_dataframe(self, query, data=('vars', 'ahead', 'lag'), arch=[], train=[]):
+        """
+        Retrieves the results from the query and builds a pandas dataframe with all the data
+
+        :param query:
+        :return:
+        """
+        lexp = self.col.find(query)
+        lvars = ['hour', 'site', 'test', 'val']
+        if data:
+            lvars.extend(list(data))
+        if arch:
+            lvars.extend(arch)
+        if train:
+            lvars.extend(train)
+        ddata = {}
+        for var in lvars:
+            ddata[var] = []
+
+        for exp in lexp:
+            # To maintain backwards compatibility
+            if 'result' in exp:
+                exdata = np.array(exp['result'])
+            elif 'results' in exp:
+                exdata = np.array(exp['results'])
+
+            for i in range(exdata.shape[0]):
+                lvals = [i+1]
+                lvals.append(int(exp['data']['datanames'][0].split('-')[1]))
+                lvals.append(exdata[i, 1])
+                lvals.append(exdata[i, 2])
+
+                for v in data:
+                    lvals.append(str(exp['data'][v]))
+
+                for v in arch:
+                    lvals.append(str(exp['arch'][v]))
+
+                for v in train:
+                    lvals.append(str(exp['training'][v]))
+
+                for var, val in zip(lvars, lvals):
+                    ddata[var].append(val)
+
+        self.exp_df = pd.DataFrame(ddata)
+
+
+
+
     def size(self):
         """
         Returns the number of results obtained
 
         :return:
         """
-        if not self.exp_result:
+        if not self.exp_result and not self.exp_df:
             raise NameError("No results yet retrieved")
 
-        return self.exp_result['sites'].shape[0]
+        if self.exp_result:
+            return self.exp_result['sites'].shape[0]
+        else:
+            return self.exp_df.shape[0]
 
     def selected_size(self):
         """
@@ -658,6 +711,41 @@ class DBResults:
         else:
             py.iplot(fig, filename=f"./{title}-distplot.html")
 
+    def plot_hours_boxplot(self, dset=('val', 'test'), figsize=(8, 4)):
+        """
+        Plots the accuracy for each hour in a boxplot
+
+        :return:
+        """
+        if not self.exp_result:
+            raise NameError("No results yet retrieved")
+        if 'experiment' in self.query:
+            title = self.query['experiment']
+        else:
+            title = 'NonSpecific'
+
+        data = np.array([])
+        hour = np.array([])
+        exp = np.array([])
+        if 'test' in dset:
+
+            for i in range(self.exp_result['test'].shape[1]):
+                data = np.append(data, self.exp_result['test'][self.selection, i])
+                hour = np.append(hour, np.array([i]*len(self.selection)))
+                exp = np.append(exp, np.array(['test']*len(self.selection)))
+
+        if 'val' in dset:
+            for i in range(self.exp_result['validation'].shape[1]):
+                data = np.append(data, self.exp_result['validation'][self.selection, i])
+                hour = np.append(hour, np.array([i]*len(self.selection)))
+                exp = np.append(exp, np.array(['val']*len(self.selection)))
+
+        df = pd.DataFrame({'hour':hour, 'acc':data, title:exp})
+        plt.figure(figsize=figsize, dpi=100)
+        sns.boxplot(x='hour', y='acc', hue=title,data=df)
+
+        plt.show()
+
     def plot_2DKDEplot(self, summary='sum', notebook=False, dset=('val', 'test'), figsize=(800, 400)):
         """
         Plots a 2D KDE plot with seaborn
@@ -786,7 +874,7 @@ if __name__ == '__main__':
 
     query = {"experiment": 'RNN_ED_s2s'}
     results = DBResults()
-    results.retrieve_results(query)
+    results.retrieve_results_dataframe(query)
     if results.size() > 0:
-        results.sample(0.1)
-        results.plot_2DKDEplot()
+        results.sample(0.01)
+        results.plot_hours_boxplot()

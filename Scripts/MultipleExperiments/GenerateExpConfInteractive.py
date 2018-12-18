@@ -122,13 +122,28 @@ def ask_config(config):
             if v == 'datanames':
                 if input("Change datanames (y/N)? ") not in ['y', 'yes']:
                     outconfig['data'][v] = [config['data'][v]]
-                elif (input("Random datanames (y/N)? ")) in ['y', 'yes']:
+                elif input("Random datanames (y/N)? ") in ['y', 'yes']:
                     n = ask_integer("How many? ")
                     lsites = np.array([i for i in range(126000)])
                     lsites = np.random.choice(lsites, n, replace=False)
                     outconfig['data'][v] = [[f"{site // 500}-{site}-12"] for site in lsites]
+                elif input("Other experiment sites (y/N)? ") in ['y', 'yes']:
+                    mongoconnection = mongolocaltest
+                    client = MongoClient(mongoconnection.server)
+                    db = client[mongoconnection.db]
+                    if mongoconnection.user is not None:
+                        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+                    col = db[mongoconnection.col]
+
+                    oexp = input("Experiment? ")
+                    resp = col.find({'experiment': oexp}, ['site'])
+                    sites = list(np.unique([f"{site['site']}-12" for site in resp]))
+                    if len(sites) == 0:
+                        raise NameError("No sites for that experiment")
+                    else:
+                        outconfig['data'][v] = [[s] for s in sites]
                 else:
-                    outconfig['data'][v] = [[f"{site // 500}-{site}-12"] for site in getinput(v, type(config['data'][v]))]
+                    outconfig['data'][v] = [[f"{site // 500}-{site}-12"] for site in getinput(v, type(config['data'][v]), int)]
             elif v == 'vars':
                 if input("Change vars (y/N)? ") not in ['y', 'yes']:
                     outconfig['data'][v] = [config['data'][v]]
@@ -176,6 +191,7 @@ if __name__ == '__main__':
 
     if args.test:
         conf = generate_configs(configB)
+        print(conf[0])
         print(len(conf))
     else:
         mongoconnection = mongolocaltest

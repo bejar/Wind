@@ -41,11 +41,13 @@ def main():
     parser.add_argument('--exp', default='convos2s', help='Type of configs')
     parser.add_argument('--nocopy', action='store_true', default=False, help='Do not copy data files')
     parser.add_argument('--machine', default='mino', help='Machine the scripts are for')
+    parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
 
 
     args = parser.parse_args()
 
-    mongoconnection = mongolocaltest
+    if args.testdb:
+        mongoconnection = mongolocaltest
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.user is not None:

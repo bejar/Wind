@@ -6,7 +6,7 @@ UploadConfig
 
 :Description: UploadConfig
 
-    
+ Uploads results to the DB
 
 :Authors: bejar
     
@@ -22,7 +22,7 @@ import argparse
 from time import time
 import json
 from Wind.Misc import load_config_file
-from Wind.Private.DBConfig import mongoconnection
+from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 from pymongo import MongoClient
 import glob
 import numpy as np
@@ -36,6 +36,7 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--pend', action='store_true', default=False, help='change status to pending')
+    parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     args = parser.parse_args()
 
     if not args.pend:
@@ -45,6 +46,8 @@ def main():
         lfiles = glob.glob('*.json')
         lfiles = sorted(lfiles)
 
+    if args.testdb:
+        mongoconnection = mongolocaltest
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.user is not None:
