@@ -20,10 +20,10 @@ ExtractConfig
 
 import argparse
 import json
-from Wind.Private.DBConfig import mongolocaltest
+from Wind.Private.DBConfig import mongolocaltest, mongoconnection
 from pymongo import MongoClient
 from shutil import copy
-from Wind.Config import wind_data_path
+from Wind.Config import wind_data_path, bsc_path
 from time import strftime
 import os
 
@@ -39,9 +39,10 @@ def main():
     parser.add_argument('--nconfig', type=int, default=200, help='number of configs')
     parser.add_argument('--jph', type=int, default=30, help='Number of jobs per hour')
     parser.add_argument('--exp', default='convos2s', help='Type of configs')
-    parser.add_argument('--nocopy', action='store_true', default=False, help='Do not copy data files')
+    parser.add_argument('--copy', action='store_true', default=False, help='Copy data files')
     parser.add_argument('--machine', default='mino', help='Machine the scripts are for')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
+    parser.add_argument('--bsc', action='store_true', default=False, help='Copy to bsc path directly')
 
 
     args = parser.parse_args()
@@ -58,21 +59,27 @@ def main():
     # config = col.find_one(query)
 
     lconfig = [c for c in col.find(query, limit=args.nconfig)]
-    nm = strftime('%Y%m%d%H%M%S')
-    os.mkdir(nm)
-    os.mkdir(f"{nm}/Data")
-    os.mkdir(f"{nm}/Jobs")
+    if not args.bsc:
+
+        nm = strftime('%Y%m%d%H%M%S')
+        spath = f"{os.getcwd()}/{nm}"
+        os.mkdir(spath)
+        os.mkdir(f"{spath}/Data")
+        os.mkdir(f"{spath}/Jobs")
+        os.mkdir(f"{spath}/Run")
+    else:
+        nm = strftime('%Y%m%d%H%M%S')
+        spath = bsc_path
 
     jobtime = (args.nconfig // args.jph) + 2
 
     if args.machine == 'mino':
-
-        batchjob = open(f"{nm}/windjob{nm}.cmd", 'w')
+        batchjob = open(f"{spath}/Run/windjob{nm}.cmd", 'w')
         batchjob.write("""#!/bin/bash
 # @ job_name = windjob
 # @ initialdir = /gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Experiments
-# @ output = windjob%j.out
-# @ error = windjob%j.err
+# @ output = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjob%j.out
+# @ error = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjob%j.err
 # @ total_tasks = 1
 # @ gpus_per_node = 1
 # @ cpus_per_task = 1
@@ -91,11 +98,11 @@ export PYTHONPATH
             for config in lconfig:
                 print(config['_id'])
                 sconf = json.dumps(config)
-                fconf = open(f"./{nm}/Jobs/{config['_id']}.json", 'w')
+                fconf = open(f"{spath}/Jobs/{config['_id']}.json", 'w')
                 fconf.write(sconf + '\n')
                 fconf.close()
-                if not args.nocopy:
-                    copy(f"{wind_data_path}/{config['data']['datanames'][0]}.npy", f"./{nm}/Data/")
+                if args.copy:
+                    copy(f"{wind_data_path}/{config['data']['datanames'][0]}.npy", f"{spath}/Data/")
                 batchjob.write(
                     f"python WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
                 col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})

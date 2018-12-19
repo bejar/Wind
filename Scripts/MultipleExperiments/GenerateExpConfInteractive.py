@@ -25,7 +25,7 @@ import argparse
 from time import time
 
 from Wind.Misc import load_config_file
-from Wind.Private.DBConfig import mongolocaltest
+from Wind.Private.DBConfig import mongolocaltest, mongoconnection
 from copy import deepcopy
 from pymongo import MongoClient
 import numpy as np
@@ -61,16 +61,15 @@ def generate_configs(config):
     return lconf
 
 
-def getinput(msg, field, t):
+def getinput(field, t):
     """
     get input and checks that has the correct type
     :param t:
     :return:
     """
-    print(msg)
     ok = False
     while not ok:
-        resp = input(f"Type the list of values to use for [{field}] as a string:")
+        resp = input(f"Type the list of values to use for [{field}] as a string: ")
         res = json.loads(resp)
         if type(res) != list:
             print("It is not a list")
@@ -128,7 +127,8 @@ def ask_config(config):
                     lsites = np.random.choice(lsites, n, replace=False)
                     outconfig['data'][v] = [[f"{site // 500}-{site}-12"] for site in lsites]
                 elif input("Other experiment sites (y/N)? ") in ['y', 'yes']:
-                    mongoconnection = mongolocaltest
+                    if args.testdb:
+                        mongoconnection = mongolocaltest
                     client = MongoClient(mongoconnection.server)
                     db = client[mongoconnection.db]
                     if mongoconnection.user is not None:
@@ -181,6 +181,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='config_MLP_s2s', help='Experiment configuration')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
+    parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     parser.add_argument('--exp', required=True, help='Experiment Name')
 
     args = parser.parse_args()
@@ -194,7 +195,8 @@ if __name__ == '__main__':
         print(conf[0])
         print(len(conf))
     else:
-        mongoconnection = mongolocaltest
+        if args.testdb:
+            mongoconnection = mongolocaltest
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         if mongoconnection.user is not None:
