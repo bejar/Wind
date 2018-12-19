@@ -73,39 +73,64 @@ def main(mongoconnection):
     jobtime = (args.nconfig // args.jph) + 2
 
     if args.machine == 'mino':
-        batchjob = open(f"{spath}/Run/windjob{nm}.cmd", 'w')
-        batchjob.write("""#!/bin/bash
+        jobcontent = f"""#!/bin/bash
 # @ job_name = windjob
 # @ initialdir = /gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Experiments
-""" +
-                       f"# @ output = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjob{nm}.out\n" +
-                       f"# @ error = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjob{nm}.err\n" +
-                       """# @ total_tasks = 1
+# @ output = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjobmino{nm}.out
+# @ error = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjobmino{nm}.err
+# @ total_tasks = 1
 # @ gpus_per_node = 1
 # @ cpus_per_task = 1
 # @ features = k80
-""" +
-                       f"# @ wall_clock_limit = {jobtime}:30:00\n"
-                       +
-                       """module purge
+# @ wall_clock_limit = {jobtime}:30:00
+module purge
 module load K80 cuda/8.0 mkl/2017.1 CUDNN/5.1.10-cuda_8.0 intel-opencl/2016 python/3.6.0+_ML
 PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
 export PYTHONPATH
 
-""")
+"""
+    else:
+        jobcontent = f"""#!/bin/bash
+#SBATCH --job-name="windjob"
+#SBATCH -D/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Experiments
+#SBATCH --output=/gpfs/projects/bsc28/bsc28642/Wind/Run/windjobpower{nm}.out
+#SBATCH --error=/gpfs/projects/bsc28/bsc28642/Wind/Run/windjobpower{nm}.err
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=2
+#SBATCH --time={jobtime}:30:00
+#SBATCH --gres=gpu:1
+module purge
+module load  gcc/6.4.0  cuda/9.1 cudnn/7.1.3 openmpi/3.0.0 atlas/3.10.3 scalapack/2.0.2 fftw/3.3.7 szip/2.1.1 opencv/3.4.1 python/3.6.5_ML
+PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
+export PYTHONPATH
 
-        if len(lconfig) > 0:
-            for config in lconfig:
-                print(config['_id'])
-                sconf = json.dumps(config)
-                fconf = open(f"{spath}/Jobs/{config['_id']}.json", 'w')
-                fconf.write(sconf + '\n')
-                fconf.close()
-                if args.copy:
-                    copy(f"{wind_data_path}/{config['data']['datanames'][0]}.npy", f"{spath}/Data/")
+"""
+
+    if args.machine == 'mino':
+        batchjob = open(f"{spath}/Run/windjobmino{nm}.cmd", 'w')
+        batchjob.write(jobcontent)
+    else:
+        batchjob = open(f"{spath}/Run/windjobpower{nm}.cmd", 'w')
+        batchjob.write(jobcontent)
+
+
+    if len(lconfig) > 0:
+        for config in lconfig:
+            print(config['_id'])
+            sconf = json.dumps(config)
+            fconf = open(f"{spath}/Jobs/{config['_id']}.json", 'w')
+            fconf.write(sconf + '\n')
+            fconf.close()
+            if args.copy:
+                copy(f"{wind_data_path}/{config['data']['datanames'][0]}.npy", f"{spath}/Data/")
+            if args.machine == 'mino':
                 batchjob.write(
                     f"python WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
-                col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
+            else:
+                batchjob.write(
+                    f"mpirun python WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
+
+            col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
         batchjob.close()
 
         print(f"NCONF= {len(lconfig)}")
