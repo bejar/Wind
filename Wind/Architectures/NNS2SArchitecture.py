@@ -44,7 +44,9 @@ class NNS2SArchitecture(NNArchitecture):
             ahead = self.config['data']['ahead']
 
         lresults = []
+        print(self.config['data']['ahead'])
         for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
+            print(p)
             lresults.append((p,
                              r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
                              r2_score(test_y[:, i - 1], test_yp[:, i - 1])

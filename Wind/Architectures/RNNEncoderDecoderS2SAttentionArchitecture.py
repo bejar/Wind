@@ -146,10 +146,10 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
         attention = Activation('softmax', name='attention')(attention)
 
         context = dot([attention, encoder], axes=[2, 1])
-        print('context', context)
+        # print('context', context)
 
         decoder_combined_context = concatenate([context, decoder])
-        print('decoder_combined_context', decoder_combined_context)
+        # print('decoder_combined_context', decoder_combined_context)
 
         output = TimeDistributed(Dense(full_layers[0], activation=activation_fl))(decoder_combined_context)
         for l in full_layers[1:]:

@@ -30,7 +30,7 @@ import os
 __author__ = 'bejar'
 
 
-def main():
+def main(mongoconnection):
     """Extracts configurations from the DB
 
     :return:
@@ -43,7 +43,6 @@ def main():
     parser.add_argument('--machine', default='mino', help='Machine the scripts are for')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     parser.add_argument('--bsc', action='store_true', default=False, help='Copy to bsc path directly')
-
 
     args = parser.parse_args()
 
@@ -78,9 +77,10 @@ def main():
         batchjob.write("""#!/bin/bash
 # @ job_name = windjob
 # @ initialdir = /gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Experiments
-# @ output = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjob%j.out
-# @ error = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjob%j.err
-# @ total_tasks = 1
+""" +
+                       f"# @ output = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjob{nm}.out\n" +
+                       f"# @ error = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjob{nm}.err\n" +
+                       """# @ total_tasks = 1
 # @ gpus_per_node = 1
 # @ cpus_per_task = 1
 # @ features = k80
@@ -108,11 +108,10 @@ export PYTHONPATH
                 col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
         batchjob.close()
 
-
         print(f"NCONF= {len(lconfig)}")
 
 
 # module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
 
 if __name__ == '__main__':
-    main()
+    main(mongoconnection)

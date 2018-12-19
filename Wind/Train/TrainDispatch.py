@@ -23,7 +23,7 @@ from Wind.Train.TrainingProcess import train_dirregression, train_persistence, t
     train_sequence2sequence,train_sequence2sequence_tf, train_recursive_multi_sequence2sequence
 from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArchitecture, \
     PersistenceArchitecture, RNNEncoderDecoderS2SArchitecture, MLPS2SArchitecture, MLPDirRegressionArchitecture, \
-    CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture, MLPS2SRecursiveArchirecture, \
+    CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture, MLPS2SRecursiveArchitecture, \
     RNNEncoderDecoderS2SDepArchitecture, KNNDirRegressionArchitecture
 
 class TrainDispatch:
@@ -64,7 +64,7 @@ class TrainDispatch:
 
         self.model_dict['MLP_dir_reg'] = self.model_dict['mlpdir'] = (train_dirregression, MLPDirRegressionArchitecture)
 
-        self.model_dict['MLP_s2s_rec'] = (train_recursive_multi_sequence2sequence, MLPS2SRecursiveArchirecture)
+        self.model_dict['MLP_s2s_rec'] = (train_recursive_multi_sequence2sequence, MLPS2SRecursiveArchitecture)
 
         # Convolutional models
 

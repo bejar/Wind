@@ -37,6 +37,7 @@ from Wind.Config import wind_data_path
 from time import strftime
 from Wind.DataBaseConfigurations import updateprocess
 import numpy as np
+from copy import deepcopy
 
 __author__ = 'bejar'
 
@@ -138,7 +139,7 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
 
     lresults = []
     lmodels = []
-    steps = [[i,j] for i,j in zip(range(iahead, iahead+1, slice), range(slice, iahead+slice+1,slice))]
+    steps = [[i,j] for i,j in zip(range(iahead, sahead+1, slice), range(slice, sahead+slice+1,slice))]
     steps[-1][1] = sahead
 
     ### Accumulated recursive predictions for train, validation and test
@@ -147,25 +148,34 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
     rec_test_pred_x = None
 
     for iter in range(niter):
-        for ahead in steps:
+        dataset = Dataset(config=config['data'], data_path=wind_data_path)
+        dataset.generate_dataset(ahead=[iahead, sahead], mode=architecture.data_mode, remote=runconfig.remote)
+        dataset.summary()
+        train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
 
+        for recit, ahead in enumerate(steps):
             if runconfig.verbose:
                 print('-----------------------------------------------------------------------------')
                 print(f"Steps Ahead = {ahead}")
 
-            # Dataset
-            dataset = Dataset(config=config['data'], data_path=wind_data_path)
-            dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
-            train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+            # Dataset (the y matrices depend on the slice used for prediction
+
 
             ############################################
             # Model
 
             config['idimensions'] = train_x.shape[1:]
-            config['odimensions'] = ahead[1] - ahead[0]
-            config['rdimensions'] = ahead[0] - 1
+            config['odimensions'] = ahead[1] - ahead[0] + 1
+            # Dimensions for the recursive input
 
-            arch = architecture(config, runconfig)
+            config['rdimensions'] = recit * slice
+
+            print(f"{config['idimensions']} {config['odimensions']} {config['rdimensions']}")
+
+            # For evaluating we need to pass the range of columns of the current iteration
+            nconfig = deepcopy(config)
+            nconfig['data']['ahead'] = ahead
+            arch = architecture(nconfig, runconfig)
 
             if runconfig.multi == 1:
                 arch.generate_model()
@@ -179,28 +189,32 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
                 dataset.summary()
                 print()
 
-           ############################################
+            ############################################
             # Training
             if config['rdimensions'] == 0:
-                arch.train(train_x, train_y, val_x, val_y)
+                arch.train(train_x, train_y[:,ahead[0]-1:ahead[1]], val_x, val_y[:,ahead[0]-1:ahead[1]])
             else:
                 # Train using the predictions of the previous iteration
-                arch.train([train_x, rec_train_pred_x], train_y, [val_x, rec_val_pred_x], val_y)
+                arch.train([train_x, rec_train_pred_x], train_y[:,ahead[0]-1:ahead[1]],
+                           [val_x, rec_val_pred_x], val_y[:,ahead[0]-1:ahead[1]])
 
             ############################################
             # Results and Add the new predictions to the saved ones
+
             if config['rdimensions'] == 0:
                 lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
                 rec_train_pred_x = arch.predict(train_x)
                 rec_val_pred_x = arch.predict(val_x)
                 rec_test_pred_x = arch.predict(test_x)
-
+                print(f"{train_x.shape} {val_x.shape} {test_x.shape}")
+                print(f"{rec_train_pred_x.shape} {rec_val_pred_x.shape} {rec_test_pred_x.shape}")
             else:
                 lresults.extend(arch.evaluate([val_x, rec_val_pred_x], val_y,
                                               [test_x, rec_test_pred_x], dataset.test_y))
-                rec_train_pred_x = np.concatenate((rec_train_pred_x, arch.predict(train_x)))
-                rec_val_pred_x = np.concatenate((rec_val_pred_x, arch.predict(val_x)))
-                rec_test_pred_x = np.concatenate((rec_test_pred_x, arch.predict(test_x)))
+                rec_train_pred_x = np.concatenate((rec_train_pred_x, arch.predict([train_x, rec_train_pred_x])), axis=1)
+                rec_val_pred_x = np.concatenate((rec_val_pred_x, arch.predict([val_x, rec_val_pred_x])), axis=1)
+                rec_test_pred_x = np.concatenate((rec_test_pred_x, arch.predict([test_x, rec_test_pred_x])), axis=1)
+                print(f"{rec_train_pred_x.shape} {rec_val_pred_x.shape} {rec_test_pred_x.shape}")
 
             print(strftime('%Y-%m-%d %H:%M:%S'))
 

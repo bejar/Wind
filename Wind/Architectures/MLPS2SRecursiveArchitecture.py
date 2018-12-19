@@ -21,6 +21,7 @@ from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import load_model, Model
 from keras.layers import Dense, Dropout, Input, concatenate, Flatten
 
+
 try:
     from keras.utils import multi_gpu_model
 except ImportError:
@@ -55,20 +56,25 @@ class MLPS2SRecursiveArchitecture(NNS2SArchitecture):
         rdimensions = self.config['rdimensions']
 
         input = Input(shape=(idimensions))
-        finput = Flatten(input)
+        # finput = Flatten()(input)
+        # If there are predictions from the previous step the NN has to heads, one for the data, other for
+        # the predictions
         if rdimensions > 0:
-            rinput = Input(shape=(rdimensions))
-            recinput = concatenate([finput, rinput])
+            # The dimensions of recursive input depend on the recursive steps but it is a matrix (batch, recpred)
+            rinput = Input(shape=(rdimensions,))
+            recinput = concatenate([input, rinput])
         else:
-            recinput = finput
+            recinput = input
 
-        output = Dense(odimensions, activation='linear')
-        model = Dense(full_layers[0], input_shape=idimensions, activation=activation)(recinput)
+        # Dense layers to process the input
+        model = Dense(full_layers[0], activation=activation)(recinput)
         model = Dropout(rate=dropout)(model)
 
         for units in full_layers[1:]:
             model = Dense(units=units, activation=activation)(model)
             model = Dropout(rate=dropout)(model)
+
+        output = Dense(odimensions, activation='linear')(model)
 
         if rdimensions > 0:
             self.model = Model(inputs=[input, rinput], outputs=output)
@@ -76,29 +82,29 @@ class MLPS2SRecursiveArchitecture(NNS2SArchitecture):
             self.model = Model(inputs=input, outputs=output)
 
 
-    def summary(self):
-        self.model.summary()
-        activation = self.config['arch']['activation']
-        print(
-        f"lag: {self.config['data']['lag']} /Layers: {str(self.config['arch']['full'])} /Activation: {activation}")
-
-        print()
-
-    def log_result(self, result):
-        for i, r2val, r2test in result:
-            print(f"{self.config['arch']['mode']} |"
-                  f"DNM={self.config['data']['datanames'][0]},"
-                  f"DS={self.config['data']['dataset']},"
-                  f"V={len(self.config['data']['vars'])},"
-                  f"LG={self.config['data']['lag']},"
-                  f"AH={i},"
-                  f"FL={str(self.config['arch']['full'])},"
-                  f"DR={self.config['arch']['drop']},"
-                  f"AF={self.config['arch']['activation']},"             
-                  f"OPT={self.config['training']['optimizer']},"
-                  f"R2V={r2val:3.5f},"
-                  f"R2T={r2test:3.5f}"
-                  )
+    # def summary(self):
+    #     self.model.summary()
+    #     activation = self.config['arch']['activation']
+    #     print(
+    #     f"lag: {self.config['data']['lag']} /Layers: {str(self.config['arch']['full'])} /Activation: {activation}")
+    #
+    #     print()
+    #
+    # def log_result(self, result):
+    #     for i, r2val, r2test in result:
+    #         print(f"{self.config['arch']['mode']} |"
+    #               f"DNM={self.config['data']['datanames'][0]},"
+    #               f"DS={self.config['data']['dataset']},"
+    #               f"V={len(self.config['data']['vars'])},"
+    #               f"LG={self.config['data']['lag']},"
+    #               f"AH={i},"
+    #               f"FL={str(self.config['arch']['full'])},"
+    #               f"DR={self.config['arch']['drop']},"
+    #               f"AF={self.config['arch']['activation']},"
+    #               f"OPT={self.config['training']['optimizer']},"
+    #               f"R2V={r2val:3.5f},"
+    #               f"R2T={r2test:3.5f}"
+    #               )
 
     def predict(self, val_x):
         """
