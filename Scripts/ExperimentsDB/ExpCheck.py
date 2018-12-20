@@ -6,7 +6,13 @@ ExpCheck
 
 :Description: ExpCheck
 
-    
+    Shows the counts of experiments with a specific status
+
+    --fr from section i
+    --to to section j
+    --exp experiment name
+    --status status to count
+    --testdb use the test database instead of the final database
 
 :Authors: bejar
     
@@ -25,9 +31,9 @@ __author__ = 'bejar'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--fr', help='Experiment status', type=int, default=0)
-    parser.add_argument('--to', help='Experiment status', type=int, default=253)
-    parser.add_argument('--exp', help='Experiment status', default='convos2s')
+    parser.add_argument('--fr', help='From section', type=int, default=0)
+    parser.add_argument('--to', help='To section', type=int, default=253)
+    parser.add_argument('--exp', help='Experiment name', default='convos2s')
     parser.add_argument('--status', help='Experiment status', default='pending')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     args = parser.parse_args()

@@ -28,6 +28,7 @@ from Wind.Misc import load_config_file
 from Wind.Private.DBConfig import mongolocaltest
 from copy import deepcopy
 from pymongo import MongoClient
+from tqdm import tqdm
 
 __author__ = 'bejar'
 
@@ -59,27 +60,24 @@ def generate_configs(config):
 
 
 
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='Mconfig_MLP_s2s', help='Experiment configuration')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
     parser.add_argument('--exp', required=True, help='Experiment Name')
+    parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
 
     args = parser.parse_args()
 
     configB = load_config_file(args.config, upload=True)
-
-
-
 
     if args.test:
         conf = generate_configs(configB)
         for c in conf:
             print(c)
     else:
-        mongoconnection = mongolocaltest
+        if args.testdb:
+            mongoconnection = mongolocaltest
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         if mongoconnection.user is not None:
@@ -87,7 +85,7 @@ if __name__ == '__main__':
         col = db[mongoconnection.col]
 
         ids = int(time())
-        for i, config in enumerate(generate_configs(configB)):
+        for i, config in tqdm(enumerate(generate_configs(configB))):
             config['experiment'] = args.exp
             config['status'] = 'pending'
             site = config['data']['datanames'][0].split('-')

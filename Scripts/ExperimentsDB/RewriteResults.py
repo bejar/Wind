@@ -1,12 +1,18 @@
 """
-.. module:: UploadResults
+.. module:: RewriteResults
 
-UploadResults
+RewriteResults
 *************
 
-:Description: UploadResults
+:Description: RewriteResults
 
-    
+    Changes the status of an experiment with results lower than a threshold to pending so it can be run again
+
+    --thres threshold to use (lower or equal than that)
+    --exp name of the experiment
+    --status status of the experiment
+    --noupdate do not change the database, just count how many experiments are below the threshold
+    --testdb use the test database instead of the final database
 
 :Authors: bejar
     
@@ -50,7 +56,7 @@ if __name__ == '__main__':
         # print(conf['site'])
         data = np.array(conf['result'])
         vsum = np.sum(data[:, 1])
-        if vsum < args.thres:
+        if vsum <= args.thres:
             print(conf['site'], vsum)
             if not args.noupdate:
                 col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})

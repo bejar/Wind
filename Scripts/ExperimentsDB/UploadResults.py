@@ -6,7 +6,7 @@ UploadResults
 
 :Description: UploadResults
 
-    
+    Uploads all the json configuration files in the current directory
 
 :Authors: bejar
     
@@ -36,7 +36,8 @@ if __name__ == '__main__':
 
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    if mongoconnection.user is not None:
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
     for line in resfile:

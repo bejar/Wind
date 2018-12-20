@@ -24,7 +24,11 @@ __author__ = 'bejar'
 
 
 class SCKArchitecture(Architecture):
+    """
+    Class for all the scikit models using direct regression
 
+    """
+    ## data mode 2 dimensional input and only one output
     data_mode = ('2D', '0D') #'svm'
     modname = 'SCKDIRREG'
 

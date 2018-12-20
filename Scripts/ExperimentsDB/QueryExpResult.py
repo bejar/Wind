@@ -1,12 +1,15 @@
 """
-.. module:: TransformData
+.. module:: QueryExpResult
 
 TransformData
 *************
 
-:Description: TransformData
+:Description: QueryExpResult
 
-    
+    Queries for the results of one site
+
+    --site site to query
+    --testdb use the test database instead of the final database
 
 :Authors: bejar
     
@@ -22,9 +25,8 @@ import argparse
 from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 from pymongo import MongoClient
 
-
-
 __author__ = 'bejar'
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -37,7 +39,8 @@ if __name__ == '__main__':
 
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    if mongoconnection.user is not None:
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
     configs = col.find({'site':args.site})

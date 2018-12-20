@@ -41,6 +41,10 @@ __author__ = 'bejar'
 
 
 class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
+    """
+    Recurrent decoder encoder sequence to sequence architecture
+
+    """
     modfile = None
     modname = 'RNNEDS2S'
     data_mode = (False, '3D') #'s2s'

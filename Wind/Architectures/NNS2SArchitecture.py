@@ -26,8 +26,22 @@ __author__ = 'bejar'
 
 
 class NNS2SArchitecture(NNArchitecture):
+    """
+    Class for all the neural networks models based on sequence to sequence
 
+    """
     def evaluate(self, val_x, val_y, test_x, test_y):
+        """
+        Evaluates the trained model with validation and test
+
+        Overrides parent function
+
+        :param val_x:
+        :param val_y:
+        :param test_x:
+        :param test_y:
+        :return:
+        """
         batch_size = self.config['training']['batch']
 
         if self.runconfig.best:

@@ -6,7 +6,7 @@ MoveResults
 
 :Description: MoveResults
 
-    
+    Moves experiments from one database to another
 
 :Authors: bejar
     
@@ -34,7 +34,8 @@ if __name__ == '__main__':
 
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
-    db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
+    if mongoconnection.user is not None:
+        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
     clientlocal = MongoClient(mongolocal.server)

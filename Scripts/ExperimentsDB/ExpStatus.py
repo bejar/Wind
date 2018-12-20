@@ -6,7 +6,9 @@ ExpStatus.py
 
 :Description: ExpStatus.py
 
-    
+    Summary of the experiments by status, starting time and host running the experiment
+
+    This script does not make sense now that all the experiments are run on the supercomputers
 
 :Authors: bejar
     

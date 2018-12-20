@@ -24,9 +24,10 @@ import argparse
 from time import time
 
 from Wind.Misc import load_config_file
-from Wind.Private.DBConfig import mongoconnection
+from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 from pymongo import MongoClient
 from tqdm import tqdm
+
 __author__ = 'bejar'
 
 if __name__ == '__main__':
@@ -36,6 +37,7 @@ if __name__ == '__main__':
     parser.add_argument('--isite', type=int, help='Initial Site')
     parser.add_argument('--fsite', type=int, help='Final Site')
     parser.add_argument('--suff', type=int, default=12, help='Datafile suffix')
+    parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     args = parser.parse_args()
 
     config = load_config_file(args.config)
@@ -43,6 +45,8 @@ if __name__ == '__main__':
     if args.test:
         print(args.fsite - args.isite + 1)
     else:
+        if args.testdb:
+            mongoconnection = mongolocaltest
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         if mongoconnection.passwd is not None:

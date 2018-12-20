@@ -1,10 +1,10 @@
 """
-.. module:: GenerateExpRangeSections
+.. module:: GenerateExpRangeGeo
 
-GenerateExpSites
+GenerateExpRangeGeo
 *************
 
-:Description: GenerateRangeSections
+:Description: GenerateExpRangeGeo
 
     Generates and uploads to the DB configurations using --config configuration
     it begin at files at lat/log --igeo and ends at files ar lat/log --fgeo
@@ -23,7 +23,7 @@ import argparse
 from time import time
 
 from Wind.Misc import load_config_file
-from Wind.Private.DBConfig import mongoconnection
+from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 from pymongo import MongoClient
 from Wind.Config.Paths import wind_data_path
 import numpy as np
@@ -32,18 +32,17 @@ from tqdm import tqdm
 __author__ = 'bejar'
 
 
-def main():
-    """
 
-    :return:
-    """
+if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='configregdir', help='Experiment configuration')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
     parser.add_argument('--igeo', type=float, nargs=2, help='Initial lon/lat')
     parser.add_argument('--fgeo', type=float, nargs=2, help='Final lon/lat')
     parser.add_argument('--suff', type=int, default=12, help='Datafile suffix')
+    parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     args = parser.parse_args()
+
     coords = np.load(wind_data_path + '/Coords.npy')
     ilon, ilat = args.igeo
     flon, flat = args.fgeo
@@ -69,6 +68,9 @@ def main():
         print(f"Num Sites= {len(lsites)}")
     else:
         print(f"Num Sites= {len(lsites)}")
+        if args.testdb:
+            mongoconnection = mongolocaltest
+
         client = MongoClient(mongoconnection.server)
         db = client[mongoconnection.db]
         if mongoconnection.passwd is not None:
@@ -85,6 +87,3 @@ def main():
             config['_id'] = f"{ids}{site:06d}"
             col.insert_one(config)
 
-
-if __name__ == '__main__':
-    main()

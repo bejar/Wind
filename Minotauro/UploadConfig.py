@@ -19,21 +19,17 @@ UploadConfig
 
 from __future__ import print_function
 import argparse
-from time import time
-import json
 from Wind.Misc import load_config_file
 from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 from pymongo import MongoClient
 import glob
 import numpy as np
+from tqdm import tqdm
 
 __author__ = 'bejar'
 
-def main():
-    """Uploads configuration to the DB
 
-    :return:
-    """
+if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--pend', action='store_true', default=False, help='change status to pending')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
@@ -55,7 +51,7 @@ def main():
     col = db[mongoconnection.col]
 
     count = 0
-    for file in lfiles:
+    for file in tqdm(lfiles):
         config = load_config_file(file, upload=True)
 
         if args.pend:
@@ -83,7 +79,3 @@ def main():
 
         count += 1
     print(count, 'Processed')
-
-
-if __name__ == '__main__':
-    main()

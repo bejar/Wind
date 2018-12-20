@@ -100,6 +100,26 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
 
             data_stack = np.stack(ldata, axis=1)
             np.save(wind_data_path + f"/{wf.replace('/', '-')}-{step:02d}-{(i+1):02d}.npy", data_stack)
+    elif mode == 'minmax':  # Average, max and min step points
+        ldata = []
+        # Average Values
+        for v in vars:
+            data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
+            ldata.append(np.mean(data.reshape((-1, step)), axis=1))
+        # Min values
+        for v in vars:
+            data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
+            ldata.append(np.min(data.reshape((-1, step)), axis=1))
+        # Max Values
+        for v in vars:
+            data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
+            ldata.append(np.max(data.reshape((-1, step)), axis=1))
+        ldata.append(hour)
+        ldata.append(month)
+
+        data_stack = np.stack(ldata, axis=1)
+
+        np.save(wind_data_path + f"/{wf.replace('/', '-')}-{step:02d}-amm.npy", data_stack)
 
 
 if __name__ == '__main__':

@@ -43,6 +43,9 @@ __author__ = 'bejar'
 
 
 class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
+    """
+    Recurrent encoder decoder with simple attention
+    """
     modfile = None
     modname = 'RNNEDS2SATT'
     data_mode = (False, '3D')  # 's2s'
@@ -193,51 +196,51 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
 
         return lresults
 
-    def summary(self):
-        self.model.summary()
-        neurons = self.config['arch']['neurons']
-        neuronsD = self.config['arch']['neuronsD']
-        nlayersE = self.config['arch']['nlayersE']  # >= 1
-        nlayersD = self.config['arch']['nlayersD']  # >= 1
-        activation = self.config['arch']['activation']
-        activation_r = self.config['arch']['activation_r']
-        print(f"lag: {self.config['data']['lag']}, /Neurons: {neurons}, {neuronsD}, /Layers: {nlayersE} {nlayersD}"
-              f"/Activation: {activation}, {activation_r}")
-
-    def log_result(self, result):
-        for i, r2val, r2test in result:
-            print(f"{self.config['arch']['mode']} |"
-                  f" DNM= {self.config['data']['datanames'][0]},"
-                  f" DS= {self.config['data']['dataset']},"
-                  f" V= {len(self.config['data']['vars'])},"
-                  f" LG= {self.config['data']['lag']},"
-                  f" AH= {i},"
-                  f" RNN= {self.config['arch']['rnn']},"
-                  f" Bi={self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no'},"
-                  f" LY= {self.config['arch']['nlayersE']} {self.config['arch']['nlayersD']},"
-                  f" NN= {self.config['arch']['neurons']} {self.config['arch']['neuronsD']},"
-                  f" DR= {self.config['arch']['drop']:3.2f},"
-                  f" AF= {self.config['arch']['activation']},"
-                  f" RAF= {self.config['arch']['activation_r']},"
-                  f" OPT= {self.config['training']['optimizer']},"
-                  f" R2V = {r2val:3.5f}, R2T = {r2test:3.5f}")
-
-            # print(
-            #         '%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d %d, DR= %3.2f, AF= %s, RAF= %s, '
-            #         'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-            #         (self.config['arch']['mode'],
-            #          self.config['data']['datanames'][0],
-            #          self.config['data']['dataset'],
-            #          len(self.config['data']['vars']),
-            #          self.config['data']['lag'],
-            #          i,
-            #          self.config['arch']['rnn'],
-            #          self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no',
-            #          self.config['arch']['nlayersE'], self.config['arch']['nlayersD'],
-            #          self.config['arch']['neurons'], self.config['arch']['neuronsD'],
-            #          self.config['arch']['drop'],
-            #          self.config['arch']['activation'],
-            #          self.config['arch']['activation_r'],
-            #          self.config['training']['optimizer'],
-            #          r2val, r2test
-            #          ))
+    # def summary(self):
+    #     self.model.summary()
+    #     neurons = self.config['arch']['neurons']
+    #     neuronsD = self.config['arch']['neuronsD']
+    #     nlayersE = self.config['arch']['nlayersE']  # >= 1
+    #     nlayersD = self.config['arch']['nlayersD']  # >= 1
+    #     activation = self.config['arch']['activation']
+    #     activation_r = self.config['arch']['activation_r']
+    #     print(f"lag: {self.config['data']['lag']}, /Neurons: {neurons}, {neuronsD}, /Layers: {nlayersE} {nlayersD}"
+    #           f"/Activation: {activation}, {activation_r}")
+    #
+    # def log_result(self, result):
+    #     for i, r2val, r2test in result:
+    #         print(f"{self.config['arch']['mode']} |"
+    #               f" DNM= {self.config['data']['datanames'][0]},"
+    #               f" DS= {self.config['data']['dataset']},"
+    #               f" V= {len(self.config['data']['vars'])},"
+    #               f" LG= {self.config['data']['lag']},"
+    #               f" AH= {i},"
+    #               f" RNN= {self.config['arch']['rnn']},"
+    #               f" Bi={self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no'},"
+    #               f" LY= {self.config['arch']['nlayersE']} {self.config['arch']['nlayersD']},"
+    #               f" NN= {self.config['arch']['neurons']} {self.config['arch']['neuronsD']},"
+    #               f" DR= {self.config['arch']['drop']:3.2f},"
+    #               f" AF= {self.config['arch']['activation']},"
+    #               f" RAF= {self.config['arch']['activation_r']},"
+    #               f" OPT= {self.config['training']['optimizer']},"
+    #               f" R2V = {r2val:3.5f}, R2T = {r2test:3.5f}")
+    #
+    #         # print(
+    #         #         '%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d %d, DR= %3.2f, AF= %s, RAF= %s, '
+    #         #         'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
+    #         #         (self.config['arch']['mode'],
+    #         #          self.config['data']['datanames'][0],
+    #         #          self.config['data']['dataset'],
+    #         #          len(self.config['data']['vars']),
+    #         #          self.config['data']['lag'],
+    #         #          i,
+    #         #          self.config['arch']['rnn'],
+    #         #          self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no',
+    #         #          self.config['arch']['nlayersE'], self.config['arch']['nlayersD'],
+    #         #          self.config['arch']['neurons'], self.config['arch']['neuronsD'],
+    #         #          self.config['arch']['drop'],
+    #         #          self.config['arch']['activation'],
+    #         #          self.config['arch']['activation_r'],
+    #         #          self.config['training']['optimizer'],
+    #         #          r2val, r2test
+    #         #          ))

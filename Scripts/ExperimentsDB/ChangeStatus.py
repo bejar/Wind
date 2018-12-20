@@ -4,9 +4,14 @@
 TransformData
 *************
 
-:Description: TransformData
+:Description: Change Status
 
-    
+    Changes the status of one or several experiments
+
+    --all selects all the experiment with the state passed
+    --id selects the experiment with the id passed
+    --status new status for the selected experiments
+    --testdb use the test database instead of the final database
 
 :Authors: bejar
     

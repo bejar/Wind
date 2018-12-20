@@ -33,8 +33,12 @@ __author__ = 'bejar'
 
 
 class MLPS2SArchitecture(NNS2SArchitecture):
+    """
+    Multilayer perceptron sequence to sequence architecture
+    """
     modfile = None
     modname = 'MLPS2S'
+    ## Data mode 2 dimensional impur and 2 dimensional output
     data_mode = ('2D', '2D')  #'mlp'
 
     def generate_model(self):
@@ -62,25 +66,3 @@ class MLPS2SArchitecture(NNS2SArchitecture):
         self.model.add(Dense(odimension, activation='linear'))
 
 
-    # def summary(self):
-    #     self.model.summary()
-    #     activation = self.config['arch']['activation']
-    #     print(
-    #     f"lag: {self.config['data']['lag']} /Layers: {str(self.config['arch']['full'])} /Activation: {activation}")
-    #     print()
-
-    # def log_result(self, result):
-    #     for i, r2val, r2test in result:
-    #         print(f"{self.config['arch']['mode']} |"
-    #               f"DNM={self.config['data']['datanames'][0]},"
-    #               f"DS={self.config['data']['dataset']},"
-    #               f"V={len(self.config['data']['vars'])},"
-    #               f"LG={self.config['data']['lag']},"
-    #               f"AH={i},"
-    #               f"FL={str(self.config['arch']['full'])},"
-    #               f"DR={self.config['arch']['drop']},"
-    #               f"AF={self.config['arch']['activation']},"
-    #               f"OPT={self.config['training']['optimizer']},"
-    #               f"R2V={r2val:3.5f},"
-    #               f"R2T={r2test:3.5f}"
-    #               )

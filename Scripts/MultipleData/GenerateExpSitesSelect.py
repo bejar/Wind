@@ -1,7 +1,7 @@
 """
-.. module:: GenerateExpSites
+.. module:: GenerateExpSitesSelect
 
-GenerateExpSites
+GenerateExpSitesSelect
 *************
 
 :Description: GenerateExpSitesSelect
@@ -24,34 +24,31 @@ import argparse
 from time import time
 
 from Wind.Misc import load_config_file
-from Wind.Private.DBConfig import mongoconnection
+from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 from pymongo import MongoClient
 import numpy as np
 from tqdm import tqdm
 
 __author__ = 'bejar'
 
-def main():
-    """
-    Generates configurations using --config for the sites with the --upper best and --lower worst results for
-    the experiment --exp with architecture --mode
 
-    The purpose is to rerun the best/worst experiments
 
-    :return:
-    """
+if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='configrnnseq2seq', help='Experiment configuration')
     parser.add_argument('--test', action='store_true', default=False, help='Only print the number of configurations and exit')
     parser.add_argument('--upper', type=int, help='Select upper best', default=100)
     parser.add_argument('--lower', type=int, help='Select lower worst', default=100)
     parser.add_argument('--exp', help='Experiment type', default="eastwest9597")
-    parser.add_argument('--mode', help='Experiment type', default='seq2seq')
+    parser.add_argument('--mode', help='Architecture mode', default='seq2seq')
     parser.add_argument('--suff', help='Datafile suffix', default='12')
+    parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
 
     args = parser.parse_args()
     config = load_config_file(args.config)
 
+    if args.testdb:
+        mongoconnection = mongolocaltest
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.passwd is not None:
@@ -83,6 +80,3 @@ def main():
             config['_id'] = f"{ids}{i:04d}%d%"
             col.insert_one(config)
 
-
-if __name__ == '__main__':
-    main()

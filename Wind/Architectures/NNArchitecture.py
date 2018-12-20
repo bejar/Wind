@@ -55,6 +55,10 @@ __author__ = 'bejar'
 
 
 class NNArchitecture(Architecture):
+    """
+    Class for all the Neural Network architectures
+
+    """
     modfile = None
     modname = ''
 

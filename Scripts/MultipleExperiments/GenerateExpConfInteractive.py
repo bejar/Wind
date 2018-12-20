@@ -31,6 +31,7 @@ from pymongo import MongoClient
 import numpy as np
 import json
 from itertools import combinations
+from tqdm import tqdm
 
 __author__ = 'bejar'
 
@@ -204,7 +205,7 @@ if __name__ == '__main__':
         col = db[mongoconnection.col]
 
         ids = int(time())
-        for i, config in enumerate(generate_configs(configB)):
+        for i, config in tqdm(enumerate(generate_configs(configB))):
             config['experiment'] = args.exp
             config['status'] = 'pending'
             config['result'] = []

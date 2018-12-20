@@ -6,7 +6,11 @@ ExpCheck
 
 :Description: ExpLook
 
-    
+    Counts the experiments that have a specific status
+
+    --status status of the experiment
+    --testdb use the test database instead of the final database
+
 
 :Authors: bejar
     
@@ -46,4 +50,4 @@ if __name__ == '__main__':
             lsites.append(conf['site'])
         else:
             lsites.append(conf['_id'])
-    print (args.status, count)
+    print(args.status, count)

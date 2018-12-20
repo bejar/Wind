@@ -21,16 +21,29 @@ __author__ = 'bejar'
 
 
 class Architecture:
+    """Architecture
+
+    Class for all the architectures
+    """
+    ## Name to use for generating files from the architecture and experiment
+    modfile = None
+    ## Stores the experiment configuration
     config = None
+    ## Stores the configuration flags passed to the training script
     runconfig = None
+    ## Stores the architecture generated
     model = None
+    ## Stores the name of the architecture
     modname = None
+    ## Stores a pair that codes how the input and output data matrices have to be generated
     data_mode = None
 
     def __init__(self, config, runconfig):
-        """
+        """Constructor
         Stores the configuration for the model
+
         :param config:
+        :param runconfig:
         """
         self.config = config
         self.runconfig = runconfig
@@ -49,6 +62,7 @@ class Architecture:
         """
         Generates the model
 
+        Abstract
         :return:
         """
         raise NameError('ERROR: Not implemented')
@@ -57,13 +71,21 @@ class Architecture:
         """
         Trains the model
 
+        Abstract
+
+        :param train_x:
+        :param train_y:
+        :param val_x:
+        :param val_y:
         :return:
         """
         raise NameError('ERROR: Not implemented')
 
     def summary(self):
-        """
-        Model summary
+        """Model summary
+
+        prints all the fields stored in the configuration for the experiment
+
         :return:
         """
         print("--------- Architecture parameters -------")
@@ -82,6 +104,12 @@ class Architecture:
     def evaluate(self, val_x, val_y, test_x, test_y):
         """
         Evaluates the trained model for validation and test
+
+        Abstract
+        :param val_x:
+        :param val_y:
+        :param test_x:
+        :param test_y:
         :return:
         """
         raise NameError('ERROR: Not implemented')
@@ -102,6 +130,10 @@ class Architecture:
     def save(self, postfix):
         """
         Saves model to a file
+
+        Abstract
+
+        :param postfix:
         :return:
         """
         pass
@@ -109,6 +141,8 @@ class Architecture:
     def plot(self):
         """
         Plots the model architecture
+
+        Abstract
         :return:
         """
         pass
