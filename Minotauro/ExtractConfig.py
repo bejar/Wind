@@ -73,37 +73,36 @@ if __name__ == '__main__':
 
     if args.machine == 'mino':
         jobcontent = f"""#!/bin/bash
-    # @ job_name = windjob
-    # @ initialdir = /gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Experiments
-    # @ output = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjobmino{nm}.out
-    # @ error = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjobmino{nm}.err
-    # @ total_tasks = 1
-    # @ gpus_per_node = 1
-    # @ cpus_per_task = 1
-    # @ features = k80
-    # @ wall_clock_limit = {jobtime}:30:00
-    module purge
-    module load K80 cuda/8.0 mkl/2017.1 CUDNN/5.1.10-cuda_8.0 intel-opencl/2016 python/3.6.0+_ML
-    PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
-    export PYTHONPATH
+# @ job_name = windjob
+# @ initialdir = /gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Experiments
+# @ output = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjobmino{nm}.out
+# @ error = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjobmino{nm}.err
+# @ total_tasks = 1
+# @ gpus_per_node = 1
+# @ cpus_per_task = 1
+# @ features = k80
+# @ wall_clock_limit = {jobtime}:30:00
+module purge
+module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
+PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
+export PYTHONPATH
 
-    """
+"""
     else:
         jobcontent = f"""#!/bin/bash
-    #SBATCH --job-name="windjob"
-    #SBATCH -D/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Experiments
-    #SBATCH --output=/gpfs/projects/bsc28/bsc28642/Wind/Run/windjobpower{nm}.out
-    #SBATCH --error=/gpfs/projects/bsc28/bsc28642/Wind/Run/windjobpower{nm}.err
-    #SBATCH --ntasks=1
-    #SBATCH --cpus-per-task=2
-    #SBATCH --time={jobtime}:30:00
-    #SBATCH --gres=gpu:1
-    module purge
-    module load  gcc/6.4.0  cuda/9.1 cudnn/7.1.3 openmpi/3.0.0 atlas/3.10.3 scalapack/2.0.2 fftw/3.3.7 szip/2.1.1 opencv/3.4.1 python/3.6.5_ML
-    PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
-    export PYTHONPATH
+#SBATCH --job-name="windjob"
+#SBATCH -D/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Experiments
+#SBATCH --output=/gpfs/projects/bsc28/bsc28642/Wind/Run/windjobpower{nm}.out
+#SBATCH --error=/gpfs/projects/bsc28/bsc28642/Wind/Run/windjobpower{nm}.err
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=2
+#SBATCH --time={jobtime}:30:00
+#SBATCH --gres=gpu:1
+module purge
+module load  gcc/6.4.0  cuda/9.1 cudnn/7.1.3 openmpi/3.0.0 atlas/3.10.3 scalapack/2.0.2 fftw/3.3.7 szip/2.1.1 opencv/3.4.1 python/3.6.5_MLPYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
+export PYTHONPATH
 
-    """
+"""
 
     if args.machine == 'mino':
         batchjob = open(f"{spath}/Run/windjobmino{nm}.cmd", 'w')
@@ -132,3 +131,5 @@ if __name__ == '__main__':
         batchjob.close()
 
         print(f"NCONF= {len(lconfig)}")
+
+#module load K80 cuda/8.0 mkl/2017.1 CUDNN/5.1.10-cuda_8.0 intel-opencl/2016 python/3.6.0+_ML
