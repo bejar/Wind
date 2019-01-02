@@ -55,13 +55,13 @@ if __name__ == '__main__':
         config = load_config_file(file, upload=True)
 
         if args.pend:
-            print(config['_id'], config['data']['datanames'][0])
+            #print(config['_id'], config['data']['datanames'][0])
             col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
         else:
-            if 'results' in config:
-                print(config['_id'], config['data']['datanames'][0], np.sum([v for _, v, _ in config['results']]))
-            elif 'result' in config:
-                print(config['_id'], config['data']['datanames'][0], np.sum([v for _, v, _ in config['result']]))
+            #if 'results' in config:
+            #    print(config['_id'], config['data']['datanames'][0], np.sum([v for _, v, _ in config['results']]))
+            #elif 'result' in config:
+            #    print(config['_id'], config['data']['datanames'][0], np.sum([v for _, v, _ in config['result']]))
 
             col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
 

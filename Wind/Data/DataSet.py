@@ -9,7 +9,6 @@ DataSet
     Generates a dataset from the data matrix
 
 :Authors: bejar
-    
 
 :Version: 
 
@@ -17,13 +16,12 @@ DataSet
 
 """
 
-from __future__ import print_function
-import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
-import os
 from Wind.Config.Paths import remote_data, remote_wind_data_path
 from Wind.Spatial.Util import get_all_neighbors
 from Wind.Preprocessing.Normalization import tanh_normalization
+import numpy as np
+import os
 
 try:
     import pysftp
@@ -37,6 +35,8 @@ def lagged_vector(data, lag=1, ahead=0, mode=None):
     """
     Returns a matrix with columns that are the steps of the lagged time series
     Last column is the value to predict
+    :param mode:
+    :param ahead:
     :param data:
     :param lag:
     :return:
@@ -60,6 +60,8 @@ def lagged_matrix(data, lag=1, ahead=0, mode=None):
     Returns a matrix with columns that are the steps of the lagged time series
     Last column is the value to predict
 
+    :param mode:
+    :param ahead:
     :param data:
     :param lag:
     :return:
@@ -81,23 +83,49 @@ def lagged_matrix(data, lag=1, ahead=0, mode=None):
 
 
 class Dataset:
+    """
+    Class to generate the data matrices (train, validation and test)
+    """
+
+    ## Train X matrix
     train_x = None
+    ## Train y matrix
     train_y = None
+    ## Validation X matrix
     val_x = None
+    ## Validation y matrix
     val_y = None
+    ## Test X matrix
     test_x = None
+    ## Test y matrix
     test_y = None
+    ## Path to the datafiles
     data_path = None
+    ## Section 'data' of the configuration file
     config = None
-    scalers = {'standard': StandardScaler(), 'minmax': MinMaxScaler(feature_range=(-1, 1)), 'tanh':tanh_normalization()}
-    dataset_type = ['onesiteonevar', 'onesitemanyvar', 'manysiteonevar', 'manysitemanyvar', 'manysitemanyvarstack', 'manysitemanyvarstackneigh']
+    ## Mode of the dataset
+    mode = None
+    ## Functions to use for scaling the data
+    scalers = {'standard': StandardScaler(), 'minmax': MinMaxScaler(feature_range=(-1, 1)),
+               'tanh': tanh_normalization()}
+    ## Strings corresponding to the different dataset configurations
+    dataset_type = ['onesiteonevar', 'onesitemanyvar', 'manysiteonevar', 'manysitemanyvar', 'manysitemanyvarstack',
+                    'manysitemanyvarstackneigh']
 
     def __init__(self, config, data_path):
+        """
+        Initializes the object with the data configuration section of the configuration file and
+        the path where the actual data is
+
+        :param config:
+        :param data_path:
+        """
         self.config = config
         self.data_path = data_path
 
     def is_teacher_force(self):
         """
+        Returns if the data matrix is configured for teaching force
 
         :return:
         """
@@ -105,15 +133,39 @@ class Dataset:
 
     def is_dependent_auxiliary(self):
         """
+        Returns if the data matrix is cofigured to separate dependent and independent variables
 
         :return:
         """
         return self.config['dmatrix'] == 'dep_aux'
 
-
     def _generate_dataset_one_var(self, data, datasize, testsize, lag=1, ahead=1, slice=1, mode=None):
         """
-        Generates
+        Generates dataset matrices for one variable according to the lag and ahead horizon. The ahead horizon can be
+        sliced to a subset of the horizon
+
+        The dimensions of the matrix are adapted accordingly to the input and output dimensions of the model
+
+        Input:
+            By default is a 3D matrix - examples x variables x lag
+            2D - examples x (variables * lag)
+        Output:
+            3D - examples x horizon x 1
+            2D - examples x horizon
+            1D - examples x 1 x 1
+            0D - examples x 1
+
+        'scaling' is obtained from the data section of the configuration
+        'fraction' allows selecting only a part of the data, selects from the end
+
+        :param data:
+        :param datasize:
+        :param testsize:
+        :param lag:
+        :param ahead:
+        :param slice:
+        :param mode:
+        :return:
         :return:
         """
         if 'scaler' in self.config and self.config['scaler'] in self.scalers:
@@ -122,7 +174,7 @@ class Dataset:
         else:
             scaler = StandardScaler()
             data = scaler.fit_transform(data)
-        # print('DATA Dim =', data.shape)
+
         mode_x, mode_y = mode
 
         if 'fraction' in self.config:
@@ -130,7 +182,6 @@ class Dataset:
             wind_train = data[isize:datasize, :]
         else:
             wind_train = data[:datasize, :]
-        # print('Train Dim =', wind_train.shape)
 
         train = lagged_vector(wind_train, lag=lag, ahead=ahead, mode=mode)
         train_x = train[:, :lag]
@@ -151,22 +202,6 @@ class Dataset:
             train_y = np.ravel(train[:, -1:, 0])
         else:
             train_y = train[:, -1:, 0]
-        #######################################
-
-        # if mode == 's2s':
-        #     train_y = train[:, -slice:, 0]
-        #     train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
-        # elif mode == 'mlp':
-        #     train_y = train[:, -slice:, 0]
-        #     train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1]))
-        # elif mode == 'svm':
-        #     train_y = np.ravel(train[:, -1:, 0])
-        #     train_x = np.reshape(train_x, (train_y.shape[0], train_y.shape[1]))
-        # elif mode == 'cnn':
-        #     train_y = train[:, -slice:, 0]
-        #     train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
-        # else:
-        #     train_y = train[:, -1:, 0]
 
         wind_test = data[datasize:datasize + testsize, 0].reshape(-1, 1)
         test = lagged_vector(wind_test, lag=lag, ahead=ahead, mode=mode)
@@ -199,37 +234,27 @@ class Dataset:
             val_y = test[:half_test, -1:, 0]
             test_y = test[half_test:, -1:, 0]
 
-        #######################################
-
-        # if mode == 's2s':
-        #     val_y = test[:half_test, -slice:, 0]
-        #     test_y = test[half_test:, -slice:, 0]
-        #     val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
-        #     test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
-        # elif mode == 'mlp':
-        #     val_y = test[:half_test, -slice:, 0]
-        #     test_y = test[half_test:, -slice:, 0]
-        #     val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1]))
-        #     test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1]))
-        # elif mode == 'svm':
-        #     val_y =  np.ravel(test[:half_test, -1:, 0])
-        #     test_y =  np.ravel(test[half_test:, -1:, 0])
-        #     val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1]))
-        #     test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1]))
-        # elif mode == 'cnn':
-        #     val_y = test[:half_test, -slice:, 0]
-        #     test_y = test[half_test:, -slice:, 0]
-        #     val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1]))
-        #     test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
-        # else:
-        #     val_y = test[:half_test, -1:, 0]
-        #     test_y = test[half_test:, -1:, 0]
-
         return train_x, train_y, val_x, val_y, test_x, test_y
 
     def _generate_dataset_multiple_var(self, data, datasize, testsize, lag=1, ahead=1, slice=1, mode=None):
         """
-        Generates
+        Generates dataset matrices for one variable according to the lag and ahead horizon. The ahead horizon can be
+        sliced to a subset of the horizon
+
+        The dimensions of the matrix are adapted accordingly to the input and output dimensions of the model
+
+        Input:
+            By default is a 3D matrix - examples x variables x lag
+            2D - examples x (variables * lag)
+        Output:
+            3D - examples x horizon x 1
+            2D - examples x horizon
+            1D - examples x 1 x 1
+            0D - examples x 1
+
+        'scaling' is obtained from the data section of the configuration
+        'fraction' allows selecting only a part of the data, selects from the end
+
         :return:
         """
         if 'scaler' in self.config and self.config['scaler'] in self.scalers:
@@ -269,22 +294,6 @@ class Dataset:
             train_y = np.ravel(train[:, -1:, 0])
         else:
             train_y = train[:, -slice:, 0]
-        ########################################3
-
-        # if mode == 's2s':
-        #     train_y = train[:, -slice:, 0]
-        #     train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
-        # elif mode == 'cnn':
-        #     train_y = train[:, -slice:, 0]
-        #     train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
-        # elif mode == 'mlp':
-        #     train_y = train[:, -slice:, 0]
-        #     train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1] * train_x.shape[2]))
-        # elif mode == 'svm':
-        #     train_y = np.ravel(train[:, -1:, 0])
-        #     train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1] * train_x.shape[2]))
-        # else:
-        #     train_y = train[:, -1:, 0]
 
         # Test and Val
         wind_test = data[datasize:datasize + testsize, :]
@@ -318,32 +327,6 @@ class Dataset:
             val_y = test[:half_test, -slice:, 0]
             test_y = test[half_test:, -slice:, 0]
 
-        ########################################################
-
-        # if mode == 's2s':
-        #     val_y = test[:half_test, -slice:, 0]
-        #     test_y = test[half_test:, -slice:, 0]
-        #     val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
-        #     test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
-        # elif mode == 'cnn':
-        #     val_y =  test[:half_test, -slice:, 0]
-        #     test_y = test[half_test:, -slice:, 0]
-        #     val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1]))
-        #     test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
-        # elif mode == 'mlp':
-        #     val_y =  test[:half_test, -slice:, 0]
-        #     test_y = test[half_test:, -slice:, 0]
-        #     val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1] * val_x.shape[2]))
-        #     test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1] * test_x.shape[2]))
-        # elif mode == 'svm':
-        #     val_y = np.ravel(test[:half_test, -1:, 0])
-        #     test_y = np.ravel(test[half_test:, -1:, 0])
-        #     val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1] * val_x.shape[2]))
-        #     test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1] * test_x.shape[2]))
-        # else:
-        #     val_y = test[:half_test, -1:, 0]
-        #     test_y = test[half_test:, -1:, 0]
-
         return train_x, train_y, val_x, val_y, test_x, test_y
 
     def generate_dataset(self, ahead=1, mode=None, ensemble=False, ens_slice=None, remote=None):
@@ -355,16 +338,18 @@ class Dataset:
           2 = All sites - wind
           3 = All sites - all variables
           4 = All sites - all variables stacked
+          5 = Uses neighbor sites around a radius
 
-
+        :param ens_slice: (not yet used)
+        :param remote: Use remote data
+        :param ensemble: (not yet used)
         :param datanames: Name of the wind datafiles
         :param ahead: number of steps ahead for prediction
-        :param mode: type of dataset
-                None (recurrent one output regression)
-                's2s' (recurrent multiple output regression)
-                'mlp' (plain n layer MLP for regression)
+        :param mode: type of dataset (pair indicating the type of dimension for input and output)
         :return:
         """
+        self.mode = mode
+
         datanames = self.config['datanames']
         datasize = self.config['datasize']
         testsize = self.config['testsize']
@@ -372,6 +357,8 @@ class Dataset:
         lag = self.config['lag']
         vars = self.config['vars']
         wind = {}
+
+        ahead = config['ahead'] if (type(config['ahead']) == list) else [1, config['ahead']]
 
         if type(ahead) == list:
             dahead = ahead[1]
@@ -453,6 +440,7 @@ class Dataset:
     def get_data_matrices(self):
         """
         Returns the data matrices for training, validation and test
+
         :return:
         """
 
@@ -465,10 +453,10 @@ class Dataset:
         else:
             raise NameError("DataSet: No such dmatrix type")
 
-
     def teacher_forcing(self):
         """
-        returns data matrices for teacher forcing/attention
+        returns data matrices for teacher forcing/attention assuming that data is for RNN
+
         :return:
         """
         # Use the last element of wind traininig data as the first of teacher forcing
@@ -487,19 +475,60 @@ class Dataset:
                [self.val_x, val_y_tf], self.val_y, \
                [self.test_x, test_y_tf], self.test_y
 
-
     def dependent_auxiliary(self):
         """
-        return data matrices separating dependent variable from the rest
+        Return data matrices separating dependent variable from the rest
 
         This is for two headed architecture with dependent and auxiliary
-        variables in separated units
+        variables in separated branches
         :return:
         """
+        horizon = self.config['lag']
+        if self.mode != '2D':
+            return [self.train_x[:, :, 0].reshape(self.train_x.shape[0], self.train_x.shape[1], 1),
+                    self.train_x[:, :, 1:]], self.train_y, \
+                   [self.val_x[:, :, 0].reshape(self.val_x.shape[0], self.val_x.shape[1], 1),
+                    self.val_x[:, :, 1:]], self.val_y, \
+                   [self.test_x[:, :, 0].reshape(self.test_x.shape[0], self.test_x.shape[1], 1),
+                    self.test_x[:, :, 1:]], self.test_y
+        else:
+            return [self.train_x[:, :horizon].train_x[:, horizon:,]], self.train_y, \
+                   [self.val_x[:, :horizon], self.val_x[:, :horizon]], self.val_y, \
+                   [self.test_x[:, :horizon], self.test_x[:, :horizon]], self.test_y
 
-        return [self.train_x[:, :, 0].reshape(self.train_x.shape[0], self.train_x.shape[1], 1), self.train_x[:, :, 1:]], self.train_y, \
-               [self.val_x[:, :, 0].reshape(self.val_x.shape[0], self.val_x.shape[1], 1), self.val_x[:, :, 1:]], self.val_y, \
-               [self.test_x[:, :, 0].reshape(self.test_x.shape[0], self.test_x.shape[1], 1), self.test_x[:, :, 1:]], self.test_y
+
+    def auxiliary_future(self):
+        """
+        Returns data matrices adding a matrix for the future for a subset of the auxiliary matrices
+
+        :return:
+        """
+        # Future variable, just one for now
+        horizon = self.config['lag']
+        future = self.config['varsf'][0]
+        ahead = config['ahead'] if (type(config['ahead']) == list) else [1, config['ahead']]
+        if type(ahead) == list:
+            dahead = ahead[1]
+            slice = (ahead[1] - ahead[0]) + 1
+        else:
+            dahead = ahead
+            slice = ahead
+
+        if self.mode != '2D':
+            # The values of the future variable are dahead positions from the stars
+            train_x_future = self.train_x[dahead:, -slice:, future]
+            val_x_future = self.val_x[dahead:, -slice:, future]
+            test_x_future = self.test_x[dahead:, -slice:, future]
+        else:
+            train_x_future = self.train_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+ahead]
+            val_x_future = self.val_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+ahead]
+            test_x_future = self.test_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+ahead]
+
+            pass
+
+        # We loose the last dahead examples because we do not have their full future in the data matrix
+        return [self.train_x[:-dahead], train_x_future], self.train_y, [self.val_x[:-dahead], val_x_future], self.val_y,\
+               [self.test_x[:-dahead], test_x_future], self.test_y
 
     def summary(self):
         """
@@ -519,7 +548,7 @@ class Dataset:
             print(f"Training:   X={self.train_x.shape} Y={self.train_y.shape}")
             print(f"Validation: X={self.val_x.shape} Y={self.val_y.shape}")
             print(f"Tests:      X={self.test_x.shape} T={self.test_y.shape}")
-            if type(self.config['dataset'])==int:
+            if type(self.config['dataset']) == int:
                 print(f"Dataset type= {self.dataset_type[self.config['dataset']]}")
             else:
                 print(f"Dataset type= {self.config['dataset']}")
@@ -530,9 +559,6 @@ class Dataset:
             print(f"Lag= {self.config['lag']}")
             print(f"Ahead= {self.config['ahead']}")
             print("------------------------------------")
-
-
-
 
 
 if __name__ == '__main__':
@@ -549,76 +575,3 @@ if __name__ == '__main__':
 
     dataset.generate_dataset(ahead=[1, 12], mode=mode)
     dataset.summary()
-
-    # for j in range(1,5):
-    #     iahead = j
-    #     fahead = j
-    #
-    #     dataset = Dataset(config=config['data'], data_path=wind_data_path)
-    #
-    #     dataset.generate_dataset(ahead=[iahead, fahead], mode=mode)
-    #     dataset.summary()
-    #
-    #     train_x = dataset.train_x
-    #     train_y = dataset.train_y
-    #     val_x = dataset.val_x
-    #     val_y = dataset.val_y
-    #     test_x = dataset.test_x
-    #     test_y = dataset.test_y
-    #
-    #
-    #     for i in range(5):
-    #         #print(f"X={train_x[i,:,1]}")
-    #         print(f"Y={train_y[i,:]}")
-
-    #
-    # fig = plt.figure()
-    #
-    # for i in range(0,10):
-    #     if mode == 's2s':
-    #         axes = fig.add_subplot(1, 1, 1)
-    #         plt.title('Time=%d' % i)
-    #         plt.plot(wind[i:i+lag+fahead,0], 'k--')
-    #         plt.plot(range(train_x.shape[1]), train_x[i,:,0], 'r')
-    #         plt.plot(range(train_x.shape[1]+iahead-1,train_x.shape[1]+train_y.shape[1]+iahead-1), train_y[i,:,0], 'g')
-    #         plt.show()
-    #         plt.title('Time=%d' % i)
-    #         plt.plot(range(val_x.shape[1]), val_x[i,:,0], 'r')
-    #         plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]), val_y[i,:,0], 'g')
-    #         plt.show()
-    #         plt.title('Time=%d' % i)
-    #         plt.plot(range(test_x.shape[1]), test_x[i,:,0], 'r')
-    #         plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]), test_y[i,:,0], 'g')
-    #         plt.show()
-    #     elif mode == 'mlp':
-    #         axes = fig.add_subplot(1, 1, 1)
-    #         plt.title('Time=%d' % i)
-    #         plt.plot(wind[i:i+24,0], 'k--')
-    #         plt.plot(range(train_x.shape[1]), train_x[i,:], 'r')
-    #         plt.plot(range(train_x.shape[1],train_x.shape[1]+train_y.shape[1]), train_y[i,:], 'g')
-    #         plt.show()
-    #         plt.title('Time=%d' % i)
-    #         plt.plot(range(val_x.shape[1]), val_x[i,:], 'r')
-    #         plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]), val_y[i,:], 'g')
-    #         plt.show()
-    #         plt.title('Time=%d' % i)
-    #         plt.plot(range(test_x.shape[1]), test_x[i,:], 'r')
-    #         plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]), test_y[i,:], 'g')
-    #         plt.show()
-    #     elif not mode:
-    #         axes = fig.add_subplot(1, 1, 1)
-    #         plt.title('Time=%d' % i)
-    #         plt.plot(wind[i:i+24,0], 'k--')
-    #         plt.plot(range(train_x.shape[1]), train_x[i,:,0], 'r')
-    #         plt.plot(range(train_x.shape[1],train_x.shape[1]+train_y.shape[1]+1), [train_y[i,:], train_y[i,:]], 'g')
-    #         plt.show()
-    #         plt.title('Time=%d' % i)
-    #         plt.plot(wind[datasize+i:datasize+i+24,0], 'k--')
-    #         plt.plot(range(val_x.shape[1]), val_x[i,:,0], 'r')
-    #         plt.plot(range(val_x.shape[1],val_x.shape[1]+val_y.shape[1]+1), [val_y[i,:],val_y[i,:]], 'g')
-    #         plt.show()
-    #         plt.title('Time=%d' % i)
-    #         plt.plot(wind[(datasize+testsize+i)-6:(datasize+testsize+i)+18,0], 'k--')
-    #         plt.plot(range(test_x.shape[1]), test_x[i,:], 'r')
-    #         plt.plot(range(test_x.shape[1],test_x.shape[1]+test_y.shape[1]+1), [test_y[i,:],test_y[i,:] ], 'g')
-    #         plt.show()

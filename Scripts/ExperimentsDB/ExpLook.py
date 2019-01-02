@@ -1,5 +1,5 @@
 """
-.. module:: ExpCheck
+.. module:: ExpLook
 
 ExpCheck
 *************

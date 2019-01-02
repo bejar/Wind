@@ -35,6 +35,7 @@ __author__ = 'bejar'
 class MLPS2SRecursiveArchitecture(NNS2SArchitecture):
     """
     Mutitlayer perceptron with sequence to sequence architecture for recursive training
+
     """
     modfile = None
     modname = 'MLPS2SREC'

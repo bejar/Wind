@@ -69,7 +69,10 @@ if __name__ == '__main__':
         nm = strftime('%Y%m%d%H%M%S')
         spath = bsc_path
 
-    jobtime = (args.nconfig // args.jph) + 2
+    jobtime = (args.nconfig // args.jph) + 1
+
+    if jobtime > 47:
+        raise NameError(f"{jobtime} is longer than the 48 hours limit, reduce number of configs")
 
     if args.machine == 'mino':
         jobcontent = f"""#!/bin/bash
@@ -81,7 +84,7 @@ if __name__ == '__main__':
 # @ gpus_per_node = 1
 # @ cpus_per_task = 1
 # @ features = k80
-# @ wall_clock_limit = {jobtime}:30:00
+# @ wall_clock_limit = {jobtime}:00:00
 module purge
 module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
 PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
@@ -96,10 +99,11 @@ export PYTHONPATH
 #SBATCH --error=/gpfs/projects/bsc28/bsc28642/Wind/Run/windjobpower{nm}.err
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
-#SBATCH --time={jobtime}:30:00
+#SBATCH --time={jobtime}:00:00
 #SBATCH --gres=gpu:1
 module purge
-module load  gcc/6.4.0  cuda/9.1 cudnn/7.1.3 openmpi/3.0.0 atlas/3.10.3 scalapack/2.0.2 fftw/3.3.7 szip/2.1.1 opencv/3.4.1 python/3.6.5_MLPYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
+module load  gcc/6.4.0  cuda/9.1 cudnn/7.1.3 openmpi/3.0.0 atlas/3.10.3 scalapack/2.0.2 fftw/3.3.7 szip/2.1.1 opencv/3.4.1 python/3.6.5_ML
+PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
 export PYTHONPATH
 
 """
@@ -113,7 +117,7 @@ export PYTHONPATH
 
     if len(lconfig) > 0:
         for config in tqdm(lconfig):
-            print(config['_id'])
+            # print(config['_id'])
             sconf = json.dumps(config)
             fconf = open(f"{spath}/Jobs/{config['_id']}.json", 'w')
             fconf.write(sconf + '\n')
@@ -131,5 +135,3 @@ export PYTHONPATH
         batchjob.close()
 
         print(f"NCONF= {len(lconfig)}")
-
-#module load K80 cuda/8.0 mkl/2017.1 CUDNN/5.1.10-cuda_8.0 intel-opencl/2016 python/3.6.0+_ML

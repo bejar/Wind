@@ -9,6 +9,7 @@ TransformData
     Changes the status of one or several experiments
 
     --all selects all the experiment with the state passed
+    --exp selects all the experiments of the type passed
     --id selects the experiment with the id passed
     --status new status for the selected experiments
     --testdb use the test database instead of the final database
@@ -27,15 +28,16 @@ import argparse
 from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 from pymongo import MongoClient
 
-
+from tqdm import tqdm
 
 __author__ = 'bejar'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--all', default='zz',  help='Experiment ID')    
-    parser.add_argument('--id', help='Experiment ID')
-    parser.add_argument('--status', help='Experiment status', default='pending')
+    parser.add_argument('--ostatus', default=None,  help='Experiment status')
+    parser.add_argument('--exp', default=None,  help='Experiment type')    
+    parser.add_argument('--id', default=None, help='Experiment ID')
+    parser.add_argument('--nstatus', help='Experiment status', default='pending')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     args = parser.parse_args()
 
@@ -48,18 +50,17 @@ if __name__ == '__main__':
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    if args.all is not None:
-        configs = col.find({'status':args.all})
-        count = 0
-        for conf in configs:
-            if 'site' in conf:
-                print(conf['_id'], conf['site'], conf['status'])
-            else:
-                print(conf['_id'], conf['status'])
-            count += 1
-            col.update({'_id': conf['_id']}, {'$set': {'status': args.status}})
-        print(count)
+    if args.ostatus is not None:
+        configs = col.find({'status':args.ostatus})
+        for conf in tqdm(configs):
+            col.update({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
+    elif args.exp is not None:
+        configs = col.find({'experiment':args.exp})
+        for conf in tqdm(configs):
+            col.update({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
+    elif args.id is not None:
+        col.update({'_id': args.id}, {'$set': {'status': args.nstatus}})
     else:
-        col.update({'_id': args.id}, {'$set': {'status': args.status}})
+        raise NameError("Selection missing")
 
 
