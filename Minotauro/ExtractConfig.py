@@ -30,7 +30,7 @@ from tqdm import tqdm
 
 __author__ = 'bejar'
 
-
+# module load K80 cuda/8.0 mkl/2017.1 CUDNN/5.1.10-cuda_8.0 intel-opencl/2016 python/3.6.0+_ML
 # module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
 
 if __name__ == '__main__':
