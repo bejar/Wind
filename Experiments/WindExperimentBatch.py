@@ -80,7 +80,7 @@ if __name__ == '__main__':
         # Data
 
         # try:
-        print(f"Running job {config['_id']} {config['arch']['mode']} {strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"Running job {config['_id']} {config['site']} {config['arch']['mode']} {strftime('%Y-%m-%d %H:%M:%S')}")
         train_process, architecture = dispatch.dispatch(config['arch']['mode'])
 
         lresults = train_process(architecture, config, run_config)
