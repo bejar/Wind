@@ -358,7 +358,7 @@ class Dataset:
         vars = self.config['vars']
         wind = {}
 
-        ahead = config['ahead'] if (type(config['ahead']) == list) else [1, config['ahead']]
+        ahead = self.config['ahead'] if (type(self.config['ahead']) == list) else [1, self.config['ahead']]
 
         if type(ahead) == list:
             dahead = ahead[1]
