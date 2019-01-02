@@ -133,5 +133,5 @@ export PYTHONPATH
 
             col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
         batchjob.close()
-
-        print(f"NCONF= {len(lconfig)}")
+        print(f"\nEstimated running time = {jobtime} hours")
+        # print(f"NCONF= {len(lconfig)}")
