@@ -49,16 +49,6 @@ class KNNDirRegressionArchitecture(SCKArchitecture):
         self.model = KNeighborsRegressor(n_neighbors=self.config['arch']['n_neighbors'],
                                          weights=self.config['arch']['weights'])
 
-    # def summary(self):
-    #     """
-    #     Model summary
-    #     :return:
-    #     """
-    #     print("--------- Architecture parameters -------")
-    #     print(f"{self.modname}")
-    #     for c in self.config['arch']:
-    #         print(f" {c}={self.config['arch'][c]}")
-    #     print("---------------------------------------")
 
 
 

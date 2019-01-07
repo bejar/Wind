@@ -18,7 +18,6 @@ NNArchitecture
 
 from Wind.Architectures.Architecture import Architecture
 from keras.models import load_model
-from keras import backend as K
 
 try:
    from keras.utils import plot_model
@@ -26,13 +25,6 @@ except ImportError:
    _has_pydot = False
 else:
    _has_pydot = True
-
-try:
-    from keras.layers import CuDNNGRU, CuDNNLSTM
-except ImportError:
-    _has_CuDNN = False
-else:
-    _has_CuDNN = True
 
 from keras.optimizers import RMSprop
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
@@ -49,7 +41,6 @@ from time import time
 import os
 
 from Wind.Train.Losses import linear_weighted_mse
-
 
 __author__ = 'bejar'
 

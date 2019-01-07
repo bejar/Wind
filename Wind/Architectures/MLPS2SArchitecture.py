@@ -20,14 +20,7 @@ MLPS2SArchitecture
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
-from keras.regularizers import l1, l2
 
-try:
-    from keras.utils import multi_gpu_model
-except ImportError:
-    _has_multigpu = False
-else:
-    _has_multigpu = True
 
 __author__ = 'bejar'
 

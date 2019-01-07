@@ -163,6 +163,16 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
         self.model = Model(inputs=[enc_input, dec_input], outputs=output)
 
     def evaluate(self, val_x, val_y, test_x, test_y):
+        """
+        The evaluation for this architecture is iterative, for each step a new time in the future is predicted
+        using the results of the previous steps, the result is appended for the next step
+
+        :param val_x:
+        :param val_y:
+        :param test_x:
+        :param test_y:
+        :return:
+        """
         batch_size = self.config['training']['batch']
 
         if self.runconfig.best:
@@ -173,10 +183,13 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
         else:
             ahead = self.config['data']['ahead']
 
+        # The input for the first step is the last column of the training (t-1)
         val_x_tfi = val_x[0][:, -1, 0]
         val_x_tfi = val_x_tfi.reshape(val_x_tfi.shape[0], 1, 1)
         test_x_tfi = test_x[0][:, -1, 0]
         test_x_tfi = test_x_tfi.reshape(test_x_tfi.shape[0], 1, 1)
+
+        # Copy the first slice (time step 1)
         val_x_tf = val_x_tfi.copy()
         test_x_tf = test_x_tfi.copy()
 
@@ -188,6 +201,8 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
             val_x_tf = np.concatenate((val_x_tfi, val_yp), axis=1)
             test_x_tf = np.concatenate((test_x_tfi, test_yp), axis=1)
 
+        # After the loop we have all the predictions for the ahead range
+
         for i in range(1, ahead + 1):
             lresults.append((i,
                              r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
@@ -196,51 +211,3 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
 
         return lresults
 
-    # def summary(self):
-    #     self.model.summary()
-    #     neurons = self.config['arch']['neurons']
-    #     neuronsD = self.config['arch']['neuronsD']
-    #     nlayersE = self.config['arch']['nlayersE']  # >= 1
-    #     nlayersD = self.config['arch']['nlayersD']  # >= 1
-    #     activation = self.config['arch']['activation']
-    #     activation_r = self.config['arch']['activation_r']
-    #     print(f"lag: {self.config['data']['lag']}, /Neurons: {neurons}, {neuronsD}, /Layers: {nlayersE} {nlayersD}"
-    #           f"/Activation: {activation}, {activation_r}")
-    #
-    # def log_result(self, result):
-    #     for i, r2val, r2test in result:
-    #         print(f"{self.config['arch']['mode']} |"
-    #               f" DNM= {self.config['data']['datanames'][0]},"
-    #               f" DS= {self.config['data']['dataset']},"
-    #               f" V= {len(self.config['data']['vars'])},"
-    #               f" LG= {self.config['data']['lag']},"
-    #               f" AH= {i},"
-    #               f" RNN= {self.config['arch']['rnn']},"
-    #               f" Bi={self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no'},"
-    #               f" LY= {self.config['arch']['nlayersE']} {self.config['arch']['nlayersD']},"
-    #               f" NN= {self.config['arch']['neurons']} {self.config['arch']['neuronsD']},"
-    #               f" DR= {self.config['arch']['drop']:3.2f},"
-    #               f" AF= {self.config['arch']['activation']},"
-    #               f" RAF= {self.config['arch']['activation_r']},"
-    #               f" OPT= {self.config['training']['optimizer']},"
-    #               f" R2V = {r2val:3.5f}, R2T = {r2test:3.5f}")
-    #
-    #         # print(
-    #         #         '%s | DNM= %s, DS= %d, V= %d, LG= %d, AH= %d, RNN= %s, Bi=%s, LY= %d %d, NN= %d %d, DR= %3.2f, AF= %s, RAF= %s, '
-    #         #         'OPT= %s, R2V = %3.5f, R2T = %3.5f' %
-    #         #         (self.config['arch']['mode'],
-    #         #          self.config['data']['datanames'][0],
-    #         #          self.config['data']['dataset'],
-    #         #          len(self.config['data']['vars']),
-    #         #          self.config['data']['lag'],
-    #         #          i,
-    #         #          self.config['arch']['rnn'],
-    #         #          self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no',
-    #         #          self.config['arch']['nlayersE'], self.config['arch']['nlayersD'],
-    #         #          self.config['arch']['neurons'], self.config['arch']['neuronsD'],
-    #         #          self.config['arch']['drop'],
-    #         #          self.config['arch']['activation'],
-    #         #          self.config['arch']['activation_r'],
-    #         #          self.config['training']['optimizer'],
-    #         #          r2val, r2test
-    #         #          ))

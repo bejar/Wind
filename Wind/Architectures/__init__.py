@@ -39,11 +39,6 @@ from .MLPS2SRecursiveArchitecture import MLPS2SRecursiveArchitecture
 
 from .CNNS2SArchitecture import CNNS2SArchitecture
 
-
-
-
-
-
 __author__ = 'bejar'
 
 __all__ = ['Architecture',

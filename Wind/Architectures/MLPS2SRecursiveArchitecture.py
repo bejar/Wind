@@ -22,14 +22,6 @@ from keras.models import load_model, Model
 from keras.layers import Dense, Dropout, Input, concatenate, Flatten
 
 
-try:
-    from keras.utils import multi_gpu_model
-except ImportError:
-    _has_multigpu = False
-else:
-    _has_multigpu = True
-
-
 __author__ = 'bejar'
 
 class MLPS2SRecursiveArchitecture(NNS2SArchitecture):

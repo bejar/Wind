@@ -1,10 +1,10 @@
 """
-.. module:: RNNEncoderDecoderS2SArchitecture
+.. module:: RNNEncoderDecoderS2DepSArchitecture
 
 RNNEncoderDecoderS2SArchitecture
 ******
 
-:Description: RNNEncoderDecoderS2SArchitecture
+:Description: RNNEncoderDecoderS2SDepArchitecture
 
     RNN Encoder Decoder separating the encoder for dependent variables and auxiliary variables
 
@@ -31,13 +31,6 @@ else:
 
 from keras.regularizers import l1, l2
 
-try:
-    from keras.utils import multi_gpu_model
-except ImportError:
-    _has_multigpu = False
-else:
-    _has_multigpu = True
-
 __author__ = 'bejar'
 
 
@@ -48,7 +41,7 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'RNNEDS2SDep'
-    data_mode = (False, '3D') #'s2s'
+    data_mode = (False, '3D')
 
     def generate_model(self):
         """
@@ -162,33 +155,3 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
                              r2_score(test_y[:, i - 1], test_yp[:, i - 1])
                              ))
         return lresults
-
-    # def summary(self):
-    #     self.model.summary()
-    #     super().summary()
-    # #     neuronsE = self.config['arch']['neuronsE']
-    # #     neuronsD = self.config['arch']['neuronsD']
-    # #     nlayersE = self.config['arch']['nlayersE']  # >= 1
-    # #     nlayersD = self.config['arch']['nlayersD']  # >= 1
-    # #     activation = self.config['arch']['activation']
-    # #     activation_r = self.config['arch']['activation_r']
-    # #     print(f"lag: {self.config['data']['lag']} /Neurons: {neuronsE} {neuronsD} /Layers: ', {nlayersE,}{nlayersD}"
-    # #           f"/Activation: {activation} {activation_r}")
-    #
-    # # def log_result(self, result):
-    # #     for i, r2val, r2test in result:
-    # #         print(f"{self.config['arch']['mode']} |"
-    # #               f" DNM= {self.config['data']['datanames'][0]},"
-    # #               f" DS= {self.config['data']['dataset']},"
-    # #               f" V= {len(self.config['data']['vars'])},"
-    # #               f" LG= {self.config['data']['lag']},"
-    # #               f" AH= {i},"
-    # #               f" RNN= {self.config['arch']['rnn']},"
-    # #               f" Bi={self.config['arch']['bimerge'] if self.config['arch']['bidirectional'] else 'no'},"
-    # #               f" LY= {self.config['arch']['nlayersE']} {self.config['arch']['nlayersD']},"
-    # #               f" NN= {self.config['arch']['neuronsE']} {self.config['arch']['neuronsD']},"
-    # #               f" DR= {self.config['arch']['drop']:3.2f},"
-    # #               f" AF= {self.config['arch']['activation']},"
-    # #               f" RAF= {self.config['arch']['activation_r']},"
-    # #               f" OPT= {self.config['training']['optimizer']},"
-    # #               f" R2V = {r2val:3.5f}, R2T = {r2test:3.5f}")

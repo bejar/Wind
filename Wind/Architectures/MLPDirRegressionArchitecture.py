@@ -22,13 +22,6 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.layers import Flatten
 
-try:
-    from keras.utils import multi_gpu_model
-except ImportError:
-    _has_multigpu = False
-else:
-    _has_multigpu = True
-
 
 __author__ = 'bejar'
 

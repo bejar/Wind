@@ -47,7 +47,7 @@ class RNNS2SArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'RNNS2S'
-    data_mode = (False, '2D')  #'cnn'
+    data_mode = (False, '2D')
 
     def generate_model(self):
         """
