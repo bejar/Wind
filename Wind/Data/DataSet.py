@@ -358,7 +358,7 @@ class Dataset:
         vars = self.config['vars']
         wind = {}
 
-        ahead = self.config['ahead'] if (type(self.config['ahead']) == list) else [1, self.config['ahead']]
+        #ahead = self.config['ahead'] if (type(self.config['ahead']) == list) else [1, self.config['ahead']]
 
         if type(ahead) == list:
             dahead = ahead[1]
@@ -367,12 +367,6 @@ class Dataset:
             dahead = ahead
             slice = ahead
 
-        # if (mode == 's2s' or mode == 'mlp') or type(ahead) == list:
-        #     dahead = ahead[1]
-        #     slice = (ahead[1] - ahead[0]) + 1
-        # else:
-        #     dahead = ahead
-        #     slice = ahead
 
         if self.config['dataset'] == 5:
             datanames = get_all_neighbors(datanames[0], 0.05)

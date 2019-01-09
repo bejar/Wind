@@ -237,11 +237,6 @@ def train_sequence2sequence(architecture, config, runconfig):
     :return:
     """
 
-    # if type(config['data']['ahead']) == list:
-    #     iahead, sahead = config['data']['ahead']
-    # else:
-    #     iahead, sahead = 1, config['data']['ahead']
-
     ahead = config['data']['ahead'] if (type(config['data']['ahead']) == list) else [1, config['data']['ahead']]
 
     if 'iter' in config['training']:
