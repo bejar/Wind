@@ -6,7 +6,7 @@ GenerateExpConf
 
 :Description: GenerateExpConf
 
-    The configuration file has lists of values for all theparameters instead of just the value
+    The configuration file has lists of values for all the parameters instead of just the value
 
     Uploads to the DB the cartesian product of all the values of the lists parameters
 

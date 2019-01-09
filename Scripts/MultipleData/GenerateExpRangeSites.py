@@ -1,10 +1,10 @@
 """
-.. module:: GenerateExpSites
+.. module:: GenerateExpRangeSites
 
 GenerateExpSites
 *************
 
-:Description: GenerateExpSites
+:Description: GenerateRangeExpSites
 
     Generates and uploads to the DB configurations using --config configuration
     it begins at file --isite and ends at section --fsite
