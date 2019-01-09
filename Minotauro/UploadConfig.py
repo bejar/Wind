@@ -25,6 +25,7 @@ from pymongo import MongoClient
 import glob
 import numpy as np
 from tqdm import tqdm
+import os
 
 __author__ = 'bejar'
 
@@ -55,27 +56,27 @@ if __name__ == '__main__':
         config = load_config_file(file, upload=True)
 
         if args.pend:
-            #print(config['_id'], config['data']['datanames'][0])
             col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
         else:
-            #if 'results' in config:
-            #    print(config['_id'], config['data']['datanames'][0], np.sum([v for _, v, _ in config['results']]))
-            #elif 'result' in config:
-            #    print(config['_id'], config['data']['datanames'][0], np.sum([v for _, v, _ in config['result']]))
-
-            col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
-
-            if 'results' in config:
-                col.update({'_id': config['_id']}, {'$set': {'result': config['results']}})
-            elif 'result' in config:
-                col.update({'_id': config['_id']}, {'$set': {'result': config['result']}})
-
-            col.update({'_id': config['_id']}, {'$set': {'etime': config['etime']}})
-            if 'btime' in config:
-                col.update({'_id': config['_id']}, {'$set': {'btime': config['btime']}})
+            exists = col.find_one({'_id': config['_id']})
+            if exists:
+                col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
+                if 'results' in config:
+                    col.update({'_id': config['_id']}, {'$set': {'result': config['results']}})
+                elif 'result' in config:
+                    col.update({'_id': config['_id']}, {'$set': {'result': config['result']}})
+                col.update({'_id': config['_id']}, {'$set': {'etime': config['etime']}})
+                if 'btime' in config:
+                    col.update({'_id': config['_id']}, {'$set': {'btime': config['btime']}})
+                else:
+                    col.update({'_id': config['_id']}, {'$set': {'btime': config['etime']}})
+                col.update({'_id': config['_id']}, {'$set': {'host': 'minotauro'}})
             else:
-                col.update({'_id': config['_id']}, {'$set': {'btime': config['etime']}})
-            col.update({'_id': config['_id']}, {'$set': {'host': 'minotauro'}})
+                config['host'] = 'minotauro'
+                config['status'] = 'done'
+                col.insert_one(config)
+
+        os.rename(file, f'done_{file}')
 
         count += 1
     print(count, 'Processed')

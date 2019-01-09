@@ -144,7 +144,7 @@ def ask_config(config):
                     else:
                         outconfig['data'][v] = [[s] for s in sites]
                 else:
-                    outconfig['data'][v] = [[f"{site // 500}-{site}-12"] for site in getinput(v, type(config['data'][v]), int)]
+                    outconfig['data'][v] = [[f"{site // 500}-{site}-12"] for site in getinput(v, int)]
             elif v == 'vars':
                 if input("Change vars (y/N)? ") not in ['y', 'yes']:
                     outconfig['data'][v] = [config['data'][v]]

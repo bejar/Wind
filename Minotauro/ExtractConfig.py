@@ -58,7 +58,6 @@ if __name__ == '__main__':
 
     lconfig = [c for c in col.find(query, limit=args.nconfig)]
     if not args.bsc:
-
         nm = strftime('%Y%m%d%H%M%S')
         spath = f"{os.getcwd()}/{nm}"
         os.mkdir(spath)

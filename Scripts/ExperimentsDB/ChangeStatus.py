@@ -51,7 +51,7 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
     if args.ostatus is not None:
-        configs = col.find({'status':args.ostatus})
+        configs = col.find({'status':args.ostatus, 'experiment':args.exp})
         for conf in tqdm(configs):
             col.update({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
     elif args.exp is not None:

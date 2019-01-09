@@ -16,9 +16,10 @@ MoveResults
 :Created on: 10/12/2018 7:13 
 
 """
-from Wind.Private.DBConfig import mongoconnection, mongolocal
+from Wind.Private.DBConfig import mongoconnection, mongolocal, mongolocaltest
 from pymongo import MongoClient
 import argparse
+
 
 __author__ = 'bejar'
 
@@ -47,3 +48,4 @@ if __name__ == '__main__':
     for conf in configs:
         conf['experiment'] = args.rexp
         collocal.insert_one(conf)
+
