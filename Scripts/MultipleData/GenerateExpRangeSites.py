@@ -55,10 +55,10 @@ if __name__ == '__main__':
 
         ids = int(time())
         for site in tqdm(range(args.isite, args.fsite + 1)):
-            config['site'] = '%d-%d' % (args.sec, site)
-            config['data']['datanames'] = ['%d-%d-%d' % (site//500, site, args.suff)]
+            config['site'] = f'{site//500}-{site}'
+            config['data']['datanames'] = [f'{site//500}-{site}-{args.suff}']
             config['status'] = 'pending'
             config['result'] = []
-            config['_id'] = "%d%06d" % (ids, site)
+            config['_id'] = f"{ids}{site}"
             col.insert_one(config)
 
