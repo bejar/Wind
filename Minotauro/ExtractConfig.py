@@ -23,7 +23,7 @@ import json
 from Wind.Private.DBConfig import mongolocaltest, mongoconnection
 from pymongo import MongoClient
 from shutil import copy
-from Wind.Config import wind_data_path, bsc_path
+from Wind.Config import wind_data_path, bsc_path, jobs_code_path, jobs_root_path
 from time import strftime
 import os
 from tqdm import tqdm
@@ -57,6 +57,8 @@ if __name__ == '__main__':
     # config = col.find_one(query)
 
     lconfig = [c for c in col.find(query, limit=args.nconfig)]
+
+    # Creates a directory with Data/Jobs/Scripts in the current path
     if not args.bsc:
         nm = strftime('%Y%m%d%H%M%S')
         spath = f"{os.getcwd()}/{nm}"
@@ -64,6 +66,7 @@ if __name__ == '__main__':
         os.mkdir(f"{spath}/Data")
         os.mkdir(f"{spath}/Jobs")
         os.mkdir(f"{spath}/Run")
+    # Copies everything to the remotely mounted BSC dir
     else:
         nm = strftime('%Y%m%d%H%M%S')
         spath = bsc_path
@@ -76,9 +79,9 @@ if __name__ == '__main__':
     if args.machine == 'mino':
         jobcontent = f"""#!/bin/bash
 # @ job_name = windjob
-# @ initialdir = /gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Experiments
-# @ output = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjobmino{nm}.out
-# @ error = /gpfs/projects/bsc28/bsc28642/Wind/Run/windjobmino{nm}.err
+# @ initialdir = {jobs_code_path}/Experiments
+# @ output = {jobs_root_path}/Run/windjobmino{nm}.out
+# @ error = {jobs_root_path}/Run/windjobmino{nm}.err
 # @ total_tasks = 1
 # @ gpus_per_node = 1
 # @ cpus_per_task = 1
@@ -86,23 +89,23 @@ if __name__ == '__main__':
 # @ wall_clock_limit = {jobtime}:00:00
 module purge
 module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
-PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
+PYTHONPATH={jobs_code_path}
 export PYTHONPATH
 
 """
     else:
         jobcontent = f"""#!/bin/bash
 #SBATCH --job-name="windjob"
-#SBATCH -D/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Experiments
-#SBATCH --output=/gpfs/projects/bsc28/bsc28642/Wind/Run/windjobpower{nm}.out
-#SBATCH --error=/gpfs/projects/bsc28/bsc28642/Wind/Run/windjobpower{nm}.err
+#SBATCH -D{jobs_code_path}/Experiments
+#SBATCH --output={jobs_root_path}/Run/windjobpower{nm}.out
+#SBATCH --error={jobs_root_path}/Run/windjobpower{nm}.err
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
 #SBATCH --time={jobtime}:00:00
 #SBATCH --gres=gpu:1
 module purge
 module load  gcc/6.4.0  cuda/9.1 cudnn/7.1.3 openmpi/3.0.0 atlas/3.10.3 scalapack/2.0.2 fftw/3.3.7 szip/2.1.1 opencv/3.4.1 python/3.6.5_ML
-PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/
+PYTHONPATH={jobs_code_path}
 export PYTHONPATH
 
 """

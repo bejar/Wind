@@ -70,7 +70,7 @@ def getinput(field, t):
     """
     ok = False
     while not ok:
-        resp = input(f"Type the list of values to use for [{field}] as a string: ")
+        resp = input(f"Type the list of values to use for [{field}] as a string (use \" for string values): ")
         res = json.loads(resp)
         if type(res) != list:
             print("It is not a list")

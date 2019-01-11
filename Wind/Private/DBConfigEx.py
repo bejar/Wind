@@ -29,6 +29,10 @@ class MongoData:
         self.col = collect
 
 
+    def __repr__(self):
+        print(self.server, self.db, self.col)
+
+
 mongoconnection = MongoData('mongodb://localhost:27017/', 'Database', 'User', 'Password',
                             'Collection')
 

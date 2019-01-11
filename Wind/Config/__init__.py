@@ -19,7 +19,8 @@ __init__.py
 
 __author__ = 'bejar'
 
-from .Paths import wind_path, wind_data_path, wind_data_ext, wind_models_path, bsc_path
+from .Paths import wind_path, wind_data_path, wind_data_ext, wind_models_path, bsc_path, wind_jobs_path, wind_res_path, \
+    jobs_root_path, jobs_code_path
 
 
-__all__ = ['wind_path', 'wind_data_path', 'wind_data_ext', 'wind_models_path', 'bsc_path']
+__all__ = ['wind_path', 'wind_data_path', 'wind_data_ext', 'wind_models_path', 'bsc_path', 'jobs_root_path', 'jobs_code_path']

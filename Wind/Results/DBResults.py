@@ -231,9 +231,12 @@ class DBResults:
                 data = np.array(exp['result'])
             elif 'results' in exp:
                 data = np.array(exp['results'])
-
+            if len(data) == 0: #Hack to avoid sites with no results
+                data = np.zeros((12,3))
             # gets the number of the site and the columns with the results
             ldata.append((int(exp['data']['datanames'][0].split('-')[1]), data[:, 1], data[:, 2]))
+        if len(ldata) == 0:
+            raise NameError('No results retrieved')
         ldata = sorted(ldata, key=lambda x: x[0])
         self.exp_result['sites'] = np.array([v[0] for v in ldata])
         self.exp_result['test'] = np.array([v[1] for v in ldata])
