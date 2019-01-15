@@ -31,7 +31,7 @@ class MLPS2SArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'MLPS2S'
-    ## Data mode 2 dimensional impur and 2 dimensional output
+    ## Data mode 2 dimensional input and 2 dimensional output
     data_mode = ('2D', '2D')  #'mlp'
 
     def generate_model(self):

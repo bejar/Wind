@@ -36,7 +36,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'CNNS2S'
-    data_mode = (False, '2D') #'cnn'
+    data_mode = ('3D', '2D') #'cnn'
 
     def generate_model(self):
         """

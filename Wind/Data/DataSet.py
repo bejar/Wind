@@ -213,6 +213,7 @@ class Dataset:
         if mode_x == '2D':
             val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1]))
             test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1]))
+        # Default is '3D'
 
         if mode_y == '3D':
             val_y = test[:half_test, -slice:, 0]
@@ -230,7 +231,7 @@ class Dataset:
         elif mode_y == '0D':
             val_y = np.ravel(test[:half_test, -1:, 0])
             test_y = np.ravel(test[half_test:, -1:, 0])
-        else:
+        else:  # Default is '1D'
             val_y = test[:half_test, -1:, 0]
             test_y = test[half_test:, -1:, 0]
 

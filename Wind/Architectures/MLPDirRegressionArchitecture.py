@@ -33,7 +33,7 @@ class MLPDirRegressionArchitecture(NNArchitecture):
     """
     modfile = None
     modname = 'MLPDir'
-    data_mode = (False, False)  # False
+    data_mode = ('3D', '1D')  # False
 
     def generate_model(self):
         """

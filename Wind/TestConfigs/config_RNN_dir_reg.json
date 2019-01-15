@@ -29,7 +29,7 @@
     "mode": "RNN_dir_reg"
   },
   "training": {
-    "iter": 1
+    "iter": 1,
     "batch": 1000,
     "epochs": 5,
     "patience": 10,

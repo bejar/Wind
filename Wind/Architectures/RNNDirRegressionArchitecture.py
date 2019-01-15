@@ -40,7 +40,7 @@ class RNNDirRegressionArchitecture(NNArchitecture):
     """
     modfile = None
     modname = 'RNNDir'
-    data_mode = (False, '1D') # False
+    data_mode = ('3D', '1D') # False
 
     def generate_model(self):
         """
