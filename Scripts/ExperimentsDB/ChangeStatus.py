@@ -37,6 +37,7 @@ if __name__ == '__main__':
     parser.add_argument('--ostatus', default=None,  help='Experiment status')
     parser.add_argument('--exp', default=None,  help='Experiment type')    
     parser.add_argument('--id', default=None, help='Experiment ID')
+    parser.add_argument('--patt', default=None, help='Section pattern')
     parser.add_argument('--nstatus', help='Experiment status', default='pending')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     args = parser.parse_args()
@@ -56,6 +57,10 @@ if __name__ == '__main__':
             col.update({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
     elif args.exp is not None:
         configs = col.find({'experiment':args.exp})
+        for conf in tqdm(configs):
+            col.update({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
+    elif args.patt is not None:
+        configs = col.find({'status':args.ostatus, 'site': {'$regex': f'^{args.patt}-.'}})
         for conf in tqdm(configs):
             col.update({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
     elif args.id is not None:

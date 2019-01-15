@@ -86,7 +86,7 @@ if __name__ == '__main__':
 # @ gpus_per_node = 1
 # @ cpus_per_task = 1
 # @ features = k80
-# @ wall_clock_limit = {jobtime}:00:00
+# @ wall_clock_limit = {jobtime}:50:00
 module purge
 module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
 PYTHONPATH={jobs_code_path}
@@ -101,7 +101,7 @@ export PYTHONPATH
 #SBATCH --error={jobs_root_path}/Run/windjobpower{nm}.err
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
-#SBATCH --time={jobtime}:00:00
+#SBATCH --time={jobtime}:50:00
 #SBATCH --gres=gpu:1
 module purge
 module load  gcc/6.4.0  cuda/9.1 cudnn/7.1.3 openmpi/3.0.0 atlas/3.10.3 scalapack/2.0.2 fftw/3.3.7 szip/2.1.1 opencv/3.4.1 python/3.6.5_ML

@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     total = 0
     for i in range(args.fr, args.to + 1):
-        configs = col.find({'experiment': args.exp, 'status': args.status, 'site': {'$regex': '^%s-.' % str(i)}})
+        configs = col.find({'experiment': args.exp, 'status': args.status, 'site': {'$regex': f'^{i}-.'}})
         count = 0
         lsites = []
         for conf in configs:

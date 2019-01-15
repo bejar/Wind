@@ -43,7 +43,7 @@ if __name__ == '__main__':
     colt = db[mongolocaltest.col]
 
 
-    configs = colt.find({'experiment': args.exp})
+    configs = colt.find({'experiment': args.exp, 'status':'done'})
 
     count = 0
     cbest = 0
@@ -53,8 +53,9 @@ if __name__ == '__main__':
 
         res = np.sum([v[1] for v in conf['result']])
         rest = np.sum([v[1] for v in conft['result']])
+        print(f"{conft['site']} {rest-res}")
         if rest>res:
-            print(f"{conft['site']} {rest-res}")
+            col.update({'_id': conf['_id']}, {'$set': {'result': conft['result']}})
             cbest +=1
-
+        colt.update({'_id': conft['_id']}, {'$set': {'status': 'copy'}})
     print(f'{cbest} of {count}')
