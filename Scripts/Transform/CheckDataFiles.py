@@ -25,7 +25,7 @@ __author__ = 'bejar'
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--cols', help='number of expected columns', type=int, default=7)
-    parser.add_argument('--sec', help='Section of files', type=int, default=0)
+    parser.add_argument('--sec', help='Pattern for the section of files', default='0')
     args = parser.parse_args()
 
     lfiles = glob.glob(f'{args.sec}-*.npy')
