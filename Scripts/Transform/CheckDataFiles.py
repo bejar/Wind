@@ -28,7 +28,7 @@ if __name__ == '__main__':
     parser.add_argument('--sec', help='Section of files', type=int, default=0)
     args = parser.parse_args()
 
-    lfiles = glob.glob('./{args.sec}-*.npy')
+    lfiles = glob.glob(f'{args.sec}-*.npy')
 
     for file in lfiles:
        data = np.load(file)
