@@ -30,7 +30,7 @@
   "training": {
     "iter":1,
     "batch": 1024,
-    "epochs": 200,
+    "epochs": 10,
     "patience": 10,
       "optimizer": "adamax",
       "loss":"wmse",
