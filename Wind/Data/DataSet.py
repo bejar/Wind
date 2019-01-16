@@ -547,7 +547,10 @@ class Dataset:
                 print(f"Dataset type= {self.dataset_type[self.config['dataset']]}")
             else:
                 print(f"Dataset type= {self.config['dataset']}")
-            print(f"Scaler= {self.config['scaler']}")
+            if 'scaler' in self.config:
+                print(f"Scaler= {self.config['scaler']}")
+            else:
+                print(f"Scaler= standard")
             if 'dmatrix' in self.config:
                 print(f"Data matrix configuration= {self.config['dmatrix']}")
             print(f"Vars= {self.config['vars']}")
