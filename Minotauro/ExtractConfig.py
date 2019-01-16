@@ -58,6 +58,9 @@ if __name__ == '__main__':
 
     lconfig = [c for c in col.find(query, limit=args.nconfig)]
 
+    if len(lconfig) == 0:
+        raise NameError('No configurations found')
+
     # Creates a directory with Data/Jobs/Scripts in the current path
     if not args.bsc:
         nm = strftime('%Y%m%d%H%M%S')
