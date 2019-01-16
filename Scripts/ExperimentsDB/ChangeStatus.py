@@ -55,12 +55,12 @@ if __name__ == '__main__':
         configs = col.find({'status':args.ostatus, 'experiment':args.exp})
         for conf in tqdm(configs):
             col.update({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
-    elif args.exp is not None:
-        configs = col.find({'experiment':args.exp})
+    elif args.patt is not None:
+        configs = col.find({'experiment':args.exp, 'site': {'$regex': f'^{args.patt}-.'}})
         for conf in tqdm(configs):
             col.update({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
-    elif args.patt is not None:
-        configs = col.find({'status':args.ostatus, 'site': {'$regex': f'^{args.patt}-.'}})
+    elif args.exp is not None:
+        configs = col.find({'experiment':args.exp})
         for conf in tqdm(configs):
             col.update({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
     elif args.id is not None:

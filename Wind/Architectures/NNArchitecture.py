@@ -21,6 +21,7 @@ from keras.models import load_model
 
 try:
    from keras.utils import plot_model
+   import pydot
 except ImportError:
    _has_pydot = False
 else:
