@@ -79,6 +79,9 @@ if __name__ == '__main__':
         ############################################
         # Data
 
+        if not 'site' in config:
+            site = config['data']['datanames'][0].split('-')
+            config['site'] = f"{site[0]}-{site[1]}"
         # try:
         print(f"Running job {config['_id']} {config['site']} {config['arch']['mode']} {strftime('%Y-%m-%d %H:%M:%S')}")
         train_process, architecture = dispatch.dispatch(config['arch']['mode'])
