@@ -49,9 +49,9 @@ def run_test(cfile):
 
 if __name__ == '__main__':
 
-    # run_test("config_CNN_s2s")
+    run_test("config_CNN_s2s")
     # run_test("config_MLP_dir_reg")
-    run_test("config_MLP_s2s")
+    # run_test("config_MLP_s2s")
     # run_test("config_MLP_s2s_rec")
     # run_test("config_persistence")
     # run_test("config_RNN_dir_reg")

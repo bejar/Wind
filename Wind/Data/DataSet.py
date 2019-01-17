@@ -510,7 +510,7 @@ class Dataset:
             slice = ahead
 
         if self.mode != '2D':
-            # The values of the future variable are dahead positions from the stars
+            # The values of the future variable are dahead positions from the start
             train_x_future = self.train_x[dahead:, -slice:, future]
             val_x_future = self.val_x[dahead:, -slice:, future]
             test_x_future = self.test_x[dahead:, -slice:, future]
@@ -521,7 +521,7 @@ class Dataset:
 
             pass
 
-        # We loose the last dahead examples because we do not have their full future in the data matrix
+        # We lose the last dahead examples because we do not have their full future in the data matrix
         return [self.train_x[:-dahead], train_x_future], self.train_y, [self.val_x[:-dahead], val_x_future], self.val_y,\
                [self.test_x[:-dahead], test_x_future], self.test_y
 
