@@ -35,7 +35,8 @@ __author__ = 'bejar'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='configregdir', help='Experiment configuration')
+    parser.add_argument('--config', default=None, required=True, help='Experiment configuration')
+    parser.add_argument('--exp', default=None, required=True, help='Experiment name')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
     parser.add_argument('--igeo', type=float, nargs=2, help='Initial lon/lat')
     parser.add_argument('--fgeo', type=float, nargs=2, help='Final lon/lat')
@@ -83,6 +84,7 @@ if __name__ == '__main__':
             config['site'] = f"{site // 500}-{site}"
             config['data']['datanames'] = [f"{site // 500}-{site}-{args.suff}"]
             config['status'] = 'pending'
+            config['experiment'] = args.exp
             config['result'] = []
             config['_id'] = f"{ids}{site:06d}"
             col.insert_one(config)

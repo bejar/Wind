@@ -29,17 +29,22 @@ from tqdm import tqdm
 
 __author__ = 'bejar'
 
+# sections 0-253
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='configbatchregdir', help='Experiment configuration')
+    parser.add_argument('--config', default=None, required=True, help='Experiment configuration')
+    parser.add_argument('--exp', default=None, required=True, help='Experiment name')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
-    parser.add_argument('--isec', type=int, help='Initial section')
-    parser.add_argument('--fsec', type=int, help='Final section')
+    parser.add_argument('--isec', type=int, required=True, help='Initial section')
+    parser.add_argument('--fsec', type=int, required=True, help='Final section')
     parser.add_argument('--suff', type=int, default=12, help='Datafile suffix')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
 
     args = parser.parse_args()
+
+    if args.fsec > 253 or args.isec > 253 :
+        raise NameError("The numer of sections can not be larger than 253")
 
     config = load_config_file(args.config)
     if args.test:
@@ -60,6 +65,7 @@ if __name__ == '__main__':
                 config['site'] = f"{sec}-{site}"
                 config['data']['datanames'] = [f"{sec}-{site}-{args.suff}"]
                 config['status'] = 'pending'
+                config['experiment'] = args.exp
                 config['result'] = []
                 config['_id'] = f"{ids}{site:06d}"
                 col.insert_one(config)
