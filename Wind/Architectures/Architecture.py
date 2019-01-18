@@ -123,9 +123,14 @@ class Architecture:
         """
         if self.runconfig.info:
             self.summary()
-
+        sr2val = 0.0
+        sr2test = 0.0
         for i, r2val, r2test in result:
+            sr2val += r2val
+            sr2test += r2test
             print(f"{self.config['arch']['mode']} | AH={i} R2V = {r2val:3.5f} R2T = {r2test:3.5f}")
+        print(f"{self.config['arch']['mode']} | AH=TT R2V = {sr2val:3.5f} R2T = {sr2test:3.5f}")
+
 
     def save(self, postfix):
         """
