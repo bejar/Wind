@@ -70,9 +70,11 @@ if __name__ == '__main__':
                     col.update({'_id': config['_id']}, {'$set': {'btime': config['btime']}})
                 else:
                     col.update({'_id': config['_id']}, {'$set': {'btime': config['etime']}})
-                col.update({'_id': config['_id']}, {'$set': {'host': 'minotauro'}})
+                if not 'host' in config:
+                    col.update({'_id': config['_id']}, {'$set': {'host': 'minotauro'}})
             else:
-                config['host'] = 'minotauro'
+                if not 'host' in config:
+                    config['host'] = 'minotauro'
                 config['status'] = 'done'
                 col.insert_one(config)
 

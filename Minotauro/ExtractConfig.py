@@ -123,6 +123,7 @@ export PYTHONPATH
     if len(lconfig) > 0:
         for config in tqdm(lconfig):
             # print(config['_id'])
+            config['host'] = args.machine
             sconf = json.dumps(config)
             fconf = open(f"{spath}/Jobs/{config['_id']}.json", 'w')
             fconf.write(sconf + '\n')

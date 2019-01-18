@@ -32,6 +32,7 @@ __author__ = 'bejar'
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--exp', default='convos2s',  help='Experiment Type')
+    parser.add_argument('--status', default=None,  help='Experiment Status')
     parser.add_argument('--noupdate', action='store_true', default=False, help='copy files')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
 
@@ -45,12 +46,15 @@ if __name__ == '__main__':
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    configs = col.find({'experiment': args.exp})
+    if args.status is None:
+        configs = col.find({'experiment': args.exp})
+    else:
+        configs = col.find({'experiment': args.exp, 'status':args.status})
 
     count = 0
     for conf in configs:
         if not args.noupdate:
-            col.update({'_id': conf['_id']}, {'$set': {'data.vars': [0,1,2,3,4,5,6]}})
+            col.update({'_id': conf['_id']}, {'$set': {'experiment': 'rnns2sfit2'}})
         count += 1
 
     print(f'{count} Experiments changed')
