@@ -445,6 +445,8 @@ class Dataset:
             return self.teacher_forcing()
         elif self.config['dmatrix'] == 'dep_aux':
             return self.dependent_auxiliary()
+        elif self.config['dmatrix'] == 'future':
+            return self.dependent_auxiliary()
         else:
             raise NameError("DataSet: No such dmatrix type")
 
