@@ -74,7 +74,7 @@ if __name__ == '__main__':
         nm = strftime('%Y%m%d%H%M%S')
         spath = bsc_path
 
-    jobtime = (args.nconfig // args.jph) + 1
+    jobtime = (len(lconfig) // args.jph) + 1
 
     if jobtime > 47:
         raise NameError(f"{jobtime} is longer than the 48 hours limit, reduce number of configs")
@@ -103,7 +103,7 @@ export PYTHONPATH
 #SBATCH --output={jobs_root_path}/Run/windjobpower{nm}.out
 #SBATCH --error={jobs_root_path}/Run/windjobpower{nm}.err
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=2
+#SBATCH --cpus-per-task=1
 #SBATCH --time={jobtime}:50:00
 #SBATCH --gres=gpu:1
 module purge
@@ -135,7 +135,8 @@ export PYTHONPATH
                     f"python WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
             else:
                 batchjob.write(
-                    f"mpirun python WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
+                    f"python3 WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
+                    #f"mpirun python WindExperimentBatch.py --best --early --gpu --gpulog --mino --config {config['_id']}\n")
 
             col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
         batchjob.close()

@@ -60,12 +60,13 @@ if __name__ == '__main__':
         col = db[mongoconnection.col]
 
         ids = int(time())
-        for site in tqdm(range(args.isite, args.fsite + 1)):
-            config['site'] = f'{site//500}-{site}'
+        for i, site in tqdm((enumerate(range(args.isite, args.fsite + 1))):
             config['data']['datanames'] = [f'{site//500}-{site}-{args.suff}']
+            site = config['data']['datanames'][0].split('-')
+            config['site'] = '-'.join(site[:2])
             config['status'] = 'pending'
             config['experiment'] = args.exp
             config['result'] = []
-            config['_id'] = f"{ids}{site}"
+            config['_id'] = f"{ids}{i:05d}{int(site[1]):06d}"
             col.insert_one(config)
 

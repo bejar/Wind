@@ -62,10 +62,11 @@ if __name__ == '__main__':
         ids = int(time())
         for i, sec in tqdm(enumerate(range(args.isec, args.fsec + 1))):
             for site in range(i * 500, (i + 1) * 500):
-                config['site'] = f"{sec}-{site}"
                 config['data']['datanames'] = [f"{sec}-{site}-{args.suff}"]
+                site = config['data']['datanames'][0].split('-')
+                config['site'] = '-'.join(site[:2])
                 config['status'] = 'pending'
                 config['experiment'] = args.exp
                 config['result'] = []
-                config['_id'] = f"{ids}{site:06d}"
+                config['_id'] = f"{ids}{i:05d}{int(site[1]):06d}"
                 col.insert_one(config)
