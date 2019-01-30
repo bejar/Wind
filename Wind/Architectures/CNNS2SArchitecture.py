@@ -53,10 +53,10 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             "rec_reg": "None",
             "rec_regw": 0.1,
             "drop": 0,
-            "nlayers": 1,
             "activation": "relu",
-            "activationfl": "linear",
+            "activation_full": "linear",
             "full": [16,8],
+            "fulldrop": 0,
             "mode":"CNN_s2s"
         }
 
@@ -66,7 +66,8 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         filters = self.config['arch']['filters']
         kernel_size = self.config['arch']['kernel_size']
         strides = self.config['arch']['strides']
-        activationfl = self.config['arch']['activationfl']
+        activationfl = self.config['arch']['activation_full']
+        fulldrop = self.config['arch']['fulldrop']
         full_layers = self.config['arch']['full']
 
         activation = self.config['arch']['activation']
@@ -104,6 +105,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         self.model.add(Flatten())
         for l in full_layers:
             self.model.add(Dense(l, activation=activationfl))
+            self.model.add(Dropout(rate=fulldrop))
 
         self.model.add(Dense(odimensions, activation='linear'))
 

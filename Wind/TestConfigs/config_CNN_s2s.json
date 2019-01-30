@@ -8,7 +8,7 @@
     "datasize": 43834,
     "testsize": 17534,
     "dataset": "onesitemanyvar",
-    "lag": 18,
+    "lag": 12,
     "ahead": [1,12]
   },
   "arch": {
@@ -20,16 +20,16 @@
     "rec_reg": "None",
     "rec_regw": 0.1,
       "drop": 0,
-      "nlayers": 1,
       "activation": "relu",
-      "activationfl": "linear",
+      "activation_full": "linear",
+      "fulldrop": 0,
       "full": [16,8],
       "mode":"CNN_s2s"
   },
   "training": {
     "iter": 1,
     "batch": 1024,
-      "epochs": 5,
+      "epochs": 200,
       "patience":10,
       "optimizer": "adamax",
     "lrate": 0.001

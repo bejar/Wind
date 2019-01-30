@@ -24,7 +24,7 @@
     "bidirectional": false,
     "bimerge":"ave",
     "rnn": "GRU",
-    "full": [64, 32],
+    "full": [512],
     "activation_full": "sigmoid",
     "fulldrop": 0.05,
     "mode": "RNN_s2s"

@@ -27,6 +27,7 @@ from Wind.Config import wind_data_path, bsc_path, jobs_code_path, jobs_root_path
 from time import strftime
 import os
 from tqdm import tqdm
+import numpy as np
 
 __author__ = 'bejar'
 
@@ -42,6 +43,7 @@ if __name__ == '__main__':
     parser.add_argument('--machine', default='mino', help='Machine the scripts are for')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     parser.add_argument('--bsc', action='store_true', default=False, help='Copy to bsc path directly')
+    parser.add_argument('--rand', action='store_true', default=False, help='Add some randomness to the selection of sites')
 
     args = parser.parse_args()
 
@@ -56,7 +58,11 @@ if __name__ == '__main__':
     query = {'status': 'pending', 'experiment': args.exp}
     # config = col.find_one(query)
 
-    lconfig = [c for c in col.find(query, limit=args.nconfig)]
+    if args.rand:
+        lsel = [c for c in col.find(query, limit=args.nconfig*20)]
+        lconfig = [c for c in np.random.choice(lsel, args.nconfig, replace=False)]
+    else:
+        lconfig = [c for c in col.find(query, limit=args.nconfig)]
 
     if len(lconfig) == 0:
         raise NameError('No configurations found')
@@ -106,6 +112,7 @@ export PYTHONPATH
 #SBATCH --cpus-per-task=1
 #SBATCH --time={jobtime}:50:00
 #SBATCH --gres=gpu:1
+#SBATCH --reservation=test-rhel-7.5
 module purge
 module load  gcc/6.4.0  cuda/9.1 cudnn/7.1.3 openmpi/3.0.0 atlas/3.10.3 scalapack/2.0.2 fftw/3.3.7 szip/2.1.1 opencv/3.4.1 python/3.6.5_ML
 PYTHONPATH={jobs_code_path}
