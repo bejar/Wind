@@ -24,7 +24,7 @@ from Wind.Train.TrainingProcess import train_dirregression, train_persistence, t
 from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArchitecture, \
     PersistenceArchitecture, RNNEncoderDecoderS2SArchitecture, MLPS2SArchitecture, MLPDirRegressionArchitecture, \
     CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture, MLPS2SRecursiveArchitecture, \
-    RNNEncoderDecoderS2SDepArchitecture, KNNDirRegressionArchitecture
+    RNNEncoderDecoderS2SDepArchitecture, KNNDirRegressionArchitecture, PersistenceMeanArchitecture
 
 class TrainDispatch:
 
@@ -38,6 +38,7 @@ class TrainDispatch:
         """
 
         self.model_dict['persistence'] = (train_persistence, PersistenceArchitecture)
+        self.model_dict['persistencemean'] = (train_persistence, PersistenceMeanArchitecture)
 
         # Scikit learn models
         self.model_dict['KNN_dir_reg'] = (train_sckit_dirregression, KNNDirRegressionArchitecture)

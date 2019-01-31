@@ -60,7 +60,7 @@ if __name__ == '__main__':
         col = db[mongoconnection.col]
 
         ids = int(time())
-        for i, site in tqdm((enumerate(range(args.isite, args.fsite + 1))):
+        for i, site in tqdm(enumerate(range(args.isite, args.fsite + 1))):
             config['data']['datanames'] = [f'{site//500}-{site}-{args.suff}']
             site = config['data']['datanames'][0].split('-')
             config['site'] = '-'.join(site[:2])

@@ -60,7 +60,10 @@ if __name__ == '__main__':
 
     if args.rand:
         lsel = [c for c in col.find(query, limit=args.nconfig*20)]
-        lconfig = [c for c in np.random.choice(lsel, args.nconfig, replace=False)]
+        if len(lsel)> args.nconfig:
+           lconfig = [c for c in np.random.choice(lsel, args.nconfig, replace=False)]
+        else:
+           lconfig = lsel
     else:
         lconfig = [c for c in col.find(query, limit=args.nconfig)]
 

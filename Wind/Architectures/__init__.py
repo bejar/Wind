@@ -23,6 +23,7 @@ from .NNS2SArchitecture import NNS2SArchitecture
 from .SCKArchitecture import SCKArchitecture
 
 from .PersistenceArchitecture import PersistenceArchitecture
+from .PersistenceMeanArchitecture import PersistenceMeanArchitecture
 
 from .SVMDirRegressionArchitecture import SVMDirRegressionArchitecture
 from .KNNDirRegressionArchitecture import KNNDirRegressionArchitecture
@@ -46,6 +47,7 @@ __all__ = ['Architecture',
            'SVMDirRegressionArchitecture',
            'RNNEncoderDecoderS2SArchitecture',
            'PersistenceArchitecture',
+           'PersistenceMeanArchitecture',
            'MLPS2SArchitecture',
            'MLPDirRegressionArchitecture',
            'CNNS2SArchitecture',

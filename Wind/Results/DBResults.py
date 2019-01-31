@@ -224,6 +224,7 @@ class DBResults:
         self.query = query
 
         lexp = self.col.find(query)
+
         ldata = []
         for exp in lexp:
             # To maintain backwards compatibility
@@ -236,7 +237,7 @@ class DBResults:
             # gets the number of the site and the columns with the results
             ldata.append((int(exp['data']['datanames'][0].split('-')[1]), data[:, 1], data[:, 2]))
         if len(ldata) == 0:
-            raise NameError('No results retrieved')
+            raise NameError('No results retrieved with query')
         ldata = sorted(ldata, key=lambda x: x[0])
         self.exp_result['sites'] = np.array([v[0] for v in ldata])
         self.exp_result['test'] = np.array([v[1] for v in ldata])
@@ -255,6 +256,8 @@ class DBResults:
         # Result 1
         self.query = query1
         lexp = self.col.find(query1)
+
+
         ldata = []
         for exp in lexp:
             # To maintain backwards compatibility
@@ -265,6 +268,9 @@ class DBResults:
 
             # gets the number of the site and the columns with the results
             ldata.append((int(exp['data']['datanames'][0].split('-')[1]), data[:, 1], data[:, 2]))
+        if len(ldata) == 0:
+            raise NameError('No results retrieved with first query')
+
         ldata = sorted(ldata, key=lambda x: x[0])
         self.exp_result['sites'] = np.array([v[0] for v in ldata])
         self.exp_result['test'] = np.array([v[1] for v in ldata])
@@ -275,6 +281,7 @@ class DBResults:
         # Result 2
         self.query2 = query2
         lexp = self.col.find(query2)
+
         ldata = []
         for exp in lexp:
             # To maintain backwards compatibility
@@ -286,6 +293,8 @@ class DBResults:
             # gets the number of the site and the columns with the results
             ldata.append((int(exp['data']['datanames'][0].split('-')[1]), data[:, 1], data[:, 2]))
 
+        if len(ldata) == 0:
+            raise NameError('No results retrieved with second query')
         ldata = sorted(ldata, key=lambda x: x[0])
         # Check that all the sites in one result set are in the other
         s1 = set(self.exp_result['sites'])
@@ -341,9 +350,6 @@ class DBResults:
                     ddata[var].append(val)
 
         self.exp_df = pd.DataFrame(ddata)
-
-
-
 
     def size(self):
         """
@@ -734,13 +740,13 @@ class DBResults:
 
             for i in range(self.exp_result['test'].shape[1]):
                 data = np.append(data, self.exp_result['test'][self.selection, i])
-                hour = np.append(hour, np.array([i]*len(self.selection)))
+                hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
                 exp = np.append(exp, np.array(['test']*len(self.selection)))
 
         if 'val' in dset:
             for i in range(self.exp_result['validation'].shape[1]):
                 data = np.append(data, self.exp_result['validation'][self.selection, i])
-                hour = np.append(hour, np.array([i]*len(self.selection)))
+                hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
                 exp = np.append(exp, np.array(['val']*len(self.selection)))
 
         df = pd.DataFrame({'hour':hour, 'acc':data, title:exp})
@@ -748,6 +754,53 @@ class DBResults:
         sns.boxplot(x='hour', y='acc', hue=title,data=df)
 
         plt.show()
+
+    def plot_hours_boxplot_compare(self, dset=('val', 'test'), figsize=(16, 4)):
+        """
+        Plots the accuracy for each hour in a boxplot
+
+        :return:
+        """
+        if not self.exp_result or not self.exp_result2:
+            raise NameError("No results yet retrieved")
+        if 'experiment' in self.query:
+            title = self.query['experiment'] + '-vs-' + self.query2['experiment']
+        else:
+            title = 'NonSpecific'
+
+
+        data = np.array([])
+        hour = np.array([])
+        exp = np.array([])
+        if 'test' in dset:
+
+            for i in range(self.exp_result['test'].shape[1]):
+                data = np.append(data, self.exp_result['test'][self.selection, i])
+                hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
+                exp = np.append(exp, np.array(['test-'+self.query['experiment']]*len(self.selection)))
+
+            for i in range(self.exp_result2['test'].shape[1]):
+                data = np.append(data, self.exp_result2['test'][self.selection, i])
+                hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
+                exp = np.append(exp, np.array(['test-'+self.query2['experiment']]*len(self.selection)))
+
+        if 'val' in dset:
+            for i in range(self.exp_result['validation'].shape[1]):
+                data = np.append(data, self.exp_result['validation'][self.selection, i])
+                hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
+                exp = np.append(exp, np.array(['val-'+self.query['experiment']]*len(self.selection)))
+
+            for i in range(self.exp_result2['validation'].shape[1]):
+                data = np.append(data, self.exp_result2['validation'][self.selection, i])
+                hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
+                exp = np.append(exp, np.array(['val-'+self.query2['experiment']]*len(self.selection)))
+
+        df = pd.DataFrame({'hour':hour, 'acc':data, title:exp})
+        plt.figure(figsize=figsize, dpi=100)
+        sns.boxplot(x='hour', y='acc', hue=title,data=df)
+
+        plt.show()
+
 
     def plot_2DKDEplot(self, summary='sum', notebook=False, dset=('val', 'test'), figsize=(800, 400)):
         """

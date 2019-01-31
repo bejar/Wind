@@ -27,7 +27,7 @@ class PersistenceArchitecture(Architecture):
 
     """
     ## Data mode default for input, 1 dimensional output
-    data_mode = (False, '1D')
+    data_mode = ('2D', '1D')
 
     def generate_model(self):
         """
