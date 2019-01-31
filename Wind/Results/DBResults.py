@@ -357,7 +357,7 @@ class DBResults:
 
         :return:
         """
-        if not self.exp_result and not self.exp_df:
+        if not self.exp_result and (self.exp_df is None):
             raise NameError("No results yet retrieved")
 
         if self.exp_result:
