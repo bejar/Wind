@@ -29,6 +29,7 @@ class PersistenceMeanArchitecture(Architecture):
     """
     ## Data mode default for input, 1 dimensional output
     data_mode = ('2D', '1D')
+    mean = None
 
     def generate_model(self):
         """
@@ -52,7 +53,7 @@ class PersistenceMeanArchitecture(Architecture):
         Model summary
         :return:
         """
-        print("Persitence")
+        print("PersitenceMean")
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         """
@@ -60,11 +61,10 @@ class PersistenceMeanArchitecture(Architecture):
         :return:
         """
 
-
         alpha = self.config['arch']['alpha']
 
         r2val = r2_score((val_x[:, -1]*alpha) + ((1-alpha) * np.mean(val_x,axis=1)), val_y[:, 0])
-        r2test = r2_score((test_x[:, -1]*alpha) + (1-alpha) * np.mean(test_x,axis=1), test_y[:, 0])
+        r2test = r2_score((test_x[:, -1]*alpha) + ((1-alpha) * np.mean(test_x,axis=1)), test_y[:, 0])
 
         return r2val, r2test
 
