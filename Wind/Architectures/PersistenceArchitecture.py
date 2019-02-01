@@ -27,7 +27,7 @@ class PersistenceArchitecture(Architecture):
 
     """
     ## Data mode default for input, 1 dimensional output
-    data_mode = ('2D', '1D')
+    data_mode = ('2D', '2D')
 
     def generate_model(self):
         """
@@ -57,9 +57,25 @@ class PersistenceArchitecture(Architecture):
         Evaluates the training
         :return:
         """
-        r2val = r2_score(val_x[:, -1], val_y[:, 0])
-        r2test = r2_score(test_x[:, -1], test_y[:, 0])
 
-        return r2val, r2test
+        if type(self.config['data']['ahead']) == list:
+            ahead = self.config['data']['ahead'][1]
+        else:
+            ahead = self.config['data']['ahead']
+
+        lresults = []
+        for i in range(1, ahead + 1):
+            lresults.append((i,
+                             r2_score(val_x[:, -1] , val_y[:, i - 1]),
+                             r2_score(test_x[:, -1] , test_y[:, i - 1])
+                             ))
+
+        return lresults
+
+        #
+        # r2val = r2_score(val_x[:, -1], val_y[:, 0])
+        # r2test = r2_score(test_x[:, -1], test_y[:, 0])
+        #
+        # return r2val, r2test
 
 

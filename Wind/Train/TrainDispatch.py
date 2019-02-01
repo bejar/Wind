@@ -37,8 +37,8 @@ class TrainDispatch:
         Keep the old model names for now, but deprecate them in the near future
         """
 
-        self.model_dict['persistence'] = (train_persistence, PersistenceArchitecture)
-        self.model_dict['persistencemean'] = (train_persistence, PersistenceMeanArchitecture)
+        self.model_dict['persistence'] = (train_sequence2sequence, PersistenceArchitecture)
+        self.model_dict['persistencemean'] = (train_sequence2sequence, PersistenceMeanArchitecture)
 
         # Scikit learn models
         self.model_dict['KNN_dir_reg'] = (train_sckit_dirregression, KNNDirRegressionArchitecture)

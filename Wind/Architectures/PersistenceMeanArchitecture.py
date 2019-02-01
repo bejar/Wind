@@ -24,11 +24,11 @@ __author__ = 'bejar'
 
 
 class PersistenceMeanArchitecture(Architecture):
-    """Class for persistence model
+    """Class for persistence model plus the mean
 
-    """
+     """
     ## Data mode default for input, 1 dimensional output
-    data_mode = ('2D', '1D')
+    data_mode = ('2D', '2D')
     mean = None
 
     def generate_model(self):
@@ -37,8 +37,9 @@ class PersistenceMeanArchitecture(Architecture):
 
         :return:
         """
-        if not (0<=self.config['arch']['alpha']<=1):
-            raise NameError(f"Alpha parameter value {self.config['arch']['alpha']} not valid")
+        for v in self.config['arch']['alpha']:
+            if not (0 <= v <= 1):
+                raise NameError(f"Alpha parameter value {self.config['arch']['alpha']} not valid")
 
     def train(self, train_x, train_y, val_x, val_y):
         """
@@ -62,10 +63,21 @@ class PersistenceMeanArchitecture(Architecture):
         """
 
         alpha = self.config['arch']['alpha']
+        if len(alpha) < val_y.shape[1]:
+            alpha.extend([alpha[-1]] * (val_y.shape[1] - len(alpha)))
 
-        r2val = r2_score((val_x[:, -1]*alpha) + ((1-alpha) * np.mean(val_x,axis=1)), val_y[:, 0])
-        r2test = r2_score((test_x[:, -1]*alpha) + ((1-alpha) * np.mean(test_x,axis=1)), test_y[:, 0])
+        if type(self.config['data']['ahead']) == list:
+            ahead = self.config['data']['ahead'][1]
+        else:
+            ahead = self.config['data']['ahead']
 
-        return r2val, r2test
+        lresults = []
+        for a, i in zip(alpha, range(1, ahead + 1)):
+            lresults.append((i,
+                             r2_score((val_x[:, -1] * a) + ((1 - a) * np.mean(val_x, axis=1)), val_y[:, i - 1]),
+                             r2_score((test_x[:, -1] * a) + ((1 - a) * np.mean(test_x, axis=1)), test_y[:, i - 1])
+                             ))
+
+        return lresults
 
 
