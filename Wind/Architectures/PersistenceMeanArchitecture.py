@@ -29,7 +29,7 @@ class PersistenceMeanArchitecture(Architecture):
      """
     ## Data mode default for input, 1 dimensional output
     data_mode = ('2D', '2D')
-    mean = None
+    modname = 'PersistenceMean'
 
     def generate_model(self):
         """
@@ -49,12 +49,12 @@ class PersistenceMeanArchitecture(Architecture):
         """
         pass
 
-    def summary(self):
-        """
-        Model summary
-        :return:
-        """
-        print("PersitenceMean")
+    # def summary(self):
+    #     """
+    #     Model summary
+    #     :return:
+    #     """
+    #     print("PersitenceMean")
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         """

@@ -28,7 +28,7 @@ class PersistenceArchitecture(Architecture):
     """
     ## Data mode default for input, 1 dimensional output
     data_mode = ('2D', '2D')
-
+    modname = 'Persistence'
     def generate_model(self):
         """
         Generates the model
@@ -45,12 +45,12 @@ class PersistenceArchitecture(Architecture):
         """
         pass
 
-    def summary(self):
-        """
-        Model summary
-        :return:
-        """
-        print("Persitence")
+    # def summary(self):
+    #     """
+    #     Model summary
+    #     :return:
+    #     """
+    #     print("Persitence")
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         """
