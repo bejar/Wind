@@ -8,7 +8,7 @@
     "datasize": 43834,
     "testsize": 17534,
     "dataset": "onesitemanyvar",
-    "lag": 12,
+    "lag": 18,
     "ahead": [1,12]
   },
   "arch": {
@@ -19,11 +19,11 @@
       "k_regw": 0.1,
       "rec_reg": "None",
       "rec_regw": 0.1,
-      "drop": 0.0,
+      "drop": 0.2,
       "activation": "relu",
       "activation_full": "linear",
       "fulldrop": 0.0,
-      "full": [128],
+      "full": [32],
       "mode":"CNN_s2s"
   },
   "training": {

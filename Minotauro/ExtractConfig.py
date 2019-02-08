@@ -112,7 +112,7 @@ export PYTHONPATH
 #SBATCH --output={jobs_root_path}/Run/windjobpower{nm}.out
 #SBATCH --error={jobs_root_path}/Run/windjobpower{nm}.err
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=40
 #SBATCH --time={jobtime}:50:00
 #SBATCH --gres=gpu:1
 module purge

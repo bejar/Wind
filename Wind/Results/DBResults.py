@@ -600,7 +600,7 @@ class DBResults:
                             f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
                             )
 
-    def plot_distplot(self, summary='sum', notebook=False, dset=('val', 'test'), figsize=(800, 400)):
+    def plot_distplot(self, summary='sum', seaborn=True, notebook=False, dset=('val', 'test'), figsize=(800, 400)):
         """
         Generates a distplot of the results
 
@@ -640,15 +640,23 @@ class DBResults:
             data.append(np.append(sumval, extra))
             labels.append('val')
 
-        fig = ff.create_distplot(data, labels, bin_size=.05)
-        fig.layout.width = figsize[0]
-        fig.layout.height = figsize[1]
-        if notebook:
-            py.iplot(fig)
-        else:
-            py.iplot(fig, filename=f"./{title}-distplot.html")
 
-    def plot_distplot_compare(self, summary='sum', compare='diff', notebook=False, dset=('val', 'test'),
+        if seaborn:
+            plt.figure(figsize=figsize)
+            for v,l in zip(data, labels):
+                sns.distplot(v, label=l, kde=True, norm_hist=True)
+                plt.legend(labels=labels, title=title)
+        else:
+            fig = ff.create_distplot(data, labels, bin_size=.05)
+            fig.layout.width = figsize[0]
+            fig.layout.height = figsize[1]
+
+            if notebook:
+                py.iplot(fig)
+            else:
+                py.iplot(fig, filename=f"./{title}-distplot.html")
+
+    def plot_distplot_compare(self, summary='sum', compare='diff', seaborn=True, notebook=False, dset=('val', 'test'),
                               figsize=(800, 400)):
         """
         Generates a distplot for the comparison of the results results
@@ -712,13 +720,19 @@ class DBResults:
                 labels.append('val ' + self.query['experiment'])
                 labels.append('val ' + self.query2['experiment'])
 
-        fig = ff.create_distplot(data, labels, bin_size=.05)
-        fig.layout.width = figsize[0]
-        fig.layout.height = figsize[1]
-        if notebook:
-            py.iplot(fig)
+        if seaborn:
+            plt.figure(figsize=figsize)
+            for v,l in zip(data, labels):
+                sns.distplot(v, label=l, kde=True, norm_hist=True)
+                plt.legend(labels=labels, title=title)
         else:
-            py.iplot(fig, filename=f"./{title}-distplot.html")
+            fig = ff.create_distplot(data, labels, bin_size=.05)
+            fig.layout.width = figsize[0]
+            fig.layout.height = figsize[1]
+            if notebook:
+                py.iplot(fig)
+            else:
+                py.iplot(fig, filename=f"./{title}-distplot.html")
 
     def plot_hours_boxplot(self, dset=('val', 'test'), figsize=(8, 4)):
         """

@@ -27,7 +27,7 @@ __author__ = 'bejar'
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--exp', help='Experiment type', default='convos2s')
-    parser.add_argument('--rexp', help='Experiment status', default=None)
+    parser.add_argument('--rexp', help='Rename Experiment', default=None)
     parser.add_argument('--ptt', action='store_true', default=False, help='Move production to test')
     args = parser.parse_args()
 
