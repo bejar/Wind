@@ -167,20 +167,20 @@ class RNNS2SArchitecture(NNS2SArchitecture):
                                        recurrent_regularizer=rec_regularizer,
                                        kernel_regularizer=k_regularizer))
 
-                if bidir:
-                    self.model.add(Bidirectional(RNN(neurons,
-                                                   implementation=impl,return_sequences=True,
-                                                   recurrent_dropout=drop, activation=activation,
-                                                   recurrent_activation=activation_r,
-                                                   recurrent_regularizer=rec_regularizer,
-                                                   kernel_regularizer=k_regularizer), merge_mode=bimerge))
-                else:
-                    self.model.add(RNN(neurons,
-                                       implementation=impl,return_sequences=True,
-                                       recurrent_dropout=drop, activation=activation,
-                                       recurrent_activation=activation_r,
-                                       recurrent_regularizer=rec_regularizer,
-                                       kernel_regularizer=k_regularizer))
+            if bidir:
+                self.model.add(Bidirectional(RNN(neurons,
+                                               implementation=impl,return_sequences=True,
+                                               recurrent_dropout=drop, activation=activation,
+                                               recurrent_activation=activation_r,
+                                               recurrent_regularizer=rec_regularizer,
+                                               kernel_regularizer=k_regularizer), merge_mode=bimerge))
+            else:
+                self.model.add(RNN(neurons,
+                                   implementation=impl,return_sequences=True,
+                                   recurrent_dropout=drop, activation=activation,
+                                   recurrent_activation=activation_r,
+                                   recurrent_regularizer=rec_regularizer,
+                                   kernel_regularizer=k_regularizer))
 
 
         self.model.add(Flatten())
