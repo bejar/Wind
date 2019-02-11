@@ -94,6 +94,8 @@ class RNNS2SArchitecture(NNS2SArchitecture):
         full = self.config['arch']['full']
         fulldrop = self.config['arch']['fulldrop']
         activation_full = self.config['arch']['activation_full']
+        bidir = self.config['arch']['bidirectional']
+        bimerge = self.config['arch']['bimerge']
 
         # Extra added from training function
         idimensions = self.config['idimensions']
@@ -114,8 +116,7 @@ class RNNS2SArchitecture(NNS2SArchitecture):
         else:
             k_regularizer = None
 
-        bidir = self.config['bidirectional']
-        bimerge = self.config['bimerge']
+
 
         RNN = LSTM if rnntype == 'LSTM' else GRU
         self.model = Sequential()
