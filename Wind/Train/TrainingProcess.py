@@ -288,7 +288,7 @@ def train_sequence2sequence(architecture, config, runconfig):
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
-        arch.save('-A%d-%d-R%02d' % (ahead[0], ahead[1], iter))
+        arch.save(f'-{ahead[0]}-{ahead[1]}-R{iter}')
 
     arch.log_result(lresults)
 

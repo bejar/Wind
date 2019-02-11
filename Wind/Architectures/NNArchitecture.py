@@ -74,7 +74,7 @@ class NNArchitecture(Architecture):
             cbacks.append(tensorboard)
 
         if self.runconfig.best:
-            self.modfile = f"./model{int(time()*100)}-{self.config['data']['datanames'][0]}.h5"
+            self.modfile = f"./model{int(time()*100)}-{self.config['data']['datanames'][0]}"
             mcheck = ModelCheckpoint(filepath=self.modfile, monitor='val_loss', verbose=0, save_best_only=True,
                                      save_weights_only=False, mode='auto', period=1)
             cbacks.append(mcheck)
@@ -147,7 +147,7 @@ class NNArchitecture(Architecture):
         if not self.runconfig.save:# or not self.runconfig.best):
             try:
                 os.remove(self.modfile)
-            except OSError:
+            except Exception:
                 pass
         else:
             os.rename(self.modfile, 'model%s-S%s%s.h5' % (self.modname, self.config['data']['datanames'][0], postfix))
