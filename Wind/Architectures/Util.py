@@ -16,6 +16,7 @@ Util
 :Created on: 03/12/2018 11:43 
 
 """
+from keras.layers import Bidirectional
 
 __author__ = 'bejar'
 
@@ -68,3 +69,49 @@ def recurrent_decoder_functional(RNN, nlayers, neurons, impl, drop, activation, 
                       kernel_regularizer=k_regularizer)(decoder)
 
     return decoder
+
+
+def recurrent_layer(rnntype, neurons, input_shape, impl,return_sequences, drop, activation,
+                    activation_r, rec_regularizer, k_regularizer, bidir, bimerge):
+    """
+    Returns an recurrent layer with the given parameters
+
+    :param rnntype:
+    :param neurons:
+    :param input_shape:
+    :param implementation:
+    :param return_sequences:
+    :param recurrent_dropout:
+    :param activation:
+    :param recurrent_activation:
+    :param recurrent_regularizer:
+    :param kernel_regularizer:
+    :param bidir:
+    :param bimerge:
+    :return:
+    """
+
+
+    if bidir:
+        return Bidirectional(
+                   rnntype(neurons,
+                           input_shape=input_shape,
+                           implementation=impl,
+                           return_sequences=return_sequences,
+                           recurrent_dropout=drop,
+                           activation=activation,
+                           recurrent_activation=activation_r,
+                           recurrent_regularizer=rec_regularizer,
+                           kernel_regularizer=k_regularizer),
+                merge_mode=bimerge
+                )
+    else:
+        return rnntype(neurons,
+                       input_shape=input_shape,
+                       implementation=impl,
+                       return_sequences=return_sequences,
+                       recurrent_dropout=drop,
+                       activation=activation,
+                       recurrent_activation=activation_r,
+                       recurrent_regularizer=rec_regularizer,
+                       kernel_regularizer=k_regularizer)

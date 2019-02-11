@@ -21,7 +21,7 @@
     "activation": "relu",
     "activation_r": "hard_sigmoid",
     "CuDNN": false,
-    "bidirectional": false,
+    "bidirectional": true,
     "bimerge":"ave",
     "rnn": "GRU",
     "full": [512],

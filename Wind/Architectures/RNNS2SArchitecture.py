@@ -17,6 +17,7 @@ RNNS2SArchitecture
 """
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind.Architectures.Util import recurrent_layer
 from keras.models import Sequential, load_model
 from keras.layers import LSTM, GRU, Dense, Flatten, Dropout
 from sklearn.metrics import r2_score
@@ -113,25 +114,40 @@ class RNNS2SArchitecture(NNS2SArchitecture):
         else:
             k_regularizer = None
 
+        bidir = self.config['bidirectional']
+        bimerge = self.config['bimerge']
 
         RNN = LSTM if rnntype == 'LSTM' else GRU
         self.model = Sequential()
         if nlayersE == 1:
-            self.model.add(RNN(neurons, input_shape=(idimensions), implementation=impl,return_sequences=True,
-                               recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                               recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+            self.model.add(recurrent_layer(RNN,neurons, input_shape=(idimensions),
+                                           implementation=impl,return_sequences=True,
+                                           recurrent_dropout=drop, activation=activation,
+                                           recurrent_activation=activation_r,
+                                           recurrent_regularizer=rec_regularizer,
+                                           kernel_regularizer=k_regularizer, bidir=bidir, bimerge=bimerge))
         else:
-            self.model.add(RNN(neurons, input_shape=(idimensions), implementation=impl,
-                               recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                               return_sequences=True, recurrent_regularizer=rec_regularizer,
-                               kernel_regularizer=k_regularizer))
+            self.model.add(recurrent_layer(RNN,neurons, input_shape=(idimensions),
+                                           implementation=impl,return_sequences=True,
+                                           recurrent_dropout=drop, activation=activation,
+                                           recurrent_activation=activation_r,
+                                           recurrent_regularizer=rec_regularizer,
+                                           kernel_regularizer=k_regularizer, bidir=bidir, bimerge=bimerge))
+
+
             for i in range(1, nlayersE - 1):
-                self.model.add(RNN(neurons, recurrent_dropout=drop, implementation=impl,
-                                   activation=activation, recurrent_activation=activation_r, return_sequences=True,
-                                   recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-            self.model.add(RNN(neurons, recurrent_dropout=drop, activation=activation,return_sequences=True,
-                               recurrent_activation=activation_r, implementation=impl,
-                               recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+                self.model.add(recurrent_layer(RNN,neurons, input_shape=(idimensions),
+                                           implementation=impl,return_sequences=True,
+                                           recurrent_dropout=drop, activation=activation,
+                                           recurrent_activation=activation_r,
+                                           recurrent_regularizer=rec_regularizer,
+                                           kernel_regularizer=k_regularizer, bidir=bidir, bimerge=bimerge))
+            self.model.add(recurrent_layer(RNN,neurons, input_shape=(idimensions),
+                                           implementation=impl,return_sequences=True,
+                                           recurrent_dropout=drop, activation=activation,
+                                           recurrent_activation=activation_r,
+                                           recurrent_regularizer=rec_regularizer,
+                                           kernel_regularizer=k_regularizer, bidir=bidir, bimerge=bimerge))
 
         self.model.add(Flatten())
 
