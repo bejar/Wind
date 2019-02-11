@@ -16,7 +16,6 @@ Util
 :Created on: 03/12/2018 11:43 
 
 """
-from keras.layers import Bidirectional
 
 __author__ = 'bejar'
 
@@ -70,48 +69,3 @@ def recurrent_decoder_functional(RNN, nlayers, neurons, impl, drop, activation, 
 
     return decoder
 
-
-def recurrent_layer(rnntype, neurons, input_shape, implementation,return_sequences, recurrent_dropout, activation,
-                    recurrent_activation, recurrent_regularizer, kernel_regularizer, bidir, bimerge):
-    """
-    Returns an recurrent layer with the given parameters
-
-    :param rnntype:
-    :param neurons:
-    :param input_shape:
-    :param implementation:
-    :param return_sequences:
-    :param recurrent_dropout:
-    :param activation:
-    :param recurrent_activation:
-    :param recurrent_regularizer:
-    :param kernel_regularizer:
-    :param bidir:
-    :param bimerge:
-    :return:
-    """
-
-
-    if bidir:
-        return Bidirectional(
-                   rnntype(neurons,
-                           input_shape=input_shape,
-                           implementation=implementation,
-                           return_sequences=return_sequences,
-                           recurrent_dropout=recurrent_dropout,
-                           activation=activation,
-                           recurrent_activation=recurrent_activation,
-                           recurrent_regularizer=recurrent_regularizer,
-                           kernel_regularizer=kernel_regularizer),
-                merge_mode=bimerge
-                )
-    else:
-        return rnntype(neurons,
-                           input_shape=input_shape,
-                           implementation=implementation,
-                           return_sequences=return_sequences,
-                           recurrent_dropout=recurrent_dropout,
-                           activation=activation,
-                           recurrent_activation=recurrent_activation,
-                           recurrent_regularizer=recurrent_regularizer,
-                           kernel_regularizer=kernel_regularizer)
