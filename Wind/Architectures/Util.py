@@ -71,8 +71,8 @@ def recurrent_decoder_functional(RNN, nlayers, neurons, impl, drop, activation, 
     return decoder
 
 
-def recurrent_layer(rnntype, neurons, input_shape, impl,return_sequences, drop, activation,
-                    activation_r, rec_regularizer, k_regularizer, bidir, bimerge):
+def recurrent_layer(rnntype, neurons, input_shape, implementation,return_sequences, recurrent_dropout, activation,
+                    recurrent_activation, recurrent_regularizer, kernel_regularizer, bidir, bimerge):
     """
     Returns an recurrent layer with the given parameters
 
@@ -96,22 +96,22 @@ def recurrent_layer(rnntype, neurons, input_shape, impl,return_sequences, drop, 
         return Bidirectional(
                    rnntype(neurons,
                            input_shape=input_shape,
-                           implementation=impl,
+                           implementation=implementation,
                            return_sequences=return_sequences,
-                           recurrent_dropout=drop,
+                           recurrent_dropout=recurrent_dropout,
                            activation=activation,
-                           recurrent_activation=activation_r,
-                           recurrent_regularizer=rec_regularizer,
-                           kernel_regularizer=k_regularizer),
+                           recurrent_activation=recurrent_activation,
+                           recurrent_regularizer=recurrent_regularizer,
+                           kernel_regularizer=kernel_regularizer),
                 merge_mode=bimerge
                 )
     else:
         return rnntype(neurons,
-                       input_shape=input_shape,
-                       implementation=impl,
-                       return_sequences=return_sequences,
-                       recurrent_dropout=drop,
-                       activation=activation,
-                       recurrent_activation=activation_r,
-                       recurrent_regularizer=rec_regularizer,
-                       kernel_regularizer=k_regularizer)
+                           input_shape=input_shape,
+                           implementation=implementation,
+                           return_sequences=return_sequences,
+                           recurrent_dropout=recurrent_dropout,
+                           activation=activation,
+                           recurrent_activation=recurrent_activation,
+                           recurrent_regularizer=recurrent_regularizer,
+                           kernel_regularizer=kernel_regularizer)
