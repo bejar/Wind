@@ -47,6 +47,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         "arch": {
             "filters": [32],
             "strides": [1],
+            "dilation": false,
             "kernel_size": [3],
             "k_reg": "None",
             "k_regw": 0.1,
@@ -65,7 +66,14 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         drop = self.config['arch']['drop']
         filters = self.config['arch']['filters']
         kernel_size = self.config['arch']['kernel_size']
-        strides = self.config['arch']['strides']
+        # If there is a dilation field and it is true the strides field is the dilation rates
+        # and the stides are all 1's
+        if 'dilation' in self.config['arch'] and self.config['arch']['dilation']:
+            dilation = self.config['arch']['strides']
+            strides = [1] * len(dilation)
+        else:
+            strides = self.config['arch']['strides']
+            dilation = [1] * len(strides)
         activationfl = self.config['arch']['activation_full']
         fulldrop = self.config['arch']['fulldrop']
         full_layers = self.config['arch']['full']
@@ -89,7 +97,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         self.model = Sequential()
 
         self.model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                              activation=activation, padding='causal',
+                              activation=activation, padding='causal', dilation_rate=dilation[0],
                               kernel_regularizer=k_regularizer))
 
         if drop != 0:
@@ -97,7 +105,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         for i in range(1, len(filters)):
             self.model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                                  activation=activation, padding='causal',
+                                  activation=activation, padding='causal', dilation_rate=dilation[0],
                                   kernel_regularizer=k_regularizer))
             if drop != 0:
                 self.model.add(Dropout(rate=drop))

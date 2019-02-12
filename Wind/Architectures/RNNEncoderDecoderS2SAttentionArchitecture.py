@@ -57,13 +57,12 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
         json config:
 
         "arch": {
-            "neuronsE":32,
+            "neurons":32,
             "k_reg": "None",
             "k_regw": 0.1,
             "rec_reg": "None",
             "rec_regw": 0.1,
             "drop": 0.3,
-            "nlayers": 2,
             "nlayersE": 1,
             "nlayersD": 1,
             "activation": "relu",
@@ -71,7 +70,7 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
             "CuDNN": false,
             "rnn": "GRU",
             "full": [64, 32],
-            "mode": "RNN_ED_s2s"
+            "mode": "RNN_ED_s2s_att"
         }
 
         :return:
