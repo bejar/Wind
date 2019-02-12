@@ -48,7 +48,7 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'RNNEDS2SATT'
-    data_mode = (False, '3D')  # 's2s'
+    data_mode = ('3d', '3D')  # 's2s'
 
     def generate_model(self):
         """
@@ -90,7 +90,7 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
         k_regw = self.config['arch']['k_regw']
         rnntype = self.config['arch']['rnn']
         CuDNN = self.config['arch']['CuDNN']
-        neuronsD = self.config['arch']['neuronsD']
+        # neuronsD = self.config['arch']['neuronsD']
         full_layers = self.config['arch']['full']
 
         # Extra added from training function
