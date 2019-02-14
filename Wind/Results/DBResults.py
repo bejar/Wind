@@ -605,9 +605,9 @@ class DBResults:
         Generates a distplot of the results
 
         :param summary: Type of summary function
+        :param seaborn: Uee seaborn instead of plotly
         :param notebook: If it is for a jupyter notebook
         :param cmap: colormap to apply
-        :param mapbox: if it is a mapbix plot (needs access token to matplot)
         :param dset: If plots for validation/test set (must be a list)
         :return:
         """
@@ -663,9 +663,8 @@ class DBResults:
 
         :param compare:
         :param summary: Type of summary function
+        :param seaborn: Uee seaborn instead of plotly
         :param notebook: If it is for a jupyter notebook
-        :param cmap: colormap to apply
-        :param mapbox: if it is a mapbix plot (needs access token to matplot)
         :param dset: If plots for validation/test set (must be a list)
         :return:
         """
@@ -733,6 +732,70 @@ class DBResults:
                 py.iplot(fig)
             else:
                 py.iplot(fig, filename=f"./{title}-distplot.html")
+
+    def plot_densplot(self, summary='sum', figsize=(800, 400)):
+        """
+        Generates a density plot comparing test and validation
+
+        :param summary: Type of summary function
+        :return:
+        """
+        if not self.exp_result:
+            raise NameError("No results yet retrieved")
+        if 'experiment' in self.query:
+            title = self.query['experiment']
+        else:
+            title = 'NonSpecific'
+
+        if type(summary) == int:
+            sumtest = self.exp_result['test'][self.selection, summary]
+            sumval = self.exp_result['validation'][self.selection, summary]
+        elif summary == 'sum':
+            sumtest = np.sum(self.exp_result['test'][self.selection], axis=1)
+            sumval = np.sum(self.exp_result['validation'][self.selection], axis=1)
+        else:
+            sumtest = self.exp_result['test'][self.selection, 0]
+            sumval = self.exp_result['validation'][self.selection, 0]
+
+
+        plt.figure(figsize=figsize)
+        sns.kdeplot(sumtest,sumval, shade=True, n_levels=10, cbar=True, shade_lowest=False)
+
+    def plot_densplot_compare(self, summary='sum', figsize=(800, 400)):
+        """
+        Generates a density plot comparing test and validation
+
+        :param summary: Type of summary function
+        :return:
+        """
+        if not self.exp_result or not self.exp_result2:
+            raise NameError("No results yet retrieved")
+        if 'experiment' in self.query:
+            title = self.query['experiment'] + '-vs-' + self.query2['experiment']
+        else:
+            title = 'NonSpecific'
+
+        if type(summary) == int:
+            sumtest = self.exp_result['test'][self.selection, summary]
+            sumval = self.exp_result['validation'][self.selection, summary]
+            sumtest2 = self.exp_result2['test'][self.selection, summary]
+            sumval2 = self.exp_result2['validation'][self.selection, summary]
+
+        elif summary == 'sum':
+            sumtest = np.sum(self.exp_result['test'][self.selection], axis=1)
+            sumval = np.sum(self.exp_result['validation'][self.selection], axis=1)
+            sumtest2 = np.sum(self.exp_result2['test'][self.selection], axis=1)
+            sumval2 = np.sum(self.exp_result2['validation'][self.selection], axis=1)
+
+        else:
+            sumtest = self.exp_result['test'][self.selection, 0]
+            sumval = self.exp_result['validation'][self.selection, 0]
+            sumtest2 = self.exp_result2['test'][self.selection, 0]
+            sumval2 = self.exp_result2['validation'][self.selection, 0]
+
+        plt.figure(figsize=figsize)
+        sns.kdeplot(sumtest, sumval, cmap="Reds", n_levels=10, cbar=True, shade_lowest=False)
+        sns.kdeplot(sumtest2, sumval2, cmap="Blues", n_levels=10, cbar=True, shade_lowest=False)
 
     def plot_hours_boxplot(self, dset=('val', 'test'), figsize=(8, 4)):
         """
