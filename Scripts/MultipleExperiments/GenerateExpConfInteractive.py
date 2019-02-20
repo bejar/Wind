@@ -153,6 +153,10 @@ def ask_config(config):
                     for c in range(1, len(config['data'][v])):
                         comb.extend([list(c) for c in combinations(config['data'][v][1:], c)])
                     outconfig['data'][v] = [[config['data'][v][0]] + c for c in comb]
+                elif (input("specific subsets (y/N)? ")) in ['y', 'yes']:
+                    outconfig['data'][v] = getinput(v, type(config['data'][v]))
+                else:
+                    outconfig['data'][v] = [config['data'][v]]
 
     print()
     print("- Architecture section:")

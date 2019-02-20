@@ -25,13 +25,16 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--exp', default='Persistence', help='experiment')
+    parser.add_argument('--exp2', default=None, help='experiment')
+    parser.add_argument('--sample', default='Persistence', help='experiment')
     args = parser.parse_args()
 
-    query = {'status': 'done', "experiment": args.exp, "site": {"$regex": "."}}
-    results = DBResults()
-    results.retrieve_results(query)
-    if results.size() > 0:
-        # results.sample(0.1)
-        # results.select_best_worst_sum_accuracy()
-        results.map_results()
+
+    if args.exp2 is None:
+        query = {'status': 'done', "experiment": args.exp}
+        results = DBResults()
+        results.retrieve_results(query)
+        if results.size() > 0:
+            results.sample(args.sample)
+            results.plot_map(mapbox=True,dset=('val'))
 

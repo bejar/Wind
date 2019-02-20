@@ -23,9 +23,11 @@ import pandas as pd
 import plotly.figure_factory as ff
 import seaborn as sns
 import matplotlib.pyplot as plt
-from scipy.stats import ks_2samp
-
+from scipy.stats import ks_2samp, ttest_rel,f_oneway
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+from statsmodels.stats.multicomp import MultiComparison
 from Wind.Config.Paths import wind_data_path
+from statsmodels.genmod.generalized_linear_model import GLM
 
 try:
     from pymongo import MongoClient
@@ -43,8 +45,9 @@ scl = [0, "rgb(150,0,90)"], [0.125, "rgb(0, 0, 200)"], [0.25, "rgb(0, 25, 255)"]
 
 sclbi = [0, "rgb(0,255,255)"], [0.49999, "rgb(0, 0, 255)"], [0.5, "rgb(0, 0, 0)"], [0.50001, "rgb(255, 0, 0)"], [1,
                                                                                                                  "rgb(255, 255, 0)"]
-
-
+sclbi = [0, "rgb(0,0,255)"], [0.49999, "rgb(0, 255, 255)"], [0.5, "rgb(0, 0, 0)"], [0.50001, "rgb(255, 255, 0)"], [1,"rgb(255, 0, 0)"]
+  
+sclbest = [0, "rgb(255,0,0)"], [0.1, "rgb(0,0,255)"], [0.2, "rgb(0,255,0)"], [0.3, "rgb(255,0,0)"], [0.4, "rgb(255,255,0)"], [0.5, "rgb(255,0,255)"], [0.4, "rgb(0,255,255)"]
 # Plotly colorscales
 #
 # [‘Blackbody’, ‘Bluered’, ‘Blues’, ‘Earth’, ‘Electric’, ‘Greens’, ‘Greys’, ‘Hot’, ‘Jet’,
@@ -156,13 +159,13 @@ def create_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(1200, 800
             lonaxis=dict(
                 showgrid=True,
                 gridwidth=0.5,
-                range=[-140.0, -55.0],
+                range=[-126.0, -65.0],
                 dtick=5
             ),
             lataxis=dict(
                 showgrid=True,
                 gridwidth=0.5,
-                range=[20.0, 60.0],
+                range=[23.0, 52.0],
                 dtick=5
             )
         ),
@@ -178,6 +181,71 @@ def create_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(1200, 800
         py.plot(fig, filename=f"./{title}.html")
 
 
+def create_plot_best(df, title, labels, notebook=False, image=False, tick=10, cmap=scl, figsize=(1200, 800)):
+    """
+    Creates an HTML file with the map
+    """
+    colors = ['red', 'green', 'blue', 'yellow', 'cyan', 'magenta']
+    data = dict(
+        mode='markers',
+        type='scattergeo'
+    )
+
+    ldata = []
+    for i in range(len(labels)):
+        ndata = data.copy()
+        ndata['lat'] = df[df['Val']==i]['Lat']
+        ndata['lon'] = df[df['Val']==i]['Lon']
+        ndata['marker'] = dict(size=1,color=i)
+        ndata['name'] = labels[i]
+        ldata.append(ndata)
+       
+
+    layout = dict(
+       legend=dict(font=dict(size=20)), 
+        geo=dict(
+            scope='north america',
+            showland=True,
+            landcolor="rgb(212, 212, 212)",
+            subunitcolor="rgb(255, 255, 255)",
+            countrycolor="rgb(255, 255, 255)",
+            showlakes=True,
+            lakecolor="rgb(255, 255, 255)",
+            showsubunits=True,
+            showcountries=True,
+            resolution=50,
+            projection=dict(
+                # type='conic conformal',
+                type='mercator',
+                rotation=dict(
+                    lon=-100
+                )
+            ),
+            lonaxis=dict(
+                showgrid=True,
+                gridwidth=0.5,
+                range=[-126.0, -65.0],
+                dtick=5
+            ),
+            lataxis=dict(
+                showgrid=True,
+                gridwidth=0.5,
+                range=[23.0, 52.0],
+                dtick=5
+            )
+        ),
+        width=figsize[0],
+        height=figsize[1],
+        title=title,
+    )
+    fig = {'data': ldata, 'layout': layout}
+
+    if notebook:
+        py.iplot(fig)
+    else:
+        py.plot(fig, filename=f"./{title}.html", image='svg')
+
+
 class DBResults:
     """
     Access to results in a mongoDB and different plots and analysis
@@ -190,12 +258,14 @@ class DBResults:
     col = None
     coords = None
     query = None
+    lquery = None
     osel = None
     selection = None
 
     # Stores the results for test and validation as numpy arrays
     exp_result = {}
     exp_result2 = {}
+    exp_lresults = []
     exp_df = None
 
     def __init__(self, conn=mongoconnection, test=""):
@@ -305,6 +375,56 @@ class DBResults:
             self.exp_result2['test'] = np.array([v[1] for v in ldata])
             self.exp_result2['validation'] = np.array([v[2] for v in ldata])
 
+    def retrieve_results_multiple(self, lquery):
+        """
+        Retrieves a list of sets of results to compare them (just for ANOVA for now)
+
+        :param query1:
+        :param query2:
+        :return:
+        """
+        self.lquery = lquery
+        for i, query in enumerate(lquery):
+            lexp = self.col.find(query)
+            exp_result = {}
+
+            ldata = []
+            for exp in lexp:
+                # To maintain backwards compatibility
+                if 'result' in exp:
+                    data = np.array(exp['result'])
+                elif 'results' in exp:
+                    data = np.array(exp['results'])
+
+                # gets the number of the site and the columns with the results
+                ldata.append((int(exp['data']['datanames'][0].split('-')[1]), data[:, 1], data[:, 2]))
+            if len(ldata) == 0:
+                raise NameError(f'No results retrieved with {i}-th query')
+
+            ldata = sorted(ldata, key=lambda x: x[0])
+
+            # Check that the sites are compatible
+            if self.exp_lresults:
+                s1 = set(self.exp_lresults[0]['sites'])
+                s2 = set([v[0] for v in ldata])
+                if s1-s2:
+                    raise NameError(f'Results not comparable, sites do not match for {i}')
+                else:
+                    exp_result['sites'] = np.array([v[0] for v in ldata])
+                    exp_result['test'] = np.array([v[1] for v in ldata])
+                    exp_result['validation'] = np.array([v[2] for v in ldata])
+                    self.exp_lresults.append(exp_result)
+            else:
+                exp_result['sites'] = np.array([v[0] for v in ldata])
+                exp_result['test'] = np.array([v[1] for v in ldata])
+                exp_result['validation'] = np.array([v[2] for v in ldata])
+                self.exp_lresults.append(exp_result)
+
+
+        self.osel = list(range(self.exp_lresults[0]['sites'].shape[0]))
+        self.selection = list(range(self.exp_lresults[0]['sites'].shape[0]))
+
+
     def retrieve_results_dataframe(self, query, data=('vars', 'ahead', 'lag'), arch=[], train=[]):
         """
         Retrieves the results from the query and builds a pandas dataframe with all the data
@@ -362,6 +482,8 @@ class DBResults:
 
         if self.exp_result:
             return self.exp_result['sites'].shape[0]
+        elif self.exp_lresults:
+            return self.exp_lresults[0]['sites'].shape[0]
         else:
             return self.exp_df.shape[0]
 
@@ -371,7 +493,7 @@ class DBResults:
 
         :return:
         """
-        if not self.exp_result:
+        if not self.exp_result and not self.exp_lresults:
             raise NameError("No results yet retrieved")
 
         return len(self.selection)
@@ -448,7 +570,7 @@ class DBResults:
 
         :return:
         """
-        if not self.exp_result:
+        if not self.exp_result and not self.exp_lresults:
             raise NameError("No results yet retrieved")
         if 0 < percentage <= 1:
             sel = np.random.choice(self.osel,
@@ -526,6 +648,7 @@ class DBResults:
         """
         generates an html map with the results
 
+        :param compare:
         :param summary: Type of summary function
         :param notebook: If it is for a jupyter notebook
         :param cmap: colormap to apply
@@ -599,6 +722,68 @@ class DBResults:
                 create_plot(valdf,
                             f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
                             )
+
+    def plot_map_multiple(self, summary='sum', notebook=False, labels=None,
+                         dset=('val', 'test'), figsize=(800, 400), image=False):
+        """
+        generates an html map with the results
+
+        :param summary: Type of summary function
+        :param notebook: If it is for a jupyter notebook
+        :param cmap: colormap to apply
+        :param dset: If plots for validation/test set (must be a list)
+        :return:
+        """
+        if not self.exp_lresults:
+            raise NameError("No results yet retrieved")
+
+        # if 'experiment' in self.query:
+        #     title = self.query['experiment'] + '-vs-' + self.query2['experiment']
+        # else:
+        #     title = 'NonSpecific'
+        title = 'NonSpecific'
+        msumtest = []
+        msumval = []
+        #labels = [l['experiment'] for l in self.lquery]
+        for exp_result in self.exp_lresults:
+            if type(summary) == int:
+                msumtest.append(exp_result['test'][self.selection, summary])
+                msumval.append(exp_result['validation'][self.selection, summary])
+            elif summary == 'sum':
+                msumtest.append(np.sum(exp_result['test'][self.selection], axis=1))
+                msumval.append(np.sum(exp_result['validation'][self.selection], axis=1))
+            else:
+                msumtest.append(exp_result['test'][self.selection, 0])
+                msumval.append(exp_result['validation'][self.selection, 0])
+
+        msumtest = np.stack(msumtest, axis=1)
+        msumtval = np.stack(msumval, axis=1)
+
+        difftest = np.argmax(msumtest,axis=1)
+        diffval = np.argmax(msumtval,axis=1)
+
+
+        if 'test' in dset:
+            testdf = pd.DataFrame({'Lon': self.coords[self.selection, 0],
+                                   'Lat': self.coords[self.selection, 1],
+                                   'Val': difftest,
+                                   'Site': self.exp_lresults[0]['sites'][self.selection]})
+        if 'val' in dset:
+            valdf = pd.DataFrame({'Lon': self.coords[self.selection, 0],
+                                  'Lat': self.coords[self.selection, 1],
+                                  'Val': diffval,
+                                  'Site': self.exp_lresults[0]['sites'][self.selection]})
+
+        if 'test' in dset:
+            create_plot_best(testdf,
+                        f"{title}-test", notebook=notebook, figsize=figsize, labels=labels
+                        )
+        if 'val' in dset:
+            create_plot_best(valdf,
+                        f"{title}-validation", notebook=notebook, figsize=figsize, labels=labels
+                        )
+
+
 
     def plot_distplot(self, summary='sum', seaborn=True, notebook=False, dset=('val', 'test'), figsize=(800, 400)):
         """
@@ -733,7 +918,7 @@ class DBResults:
             else:
                 py.iplot(fig, filename=f"./{title}-distplot.html")
 
-    def plot_densplot(self, summary='sum', figsize=(800, 400)):
+    def plot_densplot(self, plot='kde', glm=False, summary='sum', figsize=(8, 8)):
         """
         Generates a density plot comparing test and validation
 
@@ -757,11 +942,21 @@ class DBResults:
             sumtest = self.exp_result['test'][self.selection, 0]
             sumval = self.exp_result['validation'][self.selection, 0]
 
-
+        data = pd.DataFrame({'test':sumtest, 'validation':sumval})
         plt.figure(figsize=figsize)
-        sns.kdeplot(sumtest,sumval, shade=True, n_levels=10, cbar=True, shade_lowest=False)
+        if plot == 'kde':
+            sns.kdeplot(data['test'],data['validation'], shade=True, n_levels=10, cbar=True, shade_lowest=False)
+        elif plot == 'regression':
+            sns.regplot('test','validation', data=data,truncate=True, line_kws={'color':'red', 'linewidth':2,'linestyle':'--'})
+        else:
+            sns.scatterplot('test','validation', data=data)
+        if glm:
+            model = GLM.from_formula('test ~ validation', data)
+            result = model.fit()
+            print(result.summary())
+            
 
-    def plot_densplot_compare(self, summary='sum', figsize=(800, 400)):
+    def plot_densplot_compare(self, plot='kde', glm=False, summary='sum', figsize=(8, 8)):
         """
         Generates a density plot comparing test and validation
 
@@ -786,16 +981,32 @@ class DBResults:
             sumval = np.sum(self.exp_result['validation'][self.selection], axis=1)
             sumtest2 = np.sum(self.exp_result2['test'][self.selection], axis=1)
             sumval2 = np.sum(self.exp_result2['validation'][self.selection], axis=1)
-
         else:
             sumtest = self.exp_result['test'][self.selection, 0]
             sumval = self.exp_result['validation'][self.selection, 0]
             sumtest2 = self.exp_result2['test'][self.selection, 0]
             sumval2 = self.exp_result2['validation'][self.selection, 0]
 
+        data1 = pd.DataFrame({'test':sumtest, 'validation':sumval})
+        data2 = pd.DataFrame({'test':sumtest2, 'validation':sumval2})
+
         plt.figure(figsize=figsize)
-        sns.kdeplot(sumtest, sumval, cmap="Reds", n_levels=10, cbar=True, shade_lowest=False)
-        sns.kdeplot(sumtest2, sumval2, cmap="Blues", n_levels=10, cbar=True, shade_lowest=False)
+        if plot == 'kde':
+            sns.kdeplot(data1['test'],data1['validation'], cmap="Reds", n_levels=10, cbar=True, shade_lowest=False)
+            sns.kdeplot(data2['test'],data2['validation'], cmap="Blues", n_levels=10, cbar=True, shade_lowest=False)
+        elif plot == 'regression':
+            sns.regplot('test','validation', data=data1,truncate=True, line_kws={'color':'red', 'linewidth':2,'linestyle':'--'})
+            sns.regplot('test','validation', data=data2,truncate=True, line_kws={'color':'blue', 'linewidth':2,'linestyle':'--'})
+        else:
+            sns.scatterplot('test','validation', data=data1)
+            sns.scatterplot('test','validation', data=data2)
+        if glm:
+            model = GLM.from_formula('test ~ validation', data1)
+            result = model.fit()
+            print(result.summary())
+            model = GLM.from_formula('test ~ validation', data2)
+            result = model.fit()
+            print(result.summary())
 
     def plot_hours_boxplot(self, dset=('val', 'test'), figsize=(8, 4)):
         """
@@ -922,9 +1133,10 @@ class DBResults:
 
         plt.show()
 
-    def compare_ks_2samp(self, summary='sum',dset=('val', 'test')):
+    def compare_2samp(self, summary='sum',dset=('val', 'test')):
         """
         Computes a 2 sided kolmogorov-smirnov test for equality of distribution
+        Computes a T-test for two related samples for identical average
 
         Given that the results are large a subsample should be used
         :return:
@@ -952,11 +1164,66 @@ class DBResults:
 
         res = {}
         if 'test' in dset:
-            res['test'] = ks_2samp(sumtest, sumtest2)
+            res['test'] ={}
+            res['test']['KS2samp'] = ks_2samp(sumtest, sumtest2)
+            res['test']['T-test'] = ttest_rel(sumtest, sumtest2)
         if 'val' in dset:
-            res['val'] = ks_2samp(sumval, sumval2)
-
+            res['val']={}
+            res['val']['KS2samp'] = ks_2samp(sumval, sumval2)
+            res['val']['T-test'] = ttest_rel(sumval, sumval2)
         return res
+
+    def compare_ANOVA(self, summary='sum',dset=('val', 'test'), labels=None):
+        """
+        Computes a 2 sided kolmogorov-smirnov test for equality of distribution
+
+        Given that the results are large a subsample should be used
+        :return:
+        """
+        if not self.exp_lresults:
+            raise NameError("No results yet retrieved")
+        if labels is None:
+            labels = [l['experiment'] for l in self.lquery]
+
+        msumtest = []
+        msumval = []
+        categories = []
+        for i, exp_result in enumerate(self.exp_lresults):
+            categories.extend([labels[i]]*len(self.selection))
+            if type(summary) == int:
+                msumtest.append(exp_result['test'][self.selection, summary])
+                msumval.append(exp_result['validation'][self.selection, summary])
+            elif summary == 'sum':
+                msumtest.append(np.sum(exp_result['test'][self.selection], axis=1))
+                msumval.append(np.sum(exp_result['validation'][self.selection], axis=1))
+            else:
+                msumtest.append(exp_result['test'][self.selection, 0])
+                msumval.append(exp_result['validation'][self.selection, 0])
+
+        f, p = f_oneway(*msumtest)
+
+        print ('One-way ANOVA Test set')
+        print ('=============')
+
+        print ('F value:', f)
+        print ('P value:', p, '\n')
+
+        mc = MultiComparison(np.hstack(msumtest), categories)
+        result = mc.tukeyhsd()
+        print(result)
+        print()
+
+        f, p = f_oneway(*msumtest)
+
+        print ('One-way ANOVA Validation set')
+        print ('=============')
+
+        print ('F value:', f)
+        print ('P value:', p, '\n')
+
+        mc = MultiComparison(np.hstack(msumval), categories)
+        result = mc.tukeyhsd()
+        print(result)
 
     # ---------------------------------
 
@@ -1004,10 +1271,14 @@ class DBResults:
 
 
 if __name__ == '__main__':
+    from Wind.Private.DBConfig import mongolocal
+    query1 = {"experiment": "MLP_s2s_2","status":"done"}
+    query2 = {"experiment": "RNN_s2s","status":"done"}
+    results = DBResults(conn=mongolocal)
+    results.retrieve_results_compare(query1, query2)
+    results.selected_size()
+    results.sample(0.05)
+    results.selected_size()
+    results.plot_densplot_compare(plot='scatter', summary='sum')
+    plt.show()
 
-    query = {"experiment": 'RNN_ED_s2s'}
-    results = DBResults()
-    results.retrieve_results_dataframe(query)
-    if results.size() > 0:
-        results.sample(0.01)
-        results.plot_hours_boxplot()

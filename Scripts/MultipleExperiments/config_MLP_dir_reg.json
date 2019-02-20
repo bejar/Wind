@@ -11,9 +11,9 @@
     "ahead": [1,12]
   },
   "arch": {
-    "drop": 0.4,
+    "drop": 0.2,
     "activation": "relu",
-      "full": [512, 256],
+      "full": [1024, 512],
     "mode": "MLP_dir_reg"
   },
   "training": {
