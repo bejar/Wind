@@ -28,6 +28,7 @@ from statsmodels.stats.multicomp import pairwise_tukeyhsd
 from statsmodels.stats.multicomp import MultiComparison
 from Wind.Config.Paths import wind_data_path
 from statsmodels.genmod.generalized_linear_model import GLM
+import matplotlib
 
 try:
     from pymongo import MongoClient
@@ -785,7 +786,7 @@ class DBResults:
 
 
 
-    def plot_distplot(self, summary='sum', seaborn=True, notebook=False, dset=('val', 'test'), figsize=(800, 400)):
+    def plot_distplot(self, summary='sum', seaborn=True, notebook=False, dset=('val', 'test'), figsize=(800, 400), title=None, labels=None,font=None):
         """
         Generates a distplot of the results
 
@@ -798,10 +799,11 @@ class DBResults:
         """
         if not self.exp_result:
             raise NameError("No results yet retrieved")
-        if 'experiment' in self.query:
-            title = self.query['experiment']
-        else:
-            title = 'NonSpecific'
+        if title is None:
+            if 'experiment' in self.query:
+                title = self.query['experiment']
+            else:
+                title = 'NonSpecific'
 
         if type(summary) == int:
             sumtest = self.exp_result['test'][self.selection, summary]
@@ -817,16 +819,24 @@ class DBResults:
             extra = [10, 1]
 
         data = []
-        labels = []
         if 'test' in dset:
             data.append(np.append(sumtest, extra))
-            labels.append('test')
         if 'val' in dset:
             data.append(np.append(sumval, extra))
-            labels.append('val')
 
+        if labels is None:
+            labels = []
+            if 'test' in dset:
+                labels.append('test')
+            if 'val' in dset:
+                labels.append('val')
+        else:
+            if len(labels) != len(data):
+                raise NameError('Not enough labels provided')
 
         if seaborn:
+            if font is not None:
+                matplotlib.rcParams.update({'font.size': font})
             plt.figure(figsize=figsize)
             for v,l in zip(data, labels):
                 sns.distplot(v, label=l, kde=True, norm_hist=True)
@@ -842,7 +852,7 @@ class DBResults:
                 py.iplot(fig, filename=f"./{title}-distplot.html")
 
     def plot_distplot_compare(self, summary='sum', compare='diff', seaborn=True, notebook=False, dset=('val', 'test'),
-                              figsize=(800, 400)):
+                              figsize=(800, 400), title=None, labels=None,font=None):
         """
         Generates a distplot for the comparison of the results results
 
@@ -855,10 +865,13 @@ class DBResults:
         """
         if not self.exp_result or not self.exp_result2:
             raise NameError("No results yet retrieved")
-        if 'experiment' in self.query:
-            title = self.query['experiment'] + '-vs-' + self.query2['experiment']
-        else:
-            title = 'NonSpecific'
+
+        if title is None:
+
+            if 'experiment' in self.query:
+                title = self.query['experiment'] + '-vs-' + self.query2['experiment']
+            else:
+                title = 'NonSpecific'
 
         if type(summary) == int:
             sumtest = self.exp_result['test'][self.selection, summary]
@@ -879,32 +892,47 @@ class DBResults:
             sumval2 = self.exp_result2['validation'][self.selection, 0]
 
         data = []
-        labels = []
         if compare == 'diff':
             difftest = sumtest - sumtest2
             diffval = sumval - sumval2
             extra = [max(np.max(difftest), np.max(diffval)), min(np.min(difftest), np.min(diffval))]
             if 'test' in dset:
                 data.append(np.append(difftest, extra))
-                labels.append('test ' + title)
             if 'val' in dset:
                 data.append(np.append(diffval, extra))
-                labels.append('val ' + title)
+            if labels is None:
+                labels = []
+                if 'test' in dset:
+                    labels.append('test ' + title)
+                if 'val' in dset:
+                    labels.append('val ' + title)
+            else:
+                if len(labels) != len(data):
+                    raise NameError('Not enough labels provided')
         else:
-
             extra = [max(np.max(sumtest), np.max(sumval)), min(np.min(sumtest), np.min(sumval))]
             if 'test' in dset:
                 data.append(np.append(sumtest, extra))
                 data.append(np.append(sumtest2, extra))
-                labels.append('test ' + self.query['experiment'])
-                labels.append('test ' + self.query2['experiment'])
             if 'val' in dset:
                 data.append(np.append(sumval, extra))
                 data.append(np.append(sumval2, extra))
-                labels.append('val ' + self.query['experiment'])
-                labels.append('val ' + self.query2['experiment'])
+
+            if labels is None:
+                labels = []
+                if 'test' in dset:
+                    labels.append('test ' + self.query['experiment'])
+                    labels.append('test ' + self.query2['experiment'])
+                if 'val' in dset:
+                    labels.append('val ' + self.query['experiment'])
+                    labels.append('val ' + self.query2['experiment'])
+            else:
+                if len(labels) != len(data):
+                    raise NameError('Not enough labels provided')
 
         if seaborn:
+            if font is not None:
+                matplotlib.rcParams.update({'font.size': font})
             plt.figure(figsize=figsize)
             for v,l in zip(data, labels):
                 sns.distplot(v, label=l, kde=True, norm_hist=True)
@@ -947,7 +975,7 @@ class DBResults:
         if plot == 'kde':
             sns.kdeplot(data['test'],data['validation'], shade=True, n_levels=10, cbar=True, shade_lowest=False)
         elif plot == 'regression':
-            sns.regplot('test','validation', data=data,truncate=True, line_kws={'color':'red', 'linewidth':2,'linestyle':'--'})
+            sns.regplot('test','validation', data=data, truncate=True, line_kws={'color':'red', 'linewidth':2,'linestyle':'--'})
         else:
             sns.scatterplot('test','validation', data=data)
         if glm:
@@ -1008,7 +1036,7 @@ class DBResults:
             result = model.fit()
             print(result.summary())
 
-    def plot_hours_boxplot(self, dset=('val', 'test'), figsize=(8, 4)):
+    def plot_hours_boxplot(self, dset=('val', 'test'), figsize=(8, 4), title=None, font=None):
         """
         Plots the accuracy for each hour in a boxplot
 
@@ -1016,16 +1044,21 @@ class DBResults:
         """
         if not self.exp_result:
             raise NameError("No results yet retrieved")
-        if 'experiment' in self.query:
-            title = self.query['experiment']
-        else:
-            title = 'NonSpecific'
+        if title is None:
+            if 'experiment' in self.query:
+                title = self.query['experiment']
+            else:
+                title = 'NonSpecific'
 
         data = np.array([])
         hour = np.array([])
         exp = np.array([])
-        if 'test' in dset:
 
+
+        if font is not None:
+            matplotlib.rcParams.update({'font.size': font})
+
+        if 'test' in dset:
             for i in range(self.exp_result['test'].shape[1]):
                 data = np.append(data, self.exp_result['test'][self.selection, i])
                 hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
@@ -1043,7 +1076,7 @@ class DBResults:
 
         plt.show()
 
-    def plot_hours_boxplot_compare(self, dset=('val', 'test'), figsize=(16, 4)):
+    def plot_hours_boxplot_compare(self, dset=('val', 'test'), figsize=(16, 4), title=None, labels=None, font=None):
         """
         Plots the accuracy for each hour in a boxplot
 
@@ -1051,38 +1084,47 @@ class DBResults:
         """
         if not self.exp_result or not self.exp_result2:
             raise NameError("No results yet retrieved")
-        if 'experiment' in self.query:
-            title = self.query['experiment'] + '-vs-' + self.query2['experiment']
-        else:
-            title = 'NonSpecific'
+        if title is None:
+            if 'experiment' in self.query:
+                title = self.query['experiment'] + '-vs-' + self.query2['experiment']
+            else:
+                title = 'NonSpecific'
 
+        if labels is not None:
+            if len(labels) != 2:
+                raise NameError('Not enough labels provided')
+        else:
+            labels = [self.query['experiment'], self.query2['experiment']]
 
         data = np.array([])
         hour = np.array([])
         exp = np.array([])
+
         if 'test' in dset:
 
             for i in range(self.exp_result['test'].shape[1]):
                 data = np.append(data, self.exp_result['test'][self.selection, i])
                 hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
-                exp = np.append(exp, np.array(['test-'+self.query['experiment']]*len(self.selection)))
+                exp = np.append(exp, np.array(['test '+ labels[0]]*len(self.selection)))
 
             for i in range(self.exp_result2['test'].shape[1]):
                 data = np.append(data, self.exp_result2['test'][self.selection, i])
                 hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
-                exp = np.append(exp, np.array(['test-'+self.query2['experiment']]*len(self.selection)))
+                exp = np.append(exp, np.array(['test '+labels[1]]*len(self.selection)))
 
         if 'val' in dset:
             for i in range(self.exp_result['validation'].shape[1]):
                 data = np.append(data, self.exp_result['validation'][self.selection, i])
                 hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
-                exp = np.append(exp, np.array(['val-'+self.query['experiment']]*len(self.selection)))
+                exp = np.append(exp, np.array(['val '+labels[0]]*len(self.selection)))
 
             for i in range(self.exp_result2['validation'].shape[1]):
                 data = np.append(data, self.exp_result2['validation'][self.selection, i])
                 hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
-                exp = np.append(exp, np.array(['val-'+self.query2['experiment']]*len(self.selection)))
+                exp = np.append(exp, np.array(['val '+ labels[1]]*len(self.selection)))
 
+        if font is not None:
+            matplotlib.rcParams.update({'font.size': font})
         df = pd.DataFrame({'hour':hour, 'acc':data, title:exp})
         plt.figure(figsize=figsize, dpi=100)
         sns.boxplot(x='hour', y='acc', hue=title,data=df)
