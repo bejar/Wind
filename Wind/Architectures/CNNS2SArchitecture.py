@@ -67,7 +67,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         filters = self.config['arch']['filters']
         kernel_size = self.config['arch']['kernel_size']
         # If there is a dilation field and it is true the strides field is the dilation rates
-        # and the stides are all 1's
+        # and the strides are all 1's
         if 'dilation' in self.config['arch'] and self.config['arch']['dilation']:
             dilation = self.config['arch']['strides']
             strides = [1] * len(dilation)
@@ -105,7 +105,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         for i in range(1, len(filters)):
             self.model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                                  activation=activation, padding='causal', dilation_rate=dilation[0],
+                                  activation=activation, padding='causal', dilation_rate=dilation[i],
                                   kernel_regularizer=k_regularizer))
             if drop != 0:
                 self.model.add(Dropout(rate=drop))
@@ -117,13 +117,6 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         self.model.add(Dense(odimensions, activation='linear'))
 
-    # def summary(self):
-    #     self.model.summary()
-    #     print(f"LAG={self.config['data']['lag']} STRIDES={self.config['arch']['strides']} "
-    #           f"KER_S={self.config['arch']['kernel_size']} FILT={self.config['arch']['filters']} "
-    #           f"DROP={self.config['arch']['drop']}")
-    #
-    #     print()
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         batch_size = self.config['training']['batch']
