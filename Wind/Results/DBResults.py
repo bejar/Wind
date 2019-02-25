@@ -361,9 +361,9 @@ class DBResults:
         tmean = np.mean(self.exp_result['test'],axis=0)
         vmean = np.mean(self.exp_result['validation'],axis=0)
         for i in range(len(self.exp_result['test'])):
-            if self.exp_result['test'][i] == 0:
+            if self.exp_result['test'][i,0] == 0:
                 self.exp_result['test'][i] = tmean
-            if self.exp_result['validation'][i] == 0:
+            if self.exp_result['validation'][i,0] == 0:
                 self.exp_result['validation'][i] = vmean
 
         # Result 2
