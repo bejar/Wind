@@ -791,7 +791,7 @@ class DBResults:
         Generates a distplot of the results
 
         :param summary: Type of summary function
-        :param seaborn: Uee seaborn instead of plotly
+        :param seaborn: Use seaborn instead of plotly
         :param notebook: If it is for a jupyter notebook
         :param cmap: colormap to apply
         :param dset: If plots for validation/test set (must be a list)
@@ -946,7 +946,7 @@ class DBResults:
             else:
                 py.iplot(fig, filename=f"./{title}-distplot.html")
 
-    def plot_densplot(self, plot='kde', glm=False, summary='sum', figsize=(8, 8)):
+    def plot_densplot(self, plot='kde', glm=False, test=False, summary='sum', figsize=(8, 8), font=None):
         """
         Generates a density plot comparing test and validation
 
@@ -971,6 +971,8 @@ class DBResults:
             sumval = self.exp_result['validation'][self.selection, 0]
 
         data = pd.DataFrame({'test':sumtest, 'validation':sumval})
+        if font is not None:
+            matplotlib.rcParams.update({'font.size': font})
         plt.figure(figsize=figsize)
         if plot == 'kde':
             sns.kdeplot(data['test'],data['validation'], shade=True, n_levels=10, cbar=True, shade_lowest=False)
@@ -982,6 +984,11 @@ class DBResults:
             model = GLM.from_formula('test ~ validation', data)
             result = model.fit()
             print(result.summary())
+        if test:
+            print('--- Distribution Test ---')
+            print(ks_2samp(sumtest, sumval))
+            print(ttest_rel(sumtest, sumval))
+
             
 
     def plot_densplot_compare(self, plot='kde', glm=False, summary='sum', figsize=(8, 8)):
@@ -1051,7 +1058,7 @@ class DBResults:
                 title = 'NonSpecific'
 
         data = np.array([])
-        hour = np.array([])
+        hour = np.array([],dtype=int)
         exp = np.array([])
 
 
@@ -1097,7 +1104,7 @@ class DBResults:
             labels = [self.query['experiment'], self.query2['experiment']]
 
         data = np.array([])
-        hour = np.array([])
+        hour = np.array([],dtype=int)
         exp = np.array([])
 
         if 'test' in dset:
