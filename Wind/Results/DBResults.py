@@ -315,6 +315,15 @@ class DBResults:
         self.exp_result['validation'] = np.array([v[2] for v in ldata])
         self.osel = list(range(self.exp_result['sites'].shape[0]))
         self.selection = list(range(self.exp_result['sites'].shape[0]))
+        # fix missing values
+        tmean = np.mean(self.exp_result['test'],axis=0)
+        vmean = np.mean(self.exp_result['validation'],axis=0)
+        for i in range(len(self.exp_result['test'])):
+            if self.exp_result['test'][i,0] == 0:
+                self.exp_result['test'][i] = tmean
+            if self.exp_result['validation'][i,0] == 0:
+                self.exp_result['validation'][i] = vmean
+
 
     def retrieve_results_compare(self, query1, query2):
         """
@@ -348,6 +357,14 @@ class DBResults:
         self.exp_result['validation'] = np.array([v[2] for v in ldata])
         self.osel = list(range(self.exp_result['sites'].shape[0]))
         self.selection = list(range(self.exp_result['sites'].shape[0]))
+        # fix missing values
+        tmean = np.mean(self.exp_result['test'],axis=0)
+        vmean = np.mean(self.exp_result['validation'],axis=0)
+        for i in range(len(self.exp_result['test'])):
+            if self.exp_result['test'][i] == 0:
+                self.exp_result['test'][i] = tmean
+            if self.exp_result['validation'][i] == 0:
+                self.exp_result['validation'][i] = vmean
 
         # Result 2
         self.query2 = query2
@@ -375,6 +392,14 @@ class DBResults:
         else:
             self.exp_result2['test'] = np.array([v[1] for v in ldata])
             self.exp_result2['validation'] = np.array([v[2] for v in ldata])
+            # fix missing values
+            tmean = np.mean(self.exp_result2['test'],axis=0)
+            vmean = np.mean(self.exp_result2['validation'],axis=0)
+            for i in range(len(self.exp_result2['test'])):
+                if self.exp_result2['test'][i,0] == 0:
+                    self.exp_result2['test'][i] = tmean
+                if self.exp_result2['validation'][i,0] == 0:
+                    self.exp_result2['validation'][i] = vmean
 
     def retrieve_results_multiple(self, lquery):
         """
@@ -808,21 +833,21 @@ class DBResults:
         if type(summary) == int:
             sumtest = self.exp_result['test'][self.selection, summary]
             sumval = self.exp_result['validation'][self.selection, summary]
-            extra = [1, 0]
+            #extra = [1, 0]
         elif summary == 'sum':
             sumtest = np.sum(self.exp_result['test'][self.selection], axis=1)
             sumval = np.sum(self.exp_result['validation'][self.selection], axis=1)
-            extra = [10, 0]
+            #extra = [10, 0]
         else:
             sumtest = self.exp_result['test'][self.selection, 0]
             sumval = self.exp_result['validation'][self.selection, 0]
-            extra = [10, 1]
+            #extra = [10, 1]
 
         data = []
         if 'test' in dset:
-            data.append(np.append(sumtest, extra))
+            data.append(sumtest)
         if 'val' in dset:
-            data.append(np.append(sumval, extra))
+            data.append(sumval)
 
         if labels is None:
             labels = []
@@ -841,6 +866,7 @@ class DBResults:
             for v,l in zip(data, labels):
                 sns.distplot(v, label=l, kde=True, norm_hist=True)
                 plt.legend(labels=labels, title=title)
+
         else:
             fig = ff.create_distplot(data, labels, bin_size=.05)
             fig.layout.width = figsize[0]
@@ -897,9 +923,9 @@ class DBResults:
             diffval = sumval - sumval2
             extra = [max(np.max(difftest), np.max(diffval)), min(np.min(difftest), np.min(diffval))]
             if 'test' in dset:
-                data.append(np.append(difftest, extra))
+                data.append(difftest)
             if 'val' in dset:
-                data.append(np.append(diffval, extra))
+                data.append(diffval)
             if labels is None:
                 labels = []
                 if 'test' in dset:
@@ -912,11 +938,11 @@ class DBResults:
         else:
             extra = [max(np.max(sumtest), np.max(sumval)), min(np.min(sumtest), np.min(sumval))]
             if 'test' in dset:
-                data.append(np.append(sumtest, extra))
-                data.append(np.append(sumtest2, extra))
+                data.append(sumtest)
+                data.append(sumtest2)
             if 'val' in dset:
-                data.append(np.append(sumval, extra))
-                data.append(np.append(sumval2, extra))
+                data.append(sumval)
+                data.append(sumval2, extra)
 
             if labels is None:
                 labels = []
