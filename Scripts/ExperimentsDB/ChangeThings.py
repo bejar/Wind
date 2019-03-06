@@ -53,8 +53,10 @@ if __name__ == '__main__':
 
     count = 0
     for conf in configs:
-        if not args.noupdate:
-            col.update({'_id': conf['_id']}, {'$set': {'experiment': 'rnns2sfit2'}})
-        count += 1
+        if conf['arch']['filters'] == [128,128] and (len(conf['arch']['strides']) == 3):
+            if not args.noupdate:
+                col.update({'_id': conf['_id']}, {'$set': {'arch.filters': [128,128,128]}})
+                col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
+            count += 1
 
     print(f'{count} Experiments changed')
