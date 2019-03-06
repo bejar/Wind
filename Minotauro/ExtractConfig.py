@@ -36,6 +36,7 @@ __author__ = 'bejar'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--nrep', type=int, default=1, help='number of replicas of the script')
     parser.add_argument('--nconfig', type=int, default=200, help='number of configs')
     parser.add_argument('--jph', type=int, default=30, help='Number of jobs per hour')
     parser.add_argument('--exp', default='convos2s', help='Type of configs')
@@ -55,41 +56,42 @@ if __name__ == '__main__':
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    query = {'status': 'pending', 'experiment': args.exp}
-    # config = col.find_one(query)
+    for nr in range(args.nrep):
+        query = {'status': 'pending', 'experiment': args.exp}
+        # config = col.find_one(query)
 
-    if args.rand:
-        lsel = [c for c in col.find(query, limit=args.nconfig*20)]
-        if len(lsel)> args.nconfig:
-           lconfig = [c for c in np.random.choice(lsel, args.nconfig, replace=False)]
+        if args.rand:
+            lsel = [c for c in col.find(query, limit=args.nconfig*20)]
+            if len(lsel)> args.nconfig:
+               lconfig = [c for c in np.random.choice(lsel, args.nconfig, replace=False)]
+            else:
+               lconfig = lsel
         else:
-           lconfig = lsel
-    else:
-        lconfig = [c for c in col.find(query, limit=args.nconfig)]
+            lconfig = [c for c in col.find(query, limit=args.nconfig)]
 
-    if len(lconfig) == 0:
-        raise NameError('No configurations found')
+        if len(lconfig) == 0:
+            raise NameError('No configurations found')
 
-    # Creates a directory with Data/Jobs/Scripts in the current path
-    if not args.bsc:
-        nm = strftime('%Y%m%d%H%M%S')
-        spath = f"{os.getcwd()}/{nm}"
-        os.mkdir(spath)
-        os.mkdir(f"{spath}/Data")
-        os.mkdir(f"{spath}/Jobs")
-        os.mkdir(f"{spath}/Run")
-    # Copies everything to the remotely mounted BSC dir
-    else:
-        nm = strftime('%Y%m%d%H%M%S')
-        spath = bsc_path
+        # Creates a directory with Data/Jobs/Scripts in the current path
+        if not args.bsc:
+            nm = strftime('%Y%m%d%H%M%S')
+            spath = f"{os.getcwd()}/{nm}"
+            os.mkdir(spath)
+            os.mkdir(f"{spath}/Data")
+            os.mkdir(f"{spath}/Jobs")
+            os.mkdir(f"{spath}/Run")
+        # Copies everything to the remotely mounted BSC dir
+        else:
+            nm = strftime('%Y%m%d%H%M%S')
+            spath = bsc_path
 
-    jobtime = (len(lconfig) // args.jph) + 1
+        jobtime = (len(lconfig) // args.jph) + 1
 
-    if jobtime > 47:
-        raise NameError(f"{jobtime} is longer than the 48 hours limit, reduce number of configs")
+        if jobtime > 47:
+            raise NameError(f"{jobtime} is longer than the 48 hours limit, reduce number of configs")
 
-    if args.machine == 'mino':
-        jobcontent = f"""#!/bin/bash
+        if args.machine == 'mino':
+            jobcontent = f"""#!/bin/bash
 # @ job_name = windjob
 # @ initialdir = {jobs_code_path}/Experiments
 # @ output = {jobs_root_path}/Run/windjobmino{nm}.out
@@ -105,7 +107,7 @@ PYTHONPATH={jobs_code_path}
 export PYTHONPATH
 
 """
-    else:
+        else:
         jobcontent = f"""#!/bin/bash
 #SBATCH --job-name="windjob"
 #SBATCH -D{jobs_code_path}/Experiments
@@ -122,32 +124,32 @@ export PYTHONPATH
 
 """
 
-    if args.machine == 'mino':
-        batchjob = open(f"{spath}/Run/windjobmino{nm}.cmd", 'w')
-        batchjob.write(jobcontent)
-    else:
-        batchjob = open(f"{spath}/Run/windjobpower{nm}.cmd", 'w')
-        batchjob.write(jobcontent)
+        if args.machine == 'mino':
+            batchjob = open(f"{spath}/Run/windjobmino{nm}{nr}.cmd", 'w')
+            batchjob.write(jobcontent)
+        else:
+            batchjob = open(f"{spath}/Run/windjobpower{nm}{nr}.cmd", 'w')
+            batchjob.write(jobcontent)
 
-    if len(lconfig) > 0:
-        for config in tqdm(lconfig):
-            # print(config['_id'])
-            config['host'] = args.machine
-            sconf = json.dumps(config)
-            fconf = open(f"{spath}/Jobs/{config['_id']}.json", 'w')
-            fconf.write(sconf + '\n')
-            fconf.close()
-            if args.copy:
-                copy(f"{wind_data_path}/{config['data']['datanames'][0]}.npy", f"{spath}/Data/")
-            if args.machine == 'mino':
-                batchjob.write(
-                    f"python WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
-            else:
-                batchjob.write(
-                    f"python3 WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
-                    #f"mpirun python WindExperimentBatch.py --best --early --gpu --gpulog --mino --config {config['_id']}\n")
+        if len(lconfig) > 0:
+            for config in tqdm(lconfig):
+                # print(config['_id'])
+                config['host'] = args.machine
+                sconf = json.dumps(config)
+                fconf = open(f"{spath}/Jobs/{config['_id']}.json", 'w')
+                fconf.write(sconf + '\n')
+                fconf.close()
+                if args.copy:
+                    copy(f"{wind_data_path}/{config['data']['datanames'][0]}.npy", f"{spath}/Data/")
+                if args.machine == 'mino':
+                    batchjob.write(
+                        f"python WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
+                else:
+                    batchjob.write(
+                        f"python3 WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
+                        #f"mpirun python WindExperimentBatch.py --best --early --gpu --gpulog --mino --config {config['_id']}\n")
 
-            col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
-        batchjob.close()
-        print(f"\nEstimated running time = {jobtime} hours")
-        # print(f"NCONF= {len(lconfig)}")
+                col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
+            batchjob.close()
+            print(f"\nScript {nr}: Estimated running time = {jobtime} hours")
+            # print(f"NCONF= {len(lconfig)}")
