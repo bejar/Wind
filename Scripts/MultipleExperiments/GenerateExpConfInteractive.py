@@ -129,12 +129,14 @@ def ask_config(config):
                     outconfig['data'][v] = [[f"{site // 500}-{site}-12"] for site in lsites]
                 elif input("Other experiment sites (y/N)? ") in ['y', 'yes']:
                     if args.testdb:
-                        mongoconnection = mongolocaltest
-                    client = MongoClient(mongoconnection.server)
-                    db = client[mongoconnection.db]
-                    if mongoconnection.user is not None:
-                        db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-                    col = db[mongoconnection.col]
+                        mongoconn = mongolocaltest
+                    else:
+                        mongoconn = mongoconnection
+                    client = MongoClient(mongoconn.server)
+                    db = client[mongoconn.db]
+                    if mongoconn.user is not None:
+                        db.authenticate(mongoconn.user, password=mongoconn.passwd)
+                    col = db[mongoconn.col]
 
                     oexp = input("Experiment? ")
                     resp = col.find({'experiment': oexp}, ['site'])

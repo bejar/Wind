@@ -96,17 +96,21 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         self.model = Sequential()
 
+        # self.model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
+        #                       activation=activation, padding='causal', dilation_rate=dilation[0],
+        #                       kernel_regularizer=k_regularizer))
         self.model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                              activation=activation, padding='causal', dilation_rate=dilation[0],
-                              kernel_regularizer=k_regularizer))
+                              activation=activation, padding='causal', dilation_rate=dilation[0]))
 
         if drop != 0:
             self.model.add(Dropout(rate=drop))
 
         for i in range(1, len(filters)):
+            # self.model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
+            #                       activation=activation, padding='causal', dilation_rate=dilation[i],
+            #                       kernel_regularizer=k_regularizer))
             self.model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                                  activation=activation, padding='causal', dilation_rate=dilation[i],
-                                  kernel_regularizer=k_regularizer))
+                                  activation=activation, padding='causal', dilation_rate=dilation[i]))
             if drop != 0:
                 self.model.add(Dropout(rate=drop))
 

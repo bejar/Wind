@@ -12,10 +12,10 @@
     "ahead": [1,12]
   },
   "arch": {
-      "filters": [32],
-      "strides": [1],
+      "filters": [64, 64, 64],
+      "strides": [1, 2, 4],
     "dilated": true,
-      "kernel_size": [3],
+      "kernel_size": [5, 5, 5],
       "k_reg": "None",
       "k_regw": 0.1,
       "rec_reg": "None",
