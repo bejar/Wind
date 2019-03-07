@@ -94,8 +94,8 @@ if __name__ == '__main__':
             jobcontent = f"""#!/bin/bash
 # @ job_name = windjob
 # @ initialdir = {jobs_code_path}/Experiments
-# @ output = {jobs_root_path}/Run/windjobmino{nm}.out
-# @ error = {jobs_root_path}/Run/windjobmino{nm}.err
+# @ output = {jobs_root_path}/Run/windjobmino{nm}{nr:03d}.out
+# @ error = {jobs_root_path}/Run/windjobmino{nm}{nr:03d}.err
 # @ total_tasks = 1
 # @ gpus_per_node = 1
 # @ cpus_per_task = 1
@@ -108,11 +108,11 @@ export PYTHONPATH
 
 """
         else:
-        jobcontent = f"""#!/bin/bash
+            jobcontent = f"""#!/bin/bash
 #SBATCH --job-name="windjob"
 #SBATCH -D{jobs_code_path}/Experiments
-#SBATCH --output={jobs_root_path}/Run/windjobpower{nm}.out
-#SBATCH --error={jobs_root_path}/Run/windjobpower{nm}.err
+#SBATCH --output={jobs_root_path}/Run/windjobpower{nm}{nr:03d}.out
+#SBATCH --error={jobs_root_path}/Run/windjobpower{nm}{nr:03d}.err
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=40
 #SBATCH --time={jobtime}:50:00
@@ -125,10 +125,10 @@ export PYTHONPATH
 """
 
         if args.machine == 'mino':
-            batchjob = open(f"{spath}/Run/windjobmino{nm}{nr}.cmd", 'w')
+            batchjob = open(f"{spath}/Run/windjobmino{nm}{nr:03d}.cmd", 'w')
             batchjob.write(jobcontent)
         else:
-            batchjob = open(f"{spath}/Run/windjobpower{nm}{nr}.cmd", 'w')
+            batchjob = open(f"{spath}/Run/windjobpower{nm}{nr:03d}.cmd", 'w')
             batchjob.write(jobcontent)
 
         if len(lconfig) > 0:

@@ -41,7 +41,7 @@ from sklearn.metrics import r2_score
 from time import time
 import os
 
-from Wind.Train.Losses import linear_weighted_mse
+from Wind.Train.Losses import regression_losses
 
 __author__ = 'bejar'
 
@@ -92,8 +92,10 @@ class NNArchitecture(Architecture):
                 optimizer = RMSprop(lr=0.001)
 
         if 'loss' in self.config['training']:
-            if self.config['training']['loss'] == 'wmse':
-                loss = linear_weighted_mse(self.config['odimensions'])
+            if self.config['training']['loss'] in regression_losses
+            # if self.config['training']['loss'] == 'wmse':
+            #     loss = linear_weighted_mse(self.config['odimensions'])
+                loss = regression_losses[self.config['training']['loss']](self.config['odimensions'])
             else:
                 loss = 'mean_squared_error'
         else:

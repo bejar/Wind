@@ -23,6 +23,10 @@ from tensorflow import losses
 import functools
 from functools import partial, update_wrapper
 
+regression_losses = {'wmse':linear_weighted_mse1,
+                     'wmse_linear':linear_weighted_mse,}
+
+
 def wrapped_partial(func, *args, **kwargs):
     partial_func = partial(func, *args, **kwargs)
     update_wrapper(partial_func, func)
@@ -31,6 +35,7 @@ def wrapped_partial(func, *args, **kwargs):
 
 
 __author__ = 'bejar'
+
 
 def linear_weighted_mse(odimensions):
     """
@@ -42,6 +47,19 @@ def linear_weighted_mse(odimensions):
     """
     # weights = K.ones(odimensions)
     # l = ([1]*(odimensions-1)) + [odimensions]
+    #weights = K.constant(([1]*(odimensions-3)) + ([odimensions/2, odimensions/2, odimensions/4]))
+    weighs = K.range(1,odimensions+1)
+    weights = K.reshape(weights, (1,-1, 1))
+    return wrapped_partial(losses.mean_squared_error, weights=weights)
+
+def linear_weighted_mse1(odimensions):
+    """
+    Computes MSE but weighting the error using the distance in time
+
+    :param y_true:
+    :param y_pred:
+    :return:
+    """
     weights = K.constant(([1]*(odimensions-3)) + ([odimensions/2, odimensions/2, odimensions/4]))
     weights = K.reshape(weights, (1,-1, 1))
     return wrapped_partial(losses.mean_squared_error, weights=weights)

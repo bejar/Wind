@@ -15,7 +15,7 @@
     "activation": "relu",
       "full": [512, 256],
       "mode":"MLP_s2s",
-      "loss":"wmse"
+      "loss":"wmse_linear"
   },
   "training": {
     "iter":1,
