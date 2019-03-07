@@ -102,7 +102,6 @@ class NNArchitecture(Architecture):
             loss = 'mean_squared_error'
 
         if self.runconfig.multi == 1:
-            # self.model.compile(loss='mean_squared_error', optimizer=optimizer)
             self.model.compile(loss=loss, optimizer=optimizer)
 
         else:
