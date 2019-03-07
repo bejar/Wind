@@ -92,7 +92,7 @@ class NNArchitecture(Architecture):
                 optimizer = RMSprop(lr=0.001)
 
         if 'loss' in self.config['training']:
-            if self.config['training']['loss'] in regression_losses
+            if self.config['training']['loss'] in regression_losses:
             # if self.config['training']['loss'] == 'wmse':
             #     loss = linear_weighted_mse(self.config['odimensions'])
                 loss = regression_losses[self.config['training']['loss']](self.config['odimensions'])
