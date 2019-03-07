@@ -61,6 +61,20 @@ def linear_weighted_mse1(odimensions):
     weights = K.reshape(weights, (1,-1, 1))
     return wrapped_partial(losses.mean_squared_error, weights=weights)
 
+def squared_weighted_mse(odimensions):
+    """
+    Computes MSE but weighting the error using the distance in time
+
+    :param y_true:
+    :param y_pred:
+    :return:
+    """
+    weights = K.range(1,odimensions+1)
+    weights = K.multiple(weights, weights)
+    weights = K.reshape(weights, (1,-1, 1))
+    return wrapped_partial(losses.mean_squared_error, weights=weights)
 
 regression_losses = {'wmse':linear_weighted_mse1,
-                     'wmse_linear':linear_weighted_mse}
+                     'wmse_linear':linear_weighted_mse,
+                     'wmse_squared':squared_weighted_mse,
+                     }
