@@ -20,6 +20,7 @@ MLPS2SArchitecture
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
+from Wind.Train.Activations import generate_activation
 
 
 __author__ = 'bejar'
@@ -50,10 +51,12 @@ class MLPS2SArchitecture(NNS2SArchitecture):
         odimension = self.config['odimensions']
 
         self.model = Sequential()
-        self.model.add(Dense(full_layers[0], input_shape=idimensions, activation=activation))
+        self.model.add(Dense(full_layers[0], input_shape=idimensions))
+        self.model.add(generate_activation(activation))
         self.model.add(Dropout(rate=dropout))
         for units in full_layers[1:]:
-            self.model.add(Dense(units=units, activation=activation))
+            self.model.add(Dense(units=units))
+            self.model.add(generate_activation(activation))
             self.model.add(Dropout(rate=dropout))
 
         self.model.add(Dense(odimension, activation='linear'))
