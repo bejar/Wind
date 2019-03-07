@@ -11,11 +11,10 @@
       "ahead": [1,12]
   },
   "arch": {
-      "drop": 0.4,
-    "activation": "relu",
+      "drop": 0.3,
+      "activation": ["prelu",0],
       "full": [512, 256],
-      "mode":"MLP_s2s",
-      "loss":"wmse_linear"
+      "mode":"MLP_s2s"
   },
   "training": {
     "iter":1,
