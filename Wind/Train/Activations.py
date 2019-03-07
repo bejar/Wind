@@ -35,7 +35,7 @@ def generate_activation(act_par):
         atype, par = act_par
         if atype == 'elu':
             return ELU(alpha=par)
-        elif atype == ' leaky':
+        elif atype == 'leaky':
             return LeakyReLU(alpha=par)
         elif atype == 'prelu':
             return PReLU()
