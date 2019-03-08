@@ -20,6 +20,7 @@ from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
 from keras.layers import LSTM, GRU, Dense, Flatten, Dropout, Bidirectional, Input
 from sklearn.metrics import r2_score
+from Wind.Train.Activations import generate_activation
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM

@@ -12,7 +12,7 @@
   },
   "arch": {
       "drop": 0.3,
-      "activation": ["prelu",0],
+      "activation": ["leaky", 0.2],
       "full": [512, 256],
       "mode":"MLP_s2s"
   },

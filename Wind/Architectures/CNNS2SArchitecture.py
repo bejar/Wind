@@ -23,6 +23,7 @@ from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, Conv1D, Flatten
 from sklearn.metrics import r2_score
+from Wind.Train.Activations import generate_activation
 
 from keras.regularizers import l1, l2
 
@@ -112,7 +113,8 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         self.model.add(Flatten())
         for l in full_layers:
-            self.model.add(Dense(l, activation=activationfl))
+            self.model.add(Dense(l))
+            self.model.add(generate_activation(activationfl))
             self.model.add(Dropout(rate=fulldrop))
 
         self.model.add(Dense(odimensions, activation='linear'))
