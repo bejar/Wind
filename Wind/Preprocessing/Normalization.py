@@ -90,7 +90,6 @@ class sigmoid_normalization:
         :return:
         """
         tmp = np.exp(-X)
-        print(tmp.shape)
         return 1.0/(1.0 - tmp)
 
     def fit_transform(self, X):

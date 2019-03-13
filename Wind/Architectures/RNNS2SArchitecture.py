@@ -186,10 +186,11 @@ class RNNS2SArchitecture(NNS2SArchitecture):
         model = Flatten()(model)
 
         for nn in full:
-            model = Dense(nn, activation=activation_full)(model)
+            model = Dense(nn)(model)
+            model = generate_activation(activationfl)(model)
             model = Dropout(rate=fulldrop)(model)
 
-        output = Dense(odimensions)(model)
+        output = Dense(odimensions, activation='linear')(model)
 
         self.model = Model(inputs=input, outputs=output)
 

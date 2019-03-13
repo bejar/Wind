@@ -12,8 +12,8 @@
   },
   "arch": {
       "drop": 0.4,
-    "activation": "relu",
-      "full": [512, 256],
+    "activation": ["leaky", 0.2],
+      "full": [1024, 512],
       "mode":"MLP_s2s"
   },
   "training": {

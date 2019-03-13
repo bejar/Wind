@@ -53,10 +53,11 @@ if __name__ == '__main__':
 
     count = 0
     for conf in configs:
-        if conf['arch']['filters'] == [128,128] and (len(conf['arch']['strides']) == 3):
-            if not args.noupdate:
-                col.update({'_id': conf['_id']}, {'$set': {'arch.filters': [128,128,128]}})
-                col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
+        if not args.noupdate:
+            col.remove({'_id': conf['_id']})
+                #col.update({'_id': conf['_id']},{'$set': {'experiment':'mlps2selu' }})
+#                col.update({'_id': conf['_id']}, {'$set': {'arch.filters': [128,128,128]}})
+#                col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
             count += 1
 
     print(f'{count} Experiments changed')
