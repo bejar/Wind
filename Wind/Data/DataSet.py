@@ -18,7 +18,7 @@ DataSet
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from Wind.Config.Paths import remote_data, remote_wind_data_path
-from Wind.Spatial.Util import get_all_neighbors
+from Wind.Spatial.Util import get_all_neighbors, get_closest_k_neighbors
 from Wind.Preprocessing.Normalization import tanh_normalization
 import numpy as np
 import os
@@ -368,9 +368,16 @@ class Dataset:
             dahead = ahead
             slice = ahead
 
-
-        if self.config['dataset'] == 5:
-            datanames = get_all_neighbors(datanames[0], 0.05)
+        # Augment the dataset with the closest neighbors
+        if self.config['dataset'] == 5 or self.config['dataset'] == 31:
+            if 'radius' not in self.config:
+                raise NameError("Radius missing for neighbours augmented dataset")
+            else:
+                radius = self.config['radius']
+            if 'nneighbors' in self.config:
+                datanames = get_closest_k_neighbors(datanames[0], radius, self.config['nneighbors'])
+            else:
+                datanames = get_all_neighbors(datanames[0], radius)
         # Reads numpy arrays for all sites and keeps only selected columns
         for d in datanames:
             if remote:
@@ -411,7 +418,7 @@ class Dataset:
             self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
                 self._generate_dataset_multiple_var(stacked, datasize, testsize,
                                                     lag=lag, ahead=dahead, slice=slice, mode=mode)
-        elif self.config['dataset'] == 3 or self.config['dataset'] == 'manysitemanyvar':
+        elif self.config['dataset'] == 3 or self.config['dataset'] == 31 or self.config['dataset'] == 'manysitemanyvar':
             stacked = np.hstack([wind[d] for d in datanames])
             self.train_x, self.train_y, self.val_x, self.val_y, self.test_x, self.test_y = \
                 self._generate_dataset_multiple_var(stacked, datasize, testsize,

@@ -6,9 +6,11 @@
       "vars": [0,1,2,3,4,5,6],
     "datasize": 43834,
     "testsize": 17534,
-      "dataset": 1,
+      "dataset": 5,
       "lag": 12,
-      "ahead": [1,12]
+      "ahead": [1,12],
+      "radius": 0.05,
+      "nneighbors":5
   },
   "arch": {
       "drop": 0.3,

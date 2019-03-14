@@ -69,6 +69,23 @@ def get_direct_neighbors(site, radius):
     return neigh
 
 
+def get_closest_k_neighbors(site, radius, k):
+    """
+    return K closesr neighbors inside a radius
+    :param site:
+    :return:
+    """
+    coords = np.load(wind_data_path + '/Coords.npy')
+    tree = KDTree(coords, leaf_size=1)
+    isite = int(site.split('-')[1])
+    agg = int(site.split('-')[2])
+
+
+    lneighbor = tree.query_radius(coords[isite, :].reshape(1, -1), r=radius, sort_results=True, count_only=False, return_distance=True)[0][0]
+
+    return ["%d-%d-%d" % (v // 500, v, agg) for v in lneighbor[:k+1]]
+
+
 def get_all_neighbors(site, radius):
     """
     Returns all site neighbors of a site inside a cluster
@@ -119,8 +136,9 @@ def MapThis(coords, ds, lfnames):
 
 
 if __name__ == '__main__':
-    print(get_direct_neighbors(1203, 0.05))
+    # print(get_direct_neighbors(1203, 0.05))
 
     lneighbor = [4961]
 
-    print(get_all_neighbors("9-4961-12", 0.05))
+    # print(get_all_neighbors("9-4961-12", 0.05))
+    print(get_closest_k_neighbors("9-4961-12", 0.05,5))
