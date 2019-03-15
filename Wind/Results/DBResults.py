@@ -264,9 +264,9 @@ class DBResults:
     selection = None
 
     # Stores the results for test and validation as numpy arrays
-    exp_result = {}
-    exp_result2 = {}
-    exp_lresults = []
+    exp_result = None
+    exp_result2 = None
+    exp_lresults = None
     exp_df = None
 
     def __init__(self, conn=mongoconnection, test=""):
@@ -284,6 +284,9 @@ class DBResults:
             self.db.authenticate(conn.user, password=conn.passwd)
         self.col = self.db[conn.col + test]
         self.coords = np.load(wind_data_path + '/Coords.npy')
+        self.exp_result={}
+        self.exp_result2={}
+        self.exp_lresults=[]
 
     def retrieve_results(self, query):
         """
@@ -410,6 +413,7 @@ class DBResults:
         :return:
         """
         self.lquery = lquery
+        self.exp_lresults=[]
         for i, query in enumerate(lquery):
             lexp = self.col.find(query)
             exp_result = {}
