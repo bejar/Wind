@@ -100,6 +100,7 @@ class Architecture:
             for c in self.config['training']:
                 print(f"# {c} = {self.config['training'][c]}")
             print("---------------------------------------")
+        self.model.summary()
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         """

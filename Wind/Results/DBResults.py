@@ -871,6 +871,9 @@ class DBResults:
                 sns.distplot(v, label=l, kde=True, norm_hist=True)
                 plt.legend(labels=labels, title=title)
 
+            for v ,l in zip(data, labels):
+                print(f'MEAN ({l})= {np.mean(v)}')
+
         else:
             fig = ff.create_distplot(data, labels, bin_size=.05)
             fig.layout.width = figsize[0]

@@ -18,7 +18,7 @@ RNNEncoderDecoderS2SArchitecture
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model
-from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector
+from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector, Dropout
 from sklearn.metrics import r2_score
 
 try:
@@ -83,7 +83,12 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
         k_regw = self.config['arch']['k_regw']
         rnntype = self.config['arch']['rnn']
         CuDNN = self.config['arch']['CuDNN']
-
+        if 'full' in self.config['arch']:
+            full = self.config['arch']['full']
+            fulldrop = self.config['arch']['fulldrop']
+            activation_full = self.config['arch']['activation_full']
+        else:
+            full = []
         # Extra added from training function
         idimensions = self.config['idimensions']
         odimensions = self.config['odimensions']
@@ -130,6 +135,11 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
                                activation=activation, recurrent_activation=activation_r,
                                return_sequences=True, recurrent_regularizer=rec_regularizer,
                                kernel_regularizer=k_regularizer))
+
+        for units in full:
+            self.model.add(TimeDistributed(Dense(units=units, activation=activation_full)))
+            # self.model.add(generate_activation(activation))
+            self.model.add(TimeDistributed(Dropout(rate=fulldrop)))
 
         self.model.add(TimeDistributed(Dense(1)))
 
