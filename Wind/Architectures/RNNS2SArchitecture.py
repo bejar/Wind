@@ -187,7 +187,7 @@ class RNNS2SArchitecture(NNS2SArchitecture):
 
         for nn in full:
             model = Dense(nn)(model)
-            model = generate_activation(activationfl)(model)
+            model = generate_activation(activation_full)(model)
             model = Dropout(rate=fulldrop)(model)
 
         output = Dense(odimensions, activation='linear')(model)
