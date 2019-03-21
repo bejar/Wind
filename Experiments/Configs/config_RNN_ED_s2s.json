@@ -12,13 +12,13 @@
     "fraction": 1
   },
   "arch": {
-    "neuronsE":128,
-    "neuronsD":32,
+    "neuronsE":196,
+    "neuronsD":196,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",
     "rec_regw": 0.1,
-    "drop": 0.3,
+    "drop": 0.0,
     "nlayersE": 1,
     "nlayersD": 1,
     "activation": "relu",
@@ -33,7 +33,7 @@
     "epochs": 10,
     "patience": 10,
       "optimizer": "adamax",
-      "loss":"wmse",
+      "loss":"mse",
     "lrate": 0.001
   }
 }

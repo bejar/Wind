@@ -20,6 +20,8 @@ from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model
 from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector, Dropout
 from sklearn.metrics import r2_score
+from Wind.Train.Activations import generate_activation
+
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -137,8 +139,8 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
                                kernel_regularizer=k_regularizer))
 
         for units in full:
-            self.model.add(TimeDistributed(Dense(units=units, activation=activation_full)))
-            # self.model.add(generate_activation(activation))
+            self.model.add(TimeDistributed(Dense(units=units)))
+            self.model.add(TimeDistributed(generate_activation(activation)))
             self.model.add(TimeDistributed(Dropout(rate=fulldrop)))
 
         self.model.add(TimeDistributed(Dense(1)))
