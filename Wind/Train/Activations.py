@@ -32,13 +32,18 @@ def generate_activation(act_par):
     """
 
     if type(act_par) == list:
-        atype, par = act_par
-        if atype == 'elu':
-            return ELU(alpha=par)
-        elif atype == 'leaky':
-            return LeakyReLU(alpha=par)
-        elif atype == 'prelu':
-            return PReLU()
+        if len(act_par) == 2:
+            atype, par = act_par
+            if atype == 'elu':
+                return ELU(alpha=par)
+            elif atype == 'leaky':
+                return LeakyReLU(alpha=par)
+            elif atype == 'prelu':
+                return PReLU()
+            else:
+                raise NameError("No such Activation layer")
+        elif len(act_par) == 1:
+            return Activation(act_par[0])
         else:
             raise NameError("No such Activation layer")
     elif type(act_par) == str:
