@@ -120,7 +120,7 @@ class RNNS2SArchitecture(NNS2SArchitecture):
 
         input = Input(shape=(idimensions))
 
-        self.model = Sequential()
+        # self.model = Sequential()
         if nlayersE == 1:
             if bidir:
                 model = Bidirectional(RNN(neurons,

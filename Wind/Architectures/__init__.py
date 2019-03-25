@@ -39,6 +39,7 @@ from .MLPDirRegressionArchitecture import MLPDirRegressionArchitecture
 from .MLPS2SRecursiveArchitecture import MLPS2SRecursiveArchitecture
 
 from .CNNS2SArchitecture import CNNS2SArchitecture
+from .CNNS2SCrazyIvanArchitecture import CNNS2SCrazyIvanArchitecture
 
 __author__ = 'bejar'
 
@@ -59,5 +60,6 @@ __all__ = ['Architecture',
            'KNNDirRegressionArchitecture',
            'NNArchitecture',
            'NNS2SArchitecture',
-           'SCKArchitecture'
+           'SCKArchitecture',
+           'CNNS2SCrazyIvanArchitecture'
            ]

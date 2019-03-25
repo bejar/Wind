@@ -24,7 +24,8 @@ from Wind.Train.TrainingProcess import train_dirregression, train_persistence, t
 from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArchitecture, \
     PersistenceArchitecture, RNNEncoderDecoderS2SArchitecture, MLPS2SArchitecture, MLPDirRegressionArchitecture, \
     CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture, MLPS2SRecursiveArchitecture, \
-    RNNEncoderDecoderS2SDepArchitecture, KNNDirRegressionArchitecture, PersistenceMeanArchitecture
+    RNNEncoderDecoderS2SDepArchitecture, KNNDirRegressionArchitecture, PersistenceMeanArchitecture, \
+    CNNS2SCrazyIvanArchitecture
 
 class TrainDispatch:
 
@@ -70,6 +71,7 @@ class TrainDispatch:
         # Convolutional models
 
         self.model_dict['CNN_s2s'] = self.model_dict['convos2s'] = (train_sequence2sequence, CNNS2SArchitecture)
+        self.model_dict['CNN_CI_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvanArchitecture)
 
 
 
