@@ -34,6 +34,25 @@ __author__ = 'bejar'
 # module load K80 cuda/8.0 mkl/2017.1 CUDNN/5.1.10-cuda_8.0 intel-opencl/2016 python/3.6.0+_ML
 # module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
 
+
+# jobcontentmino= f"""#!/bin/bash
+# # @ job_name = windjob
+# # @ initialdir = {jobs_code_path}/Experiments
+# # @ output = {jobs_root_path}/Run/windjobmino{nm}{nr:03d}.out
+# # @ error = {jobs_root_path}/Run/windjobmino{nm}{nr:03d}.err
+# # @ total_tasks = 1
+# # @ gpus_per_node = 1
+# # @ cpus_per_task = 1
+# # @ features = k80
+# # @ wall_clock_limit = {jobtime}:50:00
+# module purge
+# module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
+# PYTHONPATH={jobs_code_path}
+# export PYTHONPATH
+#
+# """
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--nrep', type=int, default=1, help='number of replicas of the script')
@@ -92,21 +111,21 @@ if __name__ == '__main__':
 
         if args.machine == 'mino':
             jobcontent = f"""#!/bin/bash
-# @ job_name = windjob
-# @ initialdir = {jobs_code_path}/Experiments
-# @ output = {jobs_root_path}/Run/windjobmino{nm}{nr:03d}.out
-# @ error = {jobs_root_path}/Run/windjobmino{nm}{nr:03d}.err
-# @ total_tasks = 1
-# @ gpus_per_node = 1
-# @ cpus_per_task = 1
-# @ features = k80
-# @ wall_clock_limit = {jobtime}:50:00
+#SBATCH --job-name="windjob"
+#SBATCH -D{jobs_code_path}/Experiments
+#SBATCH --output={jobs_root_path}/Run/windjobmino{nm}{nr:03d}.out
+#SBATCH --error={jobs_root_path}/Run/windjobmino{nm}{nr:03d}.err
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --time={jobtime}:50:00
+#SBATCH --gres=gpu:1
 module purge
 module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
 PYTHONPATH={jobs_code_path}
 export PYTHONPATH
 
 """
+
         else:
             jobcontent = f"""#!/bin/bash
 #SBATCH --job-name="windjob"

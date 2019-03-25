@@ -40,11 +40,13 @@ if __name__ == '__main__':
         for j in lfiles:
             if not args.test:
                 os.rename(j, 'sub_%s' %j)
-                print('mnsubmit sub_%s' %j)
-                os.system('mnsubmit sub_%s' %j)
+                # print('mnsubmit sub_%s' %j)
+                # os.system('mnsubmit sub_%s' %j)
+                print('sbatch sub_%s' %j)
+                os.system('sbatch sub_%s' %j)
 
             else:
-                print('mnsubmit sub_%s' %j)
+                print('sbatch sub_%s' %j)
 
     elif args.p:
         lfiles = glob.glob('windjobpower*.cmd')
