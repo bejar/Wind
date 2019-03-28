@@ -536,7 +536,7 @@ class Dataset:
 
     def summary(self):
         """
-        Dataset Summary
+        Dataset Summary of its characteristics
 
         :return:
         """
