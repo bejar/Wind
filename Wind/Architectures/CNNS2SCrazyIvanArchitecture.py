@@ -33,7 +33,7 @@ from keras.regularizers import l1, l2
 __author__ = 'bejar'
 
 
-class CNNS2SArchitecture(NNS2SArchitecture):
+class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
     """
     Class for convolutional sequence to sequence architecture
 

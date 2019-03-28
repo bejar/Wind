@@ -453,7 +453,7 @@ class Dataset:
         elif self.config['dmatrix'] == 'dep_aux':
             return self.dependent_auxiliary()
         elif self.config['dmatrix'] == 'future':
-            return self.dependent_auxiliary()
+            return self.auxiliary_future()
         else:
             raise NameError("DataSet: No such dmatrix type")
 
@@ -510,7 +510,7 @@ class Dataset:
         # Future variable, just one for now
         horizon = self.config['lag']
         future = self.config['varsf'][0]
-        ahead = config['ahead'] if (type(config['ahead']) == list) else [1, config['ahead']]
+        ahead = self.config['ahead'] if (type(self.config['ahead']) == list) else [1, self.config['ahead']]
         if type(ahead) == list:
             dahead = ahead[1]
             slice = (ahead[1] - ahead[0]) + 1
