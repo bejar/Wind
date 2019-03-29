@@ -267,7 +267,11 @@ class DBResults:
     exp_result = None
     exp_result2 = None
     exp_lresults = None
+
+    # Stores results as a dataframe
     exp_df = None
+    exp_df_vars = None
+    exp_df_agg = False
 
     def __init__(self, conn=mongoconnection, test=""):
         """
@@ -455,7 +459,7 @@ class DBResults:
         self.selection = list(range(self.exp_lresults[0]['sites'].shape[0]))
 
 
-    def retrieve_results_dataframe(self, query, data=('vars', 'ahead', 'lag'), arch=[], train=[]):
+    def results_dataframe_retrieve(self, query, data=('vars', 'ahead', 'lag'), arch=[], train=[]):
         """
         Retrieves the results from the query and builds a pandas dataframe with all the data
 
@@ -500,6 +504,46 @@ class DBResults:
                     ddata[var].append(val)
 
         self.exp_df = pd.DataFrame(ddata)
+        self.exp_df_vars = arch + train + data
+
+    def results_dataframe_aggregate(self,threshold=None):
+        """
+        Aggregates dataframe to show results
+        """
+        if self.exp_df is None:
+            raise NameError("No results dataframe retrieved")
+        if not self.exp_df_agg:
+            self.exp_df = self.exp_df.groupby(by=['site']+self.exp_df_vars,as_index=False).sum()
+            self.exp_df.drop(columns=['hour', 'site'], inplace=True)
+            print(len(self.exp_df))
+            self.exp_df = self.exp_df.groupby(by=self.exp_df_vars,as_index=False).agg({'test':['mean','count'], 'val':'mean', })
+            self.exp_df_agg = True
+        if threshold:
+            return self.exp_df[self.exp_df['test']['mean'] > threshold].style.highlight_max()
+        else:
+            return self.exp_df.style.highlight_max()
+        
+    def results_dataframe_graph(self, facet, att):
+        """
+        Plots training results
+        """
+        if not self.exp_df_agg:
+            raise NameError("No results dataframe retrieved")
+        df = self.exp_df
+        trace = []
+        for v in sorted(df[facet].unique()):
+            text = ''
+            for a in att:
+                text += f'{a}:'+df[df[facet]==v][a].astype(str)+'-'
+            text += f'{facet}:'+df[df[facet]==v][facet].astype(str)
+            trace.append(go.Scatter(
+                x = df[df[facet]==v]['test']['mean'],
+                y = df[df[facet]==v]['val']['mean'],
+                text = text,
+                mode = 'markers', name=v,
+                marker={'size':df[df[facet]==v]['test']['count']/5}
+            ))
+        py.iplot(trace, filename='basic-scatter')
 
     def size(self):
         """

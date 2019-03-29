@@ -488,7 +488,7 @@ class Dataset:
         :return:
         """
         horizon = self.config['lag']
-        if self.mode != '2D':
+        if self.mode[1] != '2D':
             return [self.train_x[:, :, 0].reshape(self.train_x.shape[0], self.train_x.shape[1], 1),
                     self.train_x[:, :, 1:]], self.train_y, \
                    [self.val_x[:, :, 0].reshape(self.val_x.shape[0], self.val_x.shape[1], 1),
@@ -518,15 +518,15 @@ class Dataset:
             dahead = ahead
             slice = ahead
 
-        if self.mode != '2D':
+        if self.mode[1] != '2D':
             # The values of the future variable are dahead positions from the start
             train_x_future = self.train_x[dahead:, -slice:, future]
             val_x_future = self.val_x[dahead:, -slice:, future]
             test_x_future = self.test_x[dahead:, -slice:, future]
         else:
-            train_x_future = self.train_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+ahead]
-            val_x_future = self.val_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+ahead]
-            test_x_future = self.test_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+ahead]
+            train_x_future = self.train_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+dahead]
+            val_x_future = self.val_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+dahead]
+            test_x_future = self.test_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+dahead]
 
             pass
 
