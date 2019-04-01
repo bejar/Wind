@@ -168,7 +168,7 @@ if __name__ == '__main__':
         sconf = set()
         i = 0
         nc = 0
-        while i < args.confexp and nc < args.npar::
+        while i < args.confexp and nc < args.npar:
             conf = generate_random_config(configP)
             i += 1
             if hash_config(conf) not in sconf:
@@ -230,12 +230,15 @@ if __name__ == '__main__':
         lconf = []
         if args.rand:
             # Generate new configurations at random
-            while i < args.npar:
+            i=0
+            nc=0
+            while i < args.confexp and nc < args.npar:
+                i += 1
                 conf = generate_random_config(configP)
                 if hash_config(conf) not in conf_done:
                     lconf.append(conf)
                     conf_done.add(hash_config(conf))
-                    i += 1
+                    nc += 1
 
         else:
             # Train a random forest regressor to predict accuracy of new configurations
