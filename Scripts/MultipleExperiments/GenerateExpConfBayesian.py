@@ -39,7 +39,6 @@ import numpy as np
 __author__ = 'bejar'
 
 
-
 def change_config(config, param, sites):
     """
     Substitutes default parameter values by generated parameters
@@ -50,10 +49,11 @@ def change_config(config, param, sites):
         for sec in param:
             for p in param[sec]:
                 conf[sec][p] = param[sec][p]
-        conf['data']['site'] = [f'{s}-12']
+        conf['data']['datanames'] = [f'{s}-12']
         conf['site'] = s
         lconf.append(conf)
     return lconf
+
 
 def hash_config(conf):
     """
@@ -65,8 +65,8 @@ def hash_config(conf):
     s = ""
     for sec in sorted(conf.keys()):
         for p in sorted(conf[sec].keys()):
-            s+=f"{p}={conf[sec][p]}/"
-        s+='#'
+            s += f"{p}={conf[sec][p]}/"
+        s += '#'
     return s
 
 
@@ -76,10 +76,11 @@ def generate_random_config(config):
     """
     conf = {}
     for sec in config:
-        conf[sec]={}
+        conf[sec] = {}
         for p in config[sec]:
-            conf[sec][p] =config[sec][p][np.random.choice(len(config[sec][p]))]
+            conf[sec][p] = config[sec][p][np.random.choice(len(config[sec][p]))]
     return conf
+
 
 def recode_dataframe(df, conf):
     """
@@ -90,8 +91,10 @@ def recode_dataframe(df, conf):
     """
     for sec in sorted(conf.keys()):
         for p in sorted(conf[sec].keys()):
-            df[p] = df[p].replace(to_replace=[str(v) for v in conf[sec][p]], value=[i for i in range(len(conf[sec][p]))])
+            df[p] = df[p].replace(to_replace=[str(v) for v in conf[sec][p]],
+                                  value=[i for i in range(len(conf[sec][p]))])
     return df
+
 
 def get_df_configurations(df, conf):
     """
@@ -107,10 +110,11 @@ def get_df_configurations(df, conf):
         s = ""
         for sec in sorted(conf.keys()):
             for p in sorted(conf[sec].keys()):
-                s+=f"{p}={df.iloc[i][p][0]}/"
-            s+='#'
+                s += f"{p}={df.iloc[i][p][0]}/"
+            s += '#'
         sconf.add(s)
     return sconf
+
 
 def config_to_example(conf, confP, vars):
     """
@@ -123,20 +127,21 @@ def config_to_example(conf, confP, vars):
         for p in sorted(conf[sec].keys()):
             a[vars.index(p)] = confP[sec][p].index(conf[sec][p])
 
-    return a.reshape((1,-1))
+    return a.reshape((1, -1))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='config_RNN_s2s', help='Experiment configuration')
     parser.add_argument('--pconfig', default='pconfig_RNN_s2s', help='Paramters to explore configuratio')
-    parser.add_argument('--test', action='store_true', default=True, help='Print the number of configurations')
-    parser.add_argument('--exp',  default='rnns2sactiv4', help='Experiment Name')
+    parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
+    parser.add_argument('--exp', default='rnns2sactiv4', help='Experiment Name')
     parser.add_argument('--rexp', default='rnns2sactiv4', help='Reference experiment Name')
-    parser.add_argument('--npar', type=int, default=10, help='Number of parameter combinations to generate')
-    parser.add_argument('--std', type=float, default=0.1, help='Range for the STD to explore')
+    parser.add_argument('--npar', type=int, default=20, help='Number of parameter combinations to generate')
+    parser.add_argument('--std', type=float, default=0.2, help='Range for the STD to explore')
     parser.add_argument('--confexp', type=int, default=500, help='Number of parameter combinations to explore')
     parser.add_argument('--testdb', action='store_true', default=True, help='Use test database')
+    parser.add_argument('--rand', action='store_true', default=True, help='Generate random configurations')
 
     args = parser.parse_args()
 
@@ -154,7 +159,7 @@ if __name__ == '__main__':
     # Find one site 
     sites = list(set([c['site'] for c in col.find({'experiment': args.exp}, ['site'])]))
     # No experiments yet
-    if len(sites) ==0:
+    if len(sites) == 0:
         # Find one site
         sites = list(set([c['site'] for c in col.find({'experiment': args.rexp}, ['site'])]))
         sites = [sites[0]]
@@ -162,31 +167,33 @@ if __name__ == '__main__':
         lconf = []
         sconf = set()
         i = 0
-        while i < args.npar:
+        nc = 0
+        while i < args.confexp and nc < args.npar::
             conf = generate_random_config(configP)
+            i += 1
             if hash_config(conf) not in sconf:
                 lconf.append(conf)
                 sconf.add(hash_config(conf))
-                i+=1
+                nc += 1
     # Some results already
     else:
 
         site = sites[0]
         # Get all unique configurations
-        configurations = col.find({'experiment': args.exp, 'site':site})
+        configurations = col.find({'experiment': args.exp, 'site': site})
 
         # Variables used from the experiments
         arch = list(configP['arch'].keys()) if 'arch' in configP else []
         data = list(configP['data'].keys()) if 'data' in configP else []
         train = list(configP['train'].keys()) if 'train' in configP else []
 
-        lvars = ['hour', 'site', 'test', 'val'] + arch  + data+ train
+        lvars = ['hour', 'site', 'test', 'val'] + arch + data + train
         ddata = {}
         for var in lvars:
             ddata[var] = []
 
         # Retrieve all results
-        lexp =  col.find({'experiment': args.exp})
+        lexp = col.find({'experiment': args.exp})
         for exp in lexp:
             # To maintain backwards compatibility
             if 'result' in exp:
@@ -195,7 +202,7 @@ if __name__ == '__main__':
                 exdata = np.array(exp['results'])
 
             for i in range(exdata.shape[0]):
-                lvals = [i+1]
+                lvals = [i + 1]
                 lvals.append(int(exp['data']['datanames'][0].split('-')[1]))
                 lvals.append(exdata[i, 1])
                 lvals.append(exdata[i, 2])
@@ -214,57 +221,70 @@ if __name__ == '__main__':
 
         # Transform the experiment results into a dataframe and get the experiment mean R^2
         exp_df = pd.DataFrame(ddata)
-        exp_df = exp_df.groupby(by=['site']+arch+data + train ,as_index=False).sum()
+        exp_df = exp_df.groupby(by=['site'] + arch + data + train, as_index=False).sum()
         exp_df.drop(columns=['hour', 'site'], inplace=True)
-        exp_df = exp_df.groupby(by=arch+ data + train ,as_index=False).agg({'test':['mean'],'val':['mean']})
+        exp_df = exp_df.groupby(by=arch + data + train, as_index=False).agg({'test': ['mean'], 'val': ['mean']})
 
         # Get all the experiments in the dataset in canonical representation
         conf_done = get_df_configurations(exp_df, configP)
-        exp_df = recode_dataframe(exp_df, configP)
-
-        # Train a random forest regressor to predict accuracy of new configurations
-        dataset = exp_df.to_numpy()
-        rfr = RandomForestRegressor(n_estimators=1000)
-        rfr.fit(dataset[:,:-2], dataset[:,-2])
-
-        max_pred = np.max(dataset[:,-2])
-        pred_std = np.std(dataset[:,-2])
-
-        i = 0
-        nc = 0
         lconf = []
-        print("Scanning configurations ...")
-        while i < args.confexp or nc < args.npar:
-            conf = generate_random_config(configP)
-            if hash_config(conf) not in conf_done:
-                v = config_to_example(conf, configP, arch+ data + train)
-                pred = rfr.predict(v)
-                if pred + (args.std*pred_std) > max_pred:
-                    print(conf, pred)
+        if args.rand:
+            # Generate new configurations at random
+            while i < args.npar:
+                conf = generate_random_config(configP)
+                if hash_config(conf) not in conf_done:
                     lconf.append(conf)
-                    nc += 1
-                i += 1
+                    conf_done.add(hash_config(conf))
+                    i += 1
 
+        else:
+            # Train a random forest regressor to predict accuracy of new configurations
+            exp_df = recode_dataframe(exp_df, configP)
+            dataset = exp_df.to_numpy()
+            rfr = RandomForestRegressor(n_estimators=1000)
+            rfr.fit(dataset[:, :-2], dataset[:, -2])
+
+            max_pred = np.max(dataset[:, -2])
+            pred_std = np.std(dataset[:, -2])
+            print("Feature importances:")
+            for f, i in zip(arch + data + train, rfr.feature_importances_):
+                print(f"F({f}) = {i}")
+
+            print('------------------------')
+            i = 0
+            nc = 0
+            lconf = []
+            print("Scanning configurations ...")
+            while i < args.confexp and nc < args.npar:
+                conf = generate_random_config(configP)
+                if hash_config(conf) not in conf_done:
+                    v = config_to_example(conf, configP, arch + data + train)
+                    pred = rfr.predict(v)
+                    if pred + (args.std * pred_std) > max_pred:
+                        print(conf, pred)
+                        lconf.append(conf)
+                        conf_done.add(hash_config(conf))
+                        nc += 1
+                    i += 1
 
     if len(lconf) > 0:
 
         lsitesconf = []
         for c in lconf:
-            lsitesconf +=  change_config(configB, c, sites)
+            lsitesconf += change_config(configB, c, sites)
 
         ids = int(time())
         for n, sc in tqdm(enumerate(lsitesconf)):
-        # for n, sc in enumerate(lsitesconf):
+            # for n, sc in enumerate(lsitesconf):
             sc['experiment'] = args.exp
             sc['status'] = 'pending'
             sc['result'] = []
             site = sc['data']['datanames'][0].split('-')
             sc['_id'] = f"{ids}{n:05d}{int(site[1]):06d}"
+            sc['exploration'] = 'bayesian'
+            # print(sc)
             if not args.test:
-                col.insert_one(config)
-
-
-
+                col.insert_one(sc)
 
     # if args.test:
     #     conf = generate_configs(configB)
