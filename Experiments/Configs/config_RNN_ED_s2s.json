@@ -21,7 +21,7 @@
     "drop": 0.0,
     "nlayersE": 1,
     "nlayersD": 1,
-    "activation": "relu",
+      "activation": ["elu",0.4],
     "activation_r": "hard_sigmoid",
     "CuDNN": false,
     "rnn": "GRU",

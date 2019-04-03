@@ -160,28 +160,15 @@ if __name__ == '__main__':
     # Find one site
     sites = list(set([c['site'] for c in col.find({'experiment': args.exp}, ['site'])]))
     # No experiments yet
-    if (args.refexp is not None) and len(sites) == 0:
-        refexp = True
-        # Find one site from the reference experiment
-        sites = list(set([c['site'] for c in col.find({'experiment': args.refexp}, ['site'])]))
-    else:
-        raise NameError("No sites in the experiments and no reference experiment")
+    if len(sites) == 0:
+        if (args.refexp is not None):
+            refexp = True
+            # Find one site from the reference experiment
+            sites = list(set([c['site'] for c in col.find({'experiment': args.refexp}, ['site'])]))
+        else:
+            raise NameError("No sites in the experiments and no reference experiment")
 
-    #     sites = [sites[0]]
-    #     print(sites)
-    #     lconf = []
-    #     sconf = set()
-    #     i = 0
-    #     nc = 0
-    #     while i < args.confexp and nc < args.npar:
-    #         conf = generate_random_config(configP)
-    #         i += 1
-    #         if hash_config(conf) not in sconf:
-    #             lconf.append(conf)
-    #             sconf.add(hash_config(conf))
-    #             nc += 1
-    # # Some results already
-    # else:
+
 
     if not refexp:
         site = sites[0]

@@ -17,8 +17,8 @@ RNNEncoderDecoderS2SArchitecture
 """
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model
-from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector, Dropout
+from keras.models import Sequential, load_model, Model
+from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector, Dropout, Input
 from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
 
@@ -112,38 +112,72 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
 
 
         RNN = LSTM if rnntype == 'LSTM' else GRU
-        self.model = Sequential()
+
+
+        input = Input(shape=(idimensions))
+        # self.model = Sequential()
         if nlayersE == 1:
-            self.model.add(RNN(neuronsE, input_shape=(idimensions), implementation=impl,
-                               recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                               recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+            model = RNN(neuronsE, input_shape=(idimensions), implementation=impl,
+                               recurrent_dropout=drop, recurrent_activation=activation_r,
+                               recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)(input)
+            model = generate_activation(activation)(model)
+            # self.model.add(RNN(neuronsE, input_shape=(idimensions), implementation=impl,
+            #                    recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+            #                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
         else:
-            self.model.add(RNN(neuronsE, input_shape=(idimensions), implementation=impl,
-                               recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+            model = RNN(neuronsE, input_shape=(idimensions), implementation=impl,
+                               recurrent_dropout=drop, recurrent_activation=activation_r,
                                return_sequences=True, recurrent_regularizer=rec_regularizer,
-                               kernel_regularizer=k_regularizer))
+                               kernel_regularizer=k_regularizer)
+            model = generate_activation(activation)(model)
+            # self.model.add(RNN(neuronsE, input_shape=(idimensions), implementation=impl,
+            #                    recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+            #                    return_sequences=True, recurrent_regularizer=rec_regularizer,
+            #                    kernel_regularizer=k_regularizer))
             for i in range(1, nlayersE - 1):
-                self.model.add(RNN(neuronsE, recurrent_dropout=drop, implementation=impl,
-                                   activation=activation, recurrent_activation=activation_r, return_sequences=True,
-                                   recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
-            self.model.add(RNN(neuronsE, recurrent_dropout=drop, activation=activation,
+                model = RNN(neuronsE, recurrent_dropout=drop, implementation=impl,
+                                   recurrent_activation=activation_r, return_sequences=True,
+                                   recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)(model)
+                model = generate_activation(activation)(model)
+                # self.model.add(RNN(neuronsE, recurrent_dropout=drop, implementation=impl,
+                #                    activation=activation, recurrent_activation=activation_r, return_sequences=True,
+                #                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+
+            model = RNN(neuronsE, recurrent_dropout=drop,
                                recurrent_activation=activation_r, implementation=impl,
-                               recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+                               recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)
+            model = generate_activation(activation)(model)
+            # self.model.add(RNN(neuronsE, recurrent_dropout=drop, activation=activation,
+            #                    recurrent_activation=activation_r, implementation=impl,
+            #                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+        model = RepeatVector(odimensions)(model)
 
-        self.model.add(RepeatVector(odimensions))
-
+        # self.model.add(RepeatVector(odimensions))
+        #
         for i in range(nlayersD):
-            self.model.add(RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
-                               activation=activation, recurrent_activation=activation_r,
+            model = RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
+                               recurrent_activation=activation_r,
                                return_sequences=True, recurrent_regularizer=rec_regularizer,
-                               kernel_regularizer=k_regularizer))
+                               kernel_regularizer=k_regularizer)(model)
+
+            model = generate_activation(activation)(model)
+            # self.model.add(RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
+            #                    activation=activation, recurrent_activation=activation_r,
+            #                    return_sequences=True, recurrent_regularizer=rec_regularizer,
+            #                    kernel_regularizer=k_regularizer))
 
         for units in full:
-            self.model.add(TimeDistributed(Dense(units=units)))
-            self.model.add(TimeDistributed(generate_activation(activation)))
-            self.model.add(TimeDistributed(Dropout(rate=fulldrop)))
+            model = TimeDistributed(Dense(units=units))(model)
+            model = TimeDistributed(generate_activation(activation))(model)
+            model = TimeDistributed(Dropout(rate=fulldrop))(model)
 
-        self.model.add(TimeDistributed(Dense(1)))
+            # self.model.add(TimeDistributed(Dense(units=units)))
+            # self.model.add(TimeDistributed(generate_activation(activation)))
+            # self.model.add(TimeDistributed(Dropout(rate=fulldrop)))
+        output = TimeDistributed(Dense(1))(model)
+
+        # self.model.add(TimeDistributed(Dense(1)))
+        self.model = Model(inputs=input, outputs=output)
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         batch_size = self.config['training']['batch']
