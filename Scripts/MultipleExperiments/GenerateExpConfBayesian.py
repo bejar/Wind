@@ -136,12 +136,12 @@ if __name__ == '__main__':
     parser.add_argument('--pconfig', default='pconfig_RNN_s2s', help='Paramters to explore configuratio')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
     parser.add_argument('--exp', default='rnns2sactiv4', help='Experiment Name')
-    parser.add_argument('--rexp', default='rnns2sactiv4', help='Reference experiment Name')
-    parser.add_argument('--npar', type=int, default=20, help='Number of parameter combinations to generate')
-    parser.add_argument('--std', type=float, default=0.2, help='Range for the STD to explore')
-    parser.add_argument('--confexp', type=int, default=500, help='Number of parameter combinations to explore')
-    parser.add_argument('--testdb', action='store_true', default=True, help='Use test database')
-    parser.add_argument('--rand', action='store_true', default=True, help='Generate random configurations')
+    parser.add_argument('--refexp', default=None, help='Reference experiment Name')
+    parser.add_argument('--npar', type=int, default=10, help='Number of parameter combinations to generate')
+    parser.add_argument('--std', type=float, default=.4, help='Range for the STD of the best prediction to explore')
+    parser.add_argument('--confexp', type=int, default=2000, help='Number of parameter combinations to explore')
+    parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
+    parser.add_argument('--rand', action='store_true', default=False, help='Generate random configurations')
 
     args = parser.parse_args()
 
@@ -156,28 +156,34 @@ if __name__ == '__main__':
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    # Find one site 
+    refexp = False
+    # Find one site
     sites = list(set([c['site'] for c in col.find({'experiment': args.exp}, ['site'])]))
     # No experiments yet
-    if len(sites) == 0:
-        # Find one site
-        sites = list(set([c['site'] for c in col.find({'experiment': args.rexp}, ['site'])]))
-        sites = [sites[0]]
-        print(sites)
-        lconf = []
-        sconf = set()
-        i = 0
-        nc = 0
-        while i < args.confexp and nc < args.npar:
-            conf = generate_random_config(configP)
-            i += 1
-            if hash_config(conf) not in sconf:
-                lconf.append(conf)
-                sconf.add(hash_config(conf))
-                nc += 1
-    # Some results already
+    if (args.refexp is not None) and len(sites) == 0:
+        refexp = True
+        # Find one site from the reference experiment
+        sites = list(set([c['site'] for c in col.find({'experiment': args.refexp}, ['site'])]))
     else:
+        raise NameError("No sites in the experiments and no reference experiment")
 
+    #     sites = [sites[0]]
+    #     print(sites)
+    #     lconf = []
+    #     sconf = set()
+    #     i = 0
+    #     nc = 0
+    #     while i < args.confexp and nc < args.npar:
+    #         conf = generate_random_config(configP)
+    #         i += 1
+    #         if hash_config(conf) not in sconf:
+    #             lconf.append(conf)
+    #             sconf.add(hash_config(conf))
+    #             nc += 1
+    # # Some results already
+    # else:
+
+    if not refexp:
         site = sites[0]
         # Get all unique configurations
         configurations = col.find({'experiment': args.exp, 'site': site})
@@ -227,49 +233,57 @@ if __name__ == '__main__':
 
         # Get all the experiments in the dataset in canonical representation
         conf_done = get_df_configurations(exp_df, configP)
+    else:
+        conf_done = set()
+
+    lconf = []
+
+    # Generate configurations at random if the flag is set or if there is no configurations in the experiment
+    if args.rand or refexp:
+        # Generate new configurations at random
+        i=0
+        nc=0
+        while i < args.confexp and nc < args.npar:
+            i += 1
+            conf = generate_random_config(configP)
+            if hash_config(conf) not in conf_done:
+                print(conf)
+                lconf.append(conf)
+                conf_done.add(hash_config(conf))
+                nc += 1
+
+    else:
+        # We have already results to train the regressor
+        # Train a random forest regressor to predict accuracy of new configurations
+        exp_df = recode_dataframe(exp_df, configP)
+        dataset = exp_df.to_numpy()
+        rfr = RandomForestRegressor(n_estimators=1000)
+        rfr.fit(dataset[:, :-2], dataset[:, -2])
+
+        max_pred = np.max(dataset[:, -2])
+        pred_std = np.std(dataset[:, -2])
+        print("Feature importances:")
+        for f, i in zip(arch + data + train, rfr.feature_importances_):
+            print(f"F({f}) = {i}")
+
+        print('------------------------')
+        i = 0
+        nc = 0
         lconf = []
-        if args.rand:
-            # Generate new configurations at random
-            i=0
-            nc=0
-            while i < args.confexp and nc < args.npar:
-                i += 1
-                conf = generate_random_config(configP)
-                if hash_config(conf) not in conf_done:
+        print("Scanning configurations ...")
+        while i < args.confexp and nc < args.npar:
+            conf = generate_random_config(configP)
+            if hash_config(conf) not in conf_done:
+                v = config_to_example(conf, configP, arch + data + train)
+                pred = rfr.predict(v)
+                if pred + (args.std * pred_std) > max_pred:
+                    print(conf, pred)
                     lconf.append(conf)
                     conf_done.add(hash_config(conf))
                     nc += 1
+                i += 1
 
-        else:
-            # Train a random forest regressor to predict accuracy of new configurations
-            exp_df = recode_dataframe(exp_df, configP)
-            dataset = exp_df.to_numpy()
-            rfr = RandomForestRegressor(n_estimators=1000)
-            rfr.fit(dataset[:, :-2], dataset[:, -2])
-
-            max_pred = np.max(dataset[:, -2])
-            pred_std = np.std(dataset[:, -2])
-            print("Feature importances:")
-            for f, i in zip(arch + data + train, rfr.feature_importances_):
-                print(f"F({f}) = {i}")
-
-            print('------------------------')
-            i = 0
-            nc = 0
-            lconf = []
-            print("Scanning configurations ...")
-            while i < args.confexp and nc < args.npar:
-                conf = generate_random_config(configP)
-                if hash_config(conf) not in conf_done:
-                    v = config_to_example(conf, configP, arch + data + train)
-                    pred = rfr.predict(v)
-                    if pred + (args.std * pred_std) > max_pred:
-                        print(conf, pred)
-                        lconf.append(conf)
-                        conf_done.add(hash_config(conf))
-                        nc += 1
-                    i += 1
-
+    print(f"{len(lconf)} Configurations")
     if len(lconf) > 0:
 
         lsitesconf = []
@@ -277,6 +291,7 @@ if __name__ == '__main__':
             lsitesconf += change_config(configB, c, sites)
 
         ids = int(time())
+
         for n, sc in tqdm(enumerate(lsitesconf)):
             # for n, sc in enumerate(lsitesconf):
             sc['experiment'] = args.exp
