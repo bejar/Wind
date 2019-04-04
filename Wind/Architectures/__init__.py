@@ -37,6 +37,7 @@ from .RNNEncoderDecoderS2SDepArchitecture import RNNEncoderDecoderS2SDepArchitec
 from .MLPS2SArchitecture import MLPS2SArchitecture
 from .MLPDirRegressionArchitecture import MLPDirRegressionArchitecture
 from .MLPS2SRecursiveArchitecture import MLPS2SRecursiveArchitecture
+from .MLPS2SFutureArchitecture import MLPS2SFutureArchitecture
 
 from .CNNS2SArchitecture import CNNS2SArchitecture
 from .CNNS2SCrazyIvanArchitecture import CNNS2SCrazyIvanArchitecture
@@ -51,6 +52,7 @@ __all__ = ['Architecture',
            'PersistenceMeanArchitecture',
            'PersistenceMeanArchitecture2',
            'MLPS2SArchitecture',
+           'MLPS2SFutureArchitecture',
            'MLPDirRegressionArchitecture',
            'CNNS2SArchitecture',
            'RNNS2SArchitecture',

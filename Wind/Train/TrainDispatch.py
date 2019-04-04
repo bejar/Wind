@@ -25,7 +25,7 @@ from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArc
     PersistenceArchitecture, RNNEncoderDecoderS2SArchitecture, MLPS2SArchitecture, MLPDirRegressionArchitecture, \
     CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture, MLPS2SRecursiveArchitecture, \
     RNNEncoderDecoderS2SDepArchitecture, KNNDirRegressionArchitecture, PersistenceMeanArchitecture, \
-    CNNS2SCrazyIvanArchitecture
+    CNNS2SCrazyIvanArchitecture, MLPS2SFutureArchitecture
 
 class TrainDispatch:
 
@@ -63,6 +63,7 @@ class TrainDispatch:
         # MLP models
 
         self.model_dict['MLP_s2s'] = self.model_dict['mlps2s'] = (train_sequence2sequence, MLPS2SArchitecture)
+        self.model_dict['MLP_s2s_fut'] = (train_sequence2sequence, MLPS2SFutureArchitecture)
 
         self.model_dict['MLP_dir_reg'] = self.model_dict['mlpdir'] = (train_dirregression, MLPDirRegressionArchitecture)
 

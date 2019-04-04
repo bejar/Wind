@@ -528,11 +528,9 @@ class Dataset:
             val_x_future = self.val_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+dahead]
             test_x_future = self.test_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+dahead]
 
-            pass
-
         # We lose the last dahead examples because we do not have their full future in the data matrix
-        return [self.train_x[:-dahead], train_x_future], self.train_y, [self.val_x[:-dahead], val_x_future], self.val_y,\
-               [self.test_x[:-dahead], test_x_future], self.test_y
+        return [self.train_x[:-dahead], train_x_future], self.train_y[:-dahead], [self.val_x[:-dahead], val_x_future], self.val_y[:-dahead],\
+               [self.test_x[:-dahead], test_x_future], self.test_y[:-dahead]
 
     def summary(self):
         """
