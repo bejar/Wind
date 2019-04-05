@@ -7,14 +7,14 @@
     "datasize": 43834,
     "testsize": 17534,
     "dataset": 1,
-    "lag": 18,
+    "lag": 12,
     "fraction": 1,
     "ahead": [1,12]
   },
   "arch": {
-    "drop": 0.3,
-    "activation": "relu",
-    "full": [256, 128],
+    "drop": 0.4,
+    "activation": ["leaky",0.2],
+    "full": [1024, 512],
     "mode":"MLP_s2s"
   },
   "training": {

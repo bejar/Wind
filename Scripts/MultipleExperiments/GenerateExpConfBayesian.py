@@ -230,14 +230,17 @@ if __name__ == '__main__':
         # Generate new configurations at random
         i=0
         nc=0
-        while i < args.confexp and nc < args.npar:
-            i += 1
+        for i in tqdm(range(args.confexp)):
+        # while i < args.confexp and nc < args.npar:
+        #     i += 1
             conf = generate_random_config(configP)
             if hash_config(conf) not in conf_done:
-                print(conf)
+                # print(conf)
                 lconf.append(conf)
                 conf_done.add(hash_config(conf))
                 nc += 1
+            if  nc > args.npar:
+                break
 
     else:
         # We have already results to train the regressor
@@ -250,25 +253,29 @@ if __name__ == '__main__':
         max_pred = np.max(dataset[:, -2])
         pred_std = np.std(dataset[:, -2])
         print("Feature importances:")
-        for f, i in zip(arch + data + train, rfr.feature_importances_):
-            print(f"F({f}) = {i}")
+        limp = zip(rfr.feature_importances_, arch + data + train)
+        for i, f in sorted(limp):
+            print(f"F({f}) = {i:3.2f}")
 
         print('------------------------')
         i = 0
         nc = 0
         lconf = []
         print("Scanning configurations ...")
-        while i < args.confexp and nc < args.npar:
+        for i in tqdm(range(args.confexp)):
+        # while i < args.confexp and nc < args.npar:
             conf = generate_random_config(configP)
             if hash_config(conf) not in conf_done:
                 v = config_to_example(conf, configP, arch + data + train)
                 pred = rfr.predict(v)
                 if pred + (args.std * pred_std) > max_pred:
-                    print(conf, pred)
+                    # print(conf, pred)
                     lconf.append(conf)
                     conf_done.add(hash_config(conf))
                     nc += 1
-                i += 1
+                # i += 1
+            if  nc > args.npar:
+                break
 
     print(f"{len(lconf)} Configurations")
     if len(lconf) > 0:
@@ -291,25 +298,3 @@ if __name__ == '__main__':
             if not args.test:
                 col.insert_one(sc)
 
-    # if args.test:
-    #     conf = generate_configs(configB)
-    #     for c in conf:
-    #         print(c)
-    # else:
-    #     if args.testdb:
-    #         mongoconnection = mongolocaltest
-    #     client = MongoClient(mongoconnection.server)
-    #     db = client[mongoconnection.db]
-    #     if mongoconnection.user is not None:
-    #         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
-    #     col = db[mongoconnection.col]
-    #
-    #     ids = int(time())
-    #     for i, config in tqdm(enumerate(generate_configs(configB))):
-    #         config['experiment'] = args.exp
-    #         config['status'] = 'pending'
-    #         site = config['data']['datanames'][0].split('-')
-    #         config['site'] = '-'.join(site[:2])
-    #         config['result'] = []
-    #         config['_id'] = f"{ids}{i:05d}{int(site[1]):06d}"
-    #         col.insert_one(config)
