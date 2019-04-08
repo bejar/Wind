@@ -131,7 +131,7 @@ class Architecture:
         sr2test = 0.0
 
 
-        for c, i, r2val, r2test in enumerate(result):
+        for c, (i, r2val, r2test) in enumerate(result):
             sr2val += r2val
             sr2test += r2test
             print(f"{self.config['arch']['mode']} | AH={i} R2V = {r2val:3.5f} R2T = {r2test:3.5f}")
