@@ -28,7 +28,7 @@ import argparse
 from time import time
 
 from Wind.Misc import load_config_file
-from Wind.Private.DBConfig import mongolocaltest
+from Wind.Private.DBConfig import mongolocaltest, mongoconnection
 from copy import deepcopy
 from pymongo import MongoClient
 from tqdm import tqdm
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     parser.add_argument('--pconfig', default='pconfig_RNN_s2s', help='Paramters to explore configuratio')
     parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
     parser.add_argument('--exp', default='rnns2sactiv4', help='Experiment Name')
-    parser.add_argument('--refexp', default=None, help='Reference experiment Name')
+    parser.add_argument('--refexp', default='rnns2sactiv4', help='Reference experiment Name')
     parser.add_argument('--npar', type=int, default=10, help='Number of parameter combinations to generate')
     parser.add_argument('--std', type=float, default=.4, help='Range for the STD of the best prediction to explore')
     parser.add_argument('--confexp', type=int, default=2000, help='Number of parameter combinations to explore')
@@ -150,6 +150,7 @@ if __name__ == '__main__':
 
     if args.testdb:
         mongoconnection = mongolocaltest
+
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.user is not None:
@@ -168,6 +169,7 @@ if __name__ == '__main__':
         else:
             raise NameError("No sites in the experiments and no reference experiment")
 
+    print(sites)
 
 
     if not refexp:
@@ -239,7 +241,7 @@ if __name__ == '__main__':
                 lconf.append(conf)
                 conf_done.add(hash_config(conf))
                 nc += 1
-            if  nc > args.npar:
+            if  nc >= args.npar:
                 break
 
     else:
@@ -274,7 +276,7 @@ if __name__ == '__main__':
                     conf_done.add(hash_config(conf))
                     nc += 1
                 # i += 1
-            if  nc > args.npar:
+            if  nc >= args.npar:
                 break
 
     print(f"{len(lconf)} Configurations")

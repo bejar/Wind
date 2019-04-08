@@ -571,7 +571,7 @@ if __name__ == '__main__':
     from Wind.Config import wind_data_path
     import matplotlib.pyplot as plt
 
-    cfile = "config_RNN_ED_s2s"
+    cfile = "config_MLP_s2s_fut"
     config = load_config_file(f"../TestConfigs/{cfile}.json")
 
     # print(config)
@@ -580,3 +580,15 @@ if __name__ == '__main__':
 
     dataset.generate_dataset(ahead=[1, 12], mode=mode)
     dataset.summary()
+
+    dm = dataset.get_data_matrices()
+
+    trainx, trainx_f = dm[0]
+
+    print(trainx.shape)
+    print(trainx_f.shape)
+
+    print(trainx[1,:,5])
+    print(trainx[1,:,1])
+    print(trainx_f[0,:])
+
