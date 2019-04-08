@@ -78,7 +78,7 @@ class MLPS2SArchitecture(NNS2SArchitecture):
             layer = Dropout(rate=dropout)(layer)
 
         for units in full_layers[1:]:
-            layer = Dense(full_layers[0])(layer)
+            layer = Dense(units=units)(layer)
             layer = generate_activation(activation)(layer)
             if bnorm:
                 layer = BatchNormalization()(layer)
