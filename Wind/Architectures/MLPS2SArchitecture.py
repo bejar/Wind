@@ -72,7 +72,9 @@ class MLPS2SArchitecture(NNS2SArchitecture):
             layer = generate_activation(activation)(layer)
             layer = Dropout(rate=dropout)(layer)
 
-        self.model = Model(inputs=data_input, outputs=layer)
+        output = Dense(odimension, activation='linear')(layer)
+
+        self.model = Model(inputs=data_input, outputs=output)
 
         # self.model = Sequential()
         # self.model.add(Dense(full_layers[0], input_shape=idimensions))
