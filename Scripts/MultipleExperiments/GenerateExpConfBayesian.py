@@ -58,7 +58,7 @@ def change_config(config, param, sites):
 def hash_config(conf):
     """
     Creates a canonical string representation for a configuration
-    by traversing alphabetically the dictionarty and appending a representation string
+    by traversing alphabetically the dictionary and appending a representation string
     :param conf:
     :return:
     """
@@ -168,9 +168,6 @@ if __name__ == '__main__':
             sites = list(set([c['site'] for c in col.find({'experiment': args.refexp}, ['site'])]))
         else:
             raise NameError("No sites in the experiments and no reference experiment")
-
-    print(sites)
-
 
     if not refexp:
         site = sites[0]
