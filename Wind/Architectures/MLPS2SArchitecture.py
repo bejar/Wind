@@ -68,9 +68,9 @@ class MLPS2SArchitecture(NNS2SArchitecture):
             layer = Dropout(rate=dropout)(layer)
 
         for units in full_layers[1:]:
-            self.model.add(Dense(units=units))(layer)
-            self.model.add(generate_activation(activation))(layer)
-            self.model.add(Dropout(rate=dropout))(layer)
+            layer = Dense(full_layers[0])(layer)
+            layer = generate_activation(activation)(layer)
+            layer = Dropout(rate=dropout)(layer)
 
         self.model = Model(inputs=data_input, outputs=layer)
 
