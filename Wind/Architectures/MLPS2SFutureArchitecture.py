@@ -56,8 +56,6 @@ class MLPS2SFutureArchitecture(NNS2SArchitecture):
         data_input = Input(shape=(idimensions[0]))
         future_input = Input(shape=(idimensions[1]))
 
-        #branch1 = Flatten()(data_input)
-        #branch2 = Flatten()(future_input)
         to_mlp = concatenate([data_input,future_input])
 
         mlp_layers =  Dense(full_layers[0])(to_mlp)
