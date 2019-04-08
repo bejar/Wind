@@ -18,8 +18,8 @@ MLPS2SArchitecture
 """
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential
-from keras.layers import Dense, Dropout
+from keras.models import Sequential, Model
+from keras.layers import Dense, Dropout, GaussianNoise
 from Wind.Train.Activations import generate_activation
 
 
@@ -45,20 +45,44 @@ class MLPS2SArchitecture(NNS2SArchitecture):
         activation = self.config['arch']['activation']
         dropout = self.config['arch']['drop']
         full_layers = self.config['arch']['full']
+        if 'noise' in self.config['arch']:
+            noise = self.config['arch']['noise']
+        else:
+            noise = 0
 
         # Extra added from training function
         idimensions = self.config['idimensions']
         odimension = self.config['odimensions']
 
-        self.model = Sequential()
-        self.model.add(Dense(full_layers[0], input_shape=idimensions))
-        self.model.add(generate_activation(activation))
-        self.model.add(Dropout(rate=dropout))
-        for units in full_layers[1:]:
-            self.model.add(Dense(units=units))
-            self.model.add(generate_activation(activation))
-            self.model.add(Dropout(rate=dropout))
 
-        self.model.add(Dense(odimension, activation='linear'))
+        data_input = Input(shape=(idimensions))
+
+        if noise != 0:
+            layer = GaussianNoise(noise)(data_input)
+            layer = Dense(full_layers[0])(layer)
+            layer = generate_activation(activation)(layer)
+            layer = Dropout(rate=dropout)(layer)
+        else:
+            layer = Dense(full_layers[0])(data_input)
+            layer = generate_activation(activation)(layer)
+            layer = Dropout(rate=dropout)(layer)
+
+        for units in full_layers[1:]:
+            self.model.add(Dense(units=units))(layer)
+            self.model.add(generate_activation(activation))(layer)
+            self.model.add(Dropout(rate=dropout))(layer)
+
+        self.model = Model(inputs=data_input, outputs=layer)
+
+        # self.model = Sequential()
+        # self.model.add(Dense(full_layers[0], input_shape=idimensions))
+        # self.model.add(generate_activation(activation))
+        # self.model.add(Dropout(rate=dropout))
+        # for units in full_layers[1:]:
+        #     self.model.add(Dense(units=units))
+        #     self.model.add(generate_activation(activation))
+        #     self.model.add(Dropout(rate=dropout))
+        #
+        # self.model.add(Dense(odimension, activation='linear'))
 
 

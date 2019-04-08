@@ -281,6 +281,8 @@ class Dataset:
 
         #######################################
         if mode_x == '2D':
+            # Interchange axes 1 and 2 so the variables values are contiguous in the 2D matrix
+            train_x = np.swapaxes(train_x, 1, 2)
             train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1] * train_x.shape[2]))
 
         if mode_y == '3D':
@@ -305,7 +307,9 @@ class Dataset:
 
         ########################################################
         if mode_x == '2D':
+            val_x = np.swapaxes(val_x, 1, 2)
             val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1] * val_x.shape[2]))
+            test_x = np.swapaxes(test_x, 1, 2)
             test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1] * test_x.shape[2]))
 
         if mode_y == '3D':
@@ -508,7 +512,7 @@ class Dataset:
         :return:
         """
         # Future variable, just one for now
-        horizon = self.config['lag']
+        datalag = self.config['lag']
         future = self.config['varsf'][0]
         ahead = self.config['ahead'] if (type(self.config['ahead']) == list) else [1, self.config['ahead']]
         if type(ahead) == list:
@@ -524,13 +528,14 @@ class Dataset:
             val_x_future = self.val_x[dahead:, -slice:, future]
             test_x_future = self.test_x[dahead:, -slice:, future]
         else:
-            train_x_future = self.train_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+dahead]
-            val_x_future = self.val_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+dahead]
-            test_x_future = self.test_x[dahead:, (future*horizon)+dahead-slice:(future*horizon)+dahead]
+            nvars = len(self.config['vars'])
+            train_x_future = self.train_x[datalag-1:, (future*datalag)+ahead[0]:(future*datalag)+ahead[0]+slice]
+            val_x_future = self.val_x[datalag-1:, (future*datalag)+ahead[0]:(future*datalag)+ahead[0]+slice]
+            test_x_future = self.test_x[datalag-1:, (future*datalag)+ahead[0]:(future*datalag)+ahead[0]+slice]
 
-        # We lose the last dahead examples because we do not have their full future in the data matrix
-        return [self.train_x[:-dahead], train_x_future], self.train_y[:-dahead], [self.val_x[:-dahead], val_x_future], self.val_y[:-dahead],\
-               [self.test_x[:-dahead], test_x_future], self.test_y[:-dahead]
+        # We lose the last datalag-1 examples because we do not have their full future in the data matrix
+        return [self.train_x[:-(datalag-1)], train_x_future], self.train_y[:-(datalag-1)], [self.val_x[:-(datalag-1)], val_x_future], self.val_y[:-(datalag-1)],\
+               [self.test_x[:-(datalag-1)], test_x_future], self.test_y[:-(datalag-1)]
 
     def summary(self):
         """
@@ -575,20 +580,30 @@ if __name__ == '__main__':
     config = load_config_file(f"../TestConfigs/{cfile}.json")
 
     # print(config)
-    mode = (False, '3D')
+    mode = ('2D', '2D')
     dataset = Dataset(config=config['data'], data_path=wind_data_path)
 
     dataset.generate_dataset(ahead=[1, 12], mode=mode)
-    dataset.summary()
+    # dataset.summary()
 
     dm = dataset.get_data_matrices()
 
     trainx, trainx_f = dm[0]
+    trainy = dm[1]
+    valx, valx_f = dm[2]
+    testx, testx_f = dm[4]
 
     print(trainx.shape)
     print(trainx_f.shape)
+    print(trainy.shape)
 
-    print(trainx[1,:,5])
-    print(trainx[1,:,1])
-    print(trainx_f[0,:])
+    # print(trainx[2,:18])
+    # print(trainx[2,18:36])
+    # print(trainx_f[0,:])
+    # print(testx[2,:18])
+    # print(testx[2,18:36])
+    # print(testx_f[0,:])
+    # print(valx[2,:18])
+    # print(valx[2,18:36])
+    # print(valx_f[0,:])
 
