@@ -34,6 +34,5 @@ if __name__ == '__main__':
         cmat +=np.corrcoef(wind[i:i+lag,0], wind[i:i+lag,5],rowvar=False)
 
     cmat/=cmat[0,0]
-
     print(cmat)
 
