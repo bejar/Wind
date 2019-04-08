@@ -19,7 +19,7 @@ MLPS2SArchitecture
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, Model
-from keras.layers import Dense, Dropout, GaussianNoise
+from keras.layers import Dense, Dropout, GaussianNoise, Input
 from Wind.Train.Activations import generate_activation
 
 
