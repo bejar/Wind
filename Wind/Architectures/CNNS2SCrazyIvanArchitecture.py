@@ -24,7 +24,7 @@ __author__ = 'bejar'
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
-from keras.layers import Dense, Dropout, Conv1D, Flatten, Concatenate
+from keras.layers import Dense, Dropout, Conv1D, Flatten, Concatenate, Input
 from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
 
@@ -100,7 +100,7 @@ class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
 
         lconv = []
         for k in kernel_size:
-            convomodel = Conv1D(filters, input_shape=(idimensions), kernel_size=kernel_sizek, strides=strides,
+            convomodel = Conv1D(filters, input_shape=(idimensions), kernel_size=k, strides=strides,
                               activation=activation, padding='causal',
                               kernel_regularizer=k_regularizer)(input)
 
@@ -109,7 +109,7 @@ class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
             lconv.append(convomodel)
 
         convoout = Concatenate()(lconv)
-        fullout = Dense(l)(convoout)
+        fullout = Dense(full_layers[0])(convoout)
         fullout = generate_activation(activationfl)(fullout)
         fullout = Dropout(rate=fulldrop)
 
