@@ -469,3 +469,4 @@ if __name__ == '__main__':
                 if len(lconf) > 0:
                     insert_configurations(lconf, smacexp['sites'][0])
                     insert_configurations(lconf, smacexp['sites'][1])
+
