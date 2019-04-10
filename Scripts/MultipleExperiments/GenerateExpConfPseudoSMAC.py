@@ -18,8 +18,6 @@ GenerateExpConfPseudoSMAC
 
 """
 
-
-
 import argparse
 from time import time
 
@@ -187,13 +185,25 @@ def regenerate_conf(df, i):
     :return:
     """
 
-    conf = {'arch':{}, 'train':{}, 'data':{}}
+    conf = {'arch': {}, 'train': {}, 'data': {}}
     for v in arch:
-        conf['arch'][v] = df.iloc[i][v][0]
+        try:
+            conf['arch'][v] = eval(df.iloc[i][v][0])
+        except:
+            conf['arch'][v] = df.iloc[i][v][0]
+
     for v in data:
-        conf['data'][v] = df.iloc[i][v][0]
+        try:
+            conf['data'][v] = eval(df.iloc[i][v][0])
+        except:
+            conf['data'][v] = df.iloc[i][v][0]
+
     for v in train:
-        conf['train'][v] = df.iloc[i][v][0]
+        try:
+            conf['train'][v] = eval(df.iloc[i][v][0])
+        except:
+            conf['train'][v] = df.iloc[i][v][0]
+
 
     return conf
 
@@ -224,6 +234,46 @@ def insert_configurations(lconf, sites):
         if not args.test:
             col.insert_one(sc)
 
+def get_best_configurations(exp_df, n):
+    """
+    Return the n best cofigurations
+    :param exp_df:
+    :return:
+    """
+    lexp = []
+    for i in range(len(exp_df)):
+        lexp.append((exp_df.iloc[i]['test']['mean'], i, exp_df.iloc[i]['test']['count']))
+
+    lexp = sorted(lexp, reverse=True)[:n]
+
+    # For the best configurations, regenerate configuration from dataframe
+    lbestconf = []
+    for _, i, _ in lexp:
+        lbestconf.append(regenerate_conf(exp_df, i))
+    return lbestconf
+
+
+def change_one_conf(config, configP):
+    """
+    Changes randomly one item in the configuration
+    :param conf:
+    :return:
+    """
+    newconf = deepcopy(config)
+    att = ''
+    while att == '':
+        # choose randomly a section
+        sec = list(newconf.keys())[np.random.choice(len(list(newconf.keys())))]
+        if len(list(newconf[sec].keys())) != 0:
+            # choose randomly an attribute
+            att = list(newconf[sec].keys())[np.random.choice(len(list(newconf[sec].keys())))]
+    # choose randomly a new value
+    vals = deepcopy(configP[sec][att])
+    vals.remove(newconf[sec][att])
+    newconf[sec][att] = vals[np.random.choice(len(vals))]
+
+    return newconf
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -234,10 +284,12 @@ if __name__ == '__main__':
 
     parser.add_argument('--exp', required=True, help='Experiment Name')
 
-    parser.add_argument('--npar', type=int, default=10, help='Number of parameter combinations to generate/explore/exploit')
+    parser.add_argument('--npar', type=int, default=10,
+                        help='Number of parameter combinations to generate/explore/exploit')
     parser.add_argument('--std', type=float, default=.4, help='Range for the STD of the best prediction to exploit')
 
-    parser.add_argument('--confexp', type=int, default=2000, help='Number of parameter combinations to test for exploitation')
+    parser.add_argument('--confexp', type=int, default=2000,
+                        help='Number of parameter combinations to test for exploitation')
 
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
 
@@ -247,8 +299,8 @@ if __name__ == '__main__':
 
     parser.add_argument('--random', action='store_true', default=False, help='Generate random configurations')
     parser.add_argument('--intensify', action='store_true', default=False, help='Intensify best configurations')
-    parser.add_argument('--exploit', action='store_true', default=False, help='Use prediction surface for generating new promising configurations')
-
+    parser.add_argument('--exploit', default=None, choices=['random', 'local', 'genetic'],
+                        help='Use prediction surface for generating new promising configurations')
 
     args = parser.parse_args()
 
@@ -271,7 +323,7 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
     # Check if experiment already exists
-    smacexp = col.find_one({'SMAC':'init', 'smexperiment': args.exp})
+    smacexp = col.find_one({'SMAC': 'init', 'smexperiment': args.exp})
 
     # Initialize experiment
     # Pick a random sample of sites and divide it in exploration stages
@@ -283,11 +335,11 @@ if __name__ == '__main__':
         else:
             # Pick random sites and divide it in batches
             lsites = np.random.choice(range(126691), args.init, replace=False)
-            lsites = [f'{site//500}-{site}' for site in lsites]
+            lsites = [f'{site // 500}-{site}' for site in lsites]
             lbatches = []
-            for i in range(0,len(lsites), BATCH):
-                lbatches.append(lsites[i:i+BATCH])
-            expconf = {'SMAC':'INIT', 'smexperiment': args.exp, 'batch':BATCH, 'sites':lbatches}
+            for i in range(0, len(lsites), BATCH):
+                lbatches.append(lsites[i:i + BATCH])
+            expconf = {'SMAC': 'INIT', 'smexperiment': args.exp, 'batch': BATCH, 'sites': lbatches}
             col.insert_one(expconf)
 
     # Initialize experiment
@@ -296,12 +348,12 @@ if __name__ == '__main__':
         if smacexp:
             raise NameError("Experiment already initialized")
         else:
-            smacrefexp = col.find_one({'SMAC':'init', 'smexperiment': args.refexp})
+            smacrefexp = col.find_one({'SMAC': 'init', 'smexperiment': args.refexp})
             if not smacrefexp:
                 raise NameError("Reference experiment does not exists")
             else:
-                expconf = {'SMAC':'INIT', 'smexperiment': args.exp,
-                           'batch':smacrefexp['batch'], 'sites':smacrefexp['sites']}
+                expconf = {'SMAC': 'INIT', 'smexperiment': args.exp,
+                           'batch': smacrefexp['batch'], 'sites': smacrefexp['sites']}
                 col.insert_one(expconf)
     else:
         if not smacexp:
@@ -311,19 +363,18 @@ if __name__ == '__main__':
         refsite = smacexp['sites'][0][0]
         expsite = col.find_one({'experiment': args.exp, 'site': refsite})
 
-        if expsite is not None: # Some experiments run already
+        if expsite is not None:  # Some experiments run already
             exp_df = retrieve_results_as_dataframe(args.exp)
             # Get all the experiments in the dataset in canonical representation
             conf_done = get_df_configurations(exp_df, configP)
-        else: # No experiments yet
+        else:  # No experiments yet
             conf_done = set()
 
         # 1) Generate random configurations with first batch of sites
         if args.random or expsite is None:
             # Generate new configurations at random
             lconf = []
-            i=0
-            nc=0
+            nc = 0
             for i in tqdm(range(args.npar)):
                 conf = generate_random_config(configP)
                 if hash_config(conf) not in conf_done:
@@ -340,7 +391,6 @@ if __name__ == '__main__':
         # 2) Generate more experiments for the configurations with higher score
         elif args.intensify:
             lexp = []
-
             for i in range(len(exp_df)):
                 lexp.append((exp_df.iloc[i]['test']['mean'], i, exp_df.iloc[i]['test']['count']))
 
@@ -349,45 +399,73 @@ if __name__ == '__main__':
             # for the following batch
             for _, i, count in lexp:
                 conf = regenerate_conf(exp_df, i)
-                insert_configurations([conf], smacexp['sites'][(count//BATCH)+1])
+                print(f"BATCH= {(count // BATCH) + 1}")
+                insert_configurations([conf], smacexp['sites'][(count // BATCH) + 1])
 
         # 3) Generate more experiments from the prediction of the score
         elif args.exploit:
             # We have already results to train the regressor
             # Train a random forest regressor to predict accuracy of new configurations
+            lbestconf = get_best_configurations(exp_df, args.npar)
+
             lconf = []
             exp_df = recode_dataframe(exp_df, configP)
             dataset = exp_df.to_numpy()
             rfr = RandomForestRegressor(n_estimators=1000)
-            rfr.fit(dataset[:, :-2], dataset[:, -2])
+            # -3 in the test prediction
+            rfr.fit(dataset[:, :-3], dataset[:, -3])
 
-            max_pred = np.max(dataset[:, -2])
-            pred_std = np.std(dataset[:, -2])
+            max_pred = np.max(dataset[:, -3])
+            pred_std = np.std(dataset[:, -3])
             print("Feature importances:")
             limp = zip(rfr.feature_importances_, arch + data + train)
             for i, f in sorted(limp):
                 print(f"F({f}) = {i:3.2f}")
 
             print('------------------------')
-            i = 0
-            nc = 0
-            lconf = []
-            print("Scanning configurations ...")
-            for i in tqdm(range(args.confexp)):
-                conf = generate_random_config(configP)
-                if hash_config(conf) not in conf_done:
-                    v = config_to_example(conf, configP, arch + data + train)
-                    pred = rfr.predict(v)
-                    if pred + (args.std * pred_std) > max_pred:
-                        lconf.append(conf)
+
+            # 3.a) randomly by exploring the prediction surface generating and testing random configurations
+            if args.exploit == 'random':
+                i = 0
+                nc = 0
+                lconf = []
+                print("Scanning configurations ...")
+                for i in tqdm(range(args.confexp)):
+                    conf = generate_random_config(configP)
+                    if hash_config(conf) not in conf_done:
                         conf_done.add(hash_config(conf))
-                        nc += 1
-                if  nc >= args.npar:
-                    break
+                        v = config_to_example(conf, configP, arch + data + train)
+                        pred = rfr.predict(v)
+                        if pred + (args.std * pred_std) > max_pred:
+                            lconf.append(conf)
+                            nc += 1
+                    if nc >= args.npar:
+                        break
 
-            # insert promising configurations with the first and second batches of sites
-            if len(lconf) > 0:
-                insert_configurations(lconf, smacexp['sites'][0])
-                insert_configurations(lconf, smacexp['sites'][1])
+                # insert promising configurations with the first and second batches of sites
+                if len(lconf) > 0:
+                    insert_configurations(lconf, smacexp['sites'][0])
+                    insert_configurations(lconf, smacexp['sites'][1])
+            # 3.b) take the 10 best configurations and generate new configurations by changing randomly
+            # one attribute and testing accuracy
+            elif args.exploit == 'local':
+                lconf = []
+                nc = 0
+                for i in tqdm(range(args.npar)):
+                    newconf = change_one_conf(lbestconf[np.random.choice(len(lbestconf))], configP)
+                    if hash_config(newconf) not in conf_done:
+                        conf_done.add(hash_config(newconf))
+                        v = config_to_example(newconf, configP, arch + data + train)
+                        pred = rfr.predict(v)
+                        if pred + (args.std * pred_std) > max_pred:
+                            lconf.append(newconf)
+                            # add candidates to list of best candidates to explore more configurations locally
+                            lbestconf.append(newconf)
+                            nc += 1
+                    if nc >= args.npar:
+                        break
 
-
+                # insert promising configurations with the first and second batches of sites
+                if len(lconf) > 0:
+                    insert_configurations(lconf, smacexp['sites'][0])
+                    insert_configurations(lconf, smacexp['sites'][1])
