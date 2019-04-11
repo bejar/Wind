@@ -493,10 +493,10 @@ if __name__ == '__main__':
                     if nc >= args.npar:
                         break
 
-                # insert promising configurations with the first and second batches of sites
-                if len(lconf) > 0:
-                    for i in range(exp.ninitbatches):
-                        insert_configurations(lconf, smacexp['sites'][i])
+                # # insert promising configurations with the first and second batches of sites
+                # if len(lconf) > 0:
+                #     for i in range(args.ninitbatches):
+                #         insert_configurations(lconf, smacexp['sites'][i])
 
             # 3.b) take the nbest configurations and generate new configurations by changing randomly
             # one attribute and testing accuracy
@@ -520,10 +520,10 @@ if __name__ == '__main__':
                     if nc >= args.npar:
                         break
 
-                # insert promising configurations with the first and second batches of sites
-                if len(lconf) > 0:
-                    for i in range(exp.ninitbatches):
-                        insert_configurations(lconf, smacexp['sites'][i])
+                # # insert promising configurations with the first and second batches of sites
+                # if len(lconf) > 0:
+                #     for i in range(args.ninitbatches):
+                #         insert_configurations(lconf, smacexp['sites'][i])
             # 3.c) take the nbest configurations and generate candidates by cross overing
             elif args.exploit == 'genetic':
                 lconf = []
@@ -548,7 +548,7 @@ if __name__ == '__main__':
                     if nc >= args.npar:
                         break
 
-                # insert promising configurations with the first and second batches of sites
-                if len(lconf) > 0:
-                    for i in range(exp.ninitbatches):
-                        insert_configurations(lconf, smacexp['sites'][i])
+            # insert promising configurations with a number batches of sites
+            if len(lconf) > 0:
+                for i in range(args.ninitbatches):
+                    insert_configurations(lconf, smacexp['sites'][i])
