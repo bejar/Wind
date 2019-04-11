@@ -343,6 +343,8 @@ if __name__ == '__main__':
     parser.add_argument('--intensify', action='store_true', default=False, help='Intensify best configurations')
     parser.add_argument('--exploit', default=None, choices=['random', 'local', 'genetic'],
                         help='Use prediction surface for generating new promising configurations')
+    parser.add_argument('--ninitbatches', type=int, default=4,
+                        help='Number of initial batches of sites for new configurations')
 
     args = parser.parse_args()
 
@@ -429,7 +431,8 @@ if __name__ == '__main__':
                     break
 
             # insert random configurations with the first batch of sites
-            insert_configurations(lconf, smacexp['sites'][0])
+            for i in range(exp.ninitbatches):
+                insert_configurations(lconf, smacexp['sites'][i])
 
         # 2) Generate more experiments for the configurations with higher score
         elif args.intensify:
@@ -492,8 +495,9 @@ if __name__ == '__main__':
 
                 # insert promising configurations with the first and second batches of sites
                 if len(lconf) > 0:
-                    insert_configurations(lconf, smacexp['sites'][0])
-                    insert_configurations(lconf, smacexp['sites'][1])
+                    for i in range(exp.ninitbatches):
+                        insert_configurations(lconf, smacexp['sites'][i])
+
             # 3.b) take the nbest configurations and generate new configurations by changing randomly
             # one attribute and testing accuracy
             elif args.exploit == 'local':
@@ -518,8 +522,8 @@ if __name__ == '__main__':
 
                 # insert promising configurations with the first and second batches of sites
                 if len(lconf) > 0:
-                    insert_configurations(lconf, smacexp['sites'][0])
-                    insert_configurations(lconf, smacexp['sites'][1])
+                    for i in range(exp.ninitbatches):
+                        insert_configurations(lconf, smacexp['sites'][i])
             # 3.c) take the nbest configurations and generate candidates by cross overing
             elif args.exploit == 'genetic':
                 lconf = []
@@ -546,5 +550,5 @@ if __name__ == '__main__':
 
                 # insert promising configurations with the first and second batches of sites
                 if len(lconf) > 0:
-                    insert_configurations(lconf, smacexp['sites'][0])
-                    insert_configurations(lconf, smacexp['sites'][1])
+                    for i in range(exp.ninitbatches):
+                        insert_configurations(lconf, smacexp['sites'][i])
