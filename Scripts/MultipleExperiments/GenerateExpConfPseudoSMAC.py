@@ -229,7 +229,7 @@ def insert_configurations(lconf, sites):
     for c in lconf:
         lsitesconf += change_config(configB, c, sites)
 
-    ids = int(time())
+    ids = int(time()*10000)
 
     print(f'Inserting {len(lsitesconf)} configurations on the database')
     for n, sc in tqdm(enumerate(lsitesconf)):
