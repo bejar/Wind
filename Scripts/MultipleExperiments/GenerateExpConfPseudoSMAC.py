@@ -245,6 +245,7 @@ def insert_configurations(lconf, sites):
 
     print(f'Inserting {len(lsitesconf)} configurations on the database')
     for n, sc in tqdm(enumerate(lsitesconf)):
+        sc['timestamp'] = str(ids)
         sc['experiment'] = args.exp
         sc['status'] = 'pending'
         sc['result'] = []
