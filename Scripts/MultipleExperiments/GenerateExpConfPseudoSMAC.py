@@ -396,7 +396,7 @@ if __name__ == '__main__':
             lbatches = []
             for i in range(0, len(lsites), BATCH):
                 lbatches.append(lsites[i:i + BATCH])
-            expconf = {'SMAC': 'INIT', 'smexperiment': args.exp, 'batch': BATCH, 'sites': lbatches}
+            expconf = {'SMAC': 'init', 'smexperiment': args.exp, 'batch': BATCH, 'sites': lbatches}
             col.insert_one(expconf)
 
     # Initialize experiment
@@ -409,9 +409,10 @@ if __name__ == '__main__':
             if not smacrefexp:
                 raise NameError("Reference experiment does not exists")
             else:
-                expconf = {'SMAC': 'INIT', 'smexperiment': args.exp,
+                expconf = {'SMAC': 'init', 'smexperiment': args.exp,
                            'batch': smacrefexp['batch'], 'sites': smacrefexp['sites']}
                 col.insert_one(expconf)
+                print(f"Initializing experiment {args.exp}")
     else:
         if not smacexp:
             raise NameError("Experiment not initialized")
