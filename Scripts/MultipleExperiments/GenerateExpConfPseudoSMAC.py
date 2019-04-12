@@ -216,6 +216,18 @@ def regenerate_conf(df, i):
 
     return conf
 
+def concat_sites(sites, i, f):
+    """
+    Concatenates batches of sites
+    :param sites:
+    :param i:
+    :param f:
+    :return:
+    """
+    lsites = []
+    for v in range(i,f):
+        lsites.extend(sites[v])
+    return lsites
 
 def insert_configurations(lconf, sites):
     """
@@ -343,8 +355,8 @@ if __name__ == '__main__':
     parser.add_argument('--intensify', action='store_true', default=False, help='Intensify best configurations')
     parser.add_argument('--exploit', default=None, choices=['random', 'local', 'genetic'],
                         help='Use prediction surface for generating new promising configurations')
-    parser.add_argument('--ninitbatches', type=int, default=4,
-                        help='Number of initial batches of sites for new configurations')
+    parser.add_argument('--ninitbatches', type=int, default=1,
+                        help='Number of initial batches of sites for new configurations or intensification')
 
     args = parser.parse_args()
 
@@ -431,8 +443,9 @@ if __name__ == '__main__':
                     break
 
             # insert random configurations with the first batch of sites
-            for i in range(exp.ninitbatches):
-                insert_configurations(lconf, smacexp['sites'][i])
+            insert_configurations(lconf, concat_sites(smacexp['sites'],0,args.ninitbatches))
+            # for i in range(exp.ninitbatches):
+            #     insert_configurations(lconf, smacexp['sites'][i])
 
         # 2) Generate more experiments for the configurations with higher score
         elif args.intensify:
@@ -448,7 +461,12 @@ if __name__ == '__main__':
                 if args.print:
                     print(conf)
                 print(f"BATCH= {(count // BATCH) + 1}")
-                insert_configurations([conf], smacexp['sites'][(count // BATCH) + 1])
+                if count % BATCH == 0:
+                    ibatch = (count // BATCH) + 1
+                else:
+                    ibatch = (count // BATCH) + 2
+                insert_configurations(lconf, concat_sites(smacexp['sites'],ibatch,ibatch+args.ninitbatches))
+                # insert_configurations([conf], smacexp['sites'][(count // BATCH) + 1])
 
         # 3) Generate more experiments from the prediction of the score
         elif args.exploit:
@@ -550,5 +568,4 @@ if __name__ == '__main__':
 
             # insert promising configurations with a number batches of sites
             if len(lconf) > 0:
-                for i in range(args.ninitbatches):
-                    insert_configurations(lconf, smacexp['sites'][i])
+                insert_configurations(lconf, concat_sites(smacexp['sites'],0,args.ninitbatches))
