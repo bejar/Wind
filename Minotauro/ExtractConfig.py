@@ -58,6 +58,7 @@ if __name__ == '__main__':
     parser.add_argument('--nrep', type=int, default=1, help='number of replicas of the script')
     parser.add_argument('--nconfig', type=int, default=200, help='number of configs')
     parser.add_argument('--jph', type=int, default=30, help='Number of jobs per hour')
+    parser.add_argument('--mem', type=int, default=2000, help='Memory to use')
     parser.add_argument('--exp', default='convos2s', help='Type of configs')
     parser.add_argument('--copy', action='store_true', default=False, help='Copy data files')
     parser.add_argument('--machine', default='mino', help='Machine the scripts are for')
@@ -119,7 +120,7 @@ if __name__ == '__main__':
 #SBATCH --cpus-per-task=1
 #SBATCH --time={jobtime}:50:00
 #SBATCH --gres=gpu:1
-#SBATCH --mem=4000
+#SBATCH --mem={args.mem}
 module purge
 module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
 PYTHONPATH={jobs_code_path}
@@ -137,7 +138,7 @@ export PYTHONPATH
 #SBATCH --cpus-per-task=40
 #SBATCH --time={jobtime}:50:00
 #SBATCH --gres=gpu:1
-#SBATCH --mem=5000
+#SBATCH --mem={args.mem}
 module purge
 module load  gcc/6.4.0  cuda/9.1 cudnn/7.1.3 openmpi/3.0.0 atlas/3.10.3 scalapack/2.0.2 fftw/3.3.7 szip/2.1.1 opencv/3.4.1 python/3.6.5_ML
 PYTHONPATH={jobs_code_path}

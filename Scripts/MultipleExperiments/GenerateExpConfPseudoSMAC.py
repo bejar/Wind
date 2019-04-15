@@ -226,6 +226,7 @@ def concat_sites(sites, i, f):
     """
     lsites = []
     for v in range(i,f):
+        print(v)
         lsites.extend(sites[v])
     return lsites
 
@@ -242,6 +243,8 @@ def insert_configurations(lconf, sites):
         lsitesconf += change_config(configB, c, sites)
 
     ids = int(time()*10000)
+
+    print(f'TSTAMP={ids}')
 
     print(f'Inserting {len(lsitesconf)} configurations on the database')
     for n, sc in tqdm(enumerate(lsitesconf)):
@@ -462,12 +465,15 @@ if __name__ == '__main__':
                 conf = regenerate_conf(exp_df, i)
                 if args.print:
                     print(conf)
-                print(f"BATCH= {(count // BATCH) + 1}")
+
                 if count % BATCH == 0:
-                    ibatch = (count // BATCH) + 1
+                    ibatch = (count // BATCH)
                 else:
-                    ibatch = (count // BATCH) + 2
-                insert_configurations(lconf, concat_sites(smacexp['sites'],ibatch,ibatch+args.ninitbatches))
+                    ibatch = (count // BATCH) + 1
+
+                print(f"IBATCH= {ibatch} COUNT= {count} C/B={(count // BATCH)}")
+
+                insert_configurations([conf], concat_sites(smacexp['sites'],ibatch,ibatch+args.ninitbatches))
                 # insert_configurations([conf], smacexp['sites'][(count // BATCH) + 1])
 
         # 3) Generate more experiments from the prediction of the score
