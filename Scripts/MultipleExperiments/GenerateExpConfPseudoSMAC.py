@@ -230,7 +230,7 @@ def concat_sites(sites, i, f):
         lsites.extend(sites[v])
     return lsites
 
-def insert_configurations(lconf, sites):
+def insert_configurations(lconf, sites, tstamp=None):
     """
     Inserts a batch of configurations for a batch of sites
 
@@ -243,12 +243,14 @@ def insert_configurations(lconf, sites):
         lsitesconf += change_config(configB, c, sites)
 
     ids = int(time()*10000)
+    if tstamp is None:
+        tstamp = str(ids)
 
-    print(f'TSTAMP={ids}')
+    print(f'TSTAMP={tstamp}')
 
     print(f'Inserting {len(lsitesconf)} configurations on the database')
     for n, sc in tqdm(enumerate(lsitesconf)):
-        sc['timestamp'] = str(ids)
+        sc['timestamp'] = tstamp
         sc['experiment'] = args.exp
         sc['status'] = 'pending'
         sc['result'] = []
@@ -461,6 +463,7 @@ if __name__ == '__main__':
             lexp = sorted(lexp, reverse=True)[:args.npar]
             # For the best configurations, regenerate configuration from dataframe and add experiments
             # for the following batch
+            tstamp = str(int(time()*10000))
             for _, i, count in lexp:
                 conf = regenerate_conf(exp_df, i)
                 if args.print:
@@ -473,7 +476,7 @@ if __name__ == '__main__':
 
                 print(f"IBATCH= {ibatch} COUNT= {count} C/B={(count // BATCH)}")
 
-                insert_configurations([conf], concat_sites(smacexp['sites'],ibatch,ibatch+args.ninitbatches))
+                insert_configurations([conf], concat_sites(smacexp['sites'],ibatch,ibatch+args.ninitbatches),tstamp=tstamp)
                 # insert_configurations([conf], smacexp['sites'][(count // BATCH) + 1])
 
         # 3) Generate more experiments from the prediction of the score
