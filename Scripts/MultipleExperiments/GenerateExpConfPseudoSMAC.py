@@ -52,7 +52,7 @@ def change_config(config, param, sites):
 def hash_config(conf):
     """
     Creates a canonical string representation for a configuration
-    by traversing alphabetically the dictionarty and appending a representation string
+    by traversing alphabetically the dictionary and appending a representation string
     :param conf:
     :return:
     """
@@ -63,6 +63,22 @@ def hash_config(conf):
                 s += f"{p}={conf[sec][p]}/"
             s += '#'
     return s
+
+def hash_experiment(exp, confP):
+    """
+    Creates a canonical string representation for a experiment configuration given the configuration template
+    by traversing alphabetically the dictionary and appending a representation string
+    :param conf:
+    :return:
+    """
+    s = ""
+    for sec in sorted(confP.keys()):
+        if list(confP[sec].keys()):
+            for p in sorted(confP[sec].keys()):
+                s += f"{p}={exp[sec][p]}/"
+            s += '#'
+    return s
+
 
 
 def generate_random_config(config):
@@ -194,27 +210,8 @@ def regenerate_conf(df, i):
             except:
                 conf[sec][v] = df.iloc[i][v][0]
 
-
-    # for v in arch:
-    #     try:
-    #         conf['arch'][v] = eval(df.iloc[i][v][0])
-    #     except:
-    #         conf['arch'][v] = df.iloc[i][v][0]
-    #
-    # for v in data:
-    #     try:
-    #         conf['data'][v] = eval(df.iloc[i][v][0])
-    #     except:
-    #         conf['data'][v] = df.iloc[i][v][0]
-    #
-    # for v in train:
-    #     try:
-    #         conf['train'][v] = eval(df.iloc[i][v][0])
-    #     except:
-    #         conf['train'][v] = df.iloc[i][v][0]
-
-
     return conf
+
 
 def concat_sites(sites, i, f):
     """
@@ -229,6 +226,7 @@ def concat_sites(sites, i, f):
         print(v)
         lsites.extend(sites[v])
     return lsites
+
 
 def insert_configurations(lconf, sites, tstamp=None):
     """
@@ -303,7 +301,7 @@ def change_one_conf(config, configP):
     return newconf
 
 
-def crossover_conf(config1, config2, configP):
+def crossover_conf(config1, config2, configP, cross, mutate):
     """
     Cross over configurations by interchanging parameters
     For now probability of cross over is 50% (add as a pa
@@ -316,17 +314,207 @@ def crossover_conf(config1, config2, configP):
     newconf2 = deepcopy(config2)
     for var, sec in zip([arch, data, train],['arch', 'data', 'train']):
         for v in var:
-            if (newconf1[sec][v] != newconf2[sec][v]) and (np.random.sample() < args.cross):
+            if (newconf1[sec][v] != newconf2[sec][v]) and (np.random.sample() < cross):
                 temp =  newconf1[sec][v]
                 newconf1[sec][v] = newconf2[sec][v]
                 newconf2[sec][v] = temp
-    if np.random.sample() < args.mutate:
+    if np.random.sample() < mutate:
         newconf1 = change_one_conf(newconf1, configP)
-    if np.random.sample() < args.mutate:
+    if np.random.sample() < mutate:
         newconf2 = change_one_conf(newconf2, configP)
     return newconf1, newconf2
 
+def build_regression_tree(exp, attributes, configP, nbest):
+    """
+    Builds the regression tree to predict the configurations performance
 
+    :param exp:
+    :return:
+    """
+    exp_df = retrieve_results_as_dataframe(exp)
+
+    # We have already results to train the regressor
+    # Train a random forest regressor to predict accuracy of new configurations
+    lbestconf = get_best_configurations(exp_df, nbest)
+
+    exp_df = recode_dataframe(exp_df, configP)
+    dataset = exp_df.to_numpy()
+    rfr = RandomForestRegressor(n_estimators=1000)
+    # -3 is the test prediction
+    rfr.fit(dataset[:, :-3], dataset[:, -3])
+
+    pred_max = np.max(dataset[:, -3])
+    pred_std = np.std(dataset[:, -3])
+    print("Feature importances:")
+    limp = zip(rfr.feature_importances_, attributes)
+    for i, f in sorted(limp):
+        print(f"F({f}) = {i:3.2f}")
+
+    print('------------------------')
+
+    return rfr, pred_max, pred_std, lbestconf
+
+# -------------------------------------
+# Strategies for generating configurations
+
+
+def generate_random_configurations(conf_done, configP, maxtries, maxconf):
+    """
+    Generates a set of random experiment configurations different from the
+    current ones
+
+    Performs maxtries until maxconf configurations are generated
+    :return:
+    """
+    lconf = []
+    nc = 0
+    for i in tqdm(range(maxtries)):
+        conf = generate_random_config(configP)
+        if hash_config(conf) not in conf_done:
+            if args.print:
+                print(conf)
+            lconf.append(conf)
+            conf_done.add(hash_config(conf))
+            nc += 1
+        if nc >= maxconf:
+            break
+
+    insert_configurations(lconf, concat_sites(smacexp['sites'],0,args.ninitbatches))
+
+
+def intensify_configurations(expname, maxconf):
+    """
+    Add a new set ob site batches for the configurations with the best performance
+
+    :param expname:
+    :param maxconf:
+    :return:
+    """
+    exp_df = retrieve_results_as_dataframe(expname)
+
+    lexp = []
+    for i in range(len(exp_df)):
+        lexp.append((exp_df.iloc[i]['test']['mean'], i, exp_df.iloc[i]['test']['count']))
+
+    lexp = sorted(lexp, reverse=True)[:maxconf]
+    # For the best configurations, regenerate configuration from dataframe and add experiments
+    # for the following batch
+    tstamp = str(int(time() * 10000))
+    for _, i, count in lexp:
+        conf = regenerate_conf(exp_df, i)
+        if args.print:
+            print(conf)
+
+        # Compute the next batch os sites to be used in the experiments
+        # Assumes that most of the sites from the previous run have been executed
+        if count % BATCH == 0:
+            ibatch = (count // BATCH)
+        else:
+            ibatch = (count // BATCH) + 1
+
+        insert_configurations([conf], concat_sites(smacexp['sites'], ibatch, ibatch + args.ninitbatches), tstamp=tstamp)
+
+
+def exploit_random(conf_done, configP, attributes, rfr, pred_max, pred_std, maxtries, maxconf, stdevprop):
+    """
+    Exploit prediction surface by generating random configurations
+
+    :param conf_done:
+    :param configP:
+    :param maxtries:
+    :param maxconf:
+    :return:
+    """
+    nc = 0
+    lconf = []
+    print("Scanning configurations ...")
+    for i in tqdm(range(maxtries)):
+        conf = generate_random_config(configP)
+        if hash_config(conf) not in conf_done:
+            conf_done.add(hash_config(conf))
+            v = config_to_example(conf, configP, attributes)
+            pred = rfr.predict(v)
+            if pred + (stdevprop * pred_std) > pred_max:
+                if args.print:
+                    print(pred)
+                    print(conf)
+                lconf.append(conf)
+                nc += 1
+        if nc >= maxconf:
+            break
+    return lconf
+
+
+def exploit_local(lbestconf, conf_done, configP, attributes, rfr, pred_max, pred_std, maxtries, maxconf, stdevprop):
+    """
+    Exploit prediction surface by generating local configurations around the best ones
+
+    :param conf_done:
+    :param configP:
+    :param attributes:
+    :param rfr:
+    :param maxtries:
+    :param maxconf:
+    :return:
+    """
+    lconf = []
+    nc = 0
+    for i in tqdm(range(maxtries)):
+        newconf = change_one_conf(lbestconf[np.random.choice(len(lbestconf))], configP)
+        if hash_config(newconf) not in conf_done:
+            conf_done.add(hash_config(newconf))
+            v = config_to_example(newconf, configP, attributes)
+            pred = rfr.predict(v)
+            if pred + (stdevprop * pred_std) > pred_max:
+                if args.print:
+                    print(pred)
+                    print(newconf)
+                lconf.append(newconf)
+                # add candidates to list of best configurations to explore more configurations locally
+                lbestconf.append(newconf)
+                nc += 1
+        if nc >= maxconf:
+            break
+    return lconf
+
+
+def exploit_genetic(lbestconf, conf_done, configP, attributes, rfr, pred_max, pred_std, maxtries, maxconf, stdevprop, cross, mutate):
+    """
+    Exploit prediction surface by generating configurations by crossing the best configurations
+
+    :param conf_done:
+    :param configP:
+    :param attributes:
+    :param rfr:
+    :param maxtries:
+    :param maxconf:
+    :param stdevprop:
+    :param cross:
+    :param mutate:
+    :return:
+    """
+    lconf = []
+    nc = 0
+    for i in tqdm(range(maxtries)):
+        choices = np.random.choice(len(lbestconf), size=2, replace=False)
+        newconfs = crossover_conf(lbestconf[choices[0]], lbestconf[choices[1]], configP, cross, mutate)
+        for newconf in newconfs:
+            if hash_config(newconf) not in conf_done:
+                conf_done.add(hash_config(newconf))
+                v = config_to_example(newconf, configP, attributes)
+                pred = rfr.predict(v)
+                if pred + (stdevprop * pred_std) > pred_max:
+                    if args.print:
+                        print(pred)
+                        print(newconf)
+                        print(hash_config(newconf))
+                    lconf.append(newconf)
+                    # add candidates to list of best configurations to explore more configurations
+                    lbestconf.append(newconf)
+                    nc += 1
+        if nc >= maxconf:
+            break
+    return lconf
 
 
 if __name__ == '__main__':
@@ -388,7 +576,7 @@ if __name__ == '__main__':
     smacexp = col.find_one({'SMAC': 'init', 'smexperiment': args.exp})
 
     # Initialize experiment
-    # Pick a random sample of sites and divide it in exploration stages
+    # 1)  Pick a random sample of sites and divide it in exploration stages
     # Default is 1000 divided in batches of 25
     BATCH = 25
     if args.init is not None:
@@ -405,7 +593,7 @@ if __name__ == '__main__':
             col.insert_one(expconf)
 
     # Initialize experiment
-    # Copy reference experiment configuration
+    # 2) Copy reference experiment configuration
     elif args.refexp is not None:
         if smacexp:
             raise NameError("Experiment already initialized")
@@ -418,6 +606,7 @@ if __name__ == '__main__':
                            'batch': smacrefexp['batch'], 'sites': smacrefexp['sites']}
                 col.insert_one(expconf)
                 print(f"Initializing experiment {args.exp}")
+    # Experiment already initialized
     else:
         if not smacexp:
             raise NameError("Experiment not initialized")
@@ -426,156 +615,38 @@ if __name__ == '__main__':
         refsite = smacexp['sites'][0][0]
         expsite = col.find_one({'experiment': args.exp, 'site': refsite})
 
-        if expsite is not None:  # Some experiments run already
-            exp_df = retrieve_results_as_dataframe(args.exp)
-            # Get all the experiments in the dataset in canonical representation
-            conf_done = get_df_configurations(exp_df, configP)
-        else:  # No experiments yet
+        conf_done = set()
+        if expsite is not None:  # Some experiments have been added already
+            # Find all the current experiments
+            lexp = col.find({'experiment': args.exp, 'site': refsite})
             conf_done = set()
+            for exp in lexp:
+                conf_done.add(hash_experiment(exp, configP))
 
-        # 1) Generate random configurations with first batch of sites
+        # 1) Generate random configurations
         if args.random or expsite is None:
-            # Generate new configurations at random
-            lconf = []
-            nc = 0
-            for i in tqdm(range(args.npar)):
-                conf = generate_random_config(configP)
-                if hash_config(conf) not in conf_done:
-                    if args.print:
-                        print(conf)
-                    lconf.append(conf)
-                    conf_done.add(hash_config(conf))
-                    nc += 1
-                if nc >= args.npar:
-                    break
-
-            # insert random configurations with the first batch of sites
-            insert_configurations(lconf, concat_sites(smacexp['sites'],0,args.ninitbatches))
-            # for i in range(exp.ninitbatches):
-            #     insert_configurations(lconf, smacexp['sites'][i])
+            generate_random_config(conf_done, configP, args.confexp, args.npar)
 
         # 2) Generate more experiments for the configurations with higher score
         elif args.intensify:
-            lexp = []
-            for i in range(len(exp_df)):
-                lexp.append((exp_df.iloc[i]['test']['mean'], i, exp_df.iloc[i]['test']['count']))
-
-            lexp = sorted(lexp, reverse=True)[:args.npar]
-            # For the best configurations, regenerate configuration from dataframe and add experiments
-            # for the following batch
-            tstamp = str(int(time()*10000))
-            for _, i, count in lexp:
-                conf = regenerate_conf(exp_df, i)
-                if args.print:
-                    print(conf)
-
-                if count % BATCH == 0:
-                    ibatch = (count // BATCH)
-                else:
-                    ibatch = (count // BATCH) + 1
-
-                print(f"IBATCH= {ibatch} COUNT= {count} C/B={(count // BATCH)}")
-
-                insert_configurations([conf], concat_sites(smacexp['sites'],ibatch,ibatch+args.ninitbatches),tstamp=tstamp)
-                # insert_configurations([conf], smacexp['sites'][(count // BATCH) + 1])
+            intensify_configurations(args.exp, args.npar)
 
         # 3) Generate more experiments from the prediction of the score
         elif args.exploit:
-            # We have already results to train the regressor
-            # Train a random forest regressor to predict accuracy of new configurations
-            lbestconf = get_best_configurations(exp_df, args.nbest)
-
-            lconf = []
-            exp_df = recode_dataframe(exp_df, configP)
-            dataset = exp_df.to_numpy()
-            rfr = RandomForestRegressor(n_estimators=1000)
-            # -3 in the test prediction
-            rfr.fit(dataset[:, :-3], dataset[:, -3])
-
-            max_pred = np.max(dataset[:, -3])
-            pred_std = np.std(dataset[:, -3])
-            print("Feature importances:")
-            limp = zip(rfr.feature_importances_, arch + data + train)
-            for i, f in sorted(limp):
-                print(f"F({f}) = {i:3.2f}")
-
-            print('------------------------')
+            rfr, pred_max, pred_std, lbestconf = build_regression_tree(args.exp, arch + data + train, configP, exp.nbest)
 
             # 3.a) randomly by exploring the prediction surface generating and testing random configurations
             if args.exploit == 'random':
-                i = 0
-                nc = 0
-                lconf = []
-                print("Scanning configurations ...")
-                for i in tqdm(range(args.confexp)):
-                    conf = generate_random_config(configP)
-                    if hash_config(conf) not in conf_done:
-                        conf_done.add(hash_config(conf))
-                        v = config_to_example(conf, configP, arch + data + train)
-                        pred = rfr.predict(v)
-                        if pred + (args.std * pred_std) > max_pred:
-                            if args.print:
-                                print(pred)
-                                print(conf)
-                            lconf.append(conf)
-                            nc += 1
-                    if nc >= args.npar:
-                        break
-
-                # # insert promising configurations with the first and second batches of sites
-                # if len(lconf) > 0:
-                #     for i in range(args.ninitbatches):
-                #         insert_configurations(lconf, smacexp['sites'][i])
+                lconf = exploit_random(conf_done, configP, arch + data + train, rfr, pred_max, pred_std, args.confexp, args.npar, args.std)
 
             # 3.b) take the nbest configurations and generate new configurations by changing randomly
             # one attribute and testing accuracy
             elif args.exploit == 'local':
-                lconf = []
-                nc = 0
-                for i in tqdm(range(args.confexp)):
-                    newconf = change_one_conf(lbestconf[np.random.choice(len(lbestconf))], configP)
-                    if hash_config(newconf) not in conf_done:
-                        conf_done.add(hash_config(newconf))
-                        v = config_to_example(newconf, configP, arch + data + train)
-                        pred = rfr.predict(v)
-                        if pred + (args.std * pred_std) > max_pred:
-                            if args.print:
-                                print(pred)
-                                print(newconf)
-                            lconf.append(newconf)
-                            # add candidates to list of best configurations to explore more configurations locally
-                            lbestconf.append(newconf)
-                            nc += 1
-                    if nc >= args.npar:
-                        break
+                lconf = exploit_local(lbestconf, conf_done, configP, arch + data + train, rfr, pred_max, pred_std, args.confexp, args.npar, args.std)
 
-                # # insert promising configurations with the first and second batches of sites
-                # if len(lconf) > 0:
-                #     for i in range(args.ninitbatches):
-                #         insert_configurations(lconf, smacexp['sites'][i])
             # 3.c) take the nbest configurations and generate candidates by cross overing
             elif args.exploit == 'genetic':
-                lconf = []
-                nc = 0
-                for i in tqdm(range(args.confexp)):
-                    choices = np.random.choice(len(lbestconf),size=2, replace=False)
-                    newconfs = crossover_conf(lbestconf[choices[0]], lbestconf[choices[1]], configP)
-                    for newconf in newconfs:
-                        if hash_config(newconf) not in conf_done:
-                            conf_done.add(hash_config(newconf))
-                            v = config_to_example(newconf, configP, arch + data + train)
-                            pred = rfr.predict(v)
-                            if pred + (args.std * pred_std) > max_pred:
-                                if args.print:
-                                    print(pred)
-                                    print(newconf)
-                                    print(hash_config(newconf))
-                                lconf.append(newconf)
-                                # add candidates to list of best configurations to explore more configurations
-                                lbestconf.append(newconf)
-                                nc += 1
-                    if nc >= args.npar:
-                        break
+                lconf = exploit_genetic(conf_done, configP, arch + data + train, rfr, pred_max, pred_std, args.confexp, args.npar, args.std, args.cross, args.mutate)
 
             # insert promising configurations with a number batches of sites
             if len(lconf) > 0:
