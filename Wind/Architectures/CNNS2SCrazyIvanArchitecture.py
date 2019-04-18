@@ -35,7 +35,7 @@ __author__ = 'bejar'
 
 class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
     """
-    Class for convolutional sequence to sequence architecture
+    Class for Multiple head convolutional sequence to sequence architecture
 
     """
     modfile = None
@@ -49,8 +49,8 @@ class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
         json config:
 
         "arch": {
-            "filters": [32],
-            "strides": [1],
+            "filters": 32,
+            "strides": 1,
             "dilation": false,
             "kernel_size": [3],
             "k_reg": "None",
@@ -99,6 +99,8 @@ class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
         input = Input(shape=(idimensions))
 
         lconv = []
+
+        # Assumes several kernel sizes but only one layer for head
         for k in kernel_size:
             convomodel = Conv1D(filters, input_shape=(idimensions), kernel_size=k, strides=strides,
                               activation=activation, padding='causal',
@@ -111,12 +113,12 @@ class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
         convoout = Concatenate()(lconv)
         fullout = Dense(full_layers[0])(convoout)
         fullout = generate_activation(activationfl)(fullout)
-        fullout = Dropout(rate=fulldrop)
+        fullout = Dropout(rate=fulldrop)(fullout)
 
         for l in full_layers[1:]:
             fullout = Dense(l)(fullout)
             fullout = generate_activation(activationfl)(fullout)
-            fullout = Dropout(rate=fulldrop)
+            fullout = Dropout(rate=fulldrop)(fullout)
 
         output = Dense(odimensions, activation='linear')(fullout)
 
