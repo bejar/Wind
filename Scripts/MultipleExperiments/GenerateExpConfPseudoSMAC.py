@@ -345,6 +345,7 @@ def build_regression_tree(exp, attributes, configP, nbest):
 
     pred_max = np.max(dataset[:, -3])
     pred_std = np.std(dataset[:, -3])
+
     print("Feature importances:")
     limp = zip(rfr.feature_importances_, attributes)
     for i, f in sorted(limp):
@@ -353,6 +354,21 @@ def build_regression_tree(exp, attributes, configP, nbest):
     print('------------------------')
 
     return rfr, pred_max, pred_std, lbestconf
+
+def predict_randomforestregression(rfr, example):
+    """
+    Computes the prediction of the random forestregression and the stdev of the prediction from the individual predictions
+    :param rfr:
+    :return:
+    """
+    pred = rfr.predict(example)
+    lpred=[]
+    for tree in rfr.estimators_:
+        lpred.extend(tree.predict(example))
+
+    return pred, np.std(lpred)
+
+
 
 # -------------------------------------
 # Strategies for generating configurations
@@ -433,10 +449,12 @@ def exploit_random(conf_done, configP, attributes, rfr, pred_max, pred_std, maxt
         if hash_config(conf) not in conf_done:
             conf_done.add(hash_config(conf))
             v = config_to_example(conf, configP, attributes)
-            pred = rfr.predict(v)
-            if pred + (stdevprop * pred_std) > pred_max:
+            # pred = rfr.predict(v)
+            pred, p_std = predict_randomforestregression(rfr, v)
+            # if pred + (stdevprop * pred_std) > pred_max:
+            if pred + (stdevprop * p_std) > pred_max:
                 if args.print:
-                    print(pred)
+                    print(pred, pred + (stdevprop * p_std))
                     print(conf)
                 lconf.append(conf)
                 nc += 1
@@ -464,10 +482,12 @@ def exploit_local(lbestconf, conf_done, configP, attributes, rfr, pred_max, pred
         if hash_config(newconf) not in conf_done:
             conf_done.add(hash_config(newconf))
             v = config_to_example(newconf, configP, attributes)
-            pred = rfr.predict(v)
-            if pred + (stdevprop * pred_std) > pred_max:
+            # pred = rfr.predict(v)
+            pred, p_std = predict_randomforestregression(rfr, v)
+            # if pred + (stdevprop * pred_std) > pred_max:
+            if pred + (stdevprop * p_std) > pred_max:
                 if args.print:
-                    print(pred)
+                    print(pred, pred + (stdevprop * p_std))
                     print(newconf)
                 lconf.append(newconf)
                 # add candidates to list of best configurations to explore more configurations locally
@@ -502,10 +522,12 @@ def exploit_genetic(lbestconf, conf_done, configP, attributes, rfr, pred_max, pr
             if hash_config(newconf) not in conf_done:
                 conf_done.add(hash_config(newconf))
                 v = config_to_example(newconf, configP, attributes)
-                pred = rfr.predict(v)
-                if pred + (stdevprop * pred_std) > pred_max:
+                # pred = rfr.predict(v)
+                pred, p_std = predict_randomforestregression(rfr, v)
+                # if pred + (stdevprop * pred_std) > pred_max:
+                if pred + (stdevprop * p_std) > pred_max:
                     if args.print:
-                        print(pred)
+                        print(pred, pred + (stdevprop * p_std))
                         print(newconf)
                         print(hash_config(newconf))
                     lconf.append(newconf)
