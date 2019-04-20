@@ -668,7 +668,7 @@ if __name__ == '__main__':
 
             # 3.c) take the nbest configurations and generate candidates by cross overing
             elif args.exploit == 'genetic':
-                lconf = exploit_genetic(conf_done, configP, arch + data + train, rfr, pred_max, pred_std, args.confexp, args.npar, args.std, args.cross, args.mutate)
+                lconf = exploit_genetic(lbestconf, conf_done, configP, arch + data + train, rfr, pred_max, pred_std, args.confexp, args.npar, args.std, args.cross, args.mutate)
 
             # insert promising configurations with a number batches of sites
             if len(lconf) > 0:
