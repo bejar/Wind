@@ -655,7 +655,7 @@ if __name__ == '__main__':
 
         # 3) Generate more experiments from the prediction of the score
         elif args.exploit:
-            rfr, pred_max, pred_std, lbestconf = build_regression_tree(args.exp, arch + data + train, configP, exp.nbest)
+            rfr, pred_max, pred_std, lbestconf = build_regression_tree(args.exp, arch + data + train, configP, args.nbest)
 
             # 3.a) randomly by exploring the prediction surface generating and testing random configurations
             if args.exploit == 'random':
