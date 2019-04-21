@@ -452,15 +452,22 @@ def exploit_random(conf_done, configP, attributes, rfr, pred_max, pred_std, maxt
             # pred = rfr.predict(v)
             pred, p_std = predict_randomforestregression(rfr, v)
             # if pred + (stdevprop * pred_std) > pred_max:
-            if pred + (stdevprop * p_std) > pred_max:
-                if args.print:
-                    print(pred, pred + (stdevprop * p_std))
-                    print(conf)
-                lconf.append(conf)
-                nc += 1
-        if nc >= maxconf:
-            break
-    return lconf
+            # if pred + (stdevprop * p_std) > pred_max:
+            #     if args.print:
+            #         print(pred, pred + (stdevprop * p_std))
+            #         print(conf)
+            #     lconf.append(conf)
+            #     nc += 1
+        # if nc >= maxconf:
+        #     break
+            lconf.append((pred + (stdevprop / p_std), conf))
+    lbestconf = sorted(lconf, reverse=True)[:maxconf]
+
+    if args.print:
+        for c in lbestconf:
+            print(c)
+
+    return [c for _, c in lbestconf]
 
 
 def exploit_local(lbestconf, conf_done, configP, attributes, rfr, pred_max, pred_std, maxtries, maxconf, stdevprop):
@@ -485,17 +492,24 @@ def exploit_local(lbestconf, conf_done, configP, attributes, rfr, pred_max, pred
             # pred = rfr.predict(v)
             pred, p_std = predict_randomforestregression(rfr, v)
             # if pred + (stdevprop * pred_std) > pred_max:
-            if pred + (stdevprop * p_std) > pred_max:
-                if args.print:
-                    print(pred, pred + (stdevprop * p_std))
-                    print(newconf)
-                lconf.append(newconf)
-                # add candidates to list of best configurations to explore more configurations locally
-                lbestconf.append(newconf)
-                nc += 1
-        if nc >= maxconf:
-            break
-    return lconf
+        #     if pred + (stdevprop * p_std) > pred_max:
+        #         if args.print:
+        #             print(pred, pred + (stdevprop * p_std))
+        #             print(newconf)
+        #         lconf.append(newconf)
+        #         # add candidates to list of best configurations to explore more configurations locally
+        #         lbestconf.append(newconf)
+        #         nc += 1
+        # if nc >= maxconf:
+        #     break
+            lconf.append((pred + (stdevprop / p_std), newconf))
+    lbestconf =  sorted(lconf, reverse=True)[:maxconf]
+
+    if args.print:
+        for c in lbestconf:
+            print(c)
+
+    return [c for _,c in lbestconf]
 
 
 def exploit_genetic(lbestconf, conf_done, configP, attributes, rfr, pred_max, pred_std, maxtries, maxconf, stdevprop, cross, mutate):
@@ -525,19 +539,25 @@ def exploit_genetic(lbestconf, conf_done, configP, attributes, rfr, pred_max, pr
                 # pred = rfr.predict(v)
                 pred, p_std = predict_randomforestregression(rfr, v)
                 # if pred + (stdevprop * pred_std) > pred_max:
-                if pred + (stdevprop * p_std) > pred_max:
-                    if args.print:
-                        print(pred, pred + (stdevprop * p_std))
-                        print(newconf)
-                        print(hash_config(newconf))
-                    lconf.append(newconf)
-                    # add candidates to list of best configurations to explore more configurations
-                    lbestconf.append(newconf)
-                    nc += 1
-        if nc >= maxconf:
-            break
-    return lconf
+        #         if pred + (stdevprop * p_std) > pred_max:
+        #             if args.print:
+        #                 print(pred, pred + (stdevprop * p_std))
+        #                 print(newconf)
+        #                 print(hash_config(newconf))
+        #             lconf.append(newconf)
+        #             # add candidates to list of best configurations to explore more configurations
+        #             lbestconf.append(newconf)
+        #             nc += 1
+        # if nc >= maxconf:
+        #     break
+                lconf.append((pred + (stdevprop / p_std), newconf))
+    lbestconf =  sorted(lconf, reverse=True)[:maxconf]
 
+    if args.print:
+        for c in lbestconf:
+            print(c)
+
+    return [c for _,c in lbestconf]
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -552,7 +572,7 @@ if __name__ == '__main__':
                         help='Number of parameter combinations to generate/explore/exploit')
     parser.add_argument('--nbest', type=int, default=10,
                         help='Number of best solutions to use for exploitations')
-    parser.add_argument('--std', type=float, default=.4, help='Range for the STD of the best prediction to exploit')
+    parser.add_argument('--std', type=float, default=1, help='Range for the STD of the best prediction to exploit')
     parser.add_argument('--cross', type=float, default=.5, help='Crossover probability for genetic exploitation')
     parser.add_argument('--mutate', type=float, default=.1, help='Mutation probability for genetic exploitation')
 
