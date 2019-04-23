@@ -17,7 +17,7 @@ for --init sites
 
 * For creating a new experiment copying an existent experiment (ref_experiment). It just copies the batches of sites
 
- python3 GenerateExpConfPseudoSMAC.py --config config_***.json --pconfig pconfig_***.json --init 9999 --exp experiment
+ python3 GenerateExpConfPseudoSMAC.py --config config_***.json --pconfig pconfig_***.json --exp experiment
   --refexp ref_experiment
 
 * For generating random --npar configurations (no surface prediction used) for --ninitbatches batches of sites
@@ -25,16 +25,17 @@ for --init sites
  python3 GenerateExpConfPseudoSMAC.py --config config_***.json --pconfig pconfig_***.json  --exp experiment
  --random --npar 999 --ninitbatches
 
-* For intensifying the best configurations generating experiment for --nbatches additional batches of sites
+* For intensifying the best configurations generating experiment for --nbatches additional batches of the --npar sites
+with higher value
 
   python3 GenerateExpConfPseudoSMAC.py --config config_***.json --pconfig pconfig_***.json  --exp experiment
-  --intensify --nbatches 99
+  --intensify --npar 99 --nbatches 99
 
 * for exploiting the prediction surface generating a maximum of --npar random configurations with --nbatches initial
 batches. The configurations are pick after a maximum of --confexp configurations are generated
 
  python3 GenerateExpConfPseudoSMAC.py --config config_***.json --pconfig pconfig_***.json  --exp experiment
- --exploit random --npar 99 --print --nbatches 9 --confexp 9999
+ --exploit random --npar 99 --nbatches 9 --confexp 9999
 
 
 * for exploiting the prediction surface generating a maximum of --npar local configurations from the --nbest best
@@ -51,11 +52,17 @@ current configurations. The configurations are pick after a maximum of --confexp
  python3 GenerateExpConfPseudoSMAC.py --config config_***.json --pconfig pconfig_***.json  --exp experiment
  --exploit genetic --npar 99 --print --nbatches 9 --confexp 9999 --nbest 99- -cross 0.9 --mutate 0.9
 
+NOTE: For exploitation the criteria used to select a candidate is:
+    Select if the prediction + (--std * experiments stdv) is larger that the best prediction
+    Order by prediction + std of the prediccion of all the regression trees
+
  Additionaly these flags can be used:
 
  --print : prints the configurations
  --test : just testing, the configurations are not written in the DB
  --testdb : the test database is used
+ --std : multiplier for the standard deviation of the prediction values (all the experiments) to use in the
+         criteria for including a configuration (by default is 1)
 
 :Authors: bejar
     
@@ -272,7 +279,6 @@ def concat_sites(sites, i, f):
     """
     lsites = []
     for v in range(i,f):
-        print(v)
         lsites.extend(sites[v])
     return lsites
 
@@ -372,6 +378,7 @@ def crossover_conf(config1, config2, configP, cross, mutate):
     if np.random.sample() < mutate:
         newconf2 = change_one_conf(newconf2, configP)
     return newconf1, newconf2
+
 
 def build_regression_tree(exp, attributes, configP, nbest):
     """
@@ -499,7 +506,9 @@ def exploit_random(conf_done, configP, attributes, rfr, pred_max, pred_std, maxt
             conf_done.add(hash_config(conf))
             v = config_to_example(conf, configP, attributes)
             pred, p_std = predict_randomforestregression(rfr, v)
-            lconf.append((pred, conf, (pred, p_std)))
+            if (pred + (stdevprop * pred_std)) > pred_max:
+                lconf.append((pred + p_std, newconf, (pred, p_std)))
+            # lconf.append((pred, conf, (pred, p_std)))
     lbestconf = sorted(lconf, reverse=True, key=operator.itemgetter(0))[:maxconf]
 
     if args.print:
@@ -529,7 +538,9 @@ def exploit_local(lbestconf, conf_done, configP, attributes, rfr, pred_max, pred
             conf_done.add(hash_config(newconf))
             v = config_to_example(newconf, configP, attributes)
             pred, p_std = predict_randomforestregression(rfr, v)
-            lconf.append((pred, newconf, (pred, p_std)))
+            if (pred + (stdevprop * pred_std)) > pred_max:
+                lconf.append((pred + p_std, newconf, (pred, p_std)))
+            # lconf.append((pred, newconf, (pred, p_std)))
     lbestconf =  sorted(lconf, reverse=True, key=operator.itemgetter(0))[:maxconf]
 
     if args.print:
@@ -564,7 +575,9 @@ def exploit_genetic(lbestconf, conf_done, configP, attributes, rfr, pred_max, pr
                 conf_done.add(hash_config(newconf))
                 v = config_to_example(newconf, configP, attributes)
                 pred, p_std = predict_randomforestregression(rfr, v)
-                lconf.append((pred, newconf, (pred, p_std)))
+                if (pred + (stdevprop *  pred_std)) > pred_max:
+                    lconf.append((pred+p_std, newconf, (pred, p_std)))
+                # lconf.append((pred, newconf, (pred, p_std)))
     lbestconf =  sorted(lconf, reverse=True, key=operator.itemgetter(0))[:maxconf]
 
     if args.print:
