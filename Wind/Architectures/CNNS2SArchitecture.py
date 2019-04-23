@@ -118,7 +118,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             model= Dense(l)(model)
             model = generate_activation(activationfl)(model)
             if fulldrop != 0:
-                model =Dropout(rate=fulldrop)(model)
+                model = Dropout(rate=fulldrop)(model)
 
         output = Dense(odimensions, activation='linear')(model)
 
