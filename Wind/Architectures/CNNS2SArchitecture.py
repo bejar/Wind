@@ -95,7 +95,6 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         else:
             k_regularizer = None
 
-
         input = Input(shape=(idimensions))
         model = Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
                               padding='causal', dilation_rate=dilation[0],
@@ -105,9 +104,8 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         if drop != 0:
             model = Dropout(rate=drop)(model)
 
-
         for i in range(1, len(filters)):
-            model = Conv1D(filters[i], , kernel_size=kernel_size[i], strides=strides[i],
+            model = Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
                               padding='causal', dilation_rate=dilation[i],
                               kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
