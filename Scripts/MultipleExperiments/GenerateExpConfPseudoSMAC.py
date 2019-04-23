@@ -694,7 +694,7 @@ if __name__ == '__main__':
 
         # 1) Generate random configurations
         if args.random or expsite is None:
-            generate_random_config(conf_done, configP, args.confexp, args.npar, args.nbatches)
+            generate_random_configurations(conf_done, configP, args.confexp, args.npar, args.nbatches)
 
         # 2) Generate more experiments for the configurations with higher score
         elif args.intensify:
