@@ -7,11 +7,11 @@
     "datasize": 43834,
     "testsize": 17534,
     "dataset": 1,
-    "lag": 12,
+    "lag": 6,
     "ahead": 12
   },
   "arch": {
-    "neurons":32,
+    "neurons":256,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",
@@ -26,7 +26,7 @@
     "rnn": "GRU",
     "full": [512],
     "activation_full": "sigmoid",
-    "fulldrop": 0.1,
+    "fulldrop": 0.4,
     "mode": "RNN_s2s"
   },
   "training": {
