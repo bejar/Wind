@@ -501,14 +501,14 @@ def exploit_random(conf_done, configP, attributes, rfr, pred_max, pred_std, maxt
     lconf = []
     print("Scanning configurations ...")
     for i in tqdm(range(maxtries)):
-        conf = generate_random_config(configP)
-        if hash_config(conf) not in conf_done:
-            conf_done.add(hash_config(conf))
-            v = config_to_example(conf, configP, attributes)
+        newconf = generate_random_config(configP)
+        if hash_config(newconf) not in conf_done:
+            conf_done.add(hash_config(newconf))
+            v = config_to_example(newconf, configP, attributes)
             pred, p_std = predict_randomforestregression(rfr, v)
             if (pred + (stdevprop * pred_std)) > pred_max:
                 lconf.append((pred + p_std, newconf, (pred, p_std)))
-            # lconf.append((pred, conf, (pred, p_std)))
+            # lconf.append((pred, newconf, (pred, p_std)))
     lbestconf = sorted(lconf, reverse=True, key=operator.itemgetter(0))[:maxconf]
 
     if args.print:
