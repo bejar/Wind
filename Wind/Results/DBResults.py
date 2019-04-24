@@ -531,6 +531,7 @@ class DBResults:
             raise NameError("No results dataframe retrieved")
         df = self.exp_df
         trace = []
+        smax, smin = np.max(df['test']['count']), np.min(df['test']['count'])
         for v in sorted(df[facet].unique()):
             text = ''
             for a in att:
@@ -541,7 +542,7 @@ class DBResults:
                 y = df[df[facet]==v]['val']['mean'],
                 text = text,
                 mode = 'markers', name=v,
-                marker={'size':df[df[facet]==v]['test']['count']/5}
+                marker={'size':np.log(df[df[facet]==v]['test']['count']+1)*4}
             ))
         py.iplot(trace, filename='basic-scatter')
 

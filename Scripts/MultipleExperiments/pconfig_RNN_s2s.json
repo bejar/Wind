@@ -6,10 +6,10 @@
     "neurons":[32, 64, 128, 256, 512, 1024, 2048],
     "drop": [0.2,0.3,0.4, 0.1, 0.0, 0.5],
     "nlayers": [1,2,3],
-    "activation": ["relu", ["elu",0.4], ["leaky", 0.2], "linear", "hard_sigmoid"],
+    "activation": ["relu", ["elu",0.4], ["leaky", 0.2], "linear", "hard_sigmoid", ["elu",0.3], ["leaky", 0.1], ["prelu", 0.0]], "tanh",
     "full": [[32],[64],[128],[256],[512],[1024],[2048],[64,32],[256,128],[512,256],
       [1024,512],[2048,1024],[1024, 512, 256],[4096, 1024],[4096, 2048],[512, 256, 128], [128,64], [4096]],
-  "activation_full": ["relu", ["elu",0.4], ["leaky", 0.2], "linear",["linear"], "hard_sigmoid"],
+  "activation_full": ["relu", ["elu",0.4], ["leaky", 0.2], "linear",["linear"], "hard_sigmoid", ["elu",0.3], ["leaky", 0.1], ["prelu", 0.0], "tanh"],
     "fulldrop": [0.2,0.3,0.4, 0.1, 0.0, 0.5]
   }
 }
