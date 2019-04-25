@@ -586,6 +586,44 @@ def exploit_genetic(lbestconf, conf_done, configP, attributes, rfr, pred_max, pr
 
     return [c for _,c,_ in lbestconf]
 
+def equalize_configurations(expname, configP, maxconf):
+    """
+    Equalizes the number of batches for the maxconf top configurations
+
+    :param expname:
+    :param configP:
+    :param maxconf:
+    :return:
+    """
+    exp_df = retrieve_results_as_dataframe(expname)
+
+    lexp = []
+    for i in range(len(exp_df)):
+        lexp.append((exp_df.iloc[i]['test']['mean'], i, exp_df.iloc[i]['test']['count']))
+
+    lexp = sorted(lexp, reverse=True)[:maxconf]
+    lexp = [(cnt, pos) for _, pos, cnt in lexp]
+    lexp = sorted(lexp, reverse=True)
+    topcount = lexp[0][0]
+    topbatch = topcount // BATCH
+
+    # For the best configurations, regenerate configuration from dataframe and add experiments
+    # for the following batch
+    tstamp = str(int(time() * 10000))
+
+    for count, i in lexp:
+        if count != topcount:
+            conf = regenerate_conf(exp_df, i)
+            if args.print:
+                print(conf)
+            if count % BATCH == 0:
+                ibatch = (count // BATCH)
+            else:
+                ibatch = (count // BATCH) + 1
+            # print (ibatch, topbatch)
+            insert_configurations([conf], concat_sites(smacexp['sites'], ibatch, topbatch), tstamp=tstamp)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', required=True, help='Experiment configuration')
@@ -618,6 +656,7 @@ if __name__ == '__main__':
     parser.add_argument('--intensify', action='store_true', default=False, help='Intensify best configurations')
     parser.add_argument('--exploit', default=None, choices=['random', 'local', 'genetic'],
                         help='Use prediction surface for generating new promising configurations')
+    parser.add_argument('--equalize', action='store_true', default=False, help='Equalize the number of experiments for the top npar configurations')
     parser.add_argument('--nbatches', type=int, default=1,
                         help='Number of batches of sites for new configurations or intensification')
 
@@ -720,3 +759,5 @@ if __name__ == '__main__':
             # insert promising configurations with a number batches of sites
             if len(lconf) > 0:
                 insert_configurations(lconf, concat_sites(smacexp['sites'],0,args.nbatches))
+        elif args.equalize:
+            equalize_configurations(args.exp, configP, args.npar)
