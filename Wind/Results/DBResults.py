@@ -523,7 +523,7 @@ class DBResults:
         else:
             return self.exp_df.style.highlight_max()
         
-    def results_dataframe_graph(self, facet, att):
+    def results_dataframe_graph(self, facet, att, count=False):
         """
         Plots training results
         """
@@ -537,13 +537,24 @@ class DBResults:
             for a in att:
                 text += f'{a}:'+df[df[facet]==v][a].astype(str)+'-'
             text += f'{facet}:'+df[df[facet]==v][facet].astype(str)
-            trace.append(go.Scatter(
-                x = df[df[facet]==v]['test']['mean'],
-                y = df[df[facet]==v]['val']['mean'],
-                text = text,
-                mode = 'markers', name=v,
-                marker={'size':np.log(df[df[facet]==v]['test']['count']+1)*4}
-            ))
+            if count:
+                trace.append(go.Scatter(
+                    y=df[df[facet] == v]['test']['mean'],
+                    x=df[df[facet] == v]['test']['count'],
+                    text=text,
+                    mode='markers', name=v,
+                    marker={'size': 20}
+                ))
+            else:
+                trace.append(go.Scatter(
+                    x = df[df[facet]==v]['test']['mean'],
+                    y = df[df[facet]==v]['val']['mean'],
+                    text = text,
+                    mode = 'markers', name=v,
+                    marker={'size':np.log(df[df[facet]==v]['test']['count']+1)*4}
+                ))
+
+
         py.iplot(trace, filename='basic-scatter')
 
     def size(self):
