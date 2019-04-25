@@ -56,6 +56,12 @@ NOTE: For exploitation the criteria used to select a candidate is:
     Select if the prediction + (--std * experiments stdv) is larger that the best prediction
     Order by prediction + std of the prediccion of all the regression trees
 
+* For equalizing que number of experiments of the top configurations
+
+ python3 GenerateExpConfPseudoSMAC.py --config config_***.json --pconfig pconfig_***.json  --exp experiment
+ --equalize --npar 99
+
+
  Additionaly these flags can be used:
 
  --print : prints the configurations
