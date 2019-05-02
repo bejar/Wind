@@ -362,7 +362,10 @@ class Dataset:
         lag = self.config['lag']
         vars = self.config['vars']
         wind = {}
-        angle = self.config['angle']
+        if 'angle' in self.config:
+            angle = self.config['angle']
+        else:
+            angle = False
 
         #ahead = self.config['ahead'] if (type(self.config['ahead']) == list) else [1, self.config['ahead']]
 
