@@ -156,7 +156,7 @@ class NNArchitecture(Architecture):
         Plots the model as a png file
         :return:
         """
-        if _has_pydot:
-           plot_model(self.model, show_shapes=True, to_file=f'{self.modname}.png')
+        # if _has_pydot:
+        #    plot_model(self.model, show_shapes=True, to_file=f'{self.modname}.png')
 
 
