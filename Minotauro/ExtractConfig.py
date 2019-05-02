@@ -81,7 +81,8 @@ if __name__ == '__main__':
         # config = col.find_one(query)
 
         if args.rand:
-            lsel = [c for c in col.find(query, limit=args.nconfig*100)]
+            lsel = [c for c in col.find(query, limit=args.nconfig*300)]
+            np.random.shuffle(lsel)
             if len(lsel)> args.nconfig:
                lconfig = [c for c in np.random.choice(lsel, args.nconfig, replace=False)]
             else:

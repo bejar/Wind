@@ -12,18 +12,18 @@
     "ahead": [1,12]
   },
   "arch": {
-      "filters": [256],
+      "filters": [128],
       "strides": [1],
       "kernel_size": [5],
       "k_reg": "None",
       "k_regw": 0.1,
       "rec_reg": "None",
       "rec_regw": 0.1,
-      "drop": 0.2,
-      "activation": "relu",
+      "drop": 0.3,
+      "activation": ["elu", 0.4],
       "activation_full": ["elu", 0.4],
       "fulldrop": 0.2,
-      "full": [256],
+      "full": [512,256],
       "mode":"CNN_s2s"
   },
   "training": {

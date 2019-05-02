@@ -21,7 +21,7 @@ from __future__ import print_function
 from netCDF4 import Dataset
 import numpy as np
 import time
-from Wind.Config.Paths import wind_data_path, wind_path, wind_NREL_data_path
+from Wind.Config.Paths import wind_data_path, wind_data_path_a, wind_path, wind_NREL_data_path
 import argparse
 from time import strftime
 from tqdm import tqdm
@@ -73,6 +73,8 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
         ldata = []
         for v in vars:
             data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
+            if v == 'wind_direction': # Angle data to radians
+                data = np.deg2rad(data)
             end = data.shape[0]
             length = int(end / step)
 
@@ -80,14 +82,17 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
             for i in range(step):
                 data_aver += data[i::step]
             data_aver /= float(step)
-
-            ldata.append(data_aver)
+            if v == 'wind_direction':
+                ldata.append(np.sin(data_aver))
+                ldata.append(np.cos(data_aver))
+            else:
+                ldata.append(data_aver)
         ldata.append(hour)
         ldata.append(month)
 
         data_stack = np.stack(ldata, axis=1)
 
-        np.save(wind_data_path + f"/{wf.replace('/', '-')}-{step:02d}.npy", data_stack)
+        np.save(wind_data_path_a + f"/{wf.replace('/', '-')}-{step:02d}.npy", data_stack)
 
     elif mode == 'split':  # split in n step files
         for i in range(step):

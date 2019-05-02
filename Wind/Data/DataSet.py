@@ -362,6 +362,7 @@ class Dataset:
         lag = self.config['lag']
         vars = self.config['vars']
         wind = {}
+        angle = self.config['angle']
 
         #ahead = self.config['ahead'] if (type(self.config['ahead']) == list) else [1, self.config['ahead']]
 
@@ -388,7 +389,10 @@ class Dataset:
                 srv = pysftp.Connection(host=remote_data[0], username=remote_data[1])
                 srv.get(remote_wind_data_path + f"/{d}.npy", self.data_path + f"/{d}.npy")
                 srv.close()
-            wind[d] = np.load(self.data_path + f"/{d}.npy")
+            if angle:
+                wind[d] = np.load(self.data_path+'_angle' + f"/{d}.npy")
+            else:
+                wind[d] = np.load(self.data_path + f"/{d}.npy")
             if remote:
                 os.remove(self.data_path + f"/{d}.npy")
 

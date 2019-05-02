@@ -365,7 +365,6 @@ def change_one_conf(config, configP):
 def crossover_conf(config1, config2, configP, cross, mutate):
     """
     Cross over configurations by interchanging parameters
-    For now probability of cross over is 50% (add as a pa
 
     :param config:
     :param configP:
