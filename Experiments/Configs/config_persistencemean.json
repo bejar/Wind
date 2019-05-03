@@ -3,7 +3,7 @@
   "data": {
     "datanames": ["11-5795-12"],
     "scaler": "standard",
-    "vars": [0,1,2,3,4,5,6],
+    "vars": "all",
     "datasize": 43834,
     "testsize": 17534,
     "dataset": 0,

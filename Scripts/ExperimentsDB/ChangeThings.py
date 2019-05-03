@@ -46,18 +46,25 @@ if __name__ == '__main__':
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
-    if args.status is None:
-        configs = col.find({'experiment': args.exp})
-    else:
-        configs = col.find({'experiment': args.exp, 'status':args.status})
-
     count = 0
+    configs = col.find({'data.vars':[0,1,2,3,4,5,6]})
     for conf in configs:
-        if not args.noupdate:
-            col.remove({'_id': conf['_id']})
-                #col.update({'_id': conf['_id']},{'$set': {'experiment':'mlps2selu' }})
-#                col.update({'_id': conf['_id']}, {'$set': {'arch.filters': [128,128,128]}})
-#                col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
-            count += 1
+        col.update({'_id': conf['_id']},{'$set': {'data.vars':'all' }})
+        count += 1
+    
+
+#    if args.status is None:
+#        configs = col.find({'experiment': args.exp})
+#    else:
+#        configs = col.find({'experiment': args.exp, 'status':args.status})
+
+#    count = 0
+#    for conf in configs:
+#        if not args.noupdate:
+#            col.remove({'_id': conf['_id']})
+#                #col.update({'_id': conf['_id']},{'$set': {'experiment':'mlps2selu' }})
+##                col.update({'_id': conf['_id']}, {'$set': {'arch.filters': [128,128,128]}})
+##                col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
+#            count += 1
 
     print(f'{count} Experiments changed')

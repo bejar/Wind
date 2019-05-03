@@ -73,20 +73,32 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
         ldata = []
         for v in vars:
             data = np.nan_to_num(np.array(nc_fid.variables[v]), copy=False)
-            if v == 'wind_direction': # Angle data to radians
-                data = np.deg2rad(data)
-            end = data.shape[0]
-            length = int(end / step)
+            if v != 'wind_direction':
+                end = data.shape[0]
+                length = int(end / step)
 
-            data_aver = np.zeros(length)
-            for i in range(step):
-                data_aver += data[i::step]
-            data_aver /= float(step)
-            if v == 'wind_direction':
-                ldata.append(np.sin(data_aver))
-                ldata.append(np.cos(data_aver))
-            else:
+                data_aver = np.zeros(length)
+                for i in range(step):
+                    data_aver += data[i::step]
+                    data_aver /= float(step)
                 ldata.append(data_aver)
+            else:  # Angle data is averaged differently
+                data = np.deg2rad(data)
+                datasin = np.sin(data)
+                datacos = np.cos(data)
+                end = data.shape[0]
+                length = int(end / step)
+
+                datasin_aver = np.zeros(length)
+                datacos_aver = np.zeros(length)
+                for i in range(step):
+                    datasin_aver += datasin[i::step]
+                    datasin_aver /= float(step)
+                    datacos_aver += datacos[i::step]
+                    datacos_aver /= float(step)
+        
+                ldata.append(datasin_aver)
+                ldata.append(datacos_aver)
         ldata.append(hour)
         ldata.append(month)
 

@@ -399,7 +399,11 @@ class Dataset:
             if remote:
                 os.remove(self.data_path + f"/{d}.npy")
 
-            if vars is not None:
+            # If there is a list in vars attribute it should be a list of integers
+            if type(vars) == list:
+                for v in vars:
+                    if type(v) != int or v > wind.shape[1]:
+                        raise NameError('Error in variable selection')
                 wind[d] = wind[d][:, vars]
 
         if (self.config['dataset'] == 0) or (self.config['dataset'] == 'onesiteonevar'):
