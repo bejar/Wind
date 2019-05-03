@@ -402,7 +402,7 @@ class Dataset:
             # If there is a list in vars attribute it should be a list of integers
             if type(vars) == list:
                 for v in vars:
-                    if type(v) != int or v > wind.shape[1]:
+                    if type(v) != int or v > wind[d].shape[1]:
                         raise NameError('Error in variable selection')
                 wind[d] = wind[d][:, vars]
 
