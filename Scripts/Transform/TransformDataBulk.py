@@ -80,7 +80,7 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
                 data_aver = np.zeros(length)
                 for i in range(step):
                     data_aver += data[i::step]
-                    data_aver /= float(step)
+                data_aver /= float(step)
                 ldata.append(data_aver)
             else:  # Angle data is averaged differently
                 data = np.deg2rad(data)
@@ -93,9 +93,10 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
                 datacos_aver = np.zeros(length)
                 for i in range(step):
                     datasin_aver += datasin[i::step]
-                    datasin_aver /= float(step)
                     datacos_aver += datacos[i::step]
-                    datacos_aver /= float(step)
+                    
+                datacos_aver /= float(step)
+                datasin_aver /= float(step)
         
                 ldata.append(datasin_aver)
                 ldata.append(datacos_aver)
