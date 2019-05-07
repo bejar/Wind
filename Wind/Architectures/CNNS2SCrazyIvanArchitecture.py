@@ -72,6 +72,8 @@ class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
         kernel_size = self.config['arch']['kernel_size']
         if type(kernel_size) != list:
             raise NameError('kernel size must be a list')
+        elif len(kernel_size) < 1:
+            raise NameError('kernel size list must have more than one element')
 
         strides = self.config['arch']['strides']
 
@@ -102,7 +104,7 @@ class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
 
         # Assumes several kernel sizes but only one layer for head
         for k in kernel_size:
-            convomodel = Conv1D(filters, input_shape=(idimensions), kernel_size=k, strides=strides,
+            convomodel = Conv1D(filters[0], input_shape=(idimensions), kernel_size=k, strides=strides[0],
                               activation=activation, padding='causal',
                               kernel_regularizer=k_regularizer)(input)
 
@@ -119,6 +121,8 @@ class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
             fullout = Dense(l)(fullout)
             fullout = generate_activation(activationfl)(fullout)
             fullout = Dropout(rate=fulldrop)(fullout)
+
+        fullout = Flatten()(fullout)
 
         output = Dense(odimensions, activation='linear')(fullout)
 

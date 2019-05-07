@@ -30,8 +30,8 @@
   "training": {
       "iter":1,
     "batch": 1000,
-      "epochs": 5,
-      "patience":20,
+      "epochs": 20,
+      "patience":10,
       "optimizer": "adamax",
     "lrate": 0.001
   }
