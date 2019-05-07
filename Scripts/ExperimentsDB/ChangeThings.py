@@ -47,9 +47,9 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
     count = 0
-    configs = col.find({'data.vars':[0,1,2,3,4,5,6]})
+    configs = col.find({'experiment':args.exp})
     for conf in configs:
-        col.update({'_id': conf['_id']},{'$set': {'data.vars':'all' }})
+        col.update({'_id': conf['_id']},{'$set': {'data.angle':True }})
         count += 1
     
 

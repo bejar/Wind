@@ -20,6 +20,7 @@ from Wind.Private.DBConfig import mongoconnection, mongolocal, mongolocaltest
 from pymongo import MongoClient
 import argparse
 from tqdm import tqdm
+from time import time
 
 __author__ = 'bejar'
 
@@ -52,5 +53,5 @@ if __name__ == '__main__':
         site = conf['data']['datanames'][0].split('-')
         conf['_id'] = f"{ids}{n:05d}{int(site[1]):06d}"
 
-        collocal.insert_one(conf)
+        col.insert_one(conf)
 

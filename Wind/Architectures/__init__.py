@@ -41,6 +41,7 @@ from .MLPS2SFutureArchitecture import MLPS2SFutureArchitecture
 
 from .CNNS2SArchitecture import CNNS2SArchitecture
 from .CNNS2SCrazyIvanArchitecture import CNNS2SCrazyIvanArchitecture
+from .CNNS2S2DArchitecture import CNNS2S2DArchitecture
 
 __author__ = 'bejar'
 
@@ -63,5 +64,6 @@ __all__ = ['Architecture',
            'NNArchitecture',
            'NNS2SArchitecture',
            'SCKArchitecture',
-           'CNNS2SCrazyIvanArchitecture'
+           'CNNS2SCrazyIvanArchitecture',
+           'CNNS2S2DArchitecture'
            ]

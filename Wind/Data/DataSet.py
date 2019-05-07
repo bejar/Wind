@@ -189,6 +189,9 @@ class Dataset:
         #######################################
         if mode_x == '2D':
             train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1]))
+        elif mode_x == '4D':
+            raise NameError('4D is not possible when there is only a variable')
+        # Default is '3D'
 
         if mode_y == '3D':
             train_y = train[:, -slice:, 0]
@@ -213,6 +216,8 @@ class Dataset:
         if mode_x == '2D':
             val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1]))
             test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1]))
+        elif mode_x == '4D':
+            raise NameError('4D is not possible when there is only a variable')
         # Default is '3D'
 
         if mode_y == '3D':
@@ -284,6 +289,10 @@ class Dataset:
             # Interchange axes 1 and 2 so the variables values are contiguous in the 2D matrix
             train_x = np.swapaxes(train_x, 1, 2)
             train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1] * train_x.shape[2]))
+        elif mode_x == '4D':
+            # Add an extra dimension to simulate that we have only one channel
+            train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1], train_x.shape[2], 1))
+
 
         if mode_y == '3D':
             train_y = train[:, -slice:, 0]
@@ -311,6 +320,10 @@ class Dataset:
             val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1] * val_x.shape[2]))
             test_x = np.swapaxes(test_x, 1, 2)
             test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1] * test_x.shape[2]))
+        elif mode_x == '4D':
+            # Add an extra dimension to simulate that we have only one channel
+            val_x = np.reshape(val_x, (val_x.shape[0], val_x.shape[1], val_x.shape[2], 1))
+            test_x = np.reshape(test_x, (test_x.shape[0], test_x.shape[1], test_x.shape[2], 1))
 
         if mode_y == '3D':
             val_y = test[:half_test, -slice:, 0]
