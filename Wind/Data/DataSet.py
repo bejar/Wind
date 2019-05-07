@@ -250,8 +250,8 @@ class Dataset:
         The dimensions of the matrix are adapted accordingly to the input and output dimensions of the model
 
         Input:
-            By default is a 3D matrix - examples x variables x lag
-            2D - examples x (variables * lag)
+            By default is a 3D matrix - examples x lag x variables
+            2D - examples x (lag * variables)
         Output:
             3D - examples x horizon x 1
             2D - examples x horizon

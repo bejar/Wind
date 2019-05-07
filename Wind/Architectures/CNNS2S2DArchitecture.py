@@ -98,7 +98,7 @@ class CNNS2S2DArchitecture(NNS2SArchitecture):
 
         input = Input(shape=(idimensions))
         # We assume that the kernel size for the dimension corresponding to the variables is always the number of variables
-        model = Conv2D(filters[0], input_shape=(idimensions), kernel_size=[idimensions[0], kernel_size[0]], strides=[1,strides[0]],
+        model = Conv2D(filters[0], input_shape=(idimensions), kernel_size=[kernel_size[0],idimensions[1]], strides=[1,strides[0]],
                               padding='valid', dilation_rate=dilation[0],
                               kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
@@ -107,7 +107,7 @@ class CNNS2S2DArchitecture(NNS2SArchitecture):
             model = Dropout(rate=drop)(model)
 
         for i in range(1, len(filters)):
-            model = Conv2D(filters[i], kernel_size=[idimensions[0], kernel_size[i]], strides=[1,strides[i]],
+            model = Conv2D(filters[i], kernel_size=[kernel_size[i], idimensions[0]], strides=[1,strides[i]],
                               padding='valid', dilation_rate=dilation[i],
                               kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
