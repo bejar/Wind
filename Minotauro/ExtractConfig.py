@@ -57,6 +57,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--nrep', type=int, default=1, help='number of replicas of the script')
     parser.add_argument('--nconfig', type=int, default=200, help='number of configs')
+    parser.add_argument('--hours', type=int, default=None, help='number of configs')
     parser.add_argument('--jph', type=int, default=30, help='Number of jobs per hour')
     parser.add_argument('--mem', type=int, default=2000, help='Memory to use')
     parser.add_argument('--exp', default='convos2s', help='Type of configs')
@@ -76,19 +77,24 @@ if __name__ == '__main__':
         db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
     col = db[mongoconnection.col]
 
+    if args.hours is not None:
+        nconfigs = args.hours * args.jph
+    else:
+        nconfigs = args.nconfig
+
     for nr in range(args.nrep):
         query = {'status': 'pending', 'experiment': args.exp}
         # config = col.find_one(query)
 
         if args.rand:
-            lsel = [c for c in col.find(query, limit=args.nconfig*100)]
+            lsel = [c for c in col.find(query, limit=nconfigs*100)]
             np.random.shuffle(lsel)
-            if len(lsel)> args.nconfig:
-               lconfig = [c for c in np.random.choice(lsel, args.nconfig, replace=False)]
+            if len(lsel)> nconfigs:
+               lconfig = [c for c in np.random.choice(lsel, nconfigs, replace=False)]
             else:
                lconfig = lsel
         else:
-            lconfig = [c for c in col.find(query, limit=args.nconfig)]
+            lconfig = [c for c in col.find(query, limit=nconfigs)]
 
         if len(lconfig) == 0:
             raise NameError('No configurations found')

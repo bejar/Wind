@@ -23,7 +23,7 @@ for --init sites
 * For generating random --npar configurations (no surface prediction used) for --ninitbatches batches of sites
 
  python3 GenerateExpConfPseudoSMAC.py --config config_***.json --pconfig pconfig_***.json  --exp experiment
- --random --npar 999 --ninitbatches
+ --random --npar 999 --nbatches 99
 
 * For intensifying the best configurations generating experiment for --nbatches additional batches of the --npar sites
 with higher value

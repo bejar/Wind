@@ -105,8 +105,8 @@ class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
         # Assumes several kernel sizes but only one layer for head
         for k in kernel_size:
             convomodel = Conv1D(filters[0], input_shape=(idimensions), kernel_size=k, strides=strides[0],
-                              activation=activation, padding='causal',
-                              kernel_regularizer=k_regularizer)(input)
+                              padding='causal', kernel_regularizer=k_regularizer)(input)
+            convomodel = generate_activation(activation)(convomodel)
 
             if drop != 0:
                 convomodel = Dropout(rate=drop)(convomodel)
