@@ -31,6 +31,7 @@ from .KNNDirRegressionArchitecture import KNNDirRegressionArchitecture
 from .RNNDirRegressionArchitecture import RNNDirRegressionArchitecture
 from .RNNEncoderDecoderS2SArchitecture import RNNEncoderDecoderS2SArchitecture
 from .RNNS2SArchitecture import RNNS2SArchitecture
+from .RNNS2SSelfAttentionArchitecture import RNNS2SSelfAttentionArchitecture
 from .RNNEncoderDecoderS2SAttentionArchitecture import RNNEncoderDecoderS2SAttentionArchitecture
 from .RNNEncoderDecoderS2SDepArchitecture import RNNEncoderDecoderS2SDepArchitecture
 
@@ -40,6 +41,7 @@ from .MLPS2SRecursiveArchitecture import MLPS2SRecursiveArchitecture
 from .MLPS2SFutureArchitecture import MLPS2SFutureArchitecture
 
 from .CNNS2SArchitecture import CNNS2SArchitecture
+from .CNNS2SSkipArchitecture import CNNS2SSkipArchitecture
 from .CNNS2SCrazyIvanArchitecture import CNNS2SCrazyIvanArchitecture
 from .CNNS2S2DArchitecture import CNNS2S2DArchitecture
 
@@ -57,6 +59,7 @@ __all__ = ['Architecture',
            'MLPDirRegressionArchitecture',
            'CNNS2SArchitecture',
            'RNNS2SArchitecture',
+           'RNNS2SSelfAttentionArchitecture',
            'RNNEncoderDecoderS2SAttentionArchitecture',
            'MLPS2SRecursiveArchitecture',
            'RNNEncoderDecoderS2SDepArchitecture',
@@ -65,5 +68,6 @@ __all__ = ['Architecture',
            'NNS2SArchitecture',
            'SCKArchitecture',
            'CNNS2SCrazyIvanArchitecture',
-           'CNNS2S2DArchitecture'
+           'CNNS2S2DArchitecture',
+           'CNNS2SSkipArchitecture'
            ]

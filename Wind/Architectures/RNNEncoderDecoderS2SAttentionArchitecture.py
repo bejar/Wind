@@ -48,7 +48,7 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'RNNEDS2SATT'
-    data_mode = ('3d', '3D')  # 's2s'
+    data_mode = ('3D', '3D')  # 's2s'
 
     def generate_model(self):
         """

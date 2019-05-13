@@ -18,9 +18,11 @@ RNNS2SArchitecture
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
-from keras.layers import LSTM, GRU, Dense, Flatten, Dropout, Bidirectional, Input
+from keras.layers import LSTM, GRU, Dense, Flatten, Dropout, Bidirectional, Input, TimeDistributed, RepeatVector, \
+    Lambda, Activation, Permute, multiply
 from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
+from keras import backend as K
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -41,14 +43,15 @@ else:
 __author__ = 'bejar'
 
 
-class RNNS2SArchitecture(NNS2SArchitecture):
+class RNNS2SSelfAttentionArchitecture(NNS2SArchitecture):
     """
     Recurrent architecture for sequence to sequence
 
     """
     modfile = None
-    modname = 'RNNS2S'
+    modname = 'RNNS2SATT'
     data_mode = ('3D', '2D')
+
 
     def generate_model(self):
         """
@@ -96,6 +99,7 @@ class RNNS2SArchitecture(NNS2SArchitecture):
         activation_full = self.config['arch']['activation_full']
         bidir = self.config['arch']['bidirectional']
         bimerge = self.config['arch']['bimerge']
+        attsize = self.config['arch']['attsize']
 
         # Extra added from training function
         idimensions = self.config['idimensions']
@@ -122,76 +126,52 @@ class RNNS2SArchitecture(NNS2SArchitecture):
 
         # self.model = Sequential()
         if nlayersE == 1:
-            if bidir:
-                model = Bidirectional(RNN(neurons,
-                                          implementation=impl, return_sequences=True,
-                                          recurrent_dropout=drop, #activation=activation,
-                                          recurrent_activation=activation_r,
-                                          recurrent_regularizer=rec_regularizer,
-                                          kernel_regularizer=k_regularizer), merge_mode=bimerge)(input)
-                model = generate_activation(activation)(model)
-            else:
-                model = RNN(neurons,
-                            implementation=impl, return_sequences=True,
-                            recurrent_dropout=drop, #activation=activation,
-                            recurrent_activation=activation_r,
-                            recurrent_regularizer=rec_regularizer,
-                            kernel_regularizer=k_regularizer)(input)
-                model = generate_activation(activation)(model)
+            model = RNN(neurons,
+                        implementation=impl, return_sequences=True,
+                        recurrent_dropout=drop,
+                        recurrent_activation=activation_r,
+                        recurrent_regularizer=rec_regularizer,
+                        kernel_regularizer=k_regularizer)(input)
+            model = generate_activation(activation)(model)
         else:
-            if bidir:
-                model = Bidirectional(RNN(neurons,
-                                          implementation=impl, return_sequences=True,
-                                          recurrent_dropout=drop, #activation=activation,
-                                          recurrent_activation=activation_r,
-                                          recurrent_regularizer=rec_regularizer,
-                                          kernel_regularizer=k_regularizer), merge_mode=bimerge)(input)
-                model = generate_activation(activation)(model)
-            else:
-                model = RNN(neurons,
-                            implementation=impl, return_sequences=True,
-                            recurrent_dropout=drop, #activation=activation,
-                            recurrent_activation=activation_r,
-                            recurrent_regularizer=rec_regularizer,
-                            kernel_regularizer=k_regularizer)(input)
-                model = generate_activation(activation)(model)
+            model = RNN(neurons,
+                        implementation=impl, return_sequences=True,
+                        recurrent_dropout=drop,
+                        recurrent_activation=activation_r,
+                        recurrent_regularizer=rec_regularizer,
+                        kernel_regularizer=k_regularizer)(input)
+            model = generate_activation(activation)(model)
 
             for i in range(1, nlayersE - 1):
-                if bidir:
-                    model = Bidirectional(RNN(neurons,
-                                              implementation=impl, return_sequences=True,
-                                              recurrent_dropout=drop, #activation=activation,
-                                              recurrent_activation=activation_r,
-                                              recurrent_regularizer=rec_regularizer,
-                                              kernel_regularizer=k_regularizer), merge_mode=bimerge)(model)
-                    model = generate_activation(activation)(model)
-                else:
-                    model = RNN(neurons,
-                                implementation=impl, return_sequences=True,
-                                recurrent_dropout=drop, #activation=activation,
-                                recurrent_activation=activation_r,
-                                recurrent_regularizer=rec_regularizer,
-                                kernel_regularizer=k_regularizer)(model)
-                    model = generate_activation(activation)(model)
-
-            if bidir:
-                model = Bidirectional(RNN(neurons,
-                                          implementation=impl, return_sequences=True,
-                                          recurrent_dropout=drop, #activation=activation,
-                                          recurrent_activation=activation_r,
-                                          recurrent_regularizer=rec_regularizer,
-                                          kernel_regularizer=k_regularizer), merge_mode=bimerge)(model)
-                model = generate_activation(activation)(model)
-            else:
                 model = RNN(neurons,
                             implementation=impl, return_sequences=True,
-                            recurrent_dropout=drop,# activation=activation,
+                            recurrent_dropout=drop,
                             recurrent_activation=activation_r,
                             recurrent_regularizer=rec_regularizer,
                             kernel_regularizer=k_regularizer)(model)
                 model = generate_activation(activation)(model)
 
-        model = Flatten()(model)
+
+            model = RNN(neurons,
+                        implementation=impl, return_sequences=True,
+                        recurrent_dropout=drop,
+                        recurrent_activation=activation_r,
+                        recurrent_regularizer=rec_regularizer,
+                        kernel_regularizer=k_regularizer)(model)
+            model = generate_activation(activation)(model)
+
+        attention = TimeDistributed(Dense(1, activation='tanh'))(model)
+        attention = Flatten()(attention)
+        attention = Activation('softmax')(attention)
+        attention = RepeatVector(neurons)(attention)
+        attention = Permute([2,1])(attention)
+
+        sent_representation = multiply([model, attention])
+        sent_representation = Lambda(lambda xin: K.sum(xin, axis=-1))(sent_representation)
+
+        # reg = TimeDistributed(Dense(1, activation='linear'))(sent_representation)
+        model = Dense(1, activation='linear')(sent_representation)
+        # model = Flatten()(reg)
 
         for nn in full:
             model = Dense(nn)(model)
@@ -201,6 +181,7 @@ class RNNS2SArchitecture(NNS2SArchitecture):
         output = Dense(odimensions, activation='linear')(model)
 
         self.model = Model(inputs=input, outputs=output)
+        # self.model = Model(inputs=input, outputs=reg)
 
 
     def evaluate(self, val_x, val_y, test_x, test_y):

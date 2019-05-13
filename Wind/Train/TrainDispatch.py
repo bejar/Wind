@@ -25,7 +25,8 @@ from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArc
     PersistenceArchitecture, RNNEncoderDecoderS2SArchitecture, MLPS2SArchitecture, MLPDirRegressionArchitecture, \
     CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture, MLPS2SRecursiveArchitecture, \
     RNNEncoderDecoderS2SDepArchitecture, KNNDirRegressionArchitecture, PersistenceMeanArchitecture, \
-    CNNS2SCrazyIvanArchitecture, MLPS2SFutureArchitecture, CNNS2S2DArchitecture
+    CNNS2SCrazyIvanArchitecture, MLPS2SFutureArchitecture, CNNS2S2DArchitecture, RNNS2SSelfAttentionArchitecture, \
+    CNNS2SSkipArchitecture
 
 class TrainDispatch:
 
@@ -59,6 +60,7 @@ class TrainDispatch:
         self.model_dict['RNN_ED_s2s_att'] = (train_sequence2sequence_tf, RNNEncoderDecoderS2SAttentionArchitecture)
 
         self.model_dict['RNN_s2s'] = (train_sequence2sequence, RNNS2SArchitecture)
+        self.model_dict['RNN_s2s_att'] = (train_sequence2sequence, RNNS2SSelfAttentionArchitecture)
 
         # MLP models
 
@@ -74,6 +76,7 @@ class TrainDispatch:
         self.model_dict['CNN_s2s'] = self.model_dict['convos2s'] = (train_sequence2sequence, CNNS2SArchitecture)
         self.model_dict['CNN_CI_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvanArchitecture)
         self.model_dict['CNN_2D_s2s'] = (train_sequence2sequence, CNNS2S2DArchitecture)
+        self.model_dict['CNN_Skip_s2s'] = (train_sequence2sequence, CNNS2SSkipArchitecture)
 
 
 

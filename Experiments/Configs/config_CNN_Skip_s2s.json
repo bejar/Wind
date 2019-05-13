@@ -9,13 +9,11 @@
     "testsize": 17534,
     "dataset": "onesitemanyvar",
     "lag": 18,
-    "ahead": [1,12],
-    "angle":true
+    "ahead": [1,12]
   },
   "arch": {
       "filters": [128],
       "strides": [1],
-    "dilated": false,
       "kernel_size": [5],
     "k_reg": "None",
       "k_regw": 0.1,
@@ -26,11 +24,12 @@
       "activation_full":["elu",0.4] ,
       "full": [512,256],
       "fulldrop": 0.2,
-      "mode":"CNN_CI_s2s"
+
+      "mode":"CNN_Skip_s2s"
   },
-    "training": {
-	"iter":1,
-    "batch": 1024,
+  "training": {
+      "iter":1,
+    "batch": 1000,
       "epochs": 20,
       "patience":10,
       "optimizer": "adamax",

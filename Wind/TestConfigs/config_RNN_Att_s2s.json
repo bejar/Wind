@@ -1,0 +1,41 @@
+{ "_id": "00000000",
+    "experiment": "TEST",
+  "data": {
+    "datanames": ["11-5794-12"],
+    "scaler": "standard",
+    "vars": "all",
+    "datasize": 43834,
+    "testsize": 17534,
+    "dataset": 1,
+    "lag": 18,
+    "ahead": 12
+  },
+  "arch": {
+    "neurons":32,
+    "k_reg": "None",
+    "k_regw": 0.1,
+    "rec_reg": "None",
+    "rec_regw": 0.1,
+    "drop": 0.0,
+    "nlayers": 1,
+    "activation": "tanh",
+    "activation_r": "hard_sigmoid",
+    "CuDNN": false,
+    "bidirectional": false,
+    "bimerge":"ave",
+    "rnn": "GRU",
+    "full": [64, 32],
+    "activation_full": "sigmoid",
+    "fulldrop": 0.05,
+    "attsize": 16,
+    "mode": "RNN_s2s_att"
+  },
+  "training": {
+    "iter":1,
+    "batch": 1024,
+    "epochs": 200,
+    "patience": 10,
+    "optimizer": "adamax",
+    "lrate": 0.001
+  }
+}
