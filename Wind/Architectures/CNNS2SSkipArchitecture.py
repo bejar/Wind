@@ -113,8 +113,8 @@ class CNNS2SSkipArchitecture(NNS2SArchitecture):
             if drop != 0:
                 model = Dropout(rate=drop)(model)
 
-        model = Concatenate()([input, model])
-        model = Flatten()(model)
+
+        model = Concatenate()([Flatten()(input), Flatten()(model)])
         for l in full_layers:
             model= Dense(l)(model)
             model = generate_activation(activationfl)(model)
