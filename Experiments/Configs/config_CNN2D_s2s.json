@@ -24,13 +24,12 @@
       "activation_full":["elu",0.4] ,
       "full": [512,256],
       "fulldrop": 0.2,
-
-      "mode":"CNN_Skip_s2s"
+      "mode":"CNN_2D_s2s"
   },
-  "training": {
-      "iter":1,
-    "batch": 1024,
-      "epochs": 200,
+    "training": {
+	"iter":1,
+    "batch": 1000,
+      "epochs": 20,
       "patience":10,
       "optimizer": "adamax",
     "lrate": 0.001

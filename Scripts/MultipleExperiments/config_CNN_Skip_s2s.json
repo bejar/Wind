@@ -24,7 +24,6 @@
       "activation_full":["elu",0.4] ,
       "full": [512,256],
       "fulldrop": 0.2,
-
       "mode":"CNN_Skip_s2s"
   },
   "training": {
