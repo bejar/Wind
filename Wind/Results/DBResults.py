@@ -876,7 +876,7 @@ class DBResults:
 
 
 
-    def plot_distplot(self, summary='sum', seaborn=True, notebook=False, dset=('val', 'test'), figsize=(800, 400), title=None, labels=None,font=None):
+    def plot_distplot(self, summary='sum', seaborn=True, notebook=False, dset=('val', 'test'), figsize=(800, 400), title=None, labels=None,font=None, save=None, saveformat='pdf'):
         """
         Generates a distplot of the results
 
@@ -931,6 +931,8 @@ class DBResults:
             for v,l in zip(data, labels):
                 sns.distplot(v, label=l, kde=True, norm_hist=True)
                 plt.legend(labels=labels, title=title)
+            if save is not None:
+                plt.savefig(f"{save}.pdf", format=saveformat)
 
             for v ,l in zip(data, labels):
                 print(f'MEAN ({l})= {np.mean(v)}')
@@ -946,7 +948,7 @@ class DBResults:
                 py.iplot(fig, filename=f"./{title}-distplot.html")
 
     def plot_distplot_compare(self, summary='sum', compare='diff', seaborn=True, notebook=False, dset=('val', 'test'),
-                              figsize=(800, 400), title=None, labels=None,font=None):
+                              figsize=(800, 400), title=None, labels=None,font=None, save=None, saveformat='pdf'):
         """
         Generates a distplot for the comparison of the results results
 
@@ -1031,6 +1033,9 @@ class DBResults:
             for v,l in zip(data, labels):
                 sns.distplot(v, label=l, kde=True, norm_hist=True)
                 plt.legend(labels=labels, title=title)
+            if save is not None:
+                plt.savefig(f"{save}.pdf", format=saveformat)
+
         else:
             fig = ff.create_distplot(data, labels, bin_size=.05)
             fig.layout.width = figsize[0]
@@ -1040,7 +1045,7 @@ class DBResults:
             else:
                 py.iplot(fig, filename=f"./{title}-distplot.html")
 
-    def plot_densplot(self, plot='kde', glm=False, test=False, summary='sum', figsize=(8, 8), font=None):
+    def plot_densplot(self, plot='kde', glm=False, test=False, summary='sum', figsize=(8, 8), font=None, save=None, saveformat='pdf'):
         """
         Generates a density plot comparing test and validation
 
@@ -1070,10 +1075,19 @@ class DBResults:
         plt.figure(figsize=figsize)
         if plot == 'kde':
             sns.kdeplot(data['test'],data['validation'], shade=True, n_levels=10, cbar=True, shade_lowest=False)
+            if save is not None:
+                plt.savefig(f"{save}.pdf", format=saveformat)
+
         elif plot == 'regression':
             sns.regplot('test','validation', data=data, truncate=True, line_kws={'color':'red', 'linewidth':2,'linestyle':'--'})
+            if save is not None:
+                plt.savefig(f"{save}.pdf", format=saveformat)
+
         else:
             sns.scatterplot('test','validation', data=data)
+            if save is not None:
+                plt.savefig(f"{save}.pdf", format=saveformat)
+
         if glm:
             model = GLM.from_formula('test ~ validation', data)
             result = model.fit()
@@ -1085,7 +1099,7 @@ class DBResults:
 
             
 
-    def plot_densplot_compare(self, plot='kde', glm=False, summary='sum', figsize=(8, 8)):
+    def plot_densplot_compare(self, plot='kde', glm=False, summary='sum', figsize=(8, 8), save=None, saveformat='pdf'):
         """
         Generates a density plot comparing test and validation
 
@@ -1123,12 +1137,21 @@ class DBResults:
         if plot == 'kde':
             sns.kdeplot(data1['test'],data1['validation'], cmap="Reds", n_levels=10, cbar=True, shade_lowest=False)
             sns.kdeplot(data2['test'],data2['validation'], cmap="Blues", n_levels=10, cbar=True, shade_lowest=False)
+            if save is not None:
+                plt.savefig(f"{save}.pdf", format=saveformat)
+
         elif plot == 'regression':
             sns.regplot('test','validation', data=data1,truncate=True, line_kws={'color':'red', 'linewidth':2,'linestyle':'--'})
             sns.regplot('test','validation', data=data2,truncate=True, line_kws={'color':'blue', 'linewidth':2,'linestyle':'--'})
+            if save is not None:
+                plt.savefig(f"{save}.pdf", format=saveformat)
+
         else:
             sns.scatterplot('test','validation', data=data1)
             sns.scatterplot('test','validation', data=data2)
+            if save is not None:
+                plt.savefig(f"{save}.pdf", format=saveformat)
+
         if glm:
             model = GLM.from_formula('test ~ validation', data1)
             result = model.fit()
@@ -1137,7 +1160,7 @@ class DBResults:
             result = model.fit()
             print(result.summary())
 
-    def plot_hours_boxplot(self, dset=('val', 'test'), figsize=(8, 4), title=None, font=None):
+    def plot_hours_boxplot(self, dset=('val', 'test'), figsize=(8, 4), title=None, font=None, save=None, saveformat='pdf'):
         """
         Plots the accuracy for each hour in a boxplot
 
@@ -1176,8 +1199,10 @@ class DBResults:
         sns.boxplot(x='hour', y='acc', hue=title,data=df)
 
         plt.show()
+        if save is not None:
+            plt.savefig(f"{save}.pdf", format=saveformat)
 
-    def plot_hours_boxplot_compare(self, dset=('val', 'test'), figsize=(16, 4), title=None, labels=None, font=None):
+    def plot_hours_boxplot_compare(self, dset=('val', 'test'), figsize=(16, 4), title=None, labels=None, font=None, save=None, saveformat='pdf'):
         """
         Plots the accuracy for each hour in a boxplot
 
@@ -1231,6 +1256,9 @@ class DBResults:
         sns.boxplot(x='hour', y='acc', hue=title,data=df)
 
         plt.show()
+        if save is not None:
+            plt.savefig(f"{save}.pdf", format=saveformat)
+
 
 
     def plot_2DKDEplot(self, summary='sum', notebook=False, dset=('val', 'test'), figsize=(800, 400)):

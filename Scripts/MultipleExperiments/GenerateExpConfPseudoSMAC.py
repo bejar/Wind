@@ -318,6 +318,7 @@ def insert_configurations(lconf, sites, tstamp=None):
         sc['exploration'] = 'SMAC'
         if not args.test:
             col.insert_one(sc)
+    return len(lsitesconf)
 
 
 def get_best_configurations(exp_df, n):
@@ -456,7 +457,8 @@ def generate_random_configurations(conf_done, configP, maxtries, maxconf, nbatch
         if nc >= maxconf:
             break
 
-    insert_configurations(lconf, concat_sites(smacexp['sites'],0,nbatches))
+    nconf = insert_configurations(lconf, concat_sites(smacexp['sites'],0,nbatches))
+    print(f'Total new configurations = {nconf}')
 
 
 def intensify_configurations(expname, maxconf, nbatches):
@@ -477,6 +479,7 @@ def intensify_configurations(expname, maxconf, nbatches):
     # For the best configurations, regenerate configuration from dataframe and add experiments
     # for the following batch
     tstamp = str(int(time() * 10000))
+    tnconf = 0
     for _, i, count in lexp:
         conf = regenerate_conf(exp_df, i)
         if args.print:
@@ -489,7 +492,8 @@ def intensify_configurations(expname, maxconf, nbatches):
         else:
             ibatch = (count // BATCH) + 1
 
-        insert_configurations([conf], concat_sites(smacexp['sites'], ibatch, ibatch + nbatches), tstamp=tstamp)
+        tnconf += insert_configurations([conf], concat_sites(smacexp['sites'], ibatch, ibatch + nbatches), tstamp=tstamp)
+    print(f'Total new configurations = {tnconf}')
 
 
 def exploit_random(conf_done, configP, attributes, rfr, pred_max, pred_std, maxtries, maxconf, stdevprop):
@@ -616,6 +620,7 @@ def equalize_configurations(expname, configP, maxconf):
     # for the following batch
     tstamp = str(int(time() * 10000))
 
+    tnconf = 0
     for count, i in lexp:
         if count != topcount:
             conf = regenerate_conf(exp_df, i)
@@ -626,7 +631,9 @@ def equalize_configurations(expname, configP, maxconf):
             else:
                 ibatch = (count // BATCH) + 1
             # print (ibatch, topbatch)
-            insert_configurations([conf], concat_sites(smacexp['sites'], ibatch, topbatch), tstamp=tstamp)
+            tnconf += insert_configurations([conf], concat_sites(smacexp['sites'], ibatch, topbatch), tstamp=tstamp)
+    print(f'Total new configurations = {tnconf}')
+
 
 
 if __name__ == '__main__':
@@ -763,6 +770,8 @@ if __name__ == '__main__':
 
             # insert promising configurations with a number batches of sites
             if len(lconf) > 0:
-                insert_configurations(lconf, concat_sites(smacexp['sites'],0,args.nbatches))
+                tconf = insert_configurations(lconf, concat_sites(smacexp['sites'],0,args.nbatches))
+                print(f'Total new configurations = {nconf}')
+
         elif args.equalize:
             equalize_configurations(args.exp, configP, args.npar)
