@@ -202,7 +202,7 @@ def create_plot_best(df, title, labels, notebook=False, image=False, tick=10, cm
         ndata = data.copy()
         ndata['lat'] = df[df['Val']==i]['Lat']
         ndata['lon'] = df[df['Val']==i]['Lon']
-        ndata['marker'] = dict(size=1,color=i)
+        ndata['marker'] = dict(size=2,color=i,colorscale='Viridis')
         ndata['name'] = labels[i]
         ldata.append(ndata)
        
@@ -820,7 +820,7 @@ class DBResults:
                             )
 
     def plot_map_multiple(self, summary='sum', notebook=False, labels=None,
-                         dset=('val', 'test'), figsize=(800, 400), image=False):
+                         dset=('val', 'test'), figsize=(800, 400), image=False, cmap=None):
         """
         generates an html map with the results
 
@@ -872,11 +872,11 @@ class DBResults:
 
         if 'test' in dset:
             create_plot_best(testdf,
-                        f"{title}-test", notebook=notebook, figsize=figsize, labels=labels
+                        f"{title}-test", notebook=notebook, figsize=figsize, labels=labels,cmap=cmap
                         )
         if 'val' in dset:
             create_plot_best(valdf,
-                        f"{title}-validation", notebook=notebook, figsize=figsize, labels=labels
+                        f"{title}-validation", notebook=notebook, figsize=figsize, labels=labels,cmap=cmap
                         )
 
 
