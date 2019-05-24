@@ -771,7 +771,7 @@ if __name__ == '__main__':
             # insert promising configurations with a number batches of sites
             if len(lconf) > 0:
                 tconf = insert_configurations(lconf, concat_sites(smacexp['sites'],0,args.nbatches))
-                print(f'Total new configurations = {nconf}')
+                print(f'Total new configurations = {tconf}')
 
         elif args.equalize:
             equalize_configurations(args.exp, configP, args.npar)

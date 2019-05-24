@@ -182,11 +182,16 @@ def create_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(1200, 800
         py.plot(fig, filename=f"./{title}.html")
 
 
-def create_plot_best(df, title, labels, notebook=False, image=False, tick=10, cmap=scl, figsize=(1200, 800)):
+def create_plot_best(df, title, labels, notebook=False, image=False, tick=10, cmap=None, figsize=(1200, 800)):
     """
     Creates an HTML file with the map
     """
-    colors = ['red', 'green', 'blue', 'yellow', 'cyan', 'magenta']
+
+    if scl is None :
+        colors = ['red', 'green', 'blue', 'yellow', 'cyan', 'magenta']
+    else:
+        colors = scl
+
     data = dict(
         mode='markers',
         type='scattergeo'

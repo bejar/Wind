@@ -26,6 +26,7 @@ import glob
 import numpy as np
 from tqdm import tqdm
 import os
+import time
 
 __author__ = 'bejar'
 
@@ -81,4 +82,4 @@ if __name__ == '__main__':
         os.rename(file, f'done_{file}')
 
         count += 1
-    print(count, 'Processed')
+    print(f'{count} Processed {time.ctime()}')
