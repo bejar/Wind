@@ -29,6 +29,7 @@ from statsmodels.stats.multicomp import MultiComparison
 from Wind.Config.Paths import wind_data_path
 from statsmodels.genmod.generalized_linear_model import GLM
 import matplotlib
+from matplotlib.axes import Axes
 
 try:
     from pymongo import MongoClient
@@ -202,7 +203,7 @@ def create_plot_best(df, title, labels, notebook=False, image=False, tick=10, cm
         ndata = data.copy()
         ndata['lat'] = df[df['Val']==i]['Lat']
         ndata['lon'] = df[df['Val']==i]['Lon']
-        ndata['marker'] = dict(size=1,color=i,colorscale='Viridis')
+        ndata['marker'] = dict(size=1,color=i)
         ndata['name'] = labels[i]
         ldata.append(ndata)
        
@@ -932,15 +933,24 @@ class DBResults:
         if seaborn:
             if font is not None:
                 matplotlib.rcParams.update({'font.size': font})
-            plt.figure(figsize=figsize)
+            fig = plt.figure(figsize=figsize)
             for v,l in zip(data, labels):
                 sns.distplot(v, label=l, kde=True, norm_hist=True)
                 plt.legend(labels=labels, title=title)
+
+            ax = fig.axes[0]
+            ax.set_ylabel('Density')
+            if summary == 'sum':
+                ax.set_xlabel(r'$\sum_{i=1}^{12}R^2$')
+            else:
+                ax.set_xlabel(r'$R^2$')
+
             if save is not None:
-                plt.savefig(f"{save}.pdf", format=saveformat)
+                plt.savefig(f"{save}.{saveformat}", format=saveformat)
 
             for v ,l in zip(data, labels):
                 print(f'MEAN ({l})= {np.mean(v)}')
+                print(f'StDev ({l})= {np.std(v)}')
 
         else:
             fig = ff.create_distplot(data, labels, bin_size=.05)
@@ -1039,7 +1049,7 @@ class DBResults:
                 sns.distplot(v, label=l, kde=True, norm_hist=True)
                 plt.legend(labels=labels, title=title)
             if save is not None:
-                plt.savefig(f"{save}.pdf", format=saveformat)
+                plt.savefig(f"{save}.{saveformat}", format=saveformat)
 
         else:
             fig = ff.create_distplot(data, labels, bin_size=.05)
@@ -1077,21 +1087,27 @@ class DBResults:
         data = pd.DataFrame({'test':sumtest, 'validation':sumval})
         if font is not None:
             matplotlib.rcParams.update({'font.size': font})
-        plt.figure(figsize=figsize)
+        fig = plt.figure(figsize=figsize)
         if plot == 'kde':
             sns.kdeplot(data['test'],data['validation'], shade=True, n_levels=10, cbar=True, shade_lowest=False)
+            ax = fig.axes[0]
+            ax.set_xlabel(r'$\sum_{i=1}^{12}R^2$ test')
+            ax.set_ylabel(r'$\sum_{i=1}^{12}R^2$ validation')
             if save is not None:
                 plt.savefig(f"{save}.pdf", format=saveformat)
 
         elif plot == 'regression':
             sns.regplot('test','validation', data=data, truncate=True, line_kws={'color':'red', 'linewidth':2,'linestyle':'--'})
+            ax = fig.axes[0]
+            ax.set_xlabel(r'$\sum_{i=1}^{12}R^2$ test')
+            ax.set_ylabel(r'$\sum_{i=1}^{12}R^2$ validation')
             if save is not None:
                 plt.savefig(f"{save}.pdf", format=saveformat)
 
         else:
             sns.scatterplot('test','validation', data=data)
             if save is not None:
-                plt.savefig(f"{save}.pdf", format=saveformat)
+                plt.savefig(f"{save}.{saveformat}", format=saveformat)
 
         if glm:
             model = GLM.from_formula('test ~ validation', data)
@@ -1155,7 +1171,7 @@ class DBResults:
             sns.scatterplot('test','validation', data=data1)
             sns.scatterplot('test','validation', data=data2)
             if save is not None:
-                plt.savefig(f"{save}.pdf", format=saveformat)
+                plt.savefig(f"{save}.{saveformat}", format=saveformat)
 
         if glm:
             model = GLM.from_formula('test ~ validation', data1)
@@ -1200,12 +1216,15 @@ class DBResults:
                 exp = np.append(exp, np.array(['val']*len(self.selection)))
 
         df = pd.DataFrame({'hour':hour, 'acc':data, title:exp})
-        plt.figure(figsize=figsize, dpi=100)
+        fig = plt.figure(figsize=figsize, dpi=100)
         sns.boxplot(x='hour', y='acc', hue=title,data=df)
-
-        plt.show()
+        ax = fig.axes[0]
+        ax.set_ylabel(r'$R^2$')
+        ax.set_ylabel(r'$R^2$')
         if save is not None:
-            plt.savefig(f"{save}.pdf", format=saveformat)
+            plt.savefig(f"{save}.{saveformat}", format=saveformat)
+        plt.show()
+
 
     def plot_hours_boxplot_compare(self, dset=('val', 'test'), figsize=(16, 4), title=None, labels=None, font=None, save=None, saveformat='pdf'):
         """
@@ -1259,10 +1278,12 @@ class DBResults:
         df = pd.DataFrame({'hour':hour, 'acc':data, title:exp})
         plt.figure(figsize=figsize, dpi=100)
         sns.boxplot(x='hour', y='acc', hue=title,data=df)
+        ax = plt.axes()
+        ax.set_ylabel(r'$R^2$')
 
-        plt.show()
         if save is not None:
-            plt.savefig(f"{save}.pdf", format=saveformat)
+            plt.savefig(f"{save}.{saveformat}", format=saveformat)
+        plt.show()
 
 
 
