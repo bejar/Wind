@@ -465,7 +465,7 @@ class DBResults:
         self.selection = list(range(self.exp_lresults[0]['sites'].shape[0]))
 
 
-    def results_dataframe_retrieve(self, query, data=('vars', 'ahead', 'lag'), arch=[], train=[]):
+    def results_dataframe_retrieve(self, query, data=['vars', 'ahead', 'lag'], arch=[], train=[]):
         """
         Retrieves the results from the query and builds a pandas dataframe with all the data
 
