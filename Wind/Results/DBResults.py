@@ -202,7 +202,7 @@ def create_plot_best(df, title, labels, notebook=False, image=False, tick=10, cm
         ndata = data.copy()
         ndata['lat'] = df[df['Val']==i]['Lat']
         ndata['lon'] = df[df['Val']==i]['Lon']
-        ndata['marker'] = dict(size=2,color=i,colorscale='Viridis')
+        ndata['marker'] = dict(size=1,color=i,colorscale='Viridis')
         ndata['name'] = labels[i]
         ldata.append(ndata)
        
