@@ -47,9 +47,9 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
     count = 0
-    configs = col.find({'experiment':args.exp, 'status':'extract'})
+    configs = col.find({'experiment':args.exp})
     for conf in configs:
-        col.update({'_id': conf['_id']},{'$set': {'training.batch':128}})
+        col.update({'_id': conf['_id']},{'$set': {'arch.mode':"MLP_dir_reg"}})
         count += 1
     
 

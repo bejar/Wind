@@ -18,6 +18,6 @@
     "mode": "KNN_dir_reg"
   },
   "training":{
-
+    "iter":1
   }
 }

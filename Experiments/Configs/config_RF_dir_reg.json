@@ -6,19 +6,17 @@
      "vars": "all",
     "datasize": 43834,
     "testsize": 17534,
-    "dataset": 1,
+      "dataset": 1,
+      "dmatrix": "normal",
     "lag": 18,
-    "ahead": 12,
-        "fraction": 1,
-     "dmatrix": "normal"
+      "ahead": [1,12],
+      "fraction": 1
   },
   "arch": {
-    "kernel" : "rbf",
-    "C" : 0.01,
-    "epsilon": 0.01,
-    "degree": 2,
-    "coef0": 1,
-    "mode": "SVM_dir_reg"
+      "n_estimators" : 100,
+      "max_features":"auto",
+    "oob_score": true,
+    "mode": "RF_dir_reg"
   },
   "training":{
     "iter":1

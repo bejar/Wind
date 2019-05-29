@@ -27,6 +27,7 @@ from .PersistenceMeanArchitecture import PersistenceMeanArchitecture
 
 from .SVMDirRegressionArchitecture import SVMDirRegressionArchitecture
 from .KNNDirRegressionArchitecture import KNNDirRegressionArchitecture
+from .RandomForestDirRegressionArchitecture import RandomForestDirRegressionArchitecture
 
 from .RNNDirRegressionArchitecture import RNNDirRegressionArchitecture
 from .RNNEncoderDecoderS2SArchitecture import RNNEncoderDecoderS2SArchitecture
@@ -69,5 +70,6 @@ __all__ = ['Architecture',
            'SCKArchitecture',
            'CNNS2SCrazyIvanArchitecture',
            'CNNS2S2DArchitecture',
-           'CNNS2SSkipArchitecture'
+           'CNNS2SSkipArchitecture',
+           'RandomForestDirRegressionArchitecture'
            ]
