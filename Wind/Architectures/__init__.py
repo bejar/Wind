@@ -28,6 +28,7 @@ from .PersistenceMeanArchitecture import PersistenceMeanArchitecture
 from .SVMDirRegressionArchitecture import SVMDirRegressionArchitecture
 from .KNNDirRegressionArchitecture import KNNDirRegressionArchitecture
 from .RandomForestDirRegressionArchitecture import RandomForestDirRegressionArchitecture
+from .AdaBoostDirRegressionArchitecture import AdaBoostDirRegressionArchitecture
 
 from .RNNDirRegressionArchitecture import RNNDirRegressionArchitecture
 from .RNNEncoderDecoderS2SArchitecture import RNNEncoderDecoderS2SArchitecture
@@ -37,6 +38,7 @@ from .RNNEncoderDecoderS2SAttentionArchitecture import RNNEncoderDecoderS2SAtten
 from .RNNEncoderDecoderS2SDepArchitecture import RNNEncoderDecoderS2SDepArchitecture
 
 from .MLPS2SArchitecture import MLPS2SArchitecture
+from .MLPCascadeS2SArchitecture import MLPCascadeS2SArchitecture
 from .MLPDirRegressionArchitecture import MLPDirRegressionArchitecture
 from .MLPS2SRecursiveArchitecture import MLPS2SRecursiveArchitecture
 from .MLPS2SFutureArchitecture import MLPS2SFutureArchitecture
@@ -56,6 +58,7 @@ __all__ = ['Architecture',
            'PersistenceMeanArchitecture',
            'PersistenceMeanArchitecture2',
            'MLPS2SArchitecture',
+           'MLPCascadeS2SArchitecture',
            'MLPS2SFutureArchitecture',
            'MLPDirRegressionArchitecture',
            'CNNS2SArchitecture',
@@ -71,5 +74,6 @@ __all__ = ['Architecture',
            'CNNS2SCrazyIvanArchitecture',
            'CNNS2S2DArchitecture',
            'CNNS2SSkipArchitecture',
-           'RandomForestDirRegressionArchitecture'
+           'RandomForestDirRegressionArchitecture',
+           'AdaBoostDirRegressionArchitecture'
            ]

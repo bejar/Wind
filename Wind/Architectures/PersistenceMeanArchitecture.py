@@ -17,7 +17,8 @@ PersistenceArchitecture
 """
 
 from Wind.Architectures.Architecture import Architecture
-from sklearn.metrics import r2_score
+from Wind.ErrorMeasure import ErrorMeasure
+from sklearn.metrics import r2_score, mean_squared_error
 import numpy as np
 
 __author__ = 'bejar'
@@ -73,10 +74,18 @@ class PersistenceMeanArchitecture(Architecture):
 
         lresults = []
         for a, i in zip(alpha, range(1, ahead + 1)):
-            lresults.append((i,
-                             r2_score((val_x[:, -1] * a) + ((1 - a) * np.mean(val_x, axis=1)), val_y[:, i - 1]),
-                             r2_score((test_x[:, -1] * a) + ((1 - a) * np.mean(test_x, axis=1)), test_y[:, i - 1])
-                             ))
+            lresults.append([i] +
+                            ErrorMeasure().compute_errors((val_x[:, -1] * a) + ((1 - a) * np.mean(val_x, axis=1)),
+                                                        val_y[:, i - 1],
+                                                        (test_x[:, -1] * a) + ((1 - a) * np.mean(test_x, axis=1)),
+                                                        test_y[:, i - 1]))
+       # for a, i in zip(alpha, range(1, ahead + 1)):
+       #      lresults.append((i,
+       #                       r2_score((val_x[:, -1] * a) + ((1 - a) * np.mean(val_x, axis=1)), val_y[:, i - 1]),
+       #                       r2_score((test_x[:, -1] * a) + ((1 - a) * np.mean(test_x, axis=1)), test_y[:, i - 1])
+       #                       mean_squared_error((val_x[:, -1] * a) + ((1 - a) * np.mean(val_x, axis=1)), val_y[:, i - 1]),
+       #                       mean_squared_error((test_x[:, -1] * a) + ((1 - a) * np.mean(test_x, axis=1)), test_y[:, i - 1])
+       #                       ))
 
         return lresults
 

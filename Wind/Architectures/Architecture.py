@@ -19,6 +19,7 @@ Architecture
 
 __author__ = 'bejar'
 
+from Wind.ErrorMeasure import ErrorMeasure
 
 class Architecture:
     """Architecture
@@ -125,23 +126,30 @@ class Architecture:
         if self.runconfig.info:
             self.summary()
 
-        nres = len(result)//self.config['training']['iter']
-
-        sr2val = 0.0
-        sr2test = 0.0
-
-
-        for c, (i, r2val, r2test) in enumerate(result):
-            sr2val += r2val
-            sr2test += r2test
-            print(f"{self.config['arch']['mode']} | AH={i} R2V = {r2val:3.5f} R2T = {r2test:3.5f}")
-            if (c+1) % nres == 0:
-                print(f"** {self.config['arch']['mode']} | AH=TT R2V = {sr2val:3.5f} R2T = {sr2test:3.5f}")
-                sr2val = 0.0
-                sr2test = 0.0
+        if not 'iter' in self.config['training']:
+            nres = len(result)
+        else:
+            nres = len(result)//self.config['training']['iter']
 
 
+        ErrorMeasure().print_errors(self.config['arch']['mode'], nres, result)
 
+
+        # nvals = len(result[0])
+        # count = [0]*nvals
+        # for c, (i, *err) in enumerate(result):
+        #     print(f"{self.config['arch']['mode']} | AH={i:2}", end=" ")
+        #     for p, v in enumerate(err):
+        #         count[p]+=v
+        #         print(f"{ErrorMeasure.error_names[p]} = {v:3.5f}", end=" ")
+        #
+        #     print()
+        #     if (c+1) % nres == 0:
+        #         print(f"**{self.config['arch']['mode']} | AH=TT", end=" ")
+        #         for p, v in enumerate(err):
+        #             print(f"{ErrorMeasure.error_names[p]} = {count[p]:3.5f}", end=" ")
+        #         count = [0]*nvals
+        #         print()
 
 
     def save(self, postfix):

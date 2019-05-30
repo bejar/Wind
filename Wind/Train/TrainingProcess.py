@@ -98,8 +98,7 @@ def train_dirregression(architecture, config, runconfig):
             ############################################
             # Results
 
-            r2val, r2test = arch.evaluate(val_x, val_y, test_x, test_y)
-            lresults.append((ahead, r2val, r2test))
+            lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
 
             print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -325,9 +324,7 @@ def train_persistence(architecture, config, runconfig):
         if runconfig.verbose:
             dataset.summary()
 
-
-        val_r2, test_r2 = arch.evaluate(val_x, val_y, test_x, test_y)
-        lresults.append((ahead, val_r2, test_r2))
+        lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -382,8 +379,7 @@ def train_sckit_dirregression(architecture, config, runconfig):
 
         ############################################
         # Results
-        val_r2, test_r2 = arch.evaluate(val_x, val_y, test_x, test_y)
-        lresults.append((ahead, val_r2, test_r2))
+        lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 

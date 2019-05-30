@@ -17,10 +17,11 @@ NNS2SArchitecture
 
 """
 
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_squared_error
 from keras.models import load_model
 
 from Wind.Architectures.NNArchitecture import NNArchitecture
+from Wind.ErrorMeasure import ErrorMeasure
 
 __author__ = 'bejar'
 
@@ -59,8 +60,15 @@ class NNS2SArchitecture(NNArchitecture):
 
         lresults = []
         for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
-            lresults.append((p,
-                             r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
-                             r2_score(test_y[:, i - 1], test_yp[:, i - 1])
-                             ))
+            lresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
+                                                               val_yp[:, i - 1],
+                                                               test_y[:, i - 1],
+                                                               test_yp[:, i - 1]))
+        # for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
+        #     lresults.append((p,
+        #                      r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
+        #                      r2_score(test_y[:, i - 1], test_yp[:, i - 1]),
+        #                      mean_squared_error(val_y[:, i - 1], val_yp[:, i - 1]),
+        #                      mean_squared_error(test_y[:, i - 1], test_yp[:, i - 1])
+        #                      ))
         return lresults

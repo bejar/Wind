@@ -18,7 +18,7 @@ SCKArchitecture
 """
 
 from Wind.Architectures.Architecture import Architecture
-from sklearn.metrics import r2_score
+from Wind.ErrorMeasure import ErrorMeasure
 
 __author__ = 'bejar'
 
@@ -46,10 +46,36 @@ class SCKArchitecture(Architecture):
         :return:
         """
         val_yp = self.model.predict(val_x)
-
-        r2val = r2_score(val_y, val_yp)
-
         test_yp = self.model.predict(test_x)
-        r2test = r2_score(test_y, test_yp)
 
-        return r2val, r2test
+        return ErrorMeasure().compute_errors(val_y, val_yp, test_y, test_yp)
+
+        # r2val = r2_score(val_y, val_yp)
+        # mseval = mean_squared_error(val_y, val_yp)
+        # r2test = r2_score(test_y, test_yp)
+        # msetest = mean_squared_error(test_y, test_yp)
+        #
+        # return [r2val, r2test, mseval, msetest]
+
+
+    def summary(self):
+        """Model summary
+
+        prints all the fields stored in the configuration for the experiment
+
+        :return:
+        """
+        print("--------- Architecture parameters -------")
+        print(f"{self.modname}")
+        for c in self.config['arch']:
+            print(f"# {c} = {self.config['arch'][c]}")
+        print("--------- Data parameters -------")
+        for c in self.config['data']:
+            print(f"# {c} = {self.config['data'][c]}")
+        if 'training' in self.config:
+            print("--------- Training parameters -------")
+            for c in self.config['training']:
+                print(f"# {c} = {self.config['training'][c]}")
+            print("---------------------------------------")
+        
+

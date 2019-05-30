@@ -26,7 +26,7 @@ from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArc
     CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture, MLPS2SRecursiveArchitecture, \
     RNNEncoderDecoderS2SDepArchitecture, KNNDirRegressionArchitecture, PersistenceMeanArchitecture, \
     CNNS2SCrazyIvanArchitecture, MLPS2SFutureArchitecture, CNNS2S2DArchitecture, RNNS2SSelfAttentionArchitecture, \
-    CNNS2SSkipArchitecture, RandomForestDirRegressionArchitecture
+    CNNS2SSkipArchitecture, RandomForestDirRegressionArchitecture, AdaBoostDirRegressionArchitecture, MLPCascadeS2SArchitecture
 
 class TrainDispatch:
 
@@ -47,6 +47,7 @@ class TrainDispatch:
 
         self.model_dict['SVM_dir_reg'] = self.model_dict['svm'] = (train_sckit_dirregression, SVMDirRegressionArchitecture)
         self.model_dict['RF_dir_reg'] =  (train_sckit_dirregression, RandomForestDirRegressionArchitecture)
+        self.model_dict['AB_dir_reg'] =  (train_sckit_dirregression, AdaBoostDirRegressionArchitecture)
 
         # RNN models
 
@@ -66,6 +67,7 @@ class TrainDispatch:
         # MLP models
 
         self.model_dict['MLP_s2s'] = self.model_dict['mlps2s'] = (train_sequence2sequence, MLPS2SArchitecture)
+        self.model_dict['MLP_cas_s2s'] =  (train_sequence2sequence, MLPCascadeS2SArchitecture)
         self.model_dict['MLP_s2s_fut'] = (train_sequence2sequence, MLPS2SFutureArchitecture)
 
         self.model_dict['MLP_dir_reg'] = self.model_dict['mlpdir'] = (train_dirregression, MLPDirRegressionArchitecture)

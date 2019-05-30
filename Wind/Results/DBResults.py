@@ -30,6 +30,7 @@ from Wind.Config.Paths import wind_data_path
 from statsmodels.genmod.generalized_linear_model import GLM
 import matplotlib
 from matplotlib.axes import Axes
+from Wind.ErrorMeasure import ErrorMeasure
 
 try:
     from pymongo import MongoClient
@@ -278,8 +279,9 @@ class DBResults:
     exp_df = None
     exp_df_vars = None
     exp_df_agg = False
+    error = 'R2'
 
-    def __init__(self, conn=mongoconnection, test=""):
+    def __init__(self, conn=mongoconnection, test="", error='R2'):
         """
         configures the DB
         :param DB:
@@ -297,6 +299,7 @@ class DBResults:
         self.exp_result={}
         self.exp_result2={}
         self.exp_lresults=[]
+        self.error = error
 
     def retrieve_results(self, query):
         """
@@ -312,14 +315,12 @@ class DBResults:
         ldata = []
         for exp in lexp:
             # To maintain backwards compatibility
-            if 'result' in exp:
-                data = np.array(exp['result'])
-            elif 'results' in exp:
-                data = np.array(exp['results'])
+            data = np.array(exp['result']) if 'result' in exp else np.array(exp['results'])
             if len(data) == 0: #Hack to avoid sites with no results
                 data = np.zeros((12,3))
-            # gets the number of the site and the columns with the results
-            ldata.append((int(exp['data']['datanames'][0].split('-')[1]), data[:, 1], data[:, 2]))
+            # gets the number of the site and the columns with the errors
+            errval, errtest = ErrorMeasure().get_error(data, self.error)
+            ldata.append((int(exp['data']['datanames'][0].split('-')[1]), errval, errtest))
         if len(ldata) == 0:
             raise NameError('No results retrieved with query')
         ldata = sorted(ldata, key=lambda x: x[0])
@@ -354,13 +355,13 @@ class DBResults:
         ldata = []
         for exp in lexp:
             # To maintain backwards compatibility
-            if 'result' in exp:
-                data = np.array(exp['result'])
-            elif 'results' in exp:
-                data = np.array(exp['results'])
+            data = np.array(exp['result']) if 'result' in exp else np.array(exp['results'])
+            if len(data) == 0: #Hack to avoid sites with no results
+                data = np.zeros((12,3))
+            # gets the number of the site and the columns with the errors
+            errval, errtest = ErrorMeasure().get_error(data, self.error)
+            ldata.append((int(exp['data']['datanames'][0].split('-')[1]), errval, errtest))
 
-            # gets the number of the site and the columns with the results
-            ldata.append((int(exp['data']['datanames'][0].split('-')[1]), data[:, 1], data[:, 2]))
         if len(ldata) == 0:
             raise NameError('No results retrieved with first query')
 
@@ -386,13 +387,13 @@ class DBResults:
         ldata = []
         for exp in lexp:
             # To maintain backwards compatibility
-            if 'result' in exp:
-                data = np.array(exp['result'])
-            elif 'results' in exp:
-                data = np.array(exp['results'])
+            data = np.array(exp['result']) if 'result' in exp else np.array(exp['results'])
+            if len(data) == 0: #Hack to avoid sites with no results
+                data = np.zeros((12,3))
+            # gets the number of the site and the columns with the errors
+            errval, errtest = ErrorMeasure().get_error(data, self.error)
+            ldata.append((int(exp['data']['datanames'][0].split('-')[1]), errval, errtest))
 
-            # gets the number of the site and the columns with the results
-            ldata.append((int(exp['data']['datanames'][0].split('-')[1]), data[:, 1], data[:, 2]))
 
         if len(ldata) == 0:
             raise NameError('No results retrieved with second query')
@@ -414,7 +415,7 @@ class DBResults:
                 if self.exp_result2['validation'][i,0] == 0:
                     self.exp_result2['validation'][i] = vmean
 
-    def retrieve_results_multiple(self, lquery):
+    def retrieve_results_multiple(self, lquery, error='R2'):
         """
         Retrieves a list of sets of results to compare them (just for ANOVA for now)
 
@@ -431,13 +432,13 @@ class DBResults:
             ldata = []
             for exp in lexp:
                 # To maintain backwards compatibility
-                if 'result' in exp:
-                    data = np.array(exp['result'])
-                elif 'results' in exp:
-                    data = np.array(exp['results'])
+                data = np.array(exp['result']) if 'result' in exp else np.array(exp['results'])
+                if len(data) == 0:  # Hack to avoid sites with no results
+                    data = np.zeros((12, 3))
+                # gets the number of the site and the columns with the errors
+                errval, errtest = ErrorMeasure().get_error(data, self.error)
+                ldata.append((int(exp['data']['datanames'][0].split('-')[1]), errval, errtest))
 
-                # gets the number of the site and the columns with the results
-                ldata.append((int(exp['data']['datanames'][0].split('-')[1]), data[:, 1], data[:, 2]))
             if len(ldata) == 0:
                 raise NameError(f'No results retrieved with {i}-th query')
 
@@ -486,16 +487,13 @@ class DBResults:
 
         for exp in lexp:
             # To maintain backwards compatibility
-            if 'result' in exp:
-                exdata = np.array(exp['result'])
-            elif 'results' in exp:
-                exdata = np.array(exp['results'])
-
+            exdata = np.array(exp['result']) if 'result' in exp else np.array(exp['results'])
+            errval, errtest = ErrorMeasure().get_error(data, self.error)
             for i in range(exdata.shape[0]):
                 lvals = [i+1]
                 lvals.append(int(exp['data']['datanames'][0].split('-')[1]))
-                lvals.append(exdata[i, 1])
-                lvals.append(exdata[i, 2])
+                lvals.append(errval[i])
+                lvals.append(errtest[i])
 
                 for v in data:
                     lvals.append(str(exp['data'][v]))
@@ -879,8 +877,6 @@ class DBResults:
             create_plot_best(valdf,
                         f"{title}-validation", notebook=notebook, figsize=figsize, labels=labels,cmap=cmap
                         )
-
-
 
     def plot_distplot(self, summary='sum', seaborn=True, notebook=False, dset=('val', 'test'), figsize=(800, 400), title=None, labels=None,font=None, save=None, saveformat='pdf'):
         """
