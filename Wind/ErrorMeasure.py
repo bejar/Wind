@@ -88,6 +88,7 @@ class ErrorMeasure:
         :return:
         """
         ind = self.errors.index(error)
+
         if verrors.shape[1] < (2*ind)+1:
             raise NameError(f'the error {error} has not been recorded')
         return verrors[:,(2*ind)+1], verrors[:,(2*ind)+2]

@@ -488,7 +488,7 @@ class DBResults:
         for exp in lexp:
             # To maintain backwards compatibility
             exdata = np.array(exp['result']) if 'result' in exp else np.array(exp['results'])
-            errval, errtest = ErrorMeasure().get_error(data, self.error)
+            errval, errtest = ErrorMeasure().get_error(exdata, self.error)
             for i in range(exdata.shape[0]):
                 lvals = [i+1]
                 lvals.append(int(exp['data']['datanames'][0].split('-')[1]))
