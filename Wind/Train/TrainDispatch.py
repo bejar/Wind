@@ -26,7 +26,8 @@ from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArc
     CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture, MLPS2SRecursiveArchitecture, \
     RNNEncoderDecoderS2SDepArchitecture, KNNDirRegressionArchitecture, PersistenceMeanArchitecture, \
     CNNS2SCrazyIvanArchitecture, MLPS2SFutureArchitecture, CNNS2S2DArchitecture, RNNS2SSelfAttentionArchitecture, \
-    CNNS2SSkipArchitecture, RandomForestDirRegressionArchitecture, AdaBoostDirRegressionArchitecture, MLPCascadeS2SArchitecture
+    CNNS2SSkipArchitecture, RandomForestDirRegressionArchitecture, AdaBoostDirRegressionArchitecture,\
+    XGBoostDirRegressionArchitecture, MLPCascadeS2SArchitecture
 
 class TrainDispatch:
 
@@ -48,6 +49,7 @@ class TrainDispatch:
         self.model_dict['SVM_dir_reg'] = self.model_dict['svm'] = (train_sckit_dirregression, SVMDirRegressionArchitecture)
         self.model_dict['RF_dir_reg'] =  (train_sckit_dirregression, RandomForestDirRegressionArchitecture)
         self.model_dict['AB_dir_reg'] =  (train_sckit_dirregression, AdaBoostDirRegressionArchitecture)
+        self.model_dict['XGB_dir_reg'] =  (train_sckit_dirregression, XGBoostDirRegressionArchitecture)
 
         # RNN models
 

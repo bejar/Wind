@@ -13,12 +13,11 @@
       "fraction": 1
   },
   "arch": {
-      "n_estimators" :100,
-      "max_features":"auto",
-    "oob_score": true,
-    "mode": "RF_dir_reg"
+      "n_estimators" : 400,
+    "learning_rate": 1.0,
+    "mode": "XGB_dir_reg"
   },
   "training":{
-    "iter":1
+
   }
 }

@@ -1,7 +1,7 @@
 { "_id": "00000000",
     "experiment": "TEST",
   "data": {
-    "datanames": ["10-5328-12"],
+    "datanames": ["10-5308-12"],
     "scaler": "standard",
      "vars": "all",
     "datasize": 43834,
@@ -13,10 +13,9 @@
       "fraction": 1
   },
   "arch": {
-      "n_estimators" :100,
-      "max_features":"auto",
-    "oob_score": true,
-    "mode": "RF_dir_reg"
+      "n_estimators" : 100,
+    "learning_rate": 1.0,
+    "mode": "XGB_dir_reg"
   },
   "training":{
     "iter":1

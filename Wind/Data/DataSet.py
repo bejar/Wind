@@ -16,7 +16,7 @@ DataSet
 
 """
 
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, QuantileTransformer
 from Wind.Config.Paths import remote_data, remote_wind_data_path
 from Wind.Spatial.Util import get_all_neighbors, get_closest_k_neighbors
 from Wind.Preprocessing.Normalization import tanh_normalization
@@ -107,7 +107,7 @@ class Dataset:
     mode = None
     ## Functions to use for scaling the data
     scalers = {'standard': StandardScaler(), 'minmax': MinMaxScaler(feature_range=(-1, 1)),
-               'tanh': tanh_normalization()}
+               'tanh': tanh_normalization(), 'robustscaler':RobustScaler(), 'quantile':QuantileTransformer()}
     ## Strings corresponding to the different dataset configurations
     dataset_type = ['onesiteonevar', 'onesitemanyvar', 'manysiteonevar', 'manysitemanyvar', 'manysitemanyvarstack',
                     'manysitemanyvarstackneigh']
@@ -171,9 +171,9 @@ class Dataset:
         if 'scaler' in self.config and self.config['scaler'] in self.scalers:
             scaler = self.scalers[self.config['scaler']]
             data = scaler.fit_transform(data)
-        else:
-            scaler = StandardScaler()
-            data = scaler.fit_transform(data)
+        #else:
+        #    scaler = StandardScaler()
+        #    data = scaler.fit_transform(data)
 
         mode_x, mode_y = mode
 
@@ -266,9 +266,9 @@ class Dataset:
         if 'scaler' in self.config and self.config['scaler'] in self.scalers:
             scaler = self.scalers[self.config['scaler']]
             data = scaler.fit_transform(data)
-        else:
-            scaler = StandardScaler()
-            data = scaler.fit_transform(data)
+        #else:
+        #    scaler = StandardScaler()
+        #    data = scaler.fit_transform(data)
         # print('DATA Dim =', data.shape)
 
         mode_x, mode_y = mode
