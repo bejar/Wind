@@ -21,14 +21,18 @@ from .Architecture import Architecture
 from Wind.Architectures.NNArchitecture import NNArchitecture
 from .NNS2SArchitecture import NNS2SArchitecture
 from .SCKArchitecture import SCKArchitecture
+from .SCKS2SArchitecture import SCKS2SArchitecture
 
 from .PersistenceArchitecture import PersistenceArchitecture
 from .PersistenceMeanArchitecture import PersistenceMeanArchitecture
 
 from .SVMDirRegressionArchitecture import SVMDirRegressionArchitecture
 from .KNNDirRegressionArchitecture import KNNDirRegressionArchitecture
+from .KNNS2SArchitecture import KNNS2SArchitecture
 from .RandomForestDirRegressionArchitecture import RandomForestDirRegressionArchitecture
+from .RandomForestS2SArchitecture import RandomForestS2SArchitecture
 from .AdaBoostDirRegressionArchitecture import AdaBoostDirRegressionArchitecture
+from .AdaBoostS2SArchitecture import AdaBoostS2SArchitecture
 from .XGBoostDirRegressionArchitecture import XGBoostDirRegressionArchitecture
 
 from .RNNDirRegressionArchitecture import RNNDirRegressionArchitecture
@@ -69,12 +73,16 @@ __all__ = ['Architecture',
            'MLPS2SRecursiveArchitecture',
            'RNNEncoderDecoderS2SDepArchitecture',
            'KNNDirRegressionArchitecture',
+           'KNNS2SArchitecture',
            'NNArchitecture',
            'NNS2SArchitecture',
            'SCKArchitecture',
+           'SCKS2SArchitecture',
            'CNNS2SCrazyIvanArchitecture',
            'CNNS2S2DArchitecture',
            'CNNS2SSkipArchitecture',
            'RandomForestDirRegressionArchitecture',
-           'AdaBoostDirRegressionArchitecture'
+           'RandomForestS2SArchitecture',
+           'AdaBoostDirRegressionArchitecture',
+           'AdaBoostS2SArchitecture'
            ]

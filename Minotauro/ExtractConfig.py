@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
         if args.machine == 'mino':
             jobcontent = f"""#!/bin/bash
-#SBATCH --job-name="windjob"
+#SBATCH --job-name="{nm}{nr:03d}"
 #SBATCH -D{jobs_code_path}/Experiments
 #SBATCH --output={jobs_root_path}/Run/windjobmino{nm}{nr:03d}.out
 #SBATCH --error={jobs_root_path}/Run/windjobmino{nm}{nr:03d}.err
@@ -137,7 +137,7 @@ export PYTHONPATH
 
         else:
             jobcontent = f"""#!/bin/bash
-#SBATCH --job-name="windjob"
+#SBATCH --job-name="{nm}{nr:03d}"
 #SBATCH -D{jobs_code_path}/Experiments
 #SBATCH --output={jobs_root_path}/Run/windjobpower{nm}{nr:03d}.out
 #SBATCH --error={jobs_root_path}/Run/windjobpower{nm}{nr:03d}.err

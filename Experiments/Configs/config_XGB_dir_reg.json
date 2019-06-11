@@ -1,21 +1,24 @@
 { "_id": "00000000",
     "experiment": "TEST",
   "data": {
-    "datanames": ["10-5308-12"],
+    "datanames": ["10-5328-12"],
     "scaler": "standard",
      "vars": "all",
     "datasize": 43834,
     "testsize": 17534,
       "dataset": 1,
       "dmatrix": "normal",
-    "lag": 6,
+      "lag": 18,
       "ahead": [1,12],
       "fraction": 1
   },
   "arch": {
-      "n_estimators" : 100,
-    "learning_rate": 1.0,
-    "mode": "XGB_dir_reg"
+      "n_estimators" : 200,
+      "max_depth":2,
+    "learning_rate": 0.3,
+      "mode": "XGB_dir_reg",
+      "lambda":1.0,
+      "alpha":0.0
   },
   "training":{
     "iter":1

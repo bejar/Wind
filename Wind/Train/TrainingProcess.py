@@ -391,6 +391,56 @@ def train_sckit_dirregression(architecture, config, runconfig):
     return lresults
 
 
+def train_sckit_sequence2sequence(architecture, config, runconfig):
+    """
+    Training process for architecture with direct regression of ahead time steps
+
+    :return:
+    """
+
+    ahead = config['data']['ahead'] if (type(config['data']['ahead']) == list) else [1, config['data']['ahead']]
+    if type(config['data']['ahead']) == list:
+        iahead, sahead = config['data']['ahead']
+    else:
+        iahead, sahead = 1, config['data']['ahead']
+
+    # lresults = []
+
+
+    # Dataset
+    dataset = Dataset(config=config['data'], data_path=wind_data_path)
+    dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
+    train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+
+    ############################################
+    # Model
+
+    arch = architecture(config, runconfig)
+    arch.generate_model()
+
+    if runconfig.verbose:
+        arch.summary()
+        dataset.summary()
+        print()
+
+    ############################################
+    # Training
+    arch.train(train_x, train_y, val_x, val_y)
+
+    ############################################
+    # Results
+    lresults = arch.evaluate(val_x, val_y, test_x, test_y)
+
+    print(strftime('%Y-%m-%d %H:%M:%S'))
+
+    if config is not None:
+        updateprocess(config, ahead)
+
+    arch.log_result(lresults)
+
+    return lresults
+
+
 def train_sequence2sequence_tf(architecture, config, runconfig):
     """
     Training process for sequence 2 sequence architectures with teacher forcing/attention

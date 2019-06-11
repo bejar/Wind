@@ -20,14 +20,16 @@ Dispatch
 __author__ = 'bejar'
 
 from Wind.Train.TrainingProcess import train_dirregression, train_persistence, train_sckit_dirregression, \
-    train_sequence2sequence,train_sequence2sequence_tf, train_recursive_multi_sequence2sequence
+    train_sequence2sequence,train_sequence2sequence_tf, train_recursive_multi_sequence2sequence, \
+    train_sckit_sequence2sequence
 from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArchitecture, \
     PersistenceArchitecture, RNNEncoderDecoderS2SArchitecture, MLPS2SArchitecture, MLPDirRegressionArchitecture, \
     CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture, MLPS2SRecursiveArchitecture, \
     RNNEncoderDecoderS2SDepArchitecture, KNNDirRegressionArchitecture, PersistenceMeanArchitecture, \
     CNNS2SCrazyIvanArchitecture, MLPS2SFutureArchitecture, CNNS2S2DArchitecture, RNNS2SSelfAttentionArchitecture, \
     CNNS2SSkipArchitecture, RandomForestDirRegressionArchitecture, AdaBoostDirRegressionArchitecture,\
-    XGBoostDirRegressionArchitecture, MLPCascadeS2SArchitecture
+    XGBoostDirRegressionArchitecture, MLPCascadeS2SArchitecture, RandomForestS2SArchitecture, AdaBoostS2SArchitecture,\
+    KNNS2SArchitecture
 
 class TrainDispatch:
 
@@ -45,10 +47,13 @@ class TrainDispatch:
 
         # Scikit learn models
         self.model_dict['KNN_dir_reg'] = (train_sckit_dirregression, KNNDirRegressionArchitecture)
+        self.model_dict['KNN_s2s'] = (train_sckit_sequence2sequence, KNNS2SArchitecture)
 
         self.model_dict['SVM_dir_reg'] = self.model_dict['svm'] = (train_sckit_dirregression, SVMDirRegressionArchitecture)
         self.model_dict['RF_dir_reg'] =  (train_sckit_dirregression, RandomForestDirRegressionArchitecture)
+        self.model_dict['RF_s2s'] =  (train_sckit_sequence2sequence, RandomForestS2SArchitecture)
         self.model_dict['AB_dir_reg'] =  (train_sckit_dirregression, AdaBoostDirRegressionArchitecture)
+        self.model_dict['AB_s2s'] =  (train_sckit_sequence2sequence, AdaBoostS2SArchitecture)
         self.model_dict['XGB_dir_reg'] =  (train_sckit_dirregression, XGBoostDirRegressionArchitecture)
 
         # RNN models

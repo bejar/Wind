@@ -510,7 +510,7 @@ class DBResults:
         self.exp_df = pd.DataFrame(ddata)
         self.exp_df_vars = arch + train + data
 
-    def results_dataframe_aggregate(self,threshold=None):
+    def results_dataframe_aggregate(self,threshold=None,notebook=True):
         """
         Aggregates dataframe to show results
         """
@@ -523,9 +523,15 @@ class DBResults:
             self.exp_df = self.exp_df.groupby(by=self.exp_df_vars,as_index=False).agg({'test':['mean','count'], 'val':'mean', })
             self.exp_df_agg = True
         if threshold:
-            return self.exp_df[self.exp_df['test']['mean'] > threshold].style.highlight_max()
+            if notebook:
+                return self.exp_df[self.exp_df['test']['mean'] > threshold].style.highlight_max()
+            else:
+                return self.exp_df[self.exp_df['test']['mean'] > threshold]
         else:
-            return self.exp_df.style.highlight_max()
+            if notebook:
+                return self.exp_df.style.highlight_max()
+            else:
+                return self.exp_df
         
     def results_dataframe_graph(self, facet, att, count=False, threshold=None):
         """
