@@ -1,12 +1,12 @@
 """
-.. module:: KNNDirRegressionArchitecture
+.. module:: KNNS2SArchitecture
 
-KNNDirRegressionArchitecture
+KNNS2SArchitecture
 *************
 
-:Description: KNNDirRegressionArchitecture
+:Description: KNNS2SArchitecture
 
-    Direct regression architecture based on K-nearest neigbours
+    S2S architecture based on K-nearest neigbours
 
 :Authors: bejar
     
@@ -17,13 +17,15 @@ KNNDirRegressionArchitecture
 
 """
 
-from Wind.Architectures.SCKArchitecture import SCKS2SArchitecture
+from Wind.Architectures.SCKS2SArchitecture import SCKS2SArchitecture
 from sklearn.neighbors import KNeighborsRegressor
 
 __author__ = 'bejar'
 
-class KNNDirRegressionArchitecture(SCKS2SArchitecture):
-    """Direct regression architecture based on K-nearest neigbours
+
+
+class KNNS2SArchitecture(SCKS2SArchitecture):
+    """S2S regression architecture based on K-nearest neigbours
     """
     data_mode = ('2D', '2D')  #
     modname = 'KNNS2S'
@@ -38,7 +40,7 @@ class KNNDirRegressionArchitecture(SCKS2SArchitecture):
         "arch": {
             "n_neighbors" : number of neighbors,
             "weights": weights applied to the neighbors, values in ["distance", "uniform"],
-            "mode": "KNN_dir_reg"
+            "mode": "KNN_s2s_reg"
         }
 
         The rest of the parameters are the defaults of scikit-learn
@@ -48,7 +50,5 @@ class KNNDirRegressionArchitecture(SCKS2SArchitecture):
         """
         self.model = KNeighborsRegressor(n_neighbors=self.config['arch']['n_neighbors'],
                                          weights=self.config['arch']['weights'])
-
-
 
 

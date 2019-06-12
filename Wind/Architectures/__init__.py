@@ -34,6 +34,7 @@ from .RandomForestS2SArchitecture import RandomForestS2SArchitecture
 from .AdaBoostDirRegressionArchitecture import AdaBoostDirRegressionArchitecture
 from .AdaBoostS2SArchitecture import AdaBoostS2SArchitecture
 from .XGBoostDirRegressionArchitecture import XGBoostDirRegressionArchitecture
+from .ElasticNetS2SArchitecture import ElasticNetS2SArchitecture
 
 from .RNNDirRegressionArchitecture import RNNDirRegressionArchitecture
 from .RNNEncoderDecoderS2SArchitecture import RNNEncoderDecoderS2SArchitecture
@@ -84,5 +85,6 @@ __all__ = ['Architecture',
            'RandomForestDirRegressionArchitecture',
            'RandomForestS2SArchitecture',
            'AdaBoostDirRegressionArchitecture',
-           'AdaBoostS2SArchitecture'
-           ]
+           'AdaBoostS2SArchitecture',
+           'ElasticNetS2SArchitecture'
+          ]

@@ -62,6 +62,9 @@ if __name__ == '__main__':
             else:
                 count[conf['experiment']] = 1
 
-        for exp in count:
-            print(args.status, exp, count[exp])
+        if len(count) != 0:
+            for exp in count:
+                print(args.status, exp, count[exp])
+        else:
+            print('No more experiments')
 
