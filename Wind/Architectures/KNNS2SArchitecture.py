@@ -49,6 +49,6 @@ class KNNS2SArchitecture(SCKS2SArchitecture):
         :return:
         """
         self.model = KNeighborsRegressor(n_neighbors=self.config['arch']['n_neighbors'],
-                                         weights=self.config['arch']['weights'])
+                                         weights=self.config['arch']['weights'],n_jobs=-1)
 
 

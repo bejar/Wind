@@ -76,12 +76,15 @@ class SSA:
         self.Xi = lXi
 
     # TODO: error checking
-    def decomposition(self, groups):
+    def decomposition(self, groups=None):
         """
         groups is a list of list that defines
         :param groups:
         :return:
         """
+
+        if groups is None:
+            groups = range(self.n_components)
 
         ldecomp = []
         for g in groups:

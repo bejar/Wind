@@ -31,6 +31,8 @@ from statsmodels.genmod.generalized_linear_model import GLM
 import matplotlib
 from matplotlib.axes import Axes
 from Wind.ErrorMeasure import ErrorMeasure
+import os
+import warnings
 
 try:
     from pymongo import MongoClient
@@ -295,7 +297,10 @@ class DBResults:
         if conn.passwd is not None:
             self.db.authenticate(conn.user, password=conn.passwd)
         self.col = self.db[conn.col + test]
-        self.coords = np.load(wind_data_path + '/Coords.npy')
+        if os.path.isfile(f'{wind_data_path}/Coords.npy'):
+            self.coords = np.load(wind_data_path + '/Coords.npy')
+        else:
+            warnings.warn('No coordinates file found, maps will not be available')
         self.exp_result={}
         self.exp_result2={}
         self.exp_lresults=[]
@@ -693,6 +698,8 @@ class DBResults:
         """
         if not self.exp_result:
             raise NameError("No results yet retrieved")
+        if self.coords is None:
+            raise NameError("No coordinates file available")
 
         if 'experiment' in self.query:
             title = self.query['experiment']
@@ -759,6 +766,8 @@ class DBResults:
         """
         if not self.exp_result:
             raise NameError("No results yet retrieved")
+        if self.coords is None:
+            raise NameError("No coordinates file available")
 
         if 'experiment' in self.query:
             title = self.query['experiment'] + '-vs-' + self.query2['experiment']
@@ -837,6 +846,8 @@ class DBResults:
         """
         if not self.exp_lresults:
             raise NameError("No results yet retrieved")
+        if self.coords is None:
+            raise NameError("No coordinates file available")
 
         # if 'experiment' in self.query:
         #     title = self.query['experiment'] + '-vs-' + self.query2['experiment']

@@ -8,12 +8,12 @@
     "testsize": 17534,
       "dataset": 1,
       "dmatrix": "normal",
-    "lag": 1,
+    "lag": 12,
       "ahead": [1,12],
       "fraction": 1
   },
   "arch": {
-      "n_neighbors" : 75,
+      "n_neighbors" : 33,
       "weights":"uniform",
     "mode": "KNN_s2s"
   },

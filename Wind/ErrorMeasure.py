@@ -23,11 +23,35 @@ __author__ = 'bejar'
 
 
 
+def smape_error(y,yp):
+    """
+    Simetric Mean Absolute Percentage Error sMAPE
+    :param y:
+    :param yp:
+    :return:
+    """
+    err = 2 * np.abs(y-yp)
+    err /= (np.abs(y) + np.abs(yp))
+
+    return (100.0/len(y)) * np.sum(err)
+
+def mape_error(y,yp):
+    """
+    Simetric Mean Absolute Percentage Error sMAPE
+    :param y:
+    :param yp:
+    :return:
+    """
+    err = np.abs(y-yp)
+    err /= np.abs(y)
+
+    return (100.0/len(y)) * np.sum(err)
+
 class ErrorMeasure:
     """
     Compute the error measures from the data and predictions
     """
-    error_names = ['R2val', 'R2test', 'MSEval', 'MSEtest', 'MAEval', 'MAEtest']
+    error_names = None
     errors = ['R2', 'MSE', 'MAE']
     error_func = [r2_score, mean_squared_error, mean_absolute_error]
 
@@ -36,7 +60,11 @@ class ErrorMeasure:
         Initialization for the error object
         :return:
         """
-        pass
+        self.error_names = []
+        for e in self.errors:
+            self.error_names.append(e+'val')
+            self.error_names.append(e+'test')
+
 
     def compute_errors(self, val_y, val_yp, test_y, test_yp):
         """

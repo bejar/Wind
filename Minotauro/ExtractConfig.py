@@ -124,7 +124,7 @@ if __name__ == '__main__':
 #SBATCH --output={jobs_root_path}/Run/windjobmino{nm}{nr:03d}.out
 #SBATCH --error={jobs_root_path}/Run/windjobmino{nm}{nr:03d}.err
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=8
 #SBATCH --time={jobtime}:50:00
 #SBATCH --gres=gpu:1
 #SBATCH --mem={args.mem}
