@@ -16,14 +16,14 @@ PersistenceArchitecture
 :Date:  13/07/2018
 """
 
-from Wind.Architectures.Persistence import Persistence
+from Wind.Architectures.PersistenceArchitecture import PersistenceArchitecture
 from Wind.ErrorMeasure import ErrorMeasure
 import numpy as np
 
 __author__ = 'bejar'
 
 
-class PersistenceMeanArchitecture(Persistence):
+class PersistenceMeanArchitecture(PersistenceArchitecture):
     """Class for persistence model plus the mean
 
      """
