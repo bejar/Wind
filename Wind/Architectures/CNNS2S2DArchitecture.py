@@ -126,51 +126,25 @@ class CNNS2S2DArchitecture(NNS2SArchitecture):
 
         self.model = Model(inputs=input, outputs=output)
 
-
-        # self.model = Sequential()
-        #
-        # self.model.add(Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-        #                       activation=activation, padding='causal', dilation_rate=dilation[0],
-        #                       kernel_regularizer=k_regularizer))
-        #
-        # if drop != 0:
-        #     self.model.add(Dropout(rate=drop))
-        #
-        # for i in range(1, len(filters)):
-        #     self.model.add(Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-        #                           activation=activation, padding='causal', dilation_rate=dilation[i],
-        #                           kernel_regularizer=k_regularizer))
-        #     if drop != 0:
-        #         self.model.add(Dropout(rate=drop))
-        #
-        # self.model.add(Flatten())
-        # for l in full_layers:
-        #     self.model.add(Dense(l))
-        #     self.model.add(generate_activation(activationfl))
-        #     self.model.add(Dropout(rate=fulldrop))
-        #
-        # self.model.add(Dense(odimensions, activation='linear'))
-
-
-    def evaluate(self, val_x, val_y, test_x, test_y):
-        batch_size = self.config['training']['batch']
-
-        if self.runconfig.best:
-            self.model = load_model(self.modfile)
-        val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
-        test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
-
-        # Maintained to be compatible with old configuration files
-        if type(self.config['data']['ahead'])==list:
-            ahead = self.config['data']['ahead'][1]
-        else:
-            ahead = self.config['data']['ahead']
-
-        lresults = []
-        for i in range(1, ahead + 1):
-            lresults.append((i,
-                             r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
-                             r2_score(test_y[:, i - 1], test_yp[:, i - 1])
-                             ))
-        return lresults
+    # def evaluate(self, val_x, val_y, test_x, test_y):
+    #     batch_size = self.config['training']['batch']
+    #
+    #     if self.runconfig.best:
+    #         self.model = load_model(self.modfile)
+    #     val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
+    #     test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
+    #
+    #     # Maintained to be compatible with old configuration files
+    #     if type(self.config['data']['ahead'])==list:
+    #         ahead = self.config['data']['ahead'][1]
+    #     else:
+    #         ahead = self.config['data']['ahead']
+    #
+    #     lresults = []
+    #     for i in range(1, ahead + 1):
+    #         lresults.append((i,
+    #                          r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
+    #                          r2_score(test_y[:, i - 1], test_yp[:, i - 1])
+    #                          ))
+    #     return lresults
 

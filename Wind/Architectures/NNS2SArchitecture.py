@@ -59,16 +59,10 @@ class NNS2SArchitecture(NNArchitecture):
             ahead = self.config['data']['ahead']
 
         lresults = []
+
         for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
             lresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
                                                                val_yp[:, i - 1],
                                                                test_y[:, i - 1],
                                                                test_yp[:, i - 1]))
-        # for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
-        #     lresults.append((p,
-        #                      r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
-        #                      r2_score(test_y[:, i - 1], test_yp[:, i - 1]),
-        #                      mean_squared_error(val_y[:, i - 1], val_yp[:, i - 1]),
-        #                      mean_squared_error(test_y[:, i - 1], test_yp[:, i - 1])
-        #                      ))
         return lresults

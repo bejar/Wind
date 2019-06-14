@@ -135,23 +135,23 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
 
         self.model = Model(inputs=[enc_Dep_input, enc_Aux_input], outputs=output)
 
-    def evaluate(self, val_x, val_y, test_x, test_y):
-        batch_size = self.config['training']['batch']
-
-        if self.runconfig.best:
-            self.model = load_model(self.modfile)
-        val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
-        test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
-
-        if type(self.config['data']['ahead']) == list:
-            ahead = self.config['data']['ahead'][1]
-        else:
-            ahead = self.config['data']['ahead']
-
-        lresults = []
-        for i in range(1, ahead + 1):
-            lresults.append((i,
-                             r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
-                             r2_score(test_y[:, i - 1], test_yp[:, i - 1])
-                             ))
-        return lresults
+    # def evaluate(self, val_x, val_y, test_x, test_y):
+    #     batch_size = self.config['training']['batch']
+    #
+    #     if self.runconfig.best:
+    #         self.model = load_model(self.modfile)
+    #     val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
+    #     test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
+    #
+    #     if type(self.config['data']['ahead']) == list:
+    #         ahead = self.config['data']['ahead'][1]
+    #     else:
+    #         ahead = self.config['data']['ahead']
+    #
+    #     lresults = []
+    #     for i in range(1, ahead + 1):
+    #         lresults.append((i,
+    #                          r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
+    #                          r2_score(test_y[:, i - 1], test_yp[:, i - 1])
+    #                          ))
+    #     return lresults

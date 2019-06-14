@@ -17,7 +17,7 @@ PersistenceArchitecture
 """
 
 from Wind.Architectures.Architecture import Architecture
-from sklearn.metrics import r2_score
+from Wind.ErrorMeasure import ErrorMeasure
 
 __author__ = 'bejar'
 
@@ -45,12 +45,25 @@ class PersistenceArchitecture(Architecture):
         """
         pass
 
-    # def summary(self):
-    #     """
-    #     Model summary
-    #     :return:
-    #     """
-    #     print("Persitence")
+    def summary(self):
+        """Model summary
+
+        prints all the fields stored in the configuration for the experiment
+
+        :return:
+        """
+        print("--------- Architecture parameters -------")
+        print(f"{self.modname}")
+        for c in self.config['arch']:
+            print(f"# {c} = {self.config['arch'][c]}")
+        print("--------- Data parameters -------")
+        for c in self.config['data']:
+            print(f"# {c} = {self.config['data'][c]}")
+        if 'training' in self.config:
+            print("--------- Training parameters -------")
+            for c in self.config['training']:
+                print(f"# {c} = {self.config['training'][c]}")
+            print("---------------------------------------")
 
     def evaluate(self, val_x, val_y, test_x, test_y):
         """
@@ -65,17 +78,16 @@ class PersistenceArchitecture(Architecture):
 
         lresults = []
         for i in range(1, ahead + 1):
-            lresults.append((i,
-                             r2_score(val_x[:, -1] , val_y[:, i - 1]),
-                             r2_score(test_x[:, -1] , test_y[:, i - 1])
-                             ))
-
+            # lresults.append((i,
+            #                  r2_score(val_x[:, -1] , val_y[:, i - 1]),
+            #                  r2_score(test_x[:, -1] , test_y[:, i - 1])
+            #                  ))
+            #
+            lresults.append([i]  + ErrorMeasure().compute_errors(val_x[:, -1],
+                                                                 val_y[:, i - 1],
+                                                                 test_x[:, -1],
+                                                                 test_y[:, i - 1]))
         return lresults
 
-        #
-        # r2val = r2_score(val_x[:, -1], val_y[:, 0])
-        # r2test = r2_score(test_x[:, -1], test_y[:, 0])
-        #
-        # return r2val, r2test
 
 

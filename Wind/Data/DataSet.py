@@ -277,7 +277,9 @@ class Dataset:
             isize = int((1 - self.config['fraction']) * datasize)
             wind_train = data[isize:datasize, :]
         else:
+            self.config['fraction'] = 1
             wind_train = data[:datasize, :]
+
         # print('Train Dim =', wind_train.shape)
 
         # Train

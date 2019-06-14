@@ -47,23 +47,45 @@ def mape_error(y,yp):
 
     return (100.0/len(y)) * np.sum(err)
 
+
+def mase_error(y,yp):
+    """
+    Mean Absolute Scaled Error
+    :param y:
+    :param yp:
+    :return:
+    """
+    mae = mean_absolute_error(y,yp)
+    q = np.sum(np.abs(y[1:]-y[0:-1]) / (len(y) - 1))
+    return mae/q
+
+
+
 class ErrorMeasure:
     """
     Compute the error measures from the data and predictions
     """
-    error_names = None
+    error_names = []
     errors = ['R2', 'MSE', 'MAE']
-    error_func = [r2_score, mean_squared_error, mean_absolute_error]
+    error_dict = {'R2': r2_score,
+                  'MSE': mean_squared_error,
+                 'MAE' :mean_absolute_error,
+                  'sMAPE':smape_error,
+                  'MAPE':mape_error,
+                  'MASE':mase_error}
+    error_func = []
 
-    def __init(self):
+    def __init__(self):
         """
         Initialization for the error object
         :return:
         """
         self.error_names = []
+        self.error_func = []
         for e in self.errors:
-            self.error_names.append(e+'val')
-            self.error_names.append(e+'test')
+            self.error_names += [f'{e}val', f'{e}test']
+            self.error_func += [self.error_dict[e]]
+
 
 
     def compute_errors(self, val_y, val_yp, test_y, test_yp):
@@ -99,13 +121,13 @@ class ErrorMeasure:
             print(f"{arch} | AH={i:2}", end=" ")
             for p, v in enumerate(err):
                 count[p]+=v
-                print(f"{ErrorMeasure.error_names[p]} = {v:3.5f}", end=" ")
+                print(f"{self.error_names[p]} = {v:3.5f}", end=" ")
 
             print()
             if (c+1) % nres == 0:
                 print(f"**{arch} | AH=TT", end=" ")
                 for p, v in enumerate(err):
-                    print(f"{ErrorMeasure.error_names[p]} = {count[p]:3.5f}", end=" ")
+                    print(f"{self.error_names[p]} = {count[p]:3.5f}", end=" ")
                 count = [0]*nvals
                 print()
 

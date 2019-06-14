@@ -88,15 +88,6 @@ class MLPS2SArchitecture(NNS2SArchitecture):
 
         self.model = Model(inputs=data_input, outputs=output)
 
-        # self.model = Sequential()
-        # self.model.add(Dense(full_layers[0], input_shape=idimensions))
-        # self.model.add(generate_activation(activation))
-        # self.model.add(Dropout(rate=dropout))
-        # for units in full_layers[1:]:
-        #     self.model.add(Dense(units=units))
-        #     self.model.add(generate_activation(activation))
-        #     self.model.add(Dropout(rate=dropout))
-        #
-        # self.model.add(Dense(odimension, activation='linear'))
+
 
 

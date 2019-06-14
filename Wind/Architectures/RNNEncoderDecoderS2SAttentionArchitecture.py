@@ -22,6 +22,7 @@ from keras.layers import LSTM, GRU, Dense, TimeDistributed, Input
 from sklearn.metrics import r2_score
 from keras.layers import Activation, dot, concatenate
 import numpy as np
+from Wind.ErrorMeasure import ErrorMeasure
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -177,9 +178,17 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
         if self.runconfig.best:
             self.model = load_model(self.modfile)
 
-        if type(self.config['data']['ahead']) == list:
-            ahead = self.config['data']['ahead'][1]
+        # if type(self.config['data']['ahead']) == list:
+        #     ahead = self.config['data']['ahead'][1]
+        # else:
+        #     ahead = self.config['data']['ahead']
+
+        # Maintained to be compatible with old configuration files
+        if type(self.config['data']['ahead'])==list:
+            iahead = self.config['data']['ahead'][0]
+            ahead = (self.config['data']['ahead'][1] - self.config['data']['ahead'][0]) + 1
         else:
+            iahead = 1
             ahead = self.config['data']['ahead']
 
         # The input for the first step is the last column of the training (t-1)
@@ -202,11 +211,16 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
 
         # After the loop we have all the predictions for the ahead range
 
-        for i in range(1, ahead + 1):
-            lresults.append((i,
-                             r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
-                             r2_score(test_y[:, i - 1], test_yp[:, i - 1])
-                             ))
+        for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
+            lresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
+                                                               val_yp[:, i - 1],
+                                                               test_y[:, i - 1],
+                                                               test_yp[:, i - 1]))
+        # for i in range(1, ahead + 1):
+        #     lresults.append((i,
+        #                      r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
+        #                      r2_score(test_y[:, i - 1], test_yp[:, i - 1])
+        #                      ))
 
         return lresults
 

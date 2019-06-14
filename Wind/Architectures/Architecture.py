@@ -131,25 +131,7 @@ class Architecture:
         else:
             nres = len(result)//self.config['training']['iter']
 
-
         ErrorMeasure().print_errors(self.config['arch']['mode'], nres, result)
-
-
-        # nvals = len(result[0])
-        # count = [0]*nvals
-        # for c, (i, *err) in enumerate(result):
-        #     print(f"{self.config['arch']['mode']} | AH={i:2}", end=" ")
-        #     for p, v in enumerate(err):
-        #         count[p]+=v
-        #         print(f"{ErrorMeasure.error_names[p]} = {v:3.5f}", end=" ")
-        #
-        #     print()
-        #     if (c+1) % nres == 0:
-        #         print(f"**{self.config['arch']['mode']} | AH=TT", end=" ")
-        #         for p, v in enumerate(err):
-        #             print(f"{ErrorMeasure.error_names[p]} = {count[p]:3.5f}", end=" ")
-        #         count = [0]*nvals
-        #         print()
 
 
     def save(self, postfix):

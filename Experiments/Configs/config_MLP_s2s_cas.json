@@ -1,26 +1,26 @@
 {"_id": "00000000",
   "experiment": "TEST",
   "data": {
-      "datanames": ["11-5794-12"],
+      "datanames": ["138-69319-12"],
       "scaler": "standard",
       "vars": "all",
     "datasize": 43834,
     "testsize": 17534,
       "dataset": 1,
       "lag": 6,
-      "ahead": [1,12],
-    "slice": 2
+      "ahead": [1,12]
   },
   "arch": {
       "drop": 0.3,
-    "activation": "relu",
-      "full": [256, 128],
-      "mode":"MLP_s2s_rec"
+    "activation": ["leaky",0.2],
+      "full": [1024,512,256],
+      "batchnorm":true,
+      "mode":"MLP_s2s_cas"
   },
   "training": {
     "iter":1,
     "batch": 1024,
-    "epochs": 1,
+    "epochs": 100,
           "patience":10,
       "optimizer": "adamax",
     "lrate": 0.001

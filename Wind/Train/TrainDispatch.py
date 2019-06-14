@@ -22,14 +22,23 @@ __author__ = 'bejar'
 from Wind.Train.TrainingProcess import train_dirregression, train_persistence, train_sckit_dirregression, \
     train_sequence2sequence,train_sequence2sequence_tf, train_recursive_multi_sequence2sequence, \
     train_sckit_sequence2sequence
-from Wind.Architectures import RNNDirRegressionArchitecture, SVMDirRegressionArchitecture, \
-    PersistenceArchitecture, RNNEncoderDecoderS2SArchitecture, MLPS2SArchitecture, MLPDirRegressionArchitecture, \
-    CNNS2SArchitecture, RNNS2SArchitecture, RNNEncoderDecoderS2SAttentionArchitecture, MLPS2SRecursiveArchitecture, \
-    RNNEncoderDecoderS2SDepArchitecture, KNNDirRegressionArchitecture, PersistenceMeanArchitecture, \
-    CNNS2SCrazyIvanArchitecture, MLPS2SFutureArchitecture, CNNS2S2DArchitecture, RNNS2SSelfAttentionArchitecture, \
-    CNNS2SSkipArchitecture, RandomForestDirRegressionArchitecture, AdaBoostDirRegressionArchitecture,\
-    XGBoostDirRegressionArchitecture, MLPCascadeS2SArchitecture, RandomForestS2SArchitecture, AdaBoostS2SArchitecture,\
-    KNNS2SArchitecture, ElasticNetS2SArchitecture
+
+from Wind.Architectures import PersistenceArchitecture, PersistenceMeanArchitecture
+
+from Wind.Architectures import MLPDirRegressionArchitecture, MLPS2SArchitecture, MLPS2SFutureArchitecture, MLPS2SRecursiveArchitecture, \
+    MLPCascadeS2SArchitecture
+
+from Wind.Architectures import CNNS2SArchitecture, CNNS2SCrazyIvanArchitecture, CNNS2S2DArchitecture,  \
+    CNNS2SSkipArchitecture
+
+from Wind.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2SArchitecture, RNNS2SArchitecture, \
+    RNNEncoderDecoderS2SAttentionArchitecture, RNNS2SSelfAttentionArchitecture, RNNEncoderDecoderS2SDepArchitecture
+
+from Wind.Architectures import KNNDirRegressionArchitecture, RandomForestDirRegressionArchitecture, SVMDirRegressionArchitecture, \
+    AdaBoostDirRegressionArchitecture, KNNS2SArchitecture, ElasticNetS2SArchitecture, XGBoostDirRegressionArchitecture, \
+    RandomForestS2SArchitecture, AdaBoostS2SArchitecture
+
+
 
 class TrainDispatch:
 
@@ -75,7 +84,7 @@ class TrainDispatch:
         # MLP models
 
         self.model_dict['MLP_s2s'] = self.model_dict['mlps2s'] = (train_sequence2sequence, MLPS2SArchitecture)
-        self.model_dict['MLP_cas_s2s'] =  (train_sequence2sequence, MLPCascadeS2SArchitecture)
+        self.model_dict['MLP_s2s_cas'] =  (train_sequence2sequence, MLPCascadeS2SArchitecture)
         self.model_dict['MLP_s2s_fut'] = (train_sequence2sequence, MLPS2SFutureArchitecture)
 
         self.model_dict['MLP_dir_reg'] = self.model_dict['mlpdir'] = (train_dirregression, MLPDirRegressionArchitecture)

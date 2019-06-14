@@ -133,13 +133,6 @@ class NNArchitecture(Architecture):
         test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
         return ErrorMeasure().compute_errors(val_y, val_yp, test_y, test_yp)
 
-        # val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
-        # r2val = r2_score(val_y, val_yp)
-        # mseval = mean_squared_error(val_y, val_yp)
-        # test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
-        # r2test = r2_score(test_y, test_yp)
-        # msetest = mean_squared_error(test_y, test_yp)
-        # return [r2val, r2test, mseval, msetest]
 
     def save(self, postfix):
         """
@@ -162,5 +155,5 @@ class NNArchitecture(Architecture):
         """
         # if _has_pydot:
         #    plot_model(self.model, show_shapes=True, to_file=f'{self.modname}.png')
-
+        pass
 

@@ -115,45 +115,35 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
 
 
         input = Input(shape=(idimensions))
-        # self.model = Sequential()
+
         if nlayersE == 1:
             model = RNN(neuronsE, input_shape=(idimensions), implementation=impl,
                                recurrent_dropout=drop, recurrent_activation=activation_r,
                                recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)(input)
             model = generate_activation(activation)(model)
-            # self.model.add(RNN(neuronsE, input_shape=(idimensions), implementation=impl,
-            #                    recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-            #                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+
         else:
             model = RNN(neuronsE, input_shape=(idimensions), implementation=impl,
                                recurrent_dropout=drop, recurrent_activation=activation_r,
                                return_sequences=True, recurrent_regularizer=rec_regularizer,
                                kernel_regularizer=k_regularizer)(input)
             model = generate_activation(activation)(model)
-            # self.model.add(RNN(neuronsE, input_shape=(idimensions), implementation=impl,
-            #                    recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-            #                    return_sequences=True, recurrent_regularizer=rec_regularizer,
-            #                    kernel_regularizer=k_regularizer))
+
             for i in range(1, nlayersE - 1):
                 model = RNN(neuronsE, recurrent_dropout=drop, implementation=impl,
                                    recurrent_activation=activation_r, return_sequences=True,
                                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)(model)
                 model = generate_activation(activation)(model)
-                # self.model.add(RNN(neuronsE, recurrent_dropout=drop, implementation=impl,
-                #                    activation=activation, recurrent_activation=activation_r, return_sequences=True,
-                #                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+
 
             model = RNN(neuronsE, recurrent_dropout=drop,
                                recurrent_activation=activation_r, implementation=impl,
                                recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
-            # self.model.add(RNN(neuronsE, recurrent_dropout=drop, activation=activation,
-            #                    recurrent_activation=activation_r, implementation=impl,
-            #                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer))
+
         model = RepeatVector(odimensions)(model)
 
-        # self.model.add(RepeatVector(odimensions))
-        #
+
         for i in range(nlayersD):
             model = RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
                                recurrent_activation=activation_r,
@@ -161,42 +151,35 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
                                kernel_regularizer=k_regularizer)(model)
 
             model = generate_activation(activation)(model)
-            # self.model.add(RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
-            #                    activation=activation, recurrent_activation=activation_r,
-            #                    return_sequences=True, recurrent_regularizer=rec_regularizer,
-            #                    kernel_regularizer=k_regularizer))
+
 
         for units in full:
             model = TimeDistributed(Dense(units=units))(model)
             model = TimeDistributed(generate_activation(activation))(model)
             model = TimeDistributed(Dropout(rate=fulldrop))(model)
 
-            # self.model.add(TimeDistributed(Dense(units=units)))
-            # self.model.add(TimeDistributed(generate_activation(activation)))
-            # self.model.add(TimeDistributed(Dropout(rate=fulldrop)))
-        output = TimeDistributed(Dense(1))(model)
 
-        # self.model.add(TimeDistributed(Dense(1)))
+        output = TimeDistributed(Dense(1))(model)
         self.model = Model(inputs=input, outputs=output)
 
-    def evaluate(self, val_x, val_y, test_x, test_y):
-        batch_size = self.config['training']['batch']
-
-        if self.runconfig.best:
-            self.model = load_model(self.modfile)
-        val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
-        test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
-
-        if type(self.config['data']['ahead'])== list:
-            ahead = self.config['data']['ahead'][1]
-        else:
-            ahead = self.config['data']['ahead']
-
-        lresults = []
-        for i in range(1, ahead + 1):
-            lresults.append((i,
-                             r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
-                             r2_score(test_y[:, i - 1], test_yp[:, i - 1])
-                             ))
-        return lresults
+    # def evaluate(self, val_x, val_y, test_x, test_y):
+    #     batch_size = self.config['training']['batch']
+    #
+    #     if self.runconfig.best:
+    #         self.model = load_model(self.modfile)
+    #     val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
+    #     test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
+    #
+    #     if type(self.config['data']['ahead'])== list:
+    #         ahead = self.config['data']['ahead'][1]
+    #     else:
+    #         ahead = self.config['data']['ahead']
+    #
+    #     lresults = []
+    #     for i in range(1, ahead + 1):
+    #         lresults.append((i,
+    #                          r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
+    #                          r2_score(test_y[:, i - 1], test_yp[:, i - 1])
+    #                          ))
+    #     return lresults
 

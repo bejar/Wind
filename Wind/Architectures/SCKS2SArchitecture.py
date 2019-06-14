@@ -47,7 +47,6 @@ class SCKS2SArchitecture(SCKArchitecture):
         val_yp = self.model.predict(val_x)
         test_yp = self.model.predict(test_x)
 
-
         # Maintained to be compatible with old configuration files
         if type(self.config['data']['ahead'])==list:
             iahead = self.config['data']['ahead'][0]
@@ -58,15 +57,9 @@ class SCKS2SArchitecture(SCKArchitecture):
 
         lresults = []
         for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
-            lresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
+            lresults.append([p] + ErrorMeasure().compute_errors(val_y[:, i - 1],
                                                                val_yp[:, i - 1],
                                                                test_y[:, i - 1],
                                                                test_yp[:, i - 1]))
-        # for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
-        #     lresults.append((p,
-        #                      r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
-        #                      r2_score(test_y[:, i - 1], test_yp[:, i - 1]),
-        #                      mean_squared_error(val_y[:, i - 1], val_yp[:, i - 1]),
-        #                      mean_squared_error(test_y[:, i - 1], test_yp[:, i - 1])
-        #                      ))
+
         return lresults
