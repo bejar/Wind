@@ -1,0 +1,25 @@
+{ "_id": "00000000",
+    "experiment": "TEST",
+  "data": {
+    "datanames": ["10-5308-12"],
+    "scaler": "standard",
+     "vars": "all",
+    "datasize": 43834,
+    "testsize": 17534,
+      "dataset": 1,
+      "dmatrix": "normal",
+    "lag": 18,
+      "ahead": [1,12],
+      "fraction": 1
+  },
+  "arch": {
+    "max_depth": 5,
+      "n_estimators" : 100,
+      "max_features":"auto",
+    "oob_score": true,
+    "mode": "ET_s2s"
+  },
+  "training":{
+
+  }
+}

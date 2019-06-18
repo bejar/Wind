@@ -13,10 +13,10 @@
       "fraction": 1
   },
   "arch": {
+    "max_depth": 5,
       "n_estimators" : 100,
-    "learning_rate": 1.0,
-    "loss": "linear",
-    "mode": "AB_s2s"
+      "max_features":"auto",
+    "mode": "ET_s2s"
   },
   "training":{
 

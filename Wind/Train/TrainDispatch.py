@@ -36,7 +36,7 @@ from Wind.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2
 
 from Wind.Architectures import KNNDirRegressionArchitecture, RandomForestDirRegressionArchitecture, SVMDirRegressionArchitecture, \
     AdaBoostDirRegressionArchitecture, KNNS2SArchitecture, ElasticNetS2SArchitecture, XGBoostDirRegressionArchitecture, \
-    RandomForestS2SArchitecture, AdaBoostS2SArchitecture
+    RandomForestS2SArchitecture, ExtraTreesS2SArchitecture
 
 
 
@@ -62,7 +62,7 @@ class TrainDispatch:
         self.model_dict['RF_dir_reg'] =  (train_sckit_dirregression, RandomForestDirRegressionArchitecture)
         self.model_dict['RF_s2s'] =  (train_sckit_sequence2sequence, RandomForestS2SArchitecture)
         self.model_dict['AB_dir_reg'] =  (train_sckit_dirregression, AdaBoostDirRegressionArchitecture)
-        self.model_dict['AB_s2s'] =  (train_sckit_sequence2sequence, AdaBoostS2SArchitecture)
+        self.model_dict['ET_s2s'] =  (train_sckit_sequence2sequence, ExtraTreesS2SArchitecture)
         self.model_dict['XGB_dir_reg'] =  (train_sckit_dirregression, XGBoostDirRegressionArchitecture)
         self.model_dict['ENet_s2s'] =  (train_sckit_sequence2sequence, ElasticNetS2SArchitecture)
 

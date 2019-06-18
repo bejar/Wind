@@ -23,7 +23,7 @@ from keras.layers import LSTM, GRU, Dense, Flatten, Dropout, Bidirectional, Inpu
 from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
 from keras import backend as K
-
+from Wind.Util.SelfAttention import SelfAttention
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
 except ImportError:
@@ -160,18 +160,21 @@ class RNNS2SSelfAttentionArchitecture(NNS2SArchitecture):
                         kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
 
-        attention = TimeDistributed(Dense(1, activation='tanh'))(model)
-        attention = Flatten()(attention)
-        attention = Activation('softmax')(attention)
-        attention = RepeatVector(neurons)(attention)
-        attention = Permute([2,1])(attention)
+        ## OLD self attention code
+        # attention = TimeDistributed(Dense(1, activation='tanh'))(model)
+        # attention = Flatten()(attention)
+        # attention = Activation('softmax')(attention)
+        # attention = RepeatVector(neurons)(attention)
+        # attention = Permute([2,1])(attention)
+        #
+        # sent_representation = multiply([model, attention])
+        # sent_representation = Lambda(lambda xin: K.sum(xin, axis=-1))(sent_representation)
+        #
+        # # reg = TimeDistributed(Dense(1, activation='linear'))(sent_representation)
+        # model = Dense(1, activation='linear')(sent_representation)
+        # # model = Flatten()(reg)
 
-        sent_representation = multiply([model, attention])
-        sent_representation = Lambda(lambda xin: K.sum(xin, axis=-1))(sent_representation)
-
-        # reg = TimeDistributed(Dense(1, activation='linear'))(sent_representation)
-        model = Dense(1, activation='linear')(sent_representation)
-        # model = Flatten()(reg)
+        model = SelfAttention()(model)
 
         for nn in full:
             model = Dense(nn)(model)
