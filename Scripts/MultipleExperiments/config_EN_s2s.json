@@ -1,0 +1,23 @@
+{ "_id": "00000000",
+    "experiment": "TEST",
+  "data": {
+    "datanames": ["10-5328-12"],
+    "scaler": "standard",
+     "vars": "all",
+    "datasize": 43834,
+    "testsize": 17534,
+      "dataset": 1,
+      "dmatrix": "normal",
+    "lag": 18,
+      "ahead": [1,12],
+      "fraction": 1
+  },
+  "arch": {
+    "alpha" : 1.0,
+    "l1_ratio": 0.5,
+    "mode": "ENet_s2s"
+  },
+  "training":{
+
+  }
+}

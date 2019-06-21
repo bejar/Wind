@@ -23,6 +23,9 @@ from Wind.Preprocessing.Normalization import tanh_normalization
 import numpy as np
 import os
 
+from entropy import spectral_entropy
+
+
 try:
     import pysftp
 except Exception:
@@ -111,6 +114,8 @@ class Dataset:
     ## Strings corresponding to the different dataset configurations
     dataset_type = ['onesiteonevar', 'onesitemanyvar', 'manysiteonevar', 'manysitemanyvar', 'manysitemanyvarstack',
                     'manysitemanyvarstackneigh']
+    generated = False
+    raw_data = None
 
     def __init__(self, config, data_path):
         """
@@ -349,6 +354,40 @@ class Dataset:
 
         return train_x, train_y, val_x, val_y, test_x, test_y
 
+    def load_raw_data(self, remote=False):
+        """
+        Loads the data so some computations can be performed
+        :return:
+        """
+        datanames = self.config['datanames']
+        d=datanames[0]  # just the main dataset
+
+        vars = self.config['vars']
+        if 'angle' in self.config:
+            angle = self.config['angle']
+        else:
+            angle = False
+
+        if remote:
+            srv = pysftp.Connection(host=remote_data[0], username=remote_data[1])
+            srv.get(remote_wind_data_path + f"/{d}.npy", self.data_path + f"/{d}.npy")
+            srv.close()
+        if angle:
+            wind = np.load(self.data_path+'_angle' + f"/{d}.npy")
+        else:
+            wind = np.load(self.data_path + f"/{d}.npy")
+
+        if remote:
+            os.remove(self.data_path + f"/{d}.npy")
+
+        # If there is a list in vars attribute it should be a list of integers
+        if type(vars) == list:
+            for v in vars:
+                if type(v) != int or v > wind.shape[1]:
+                    raise NameError('Error in variable selection')
+            wind = wind[:, vars]
+        self.raw_data = wind
+
     def generate_dataset(self, ahead=1, mode=None, ensemble=False, ens_slice=None, remote=None):
         """
         Generates the dataset for training, test and validation
@@ -368,6 +407,7 @@ class Dataset:
         :param mode: type of dataset (pair indicating the type of dimension for input and output)
         :return:
         """
+        self.generated = True
         self.mode = mode
 
         datanames = self.config['datanames']
@@ -596,32 +636,75 @@ class Dataset:
             print(f"Ahead= {self.config['ahead']}")
             print("------------------------------------")
 
+    def compute_measures(self, window=[1000]):
+        """
+        Computing some measures with the wind series
+
+        :return:
+        """
+        if self.raw_data is None:
+            raise NameError("Raw data is not loaded")
+
+        dvals={}
+        dvals['specent'] =spectral_entropy(self.raw_data[:,0],sf=1)
+
+        data = self.raw_data[:,0]
+        for w in window:
+            length = int(data.shape[0] / w)
+            size = w * length
+            datac = data[:size]
+            datac = datac.reshape(-1, w)
+            means = np.mean(datac,axis=1)
+            vars = np.std(datac,axis=1)
+            dvals[f'Stab({w})'] = np.std(means)
+            dvals[f'Lump({w})']= np.std(vars)
+
+        return dvals
+
 
 if __name__ == '__main__':
     from Wind.Misc import load_config_file
     from Wind.Config import wind_data_path
     import matplotlib.pyplot as plt
 
-    cfile = "config_MLP_s2s_fut"
-    config = load_config_file(f"../TestConfigs/{cfile}.json")
+    # cfile = "config_MLP_s2s_fut"
+    # config = load_config_file(f"../TestConfigs/{cfile}.json")
+    config = {
+     "data": {
+         "datanames": ["10-5308-12"],
+         "scaler": "standard",
+         "vars": "all",
+         "dmatrix": "future",
+         "varsf": [1],
+         "datasize": 43834,
+         "testsize": 17534,
+         "dataset": 1,
+         "lag": 18,
+         "ahead": [1, 12]
+     }
+     }
 
     # print(config)
     mode = ('2D', '2D')
-    dataset = Dataset(config=config['data'], data_path=wind_data_path)
+    dataset = Dataset(config={"datanames": ["10-5308-12"], "vars": [0]}, data_path=wind_data_path)
 
-    dataset.generate_dataset(ahead=[1, 12], mode=mode)
-    # dataset.summary()
+    dataset.load_raw_data()
 
-    dm = dataset.get_data_matrices()
+    print(dataset.compute_measures(window=[12,24,168,620,1240]))
 
-    trainx, trainx_f = dm[0]
-    trainy = dm[1]
-    valx, valx_f = dm[2]
-    testx, testx_f = dm[4]
-
-    print(trainx.shape)
-    print(trainx_f.shape)
-    print(trainy.shape)
+    # dataset.generate_dataset(ahead=[1, 12], mode=mode)
+    # # dataset.summary()
+    #
+    # dm = dataset.get_data_matrices()
+    #
+    # trainx, trainx_f = dm[0]
+    # trainy = dm[1]
+    # valx, valx_f = dm[2]
+    # testx, testx_f = dm[4]
+    #
+    # print(trainx.shape)
+    # print(trainx_f.shape)
+    # print(trainy.shape)
 
     # print(trainx[2,:18])
     # print(trainx[2,18:36])

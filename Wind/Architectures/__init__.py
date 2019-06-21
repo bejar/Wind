@@ -53,6 +53,7 @@ from .CNNS2SArchitecture import CNNS2SArchitecture
 from .CNNS2SSkipArchitecture import CNNS2SSkipArchitecture
 from .CNNS2SCrazyIvanArchitecture import CNNS2SCrazyIvanArchitecture
 from .CNNS2S2DArchitecture import CNNS2S2DArchitecture
+from .CNNSeparableS2SArchitecture import CNNSeparableS2SArchitecture
 
 __author__ = 'bejar'
 
@@ -81,6 +82,7 @@ __all__ = ['Architecture',
            'SCKS2SArchitecture',
            'CNNS2SCrazyIvanArchitecture',
            'CNNS2S2DArchitecture',
+           'CNNSeparableS2S2DArchitecture',
            'CNNS2SSkipArchitecture',
            'RandomForestDirRegressionArchitecture',
            'RandomForestS2SArchitecture',

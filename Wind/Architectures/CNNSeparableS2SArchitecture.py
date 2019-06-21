@@ -21,7 +21,7 @@ CNNS2SArchitecture
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
-from keras.layers import Dense, Dropout, Conv1D, Flatten, Input
+from keras.layers import Dense, Dropout, SeparableConv1D, Flatten, Input
 from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
 
@@ -30,9 +30,9 @@ from keras.regularizers import l1, l2
 __author__ = 'bejar'
 
 
-class CNNS2SArchitecture(NNS2SArchitecture):
+class CNNSeparableS2SArchitecture(NNS2SArchitecture):
     """
-    Class for convolutional sequence to sequence architecture
+    Class for separable convolutional sequence to sequence architecture
 
     """
     modfile = None
@@ -41,7 +41,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
     def generate_model(self):
         """
-        Model for CNN  for S2S
+        Model for separable CNN for S2S
 
         json config:
 
@@ -50,6 +50,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             "strides": [1],
             "dilation": false,
             "kernel_size": [3],
+            "depth_multiplier": 1,
             "k_reg": "None",
             "k_regw": 0.1,
             "rec_reg": "None",
@@ -59,7 +60,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             "activation_full": "linear",
             "full": [16,8],
             "fulldrop": 0,
-            "mode":"CNN_s2s"
+            "mode":"CNN_sep_s2s"
         }
 
         :return:
@@ -75,6 +76,8 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         else:
             strides = self.config['arch']['strides']
             dilation = [1] * len(strides)
+
+        depth_multiplier = self.config['arch']['depth_multiplier']
         activationfl = self.config['arch']['activation_full']
         fulldrop = self.config['arch']['fulldrop']
         full_layers = self.config['arch']['full']
@@ -96,8 +99,8 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             k_regularizer = None
 
         input = Input(shape=(idimensions))
-        model = Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                              padding='causal', dilation_rate=dilation[0],
+        model = SeparableConv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
+                              padding='same', dilation_rate=dilation[0],depth_multiplier=depth_multiplier,
                               kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
 
@@ -105,8 +108,8 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             model = Dropout(rate=drop)(model)
 
         for i in range(1, len(filters)):
-            model = Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                              padding='causal', dilation_rate=dilation[i],
+            model = SeparableConv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
+                              padding='same', dilation_rate=dilation[i],depth_multiplier=depth_multiplier,
                               kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
 
