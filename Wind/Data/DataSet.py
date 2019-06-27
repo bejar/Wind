@@ -23,7 +23,7 @@ from Wind.Preprocessing.Normalization import tanh_normalization
 import numpy as np
 import os
 
-from entropy import spectral_entropy
+from entropy import spectral_entropy, sample_entropy
 
 
 try:
@@ -646,7 +646,8 @@ class Dataset:
             raise NameError("Raw data is not loaded")
 
         dvals={}
-        dvals['specent'] =spectral_entropy(self.raw_data[:,0],sf=1)
+        dvals['SpecEnt'] =spectral_entropy(self.raw_data[:,0],sf=1)
+        dvals['SampEnt'] =sample_entropy(self.raw_data[:,0],order=2)
 
         data = self.raw_data[:,0]
         for w in window:
@@ -656,8 +657,8 @@ class Dataset:
             datac = datac.reshape(-1, w)
             means = np.mean(datac,axis=1)
             vars = np.std(datac,axis=1)
-            dvals[f'Stab({w})'] = np.std(means)
-            dvals[f'Lump({w})']= np.std(vars)
+            dvals[f'Stab{w}'] = np.std(means)
+            dvals[f'Lump{w}']= np.std(vars)
 
         return dvals
 
