@@ -143,8 +143,8 @@ def generate_data(dfile, vars, step, mode='average', hour=None, month=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--isec', type=int, help='Sites Section')
-    parser.add_argument('--fsec', type=int, help='Initial Site')
+    parser.add_argument('--isec', type=int, default=190, help='Sites Section')
+    parser.add_argument('--fsec', type=int, default=190, help='Initial Site')
     parser.add_argument('--step', default=12, type=int, help='Grouping step')
     parser.add_argument('--mode', default='average', choices=['average', 'split'], help='Grouping mode')
     args = parser.parse_args()
