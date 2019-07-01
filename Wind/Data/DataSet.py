@@ -23,8 +23,11 @@ from Wind.Preprocessing.Normalization import tanh_normalization
 import numpy as np
 import os
 
-from entropy import spectral_entropy, sample_entropy
 
+try:
+    from entropy import spectral_entropy, sample_entropy
+except Exception:
+    pass
 
 try:
     import pysftp
