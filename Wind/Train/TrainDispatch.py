@@ -100,7 +100,6 @@ class TrainDispatch:
         self.model_dict['CNN_sep_s2s'] = (train_sequence2sequence, CNNSeparableS2SArchitecture)
 
 
-
     def dispatch(self, mode):
         """
         Returns the corresponding (training algorithm, architecture)
