@@ -54,17 +54,17 @@ if __name__ == '__main__':
     if args.ostatus is not None:
         configs = col.find({'status':args.ostatus, 'experiment':args.exp})
         for conf in tqdm(configs):
-            col.update({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
+            col.update_one({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
     elif args.patt is not None:
         configs = col.find({'experiment':args.exp, 'site': {'$regex': f'^{args.patt}-.'}})
         for conf in tqdm(configs):
-            col.update({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
+            col.update_one({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
     elif args.exp is not None:
         configs = col.find({'experiment':args.exp})
         for conf in tqdm(configs):
-            col.update({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
+            col.update_one({'_id': conf['_id']}, {'$set': {'status': args.nstatus}})
     elif args.id is not None:
-        col.update({'_id': args.id}, {'$set': {'status': args.nstatus}})
+        col.update_one({'_id': args.id}, {'$set': {'status': args.nstatus}})
     else:
         raise NameError("Selection missing")
 

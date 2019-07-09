@@ -57,22 +57,22 @@ if __name__ == '__main__':
         config = load_config_file(file, upload=True)
 
         if args.pend:
-            col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
+            col.update_one({'_id': config['_id']}, {'$set': {'status': 'pending'}})
         else:
             exists = col.find_one({'_id': config['_id']})
             if exists:
-                col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
+                col.update_one({'_id': config['_id']}, {'$set': {'status': 'done'}})
                 if 'results' in config:
-                    col.update({'_id': config['_id']}, {'$set': {'result': config['results']}})
+                    col.update_one({'_id': config['_id']}, {'$set': {'result': config['results']}})
                 elif 'result' in config:
-                    col.update({'_id': config['_id']}, {'$set': {'result': config['result']}})
-                col.update({'_id': config['_id']}, {'$set': {'etime': config['etime']}})
+                    col.update_one({'_id': config['_id']}, {'$set': {'result': config['result']}})
+                col.update_one({'_id': config['_id']}, {'$set': {'etime': config['etime']}})
                 if 'btime' in config:
-                    col.update({'_id': config['_id']}, {'$set': {'btime': config['btime']}})
+                    col.update_one({'_id': config['_id']}, {'$set': {'btime': config['btime']}})
                 else:
-                    col.update({'_id': config['_id']}, {'$set': {'btime': config['etime']}})
+                    col.update_one({'_id': config['_id']}, {'$set': {'btime': config['etime']}})
                 if not 'host' in config:
-                    col.update({'_id': config['_id']}, {'$set': {'host': 'minotauro'}})
+                    col.update_one({'_id': config['_id']}, {'$set': {'host': 'minotauro'}})
             else:
                 if not 'host' in config:
                     config['host'] = 'minotauro'
