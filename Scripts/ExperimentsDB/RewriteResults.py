@@ -59,7 +59,7 @@ if __name__ == '__main__':
         if vsum <= args.thres:
             print(conf['site'], vsum)
             if not args.noupdate:
-                col.update({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
+                col.update_one({'_id': conf['_id']}, {'$set': {'status': 'pending'}})
             count += 1
 
     print(count)

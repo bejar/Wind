@@ -55,7 +55,7 @@ if __name__ == '__main__':
         rest = np.sum([v[1] for v in conft['result']])
         print(f"{conft['site']} {rest-res}")
         if rest>res:
-            col.update({'_id': conf['_id']}, {'$set': {'result': conft['result']}})
+            col.update_one({'_id': conf['_id']}, {'$set': {'result': conft['result']}})
             cbest +=1
-        colt.update({'_id': conft['_id']}, {'$set': {'status': 'copy'}})
+        colt.update_one({'_id': conft['_id']}, {'$set': {'status': 'copy'}})
     print(f'{cbest} of {count}')

@@ -49,7 +49,7 @@ if __name__ == '__main__':
     count = 0
     configs = col.find({'experiment':args.exp})
     for conf in configs:
-        col.update({'_id': conf['_id']},{'$set': {'arch.mode':"MLP_dir_reg"}})
+        col.update_one({'_id': conf['_id']},{'$set': {'arch.mode':"MLP_dir_reg"}})
         count += 1
     
 
