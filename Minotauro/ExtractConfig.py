@@ -178,7 +178,7 @@ export PYTHONPATH
                         f"python3 WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
                         #f"mpirun python WindExperimentBatch.py --best --early --gpu --gpulog --mino --config {config['_id']}\n")
 
-                col.update({'_id': config['_id']}, {'$set': {'status': 'extract'}})
+                col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
             batchjob.close()
             print(f"\nScript {nr}: Estimated running time = {jobtime} hours")
             # print(f"NCONF= {len(lconfig)}")
