@@ -7,19 +7,19 @@
     "datasize": 43834,
     "testsize": 17534,
       "dataset": 1,
-      "lag": 6,
+      "lag": 12,
       "ahead": [1,12]
   },
   "arch": {
       "drop": 0.3,
-    "activation": "relu",
-      "full": [256, 128, 64],
+      "activation": ["leaky", 0.2],
+      "full": [512,256],
       "mode":"MLP_s2s_rec"
   },
   "training": {
     "iter":1,
     "batch": 1024,
-    "epochs": 1,
+    "epochs": 200,
           "patience":10,
       "optimizer": "adamax",
     "lrate": 0.001

@@ -20,7 +20,7 @@
   "training": {
     "iter":1,
     "batch": 1024,
-    "epochs": 1,
+    "epochs": 200,
           "patience":10,
       "optimizer": "adamax",
     "lrate": 0.001
