@@ -163,11 +163,6 @@ def train_sjoint_sequence2sequence(architecture, config, runconfig):
                 print('-----------------------------------------------------------------------------')
                 print(f"Steps Ahead = {ahead}")
 
-            # # Dataset
-            # dataset = Dataset(config=config['data'], data_path=wind_data_path)
-            # dataset.generate_dataset(ahead=[ahead, ahead], mode=architecture.data_mode, remote=runconfig.remote)
-            # train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
-
             ############################################
             # Model
             config['idimensions'] = train_x.shape[1:]
