@@ -21,7 +21,7 @@ __author__ = 'bejar'
 
 from Wind.Train.TrainingProcess import train_dirregression, train_persistence, train_sckit_dirregression, \
     train_sequence2sequence,train_sequence2sequence_tf, train_recursive_multi_sequence2sequence, \
-    train_sckit_sequence2sequence
+    train_sckit_sequence2sequence, train_sjoint_sequence2sequence
 
 from Wind.Architectures import PersistenceArchitecture, PersistenceMeanArchitecture
 
@@ -69,7 +69,6 @@ class TrainDispatch:
         # RNN models
 
         self.model_dict['RNN_dir_reg'] = self.model_dict['regdir'] = (train_dirregression, RNNDirRegressionArchitecture)
-
         self.model_dict['RNN_ED_s2s'] = self.model_dict['seq2seq'] = (train_sequence2sequence, RNNEncoderDecoderS2SArchitecture)
 
         # self.model_dict['RNN_ED_s2s'] = (train_sequence2sequence, RNNEncoderDecoderS2SArchitecture)
@@ -90,6 +89,7 @@ class TrainDispatch:
         self.model_dict['MLP_dir_reg'] = self.model_dict['mlpdir'] = (train_dirregression, MLPDirRegressionArchitecture)
 
         self.model_dict['MLP_s2s_rec'] = (train_recursive_multi_sequence2sequence, MLPS2SRecursiveArchitecture)
+        self.model_dict['MLP_s2s_sjoint'] = (train_sjoint_sequence2sequence, MLPS2SArchitecture)
 
         # Convolutional models
 

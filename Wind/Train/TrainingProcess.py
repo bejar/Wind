@@ -46,6 +46,8 @@ def train_dirregression(architecture, config, runconfig):
     """
     Training process for architecture with direct regression of ahead time steps
 
+    Multiorizon DIR strategy, an independent model for each horizon
+
     :return:
     """
 
@@ -107,7 +109,7 @@ def train_dirregression(architecture, config, runconfig):
                 from Wind.DataBaseConfigurations import updateprocess
                 updateprocess(config, ahead)
 
-            arch.save('-A%d-R%02d' % (ahead, iter))
+            arch.save(f'-A{ahead}-R{iter:02d}')
             del dataset
 
     arch.log_result(lresults)
@@ -115,9 +117,107 @@ def train_dirregression(architecture, config, runconfig):
     return lresults
 
 
+def train_sjoint_sequence2sequence(architecture, config, runconfig):
+    """
+    Training process for architecture with multiple blocks of horizons
+
+    Multihorizon SJOINT strategy
+
+    The training is done separately for blocks of horizons (if block size is 1 this is dirregression)
+
+    :return:
+    """
+
+    if type(config['data']['ahead']) == list:
+        iahead, sahead = config['data']['ahead']
+    else:
+        iahead, sahead = 1, config['data']['ahead']
+
+    # Number of consecutive horizon elements to join in a prediction
+    slice = config['data']['slice']
+
+    # if (sahead - (iahead-1)) % slice != 0:
+    #     raise NameError("SJOINT: slice has to be a divisor of the horizon length")
+
+
+    lresults = []
+    if 'iter' in config['training']:
+        niter = config['training']['iter']
+    else:
+        niter = 1
+
+    lmodels = []
+    steps = [[i,j] for i,j in zip(range(iahead, sahead+1, slice), range(slice, sahead+slice+1,slice))]
+    steps[-1][1] = sahead
+
+
+    for iter in range(niter):
+        # Loads the dataset once and slices the y matrix for training and evaluation
+        dataset = Dataset(config=config['data'], data_path=wind_data_path)
+        dataset.generate_dataset(ahead=[iahead, sahead], mode=architecture.data_mode, remote=runconfig.remote)
+
+        train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+
+        for recit, ahead in enumerate(steps):
+            if runconfig.verbose:
+                print('-----------------------------------------------------------------------------')
+                print(f"Steps Ahead = {ahead}")
+
+            # # Dataset
+            # dataset = Dataset(config=config['data'], data_path=wind_data_path)
+            # dataset.generate_dataset(ahead=[ahead, ahead], mode=architecture.data_mode, remote=runconfig.remote)
+            # train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+
+            ############################################
+            # Model
+            config['idimensions'] = train_x.shape[1:]
+            config['odimensions'] = ahead[1] - ahead[0] + 1
+
+            nconfig = deepcopy(config)
+            nconfig['data']['ahead'] = ahead
+            arch = architecture(nconfig, runconfig)
+
+            if runconfig.multi == 1:
+                arch.generate_model()
+            else:
+                with tf.device('/cpu:0'):
+                    arch.generate_model()
+
+            if runconfig.verbose:
+                arch.summary()
+                arch.plot()
+                dataset.summary()
+                print()
+
+            ############################################
+            # Training with the current slice
+            arch.train(train_x, train_y[:,ahead[0]-1:ahead[1]], val_x, val_y[:,ahead[0]-1:ahead[1]])
+            ############################################
+            # Results
+            lresults.extend(arch.evaluate(val_x, val_y[:,ahead[0]-1:ahead[1]], test_x, test_y[:,ahead[0]-1:ahead[1]]))
+
+            print(strftime('%Y-%m-%d %H:%M:%S'))
+
+            # Update result in db
+            if config is not None and not runconfig.proxy:
+                from Wind.DataBaseConfigurations import updateprocess
+                updateprocess(config, ahead)
+
+            arch.save(f"-{ahead[0]}-{ahead[1]}-S{recit:02d}-R{iter:02d}")
+
+    arch.log_result(lresults)
+
+    return lresults
+
+
+
 def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
     """
     Training process for sequence 2 sequence architectures with multi step recursive training
+
+    Multihorizon SJOINT strategy with recursive prediccion
+
+    Each block of horizons use the predicion of the previous block a s input
 
     :param architecture:
     :param config:
@@ -167,11 +267,11 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
             config['odimensions'] = ahead[1] - ahead[0] + 1
             # Dimensions for the recursive input
 
+            # For evaluating we need to pass the range of columns of the current iteration
             config['rdimensions'] = recit * slice
 
             print(f"{config['idimensions']} {config['odimensions']} {config['rdimensions']}")
 
-            # For evaluating we need to pass the range of columns of the current iteration
             nconfig = deepcopy(config)
             nconfig['data']['ahead'] = ahead
             arch = architecture(nconfig, runconfig)
@@ -217,7 +317,7 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
 
             print(strftime('%Y-%m-%d %H:%M:%S'))
 
-            arch.save(f"-{ahead[0]}-{ahead[1]}-R{iter:02d}")
+            arch.save(f"-{ahead[0]}-{ahead[1]}-S{recit:02d}-R{iter:02d}")
 
     arch.log_result(lresults)
 
