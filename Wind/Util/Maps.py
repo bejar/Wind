@@ -99,7 +99,7 @@ def create_mapbox_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(12
         py.plot(fig, filename=f"./{title}.html")
 
 
-def create_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(1200, 800)):
+def create_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(1200, 800), mksize=2):
     """
     Creates an HTML file with the map
     """
@@ -112,7 +112,7 @@ def create_plot(df, title, notebook=False, tick=10, cmap=scl, figsize=(1200, 800
             colorscale=cmap,
             reversescale=True,
             opacity=0.7,
-            size=2,
+            size=mksize,
             colorbar=dict(
                 thickness=10,
                 titleside="right",

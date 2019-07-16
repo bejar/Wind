@@ -472,7 +472,7 @@ class DBResults:
             raise NameError("Coordinates outside range, use longitude in [-130,-63] and latitude in [20, 50]")
 
         self.selection = [i for i in self.osel if
-                          (ilat <= self.coords[i][1] <= flat) and (ilon <= self.coords[i][0] <= flon)]
+                          (ilat <= self.coords[self.exp_result['sites'][i]][1] <= flat) and (ilon <= self.coords[self.exp_result['sites'][i]][0] <= flon)]
 
     def sample(self, percentage):
         """
@@ -489,7 +489,7 @@ class DBResults:
         else:
             raise NameError("percentage must be in range (0-1]")
 
-    def plot_map(self, summary='sum', notebook=False, cmap=scl, mapbox=False, dset=('val', 'test'), figsize=(800, 400)):
+    def plot_map(self, summary='sum', notebook=False, cmap=scl, mapbox=False, dset=('val', 'test'), figsize=(800, 400),mksize=2):
         """
         generates an html map with the results
 
@@ -525,14 +525,16 @@ class DBResults:
             sumval = self.exp_result['validation'][self.selection, 0]
             extra = [1, 0]
 
+        site_coords = list(self.exp_result['sites'][self.selection])
         if 'test' in dset:
-            testdf = pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
-                                   'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
+
+            testdf = pd.DataFrame({'Lon': np.append(self.coords[site_coords, 0], [0, 0]),
+                                   'Lat': np.append(self.coords[site_coords, 1], [0, 0]),
                                    'Val': np.append(sumtest, extra),
                                    'Site': np.append(self.exp_result['sites'][self.selection], [0, 0])})
         if 'val' in dset:
-            valdf = pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
-                                  'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
+            valdf = pd.DataFrame({'Lon': np.append(self.coords[site_coords, 0], [0, 0]),
+                                  'Lat': np.append(self.coords[site_coords, 1], [0, 0]),
                                   'Val': np.append(sumval, extra),
                                   'Site': np.append(self.exp_result['sites'][self.selection], [0, 0])})
 
@@ -548,15 +550,15 @@ class DBResults:
         else:
             if 'test' in dset:
                 create_plot(testdf,
-                            f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                            f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize, mksize=mksize
                             )
             if 'val' in dset:
                 create_plot(valdf,
-                            f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                            f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize, mksize=mksize
                             )
 
     def plot_map_compare(self, summary='sum', notebook=False, compare='diff', cmap=sclbi, mapbox=False,
-                         dset=('val', 'test'), figsize=(800, 400)):
+                         dset=('val', 'test'), figsize=(800, 400), mksize=2):
         """
         generates an html map with the results
 
@@ -607,14 +609,15 @@ class DBResults:
                      np.abs(min(np.min(difftest), np.min(diffval))))
             extra = [mx, -mx]
 
+        site_coords = list(self.exp_result['sites'][self.selection])
         if 'test' in dset:
-            testdf = pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
-                                   'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
+            testdf = pd.DataFrame({'Lon': np.append(self.coords[site_coords, 0], [0, 0]),
+                                   'Lat': np.append(self.coords[site_coords, 1], [0, 0]),
                                    'Val': np.append(difftest, extra),
                                    'Site': np.append(self.exp_result['sites'][self.selection], [0, 0])})
         if 'val' in dset:
-            valdf = pd.DataFrame({'Lon': np.append(self.coords[self.selection, 0], [0, 0]),
-                                  'Lat': np.append(self.coords[self.selection, 1], [0, 0]),
+            valdf = pd.DataFrame({'Lon': np.append(self.coords[site_coords, 0], [0, 0]),
+                                  'Lat': np.append(self.coords[site_coords, 1], [0, 0]),
                                   'Val': np.append(diffval, extra),
                                   'Site': np.append(self.exp_result['sites'][self.selection], [0, 0])})
 
@@ -630,11 +633,11 @@ class DBResults:
         else:
             if 'test' in dset:
                 create_plot(testdf,
-                            f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                            f"{title}-test", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize, mksize=mksize
                             )
             if 'val' in dset:
                 create_plot(valdf,
-                            f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize
+                            f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize, mksize=mksize
                             )
 
     def plot_map_multiple(self, summary='sum', notebook=False, labels=None,
@@ -678,15 +681,15 @@ class DBResults:
         difftest = np.argmax(msumtest,axis=1)
         diffval = np.argmax(msumtval,axis=1)
 
-
+        site_coords = list(self.exp_result['sites'][self.selection])
         if 'test' in dset:
-            testdf = pd.DataFrame({'Lon': self.coords[self.selection, 0],
-                                   'Lat': self.coords[self.selection, 1],
+            testdf = pd.DataFrame({'Lon': self.coords[site_coords, 0],
+                                   'Lat': self.coords[site_coords, 1],
                                    'Val': difftest,
                                    'Site': self.exp_lresults[0]['sites'][self.selection]})
         if 'val' in dset:
-            valdf = pd.DataFrame({'Lon': self.coords[self.selection, 0],
-                                  'Lat': self.coords[self.selection, 1],
+            valdf = pd.DataFrame({'Lon': self.coords[site_coords, 0],
+                                  'Lat': self.coords[site_coords, 1],
                                   'Val': diffval,
                                   'Site': self.exp_lresults[0]['sites'][self.selection]})
 
@@ -1139,10 +1142,11 @@ class DBResults:
 
         f, axes = plt.subplots(1, 2, figsize=figsize, sharex=False, sharey=True)
 
-        sns.kdeplot(self.coords[self.selection, 0], sumval,
+        site_coords = list(self.exp_result['sites'][self.selection])
+        sns.kdeplot(self.coords[site_coords, 0], sumval,
                     cmap="Reds", shade=True, shade_lowest=False, ax=axes.flat[0], cbar=True)
 
-        sns.kdeplot(self.coords[self.selection, 1], sumval,
+        sns.kdeplot(self.coords[site_coords, 1], sumval,
                     cmap="Reds", shade=True, shade_lowest=False, ax=axes.flat[1], cbar=True)
 
         plt.show()

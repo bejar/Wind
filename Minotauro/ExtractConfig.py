@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
         # Creates a directory with Data/Jobs/Scripts in the current path
         if not args.bsc:
-            nm = f"{strftime('%Y%m%d%H%M%S')}{nr:2}"
+            nm = f"{strftime('%Y%m%d%H%M%S')}{nr:03d}"
             spath = f"{os.getcwd()}/{nm}"
             os.mkdir(spath)
             os.mkdir(f"{spath}/Data")
