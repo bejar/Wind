@@ -152,12 +152,12 @@ class CNNSeparable3LS2SArchitecture(NNS2SArchitecture):
         model = generate_activation(activation)(model)
 
         if drop != 0:
-            model = Dropout(rate=drop3)(model)
+            model = Dropout(rate=drop2)(model)
 
         model = SeparableConv1D(filters3[0], kernel_size=kernel_size3[0], strides=strides3[0],
                           padding='same', dilation_rate=dilation3[0],depth_multiplier=depth_multiplier3,
                           kernel_regularizer=k_regularizer)(model)
-        model = generate_activation(activation3)(model)
+        model = generate_activation(activation)(model)
 
         if drop != 0:
             model = Dropout(rate=drop3)(model)
