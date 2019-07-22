@@ -1289,14 +1289,20 @@ class DBResults:
 
 
 if __name__ == '__main__':
-    from Wind.Private.DBConfig import mongolocal
-    query1 = {"experiment": "MLP_s2s_2","status":"done"}
-    query2 = {"experiment": "RNN_s2s","status":"done"}
-    results = DBResults(conn=mongolocal)
-    results.retrieve_results_compare(query1, query2)
-    results.selected_size()
-    results.sample(0.05)
-    results.selected_size()
-    results.plot_densplot_compare(plot='scatter', summary='sum')
-    plt.show()
+    from Wind.Private.DBConfig import mongolocal, mongolocaltest
+    # query1 = {"experiment": "MLP_s2s_2","status":"done"}
+    # query2 = {"experiment": "RNN_s2s","status":"done"}
+    # results = DBResults(conn=mongolocal)
+    # results.retrieve_results_compare(query1, query2)
+    # results.selected_size()
+    # results.sample(0.05)
+    # results.selected_size()
+    # results.plot_densplot_compare(plot='scatter', summary='sum')
+    # plt.show()
 
+    query={'experiment':'mlps2ssjointsmac', 'status':'done'}
+
+    results = DBResults(conn=mongolocaltest)
+    #results = DBResults()
+
+    results.results_dataframe_retrieve(query, arch=['activation', 'full','drop' ], data=['lag','slice'])

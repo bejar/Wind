@@ -639,25 +639,31 @@ class Dataset:
             print(f"Ahead= {self.config['ahead']}")
             print("------------------------------------")
 
-    def compute_measures(self, window=[1000]):
+    def compute_measures(self, var, window=None):
         """
         Computing some measures with the wind series
+        Window is a dictionary with a keyword for the windoe size and a window length
 
         :return:
         """
         if self.raw_data is None:
             raise NameError("Raw data is not loaded")
 
-        dvals={}
-        dvals['SpecEnt'] =spectral_entropy(self.raw_data[:,0],sf=1)
-        dvals['SampEnt'] =sample_entropy(self.raw_data[:,0],order=2)
+        if var > self.raw_data.shape[1]:
+             raise NameError("Invalid variable number")
 
-        data = self.raw_data[:,0]
+
+        dvals={}
+        dvals['SpecEnt'] =spectral_entropy(self.raw_data[:,var],sf=1)
+        dvals['SampEnt'] =sample_entropy(self.raw_data[:,var],order=2)
+
+        data = self.raw_data[:,var]
         for w in window:
-            length = int(data.shape[0] / w)
-            size = w * length
+            lw = window[w]
+            length = int(data.shape[0] / lw)
+            size = lw * length
             datac = data[:size]
-            datac = datac.reshape(-1, w)
+            datac = datac.reshape(-1, lw)
             means = np.mean(datac,axis=1)
             vars = np.std(datac,axis=1)
             dvals[f'Stab{w}'] = np.std(means)
@@ -694,7 +700,7 @@ if __name__ == '__main__':
 
     dataset.load_raw_data()
 
-    print(dataset.compute_measures(window=[12,24,168,620,1240]))
+    print(dataset.compute_measures(window={'12h':12, '24h':24, '1w':168, '1m':720, '3m':2190, '6m':4380}))
 
     # dataset.generate_dataset(ahead=[1, 12], mode=mode)
     # # dataset.summary()
