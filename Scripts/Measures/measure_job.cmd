@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name="measure"
-#SBATCH -D/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Scripts/Measutes
+#SBATCH -D/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind/Scripts/Measures
 #SBATCH --output=/gpfs/projects/bsc28/bsc28642/Wind/Run/measures.out
 #SBATCH --error=/gpfs/projects/bsc28/bsc28642/Wind/Run/measures.err
 #SBATCH --ntasks=1

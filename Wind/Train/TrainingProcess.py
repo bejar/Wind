@@ -266,7 +266,7 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
             # For evaluating we need to pass the range of columns of the current iteration
             config['rdimensions'] = recit * slice
 
-            print(f"{config['idimensions']} {config['odimensions']} {config['rdimensions']}")
+            print(f"IDim:{config['idimensions']} ODim:{config['odimensions']} RDim:{config['rdimensions']}")
 
             nconfig = deepcopy(config)
             nconfig['data']['ahead'] = ahead
@@ -286,6 +286,7 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
 
             ############################################
             # Training
+            print(f'Ahead: {ahead[0] - 1}  {ahead[1]}')
             if config['rdimensions'] == 0:
                 arch.train(train_x, train_y[:,ahead[0]-1:ahead[1]], val_x, val_y[:,ahead[0]-1:ahead[1]])
             else:
@@ -300,15 +301,16 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
                 rec_train_pred_x = arch.predict(train_x)
                 rec_val_pred_x = arch.predict(val_x)
                 rec_test_pred_x = arch.predict(test_x)
-                print(f"{train_x.shape} {val_x.shape} {test_x.shape}")
-                print(f"{rec_train_pred_x.shape} {rec_val_pred_x.shape} {rec_test_pred_x.shape}")
+                print(f"TRshape:{train_x.shape} Vshape:{val_x.shape} TSshape:{test_x.shape}")
+                print(f"RTR:{rec_train_pred_x.shape} RV:{rec_val_pred_x.shape} RTS:{rec_test_pred_x.shape}")
             else:
                 lresults.extend(arch.evaluate([val_x, rec_val_pred_x], val_y,
                                               [test_x, rec_test_pred_x], dataset.test_y))
                 rec_train_pred_x = np.concatenate((rec_train_pred_x, arch.predict([train_x, rec_train_pred_x])), axis=1)
                 rec_val_pred_x = np.concatenate((rec_val_pred_x, arch.predict([val_x, rec_val_pred_x])), axis=1)
                 rec_test_pred_x = np.concatenate((rec_test_pred_x, arch.predict([test_x, rec_test_pred_x])), axis=1)
-                print(f"{rec_train_pred_x.shape} {rec_val_pred_x.shape} {rec_test_pred_x.shape}")
+                print(f"TRshape:{train_x.shape} Vshape:{val_x.shape} TSshape:{test_x.shape}")
+                print(f"RTR:{rec_train_pred_x.shape} RV:{rec_val_pred_x.shape} RTS:{rec_test_pred_x.shape}")
 
             print(strftime('%Y-%m-%d %H:%M:%S'))
 
