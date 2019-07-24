@@ -8,7 +8,7 @@
     "testsize": 17534,
     "dataset": 1,
     "lag": 12,
-    "ahead": 12
+      "ahead": [1,12]
   },
   "arch": {
     "neurons":128,

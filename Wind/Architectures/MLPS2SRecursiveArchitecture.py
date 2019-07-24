@@ -20,7 +20,7 @@ MLPS2SRecursiveArchirecture
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import load_model, Model
 from keras.layers import Dense, Dropout, Input, concatenate, Flatten
-
+from Wind.Train.Activations import generate_activation
 
 __author__ = 'bejar'
 
@@ -62,11 +62,13 @@ class MLPS2SRecursiveArchitecture(NNS2SArchitecture):
             recinput = input
 
         # Dense layers to process the input
-        model = Dense(full_layers[0], activation=activation)(recinput)
+        model = Dense(full_layers[0])(recinput)
+        model = generate_activation(activation)(model)
         model = Dropout(rate=dropout)(model)
 
         for units in full_layers[1:]:
-            model = Dense(units=units, activation=activation)(model)
+            model = Dense(units=units)(model)
+            model = generate_activation(activation)(model)
             model = Dropout(rate=dropout)(model)
 
         output = Dense(odimensions, activation='linear')(model)

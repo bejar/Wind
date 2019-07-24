@@ -29,7 +29,7 @@ from Wind.Architectures import MLPDirRegressionArchitecture, MLPS2SArchitecture,
     MLPCascadeS2SArchitecture
 
 from Wind.Architectures import CNNS2SArchitecture, CNNS2SCrazyIvanArchitecture, CNNS2S2DArchitecture,  \
-    CNNS2SSkipArchitecture, CNNSeparableS2SArchitecture, CNNSeparable2LS2SArchitecture
+    CNNS2SSkipArchitecture, CNNSeparableS2SArchitecture, CNNSeparable2LS2SArchitecture, CNNSeparable3LS2SArchitecture
 
 from Wind.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2SArchitecture, RNNS2SArchitecture, \
     RNNEncoderDecoderS2SAttentionArchitecture, RNNS2SSelfAttentionArchitecture, RNNEncoderDecoderS2SDepArchitecture
@@ -99,6 +99,7 @@ class TrainDispatch:
         self.model_dict['CNN_Skip_s2s'] = (train_sequence2sequence, CNNS2SSkipArchitecture)
         self.model_dict['CNN_sep_s2s'] = (train_sequence2sequence, CNNSeparableS2SArchitecture)
         self.model_dict['CNN_sep_2l_s2s'] = (train_sequence2sequence, CNNSeparable2LS2SArchitecture)
+        self.model_dict['CNN_sep_3l_s2s'] = (train_sequence2sequence, CNNSeparable3LS2SArchitecture)
 
 
     def dispatch(self, mode):
