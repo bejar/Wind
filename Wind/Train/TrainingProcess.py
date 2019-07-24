@@ -210,7 +210,8 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
     """
     Training process for sequence 2 sequence architectures with multi step recursive training
 
-    Multihorizon SJOINT strategy with recursive prediccion
+    Multihorizon SJOINT strategy with recursive prediccion, it only works with architectures prepared
+    for recursive training
 
     Each block of horizons use the predicion of the previous block a s input
 
@@ -294,7 +295,6 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
 
             ############################################
             # Results and Add the new predictions to the saved ones
-
             if config['rdimensions'] == 0:
                 lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
                 rec_train_pred_x = arch.predict(train_x)

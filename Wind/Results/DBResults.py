@@ -681,7 +681,7 @@ class DBResults:
         difftest = np.argmax(msumtest,axis=1)
         diffval = np.argmax(msumtval,axis=1)
 
-        site_coords = list(self.exp_result['sites'][self.selection])
+        site_coords = list(self.exp_lresults[0]['sites'][self.selection])
         if 'test' in dset:
             testdf = pd.DataFrame({'Lon': self.coords[site_coords, 0],
                                    'Lat': self.coords[site_coords, 1],
