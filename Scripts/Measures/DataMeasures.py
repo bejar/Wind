@@ -66,19 +66,19 @@ def compute_values(lsites, windows, tstamp):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--isite', default=0,  help='Initial Site')
-    parser.add_argument('--nsites', default=10000,  help='Number of sites')
-    parser.add_argument('--ncores', default=40, help='Experiment ID')
+    parser.add_argument('--isite', type=int, default=0,  help='Initial Site')
+    parser.add_argument('--nsites', type=int, default=10000,  help='Number of sites')
+    parser.add_argument('--ncores', type=int, default=40, help='Experiment ID')
 
     args = parser.parse_args()
 
     lim_sites = 126691
     # nsites = 100
-    if args.isite> lim_sites:
+    if args.isite > lim_sites:
         raise NameError('Initial site out of bounds')
 
     windows = {'12h':12, '24h':24, '1w':168, '1m':720, '3m':2190, '6m':4380}
-    if (args.site+args.nsites) < lim_sites:
+    if (args.site+args.nsites) <= lim_sites:
         lsites = range(args.isite, args.nsites+args.nsites)
     else:
         lsites = range(args.isite, lim_sites)
