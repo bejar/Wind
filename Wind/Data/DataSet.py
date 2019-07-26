@@ -23,11 +23,7 @@ from Wind.Preprocessing.Normalization import tanh_normalization
 import numpy as np
 import os
 
-
-try:
-    from entropy import spectral_entropy, sample_entropy
-except Exception:
-    pass
+from Wind.Entropy.entropy import spectral_entropy, sample_entropy
 
 try:
     import pysftp
@@ -654,8 +650,8 @@ class Dataset:
 
 
         dvals={}
-        dvals['SpecEnt'] =spectral_entropy(self.raw_data[:,var],sf=1)
-        dvals['SampEnt'] =sample_entropy(self.raw_data[:,var],order=2)
+        dvals['SpecEnt'] = spectral_entropy(self.raw_data[:,var],sf=1)
+        dvals['SampEnt'] = sample_entropy(self.raw_data[:,var],order=2)
 
         data = self.raw_data[:,var]
         for w in window:

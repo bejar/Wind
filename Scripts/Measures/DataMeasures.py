@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     windows = {'12h':12, '24h':24, '1w':168, '1m':720, '3m':2190, '6m':4380}
     lsites = range(nsites)
-    ncores = multiprocessing.cpu_count()
+    ncores = 40  # multiprocessing.cpu_count()
     print(ncores)
     # ncores = args.cores
     tstamp = str(int(time() * 10000))
