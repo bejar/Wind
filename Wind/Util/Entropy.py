@@ -22,6 +22,36 @@ from sklearn.neighbors import KDTree
 from scipy.signal import periodogram, welch
 import numpy as np
 
+def _embed(x, order=3, delay=1):
+    """Time-delay embedding.
+
+    Parameters
+    ----------
+    x : 1d-array, shape (n_times)
+        Time series
+    order : int
+        Embedding dimension (order)
+    delay : int
+        Delay.
+
+    Returns
+    -------
+    embedded : ndarray, shape (n_times - (order - 1) * delay, order)
+        Embedded time-series.
+    """
+    N = len(x)
+    if order * delay > N:
+        raise ValueError("Error: order * delay should be lower than x.size")
+    if delay < 1:
+        raise ValueError("Delay has to be at least 1.")
+    if order < 2:
+        raise ValueError("Order has to be at least 2.")
+    Y = np.zeros((order, N - (order - 1) * delay))
+    for i in range(order):
+        Y[i] = x[i * delay:i * delay + Y.shape[1]]
+    return Y.T
+
+
 def spectral_entropy(x, sf, method='fft', nperseg=None, normalize=False):
     """Spectral Entropy.
 
@@ -65,32 +95,6 @@ def spectral_entropy(x, sf, method='fft', nperseg=None, normalize=False):
        use of the entropy of the power spectrum. Electroencephalography
        and clinical neurophysiology, 79(3), 204-210.
 
-    Examples
-    --------
-    1. Spectral entropy of a pure sine using FFT
-
-        >>> from entropy import spectral_entropy
-        >>> import numpy as np
-        >>> sf, f, dur = 100, 1, 4
-        >>> N = sf * duration # Total number of discrete samples
-        >>> t = np.arange(N) / sf # Time vector
-        >>> x = np.sin(2 * np.pi * f * t)
-        >>> print(np.round(spectral_entropy(x, sf, method='fft'), 2)
-            0.0
-
-    2. Spectral entropy of a random signal using Welch's method
-
-        >>> from entropy import spectral_entropy
-        >>> import numpy as np
-        >>> np.random.seed(42)
-        >>> x = np.random.rand(3000)
-        >>> print(spectral_entropy(x, sf=100, method='welch'))
-            9.939
-
-    3. Normalized spectral entropy
-
-        >>> print(spectral_entropy(x, sf=100, method='welch', normalize=True))
-            0.995
     """
     x = np.array(x)
     # Compute and normalize power spectrum
@@ -187,25 +191,6 @@ def sample_entropy(x, order=2, metric='chebyshev'):
            using approximate entropy and sample entropy. American Journal of
            Physiology-Heart and Circulatory Physiology, 278(6), H2039-H2049.
 
-    Examples
-    --------
-    1. Sample entropy with order 2.
-
-        >>> from entropy import sample_entropy
-        >>> import numpy as np
-        >>> np.random.seed(1234567)
-        >>> x = np.random.rand(3000)
-        >>> print(sample_entropy(x, order=2))
-            2.192
-
-    2. Sample entropy with order 3 using the Euclidean distance.
-
-        >>> from entropy import sample_entropy
-        >>> import numpy as np
-        >>> np.random.seed(1234567)
-        >>> x = np.random.rand(3000)
-        >>> print(sample_entropy(x, order=3, metric='euclidean'))
-            2.725
     """
     x = np.asarray(x, dtype=np.float64)
 
