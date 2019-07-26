@@ -55,7 +55,7 @@ def compute_values(lsites, windows, tstamp):
     """
 
     for s in lsites:
-        print(s)
+        print(s, flush=True)
         dmeasures = {}
         for i, v in enumerate(vars):
             dataset = Dataset(config={"datanames": [f"{s//500}-{s}-12"],  "vars": "all"}, data_path=wind_data_path)
