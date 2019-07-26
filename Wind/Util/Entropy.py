@@ -20,6 +20,7 @@ Entropy
 from math import factorial, log
 from sklearn.neighbors import KDTree
 from scipy.signal import periodogram, welch
+import numpy as np
 
 def spectral_entropy(x, sf, method='fft', nperseg=None, normalize=False):
     """Spectral Entropy.
