@@ -78,7 +78,7 @@ if __name__ == '__main__':
         raise NameError('Initial site out of bounds')
 
     windows = {'12h':12, '24h':24, '1w':168, '1m':720, '3m':2190, '6m':4380}
-    if (args.site+args.nsites) <= lim_sites:
+    if (args.isite+args.nsites) <= lim_sites:
         lsites = range(args.isite, args.nsites+args.nsites)
     else:
         lsites = range(args.isite, lim_sites)
