@@ -22,8 +22,7 @@ from Wind.Spatial.Util import get_all_neighbors, get_closest_k_neighbors
 from Wind.Preprocessing.Normalization import tanh_normalization
 import numpy as np
 import os
-
-from Wind.Entropy.entropy import spectral_entropy, sample_entropy
+from Wind.Util.Entropy import spectral_entropy, sample_entropy
 
 try:
     import pysftp
