@@ -56,6 +56,7 @@ from .CNNS2S2DArchitecture import CNNS2S2DArchitecture
 from .CNNSeparableS2SArchitecture import CNNSeparableS2SArchitecture
 from .CNNSeparable2LS2SArchitecture import CNNSeparable2LS2SArchitecture
 from .CNNSeparable3LS2SArchitecture import CNNSeparable3LS2SArchitecture
+from .CNNSeparable4LS2SArchitecture import CNNSeparable4LS2SArchitecture
 
 __author__ = 'bejar'
 
@@ -65,7 +66,6 @@ __all__ = ['Architecture',
            'RNNEncoderDecoderS2SArchitecture',
            'PersistenceArchitecture',
            'PersistenceMeanArchitecture',
-           'PersistenceMeanArchitecture2',
            'MLPS2SArchitecture',
            'MLPCascadeS2SArchitecture',
            'MLPS2SFutureArchitecture',
@@ -84,9 +84,10 @@ __all__ = ['Architecture',
            'SCKS2SArchitecture',
            'CNNS2SCrazyIvanArchitecture',
            'CNNS2S2DArchitecture',
-           'CNNSeparableS2S2DArchitecture',
-           'CNNSeparable2LS2S2DArchitecture',
-           'CNNSeparable3LS2S2DArchitecture',
+           'CNNSeparableS2SArchitecture',
+           'CNNSeparable2LS2SArchitecture',
+           'CNNSeparable3LS2SArchitecture',
+           'CNNSeparable4LS2SArchitecture',
            'CNNS2SSkipArchitecture',
            'RandomForestDirRegressionArchitecture',
            'RandomForestS2SArchitecture',
