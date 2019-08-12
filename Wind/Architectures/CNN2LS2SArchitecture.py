@@ -119,7 +119,7 @@ class CNN2LS2SArchitecture(NNS2SArchitecture):
         if drop != 0:
             model = Dropout(rate=drop)(model)
 
-        model = Conv1D(filters2, kernel_size=kernel_size2, strides=strides2,
+        model = Conv1D(filters2[0], kernel_size=kernel_size2[0], strides=strides2[0],
                           padding='causal', dilation_rate=dilation2,
                           kernel_regularizer=k_regularizer)(model)
         model = generate_activation(activation)(model)
