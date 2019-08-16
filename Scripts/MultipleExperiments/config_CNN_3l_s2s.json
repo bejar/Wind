@@ -33,7 +33,7 @@
       "activation_full": "linear",
       "fulldrop": 0,
       "full": [16,8],
-      "mode":"CNN_2l_s2s"
+      "mode":"CNN_3l_s2s"
   },
   "training": {
     "iter": 1,
