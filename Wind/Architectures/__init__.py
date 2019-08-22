@@ -52,6 +52,7 @@ from .MLPS2SFutureArchitecture import MLPS2SFutureArchitecture
 from .CNNS2SArchitecture import CNNS2SArchitecture
 from .CNN2LS2SArchitecture import CNN2LS2SArchitecture
 from .CNN3LS2SArchitecture import CNN3LS2SArchitecture
+from .CNN4LS2SArchitecture import CNN4LS2SArchitecture
 from .CNNS2SSkipArchitecture import CNNS2SSkipArchitecture
 from .CNNS2SCrazyIvanArchitecture import CNNS2SCrazyIvanArchitecture
 from .CNNS2S2DArchitecture import CNNS2S2DArchitecture
@@ -75,6 +76,7 @@ __all__ = ['Architecture',
            'CNNS2SArchitecture',
            'CNN2LS2SArchitecture',
            'CNN3LS2SArchitecture',
+           'CNN4LS2SArchitecture',
            'RNNS2SArchitecture',
            'RNNS2SSelfAttentionArchitecture',
            'RNNEncoderDecoderS2SAttentionArchitecture',
