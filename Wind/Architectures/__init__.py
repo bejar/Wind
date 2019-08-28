@@ -55,6 +55,7 @@ from .CNN3LS2SArchitecture import CNN3LS2SArchitecture
 from .CNN4LS2SArchitecture import CNN4LS2SArchitecture
 from .CNNS2SSkipArchitecture import CNNS2SSkipArchitecture
 from .CNNS2SCrazyIvanArchitecture import CNNS2SCrazyIvanArchitecture
+from .CNNS2SCrazyIvan2HArchitecture import CNNS2SCrazyIvan2HArchitecture
 from .CNNS2S2DArchitecture import CNNS2S2DArchitecture
 from .CNNSeparableS2SArchitecture import CNNSeparableS2SArchitecture
 from .CNNSeparable2LS2SArchitecture import CNNSeparable2LS2SArchitecture
@@ -89,6 +90,7 @@ __all__ = ['Architecture',
            'SCKArchitecture',
            'SCKS2SArchitecture',
            'CNNS2SCrazyIvanArchitecture',
+           'CNNS2SCrazyIvan2HArchitecture',
            'CNNS2S2DArchitecture',
            'CNNSeparableS2SArchitecture',
            'CNNSeparable2LS2SArchitecture',
