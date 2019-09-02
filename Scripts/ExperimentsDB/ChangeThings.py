@@ -32,8 +32,8 @@ __author__ = 'bejar'
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--exp', default='convos2s',  help='Experiment Type')
-    parser.add_argument('--status', default=None,  help='Experiment Status')
-    parser.add_argument('--noupdate', action='store_true', default=False, help='copy files')
+#    parser.add_argument('--status', default=None,  help='Experiment Status')
+#    parser.add_argument('--noupdate', action='store_true', default=False, help='copy files')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
 
     args = parser.parse_args()
@@ -47,9 +47,9 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
     count = 0
-    configs = col.find({'experiment':args.exp})
+    configs = col.find({'experiment':args.exp, 'arch.activation':['elu',0.2]})
     for conf in configs:
-        col.update_one({'_id': conf['_id']},{'$set': {'arch.mode':"MLP_dir_reg"}})
+        col.update_one({'_id': conf['_id']},{'$set': {'status':'purgued'}})
         count += 1
     
 
