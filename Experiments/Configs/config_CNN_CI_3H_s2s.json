@@ -21,7 +21,7 @@
       32
     ],
     "strides": [
-      1
+      2
     ],
     "kernel_size": [
       7
@@ -34,7 +34,7 @@
       1
     ],
     "kernel_size2": [
-      7
+      3
     ],
     "drop2": 0,
     "filters3": [
@@ -44,7 +44,7 @@
       1
     ],
     "kernel_size3": [
-      7
+      5
     ],
     "drop3": 0,
     "dilation": false,
@@ -56,8 +56,8 @@
     "activation_full": "linear",
     "fulldrop": 0,
     "full": [
-      16,
-      8
+      128,
+      64
     ],
     "mode": "CNN_CI_3H_s2s"
   },

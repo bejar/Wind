@@ -158,7 +158,7 @@ class CNNS2SCrazyIvan3HArchitecture(NNS2SArchitecture):
             fullout = generate_activation(activationfl)(fullout)
             fullout = Dropout(rate=fulldrop)(fullout)
 
-        fullout = Flatten()(fullout)
+        #fullout = Flatten()(fullout)
 
         output = Dense(odimensions, activation='linear')(fullout)
 
