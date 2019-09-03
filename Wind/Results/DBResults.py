@@ -318,6 +318,8 @@ class DBResults:
 
         self.exp_df = pd.DataFrame(ddata)
         self.exp_df_vars = arch + train + data
+        for v in self.exp_df_vars+['hour','site']:
+            self.exp_df[v] = self.exp_df[v].astype('category')
 
     def results_dataframe_aggregate(self,threshold=None,notebook=True):
         """
@@ -326,10 +328,11 @@ class DBResults:
         if self.exp_df is None:
             raise NameError("No results dataframe retrieved")
         if not self.exp_df_agg:
-            self.exp_df = self.exp_df.groupby(by=['site']+self.exp_df_vars,as_index=False).sum()
-            self.exp_df.drop(columns=['hour', 'site'], inplace=True)
+            self.exp_df = self.exp_df.groupby(by=['site']+self.exp_df_vars,as_index=False, observed=True).sum()
+#            self.exp_df.drop(columns=['hour', 'site'], inplace=True)
+            self.exp_df.drop(columns=['site'], inplace=True)
             print(len(self.exp_df))
-            self.exp_df = self.exp_df.groupby(by=self.exp_df_vars,as_index=False).agg({'test':['mean','count'], 'val':'mean', })
+            self.exp_df = self.exp_df.groupby(by=self.exp_df_vars,as_index=False, observed=True).agg({'test':['mean','count'], 'val':'mean', })
             self.exp_df_agg = True
         if threshold:
             if notebook:
