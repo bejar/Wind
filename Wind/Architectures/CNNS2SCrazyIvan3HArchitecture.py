@@ -128,7 +128,7 @@ class CNNS2SCrazyIvan3HArchitecture(NNS2SArchitecture):
 
         if drop != 0:
             convomodel = Dropout(rate=drop)(convomodel)
-        lconv.append(convomodel)
+        lconv.append(Flatten()(convomodel))
 
         # 2nd head
         convomodel = Conv1D(filters2[0], input_shape=(idimensions), kernel_size=kernel_size2, strides=strides2[0],
@@ -137,7 +137,7 @@ class CNNS2SCrazyIvan3HArchitecture(NNS2SArchitecture):
 
         if drop != 0:
             convomodel = Dropout(rate=drop2)(convomodel)
-        lconv.append(convomodel)
+        lconv.append(Flatten()(convomodel))
 
         # 3rd head
         convomodel = Conv1D(filters3[0], input_shape=(idimensions), kernel_size=kernel_size3, strides=strides3[0],
@@ -146,7 +146,7 @@ class CNNS2SCrazyIvan3HArchitecture(NNS2SArchitecture):
 
         if drop != 0:
             convomodel = Dropout(rate=drop3)(convomodel)
-        lconv.append(convomodel)
+        lconv.append(Flatten()(convomodel))
 
         convoout = Concatenate()(lconv)
         fullout = Dense(full_layers[0])(convoout)
