@@ -28,7 +28,7 @@ from Wind.Architectures import PersistenceArchitecture, PersistenceMeanArchitect
 from Wind.Architectures import MLPDirRegressionArchitecture, MLPS2SArchitecture, MLPS2SFutureArchitecture, MLPS2SRecursiveArchitecture, \
     MLPCascadeS2SArchitecture
 
-from Wind.Architectures import CNNS2SArchitecture, CNNS2SCrazyIvanArchitecture, CNNS2SCrazyIvan2HArchitecture, CNNS2S2DArchitecture,  \
+from Wind.Architectures import CNNS2SArchitecture, CNNS2SCrazyIvanArchitecture, CNNS2SCrazyIvan2HArchitecture, CNNS2SCrazyIvan3HArchitecture, CNNS2S2DArchitecture,  \
     CNNS2SSkipArchitecture, CNNSeparableS2SArchitecture, CNNSeparable2LS2SArchitecture, CNNSeparable3LS2SArchitecture,\
     CNNSeparable4LS2SArchitecture, CNN2LS2SArchitecture, CNN3LS2SArchitecture, CNN4LS2SArchitecture
 
@@ -107,6 +107,7 @@ class TrainDispatch:
 
         self.model_dict['CNN_CI_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvanArchitecture)
         self.model_dict['CNN_CI_2H_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvan2HArchitecture)
+        self.model_dict['CNN_CI_3H_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvan3HArchitecture)
 
     def dispatch(self, mode):
         """
