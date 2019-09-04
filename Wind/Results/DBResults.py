@@ -224,6 +224,28 @@ class DBResults:
                 if self.exp_result2['validation'][i,0] == 0:
                     self.exp_result2['validation'][i] = vmean
 
+    def extract_result(self, summary='sum', dset='val'):
+        """
+        Returns an array with the results of the current selected sites
+
+        :param dset:
+        :return:
+        """
+        if not self.exp_result:
+            raise NameError("No results yet retrieved")
+
+        vsel = 'validation' if dset ==  'val' else 'test'
+
+        if type(summary) == int:
+            sumres = self.exp_result[vsel][self.selection, summary]
+        elif summary == 'sum':
+            sumres = np.sum(self.exp_result[vsel][self.selection], axis=1)
+        else:
+            sumres = self.exp_result[vsel][self.selection, 0]
+
+        return(np.stack((self.selection, sumres), axis=-1))
+
+
     def retrieve_results_multiple(self, lquery, error='R2'):
         """
         Retrieves a list of sets of results to compare them (just for ANOVA for now)
@@ -1153,6 +1175,8 @@ class DBResults:
                     cmap="Reds", shade=True, shade_lowest=False, ax=axes.flat[1], cbar=True)
 
         plt.show()
+
+    # ---- Statistical tests
 
     def compare_2samp(self, summary='sum',dset=('val', 'test')):
         """

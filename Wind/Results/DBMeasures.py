@@ -184,6 +184,29 @@ class DBMeasures:
 
         return val
 
+    def extract_measure_sites(self, sites, var='wind_speed', measure='SpecEnt'):
+        """
+        Returns the values of the measures for a variable with the site number
+        :param var:
+        :param measure:
+        :return:
+        """
+        if not self.exp_measures:
+            raise NameError("No measures yet retrieved")
+        if self.coords is None:
+            raise NameError("No coordinates file available")
+        if var not in self.variables:
+            raise NameError("Variable unknown")
+        if measure not in self.measures:
+            raise NameError("Measure unknown")
+
+        val = np.zeros((len(sites), 2))
+        for i, site in enumerate(np.array(sites,dtype=int)):
+            val[i,0] = site
+            val[i,1] = self.exp_measures[site][var][measure]
+
+        return val
+
 
 if __name__ == '__main__':
     from Wind.Private.DBConfig import mongolocal, mongolocaltest

@@ -18,7 +18,9 @@ __init__.py
 """
 
 from .DBResults import DBResults
+from .DBMeasures import DBMeasures
 
 __author__ = 'bejar'
 
-__all__ = ['DBResults']
+__all__ = ['DBResults',
+           'DBMeasures']
