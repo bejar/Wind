@@ -357,6 +357,7 @@ class DBResults:
             self.exp_df = self.exp_df.groupby(by=self.exp_df_vars,as_index=False, observed=True).agg({'test':['mean','count'], 'val':'mean', })
             self.exp_df_agg = True
         if threshold:
+            print(f"Total={len(self.exp_df)} Thres={len(self.exp_df[self.exp_df['test']['mean'] > threshold])}")
             if notebook:
                 return self.exp_df[self.exp_df['test']['mean'] > threshold].style.highlight_max()
             else:

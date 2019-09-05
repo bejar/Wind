@@ -45,7 +45,8 @@ if __name__ == '__main__':
 
     configs = col.find({'site':args.site})
     for conf in configs:
-        print('TYPE=', conf['arch']['mode'])
+        if 'arch' in conf:
+            print('TYPE=', conf['arch']['mode'])
         for v in conf['result']:
             print(v)
         print('****************************************')

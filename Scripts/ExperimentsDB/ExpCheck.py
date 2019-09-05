@@ -40,5 +40,5 @@ if __name__ == '__main__':
     configs = col.find({'experiment': args.exp, 'status': args.status})
     for conf in configs:
         #print(conf['result'][0][0])
-        if conf['result'][0][1] < -1:
+        if conf['result'][0][1] < 0.11:
             print(conf['site'])
