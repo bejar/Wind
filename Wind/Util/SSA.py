@@ -42,7 +42,7 @@ class SSA:
 
     def fit(self, X):
         """
-        Computes the embedding X is the time series
+        Computes the embedding, X is the time series
 
         :param X:
         :return:
@@ -78,7 +78,8 @@ class SSA:
     # TODO: error checking
     def decomposition(self, groups=None):
         """
-        groups is a list of list that defines
+        groups is a list of list that defines the grouping of the decomposition
+        if it is None each signal is a group
         :param groups:
         :return:
         """
@@ -115,7 +116,7 @@ class SSA:
                     tmp[k] = val / (self.length - Xg.shape[1])
             ldecomp.append(tmp)
         self.components = np.array(ldecomp)
-        return ldecomp
+        return self.components
 
     def reconstruct(self, n):
         """

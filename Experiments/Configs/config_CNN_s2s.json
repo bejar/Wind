@@ -9,7 +9,8 @@
     "testsize": 17534,
     "dataset": "onesitemanyvar",
     "lag": 18,
-    "ahead": [1,12]
+    "ahead": [1,12],
+      "decompose":[0,5]
   },
   "arch": {
       "filters": [128],

@@ -704,7 +704,7 @@ if __name__ == '__main__':
             raise NameError("Experiment already initialized")
         else:
             # Pick random sites and divide it in batches
-            lsites = np.random.choice(range(126691), args.init, replace=False)
+            lsites = np.random.choice(range(126692), args.init, replace=False)
             lsites = [f'{site // 500}-{site}' for site in lsites]
             lbatches = []
             for i in range(0, len(lsites), BATCH):

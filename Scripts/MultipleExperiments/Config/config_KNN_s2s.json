@@ -1,0 +1,23 @@
+{ "_id": "00000000",
+    "experiment": "TEST",
+  "data": {
+    "datanames": ["10-5308-12"],
+    "scaler": "standard",
+     "vars": "all",
+    "datasize": 43834,
+    "testsize": 17534,
+      "dataset": 0,
+      "dmatrix": "normal",
+    "lag": 18,
+      "ahead": [1,12],
+      "fraction": 1
+  },
+  "arch": {
+      "n_neighbors" : 13,
+      "weights":"uniform",
+    "mode": "KNN_s2s"
+  },
+  "training":{
+    "iter":1
+  }
+}
