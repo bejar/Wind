@@ -410,6 +410,7 @@ def train_gradient_boosting_sequence2sequence(architecture, config, runconfig):
             n_val_y = val_y - boost_val_predict_y
             print(ErrorMeasure().compute_errors(val_y[:, 0], boost_val_predict_y[:, 0], test_y[:, 0], boost_test_predict_y[:, 0]))
             alpha *= decay
+
             # Reset the model
             arch = architecture(config, runconfig)
             if runconfig.multi == 1:

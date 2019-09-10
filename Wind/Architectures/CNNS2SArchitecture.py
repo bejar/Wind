@@ -127,4 +127,17 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         self.model = Model(inputs=input, outputs=output)
 
 
+    def predict(self, val_x):
+        """
+        Returns the predictions of the model for some data
 
+        :param val_x:
+        :param val_y:
+        :return:
+        """
+        batch_size = self.config['training']['batch']
+
+        if self.runconfig.best:
+            self.model = load_model(self.modfile)
+
+        return self.model.predict(val_x, batch_size=batch_size, verbose=0)

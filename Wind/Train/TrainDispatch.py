@@ -110,6 +110,8 @@ class TrainDispatch:
         self.model_dict['CNN_CI_2H_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvan2HArchitecture)
         self.model_dict['CNN_CI_3H_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvan3HArchitecture)
 
+        self.model_dict['CNN_s2s_gb'] = self.model_dict['convos2s'] = (train_gradient_boosting_sequence2sequence, CNNS2SArchitecture)
+
     def dispatch(self, mode):
         """
         Returns the corresponding (training algorithm, architecture)
