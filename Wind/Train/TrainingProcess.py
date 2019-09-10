@@ -418,6 +418,9 @@ def train_gradient_boosting_sequence2sequence(architecture, config, runconfig):
             else:
                 with tf.device('/cpu:0'):
                     arch.generate_model()
+            # For now the model is not saved
+            arch.save(f'-{ahead[0]}-{ahead[1]}-R{nm}')
+
         ############################################
         # Results
 
@@ -441,8 +444,6 @@ def train_gradient_boosting_sequence2sequence(architecture, config, runconfig):
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
-        # For now the model is not saved
-        # arch.save(f'-{ahead[0]}-{ahead[1]}-R{iter}')
 
     arch.log_result(lresults)
 
