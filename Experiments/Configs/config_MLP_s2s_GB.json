@@ -1,0 +1,31 @@
+{"_id": "00000000",
+  "experiment": "TEST",
+  "data": {
+    "datanames": ["11-5548-12"],
+    "scaler": "standard",
+      "vars": "all",
+    "datasize": 43834,
+    "testsize": 17534,
+    "dataset": "onesitemanyvar",
+    "lag": 12,
+    "fraction": 1,
+      "ahead": [1,12]
+  },
+  "arch": {
+      "drop": 0.3,
+    "activation": ["leaky", 0.2],
+      "full": [512,256],
+     "nmodels": 5,
+     "alpha": 0.3,
+     "decay": 0.9,
+    "mode":"MLP_s2s_gb"
+  },
+  "training": {
+    "iter":1,
+    "batch": 1024,
+    "epochs": 5,
+    "patience":10,
+    "optimizer": "adamax",
+    "lrate": 0.001
+  }
+}

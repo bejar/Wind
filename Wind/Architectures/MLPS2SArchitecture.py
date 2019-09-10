@@ -18,7 +18,7 @@ MLPS2SArchitecture
 """
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, Model
+from keras.models import Sequential, Model, load_model
 from keras.layers import Dense, Dropout, GaussianNoise, Input, BatchNormalization
 from Wind.Train.Activations import generate_activation
 
@@ -88,6 +88,18 @@ class MLPS2SArchitecture(NNS2SArchitecture):
 
         self.model = Model(inputs=data_input, outputs=output)
 
+    def predict(self, val_x):
+        """
+        Returns the predictions of the model for some data
 
+        :param val_x:
+        :param val_y:
+        :return:
+        """
+        batch_size = self.config['training']['batch']
 
+        if self.runconfig.best:
+            self.model = load_model(self.modfile)
+
+        return self.model.predict(val_x, batch_size=batch_size, verbose=0)
 

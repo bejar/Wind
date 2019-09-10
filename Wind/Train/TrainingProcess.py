@@ -38,6 +38,7 @@ from time import strftime
 from Wind.DataBaseConfigurations import updateprocess
 import numpy as np
 from copy import deepcopy
+from Wind.ErrorMeasure import ErrorMeasure
 
 __author__ = 'bejar'
 
@@ -204,8 +205,6 @@ def train_sjoint_sequence2sequence(architecture, config, runconfig):
 
     return lresults
 
-
-
 def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
     """
     Training process for sequence 2 sequence architectures with multi step recursive training
@@ -213,7 +212,7 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
     Multihorizon SJOINT strategy with recursive prediccion, it only works with architectures prepared
     for recursive training
 
-    Each block of horizons use the predicion of the previous block a s input
+    Each block of horizons use the predicion of the previous block as part of the input
 
     :param architecture:
     :param config:
@@ -321,6 +320,134 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
     return lresults
 
 
+def train_gradient_boosting_sequence2sequence(architecture, config, runconfig):
+    """
+    Training process for sequence 2 sequence architectures
+
+    Mutihorizon MIMO/DIRJOINT strategy plus gradient boosting
+
+    Generates a sequence of models that train over the difference of the previous prediction
+
+    :param architecture:
+    :param config:
+    :param runconfig:
+    :return:
+    """
+
+    ahead = config['data']['ahead'] if (type(config['data']['ahead']) == list) else [1, config['data']['ahead']]
+
+    if 'iter' in config['training']:
+        niter = config['training']['iter']
+    else:
+        niter = 1
+
+    if type(ahead) == list:
+        odimensions = ahead[1] - ahead[0] + 1
+    else:
+        odimensions = ahead
+
+    # Dataset
+    dataset = Dataset(config=config['data'], data_path=wind_data_path)
+    dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
+    train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+
+    if type(train_x) != list:
+        config['idimensions'] = train_x.shape[1:]
+    else:
+        config['idimensions'] = [d.shape[1:] for d in train_x]
+    config['odimensions'] = odimensions
+
+    lresults = []
+    for iter in range(niter):
+
+        arch = architecture(config, runconfig)
+
+        if runconfig.multi == 1:
+            arch.generate_model()
+        else:
+            with tf.device('/cpu:0'):
+                arch.generate_model()
+
+        if runconfig.verbose:
+            arch.summary()
+            arch.plot()
+            dataset.summary()
+            print()
+
+        ############################################
+        # Training
+
+        # Training using gradient boosting (kindof)
+        # Generate a bunch of models
+        boost_train_pred = []
+        boost_val_pred = []
+        boost_test_pred = []
+        n_train_y = train_y
+        n_val_y = val_y
+        n_test_y = test_y
+        alpha = config['arch']['alpha']
+        decay = config['arch']['decay']
+        for nm in range(config['arch']['nmodels']):
+            arch.train(train_x, n_train_y, val_x, n_val_y)
+
+            # Prediction of the current model
+            boost_train_pred.append(arch.predict(train_x))
+            boost_val_pred.append(arch.predict(val_x))
+            boost_test_pred.append(arch.predict(test_x))
+
+            # Compute the prediction of the combination of models
+            # Prediction of the first model
+            boost_train_predict_y = boost_train_pred[0]
+            boost_val_predict_y = boost_val_pred[0]
+            boost_test_predict_y = boost_test_pred[0]
+            for m in range(1,len(boost_train_pred)):
+                boost_train_predict_y += (alpha * boost_train_pred[m])
+                boost_val_predict_y += (alpha * boost_val_pred[m])
+                boost_test_predict_y += (alpha * boost_test_pred[m])
+
+            # Residual of the prediction for the next step
+            n_train_y = train_y - boost_train_predict_y
+            n_val_y = val_y - boost_val_predict_y
+            print(ErrorMeasure().compute_errors(val_y[:, 0], boost_val_predict_y[:, 0], test_y[:, 0], boost_test_predict_y[:, 0]))
+            alpha *= decay
+            # Reset the model
+            arch = architecture(config, runconfig)
+            if runconfig.multi == 1:
+                arch.generate_model()
+            else:
+                with tf.device('/cpu:0'):
+                    arch.generate_model()
+        ############################################
+        # Results
+
+        # Maintained to be compatible with old configuration files
+        if type(config['data']['ahead'])==list:
+            iahead = config['data']['ahead'][0]
+            ahead = (config['data']['ahead'][1] - config['data']['ahead'][0]) + 1
+        else:
+            iahead = 1
+            ahead = config['data']['ahead']
+
+        itresults = []
+
+        for i, p in zip(range(1, ahead + 1), range(iahead, config['data']['ahead'][1]+1)):
+            itresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
+                                                               boost_val_predict_y[:, i - 1],
+                                                               test_y[:, i - 1],
+                                                               boost_test_predict_y[:, i - 1]))
+
+        lresults.extend(itresults)
+
+        print(strftime('%Y-%m-%d %H:%M:%S'))
+
+        # For now the model is not saved
+        # arch.save(f'-{ahead[0]}-{ahead[1]}-R{iter}')
+
+    arch.log_result(lresults)
+
+    return lresults
+
+
 def train_sequence2sequence(architecture, config, runconfig):
     """
     Training process for sequence 2 sequence architectures
@@ -389,6 +516,7 @@ def train_sequence2sequence(architecture, config, runconfig):
     arch.log_result(lresults)
 
     return lresults
+
 
 
 def train_persistence(architecture, config, runconfig):
