@@ -67,6 +67,8 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         drop = self.config['arch']['drop']
         filters = self.config['arch']['filters']
         kernel_size = self.config['arch']['kernel_size']
+
+        padding = 'causal' if 'padding' not in self.config['arch'] else  self.config['arch']['padding']
         # If there is a dilation field and it is true the strides field is the dilation rates
         # and the strides are all 1's
         if 'dilation' in self.config['arch'] and self.config['arch']['dilation']:
@@ -97,7 +99,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         input = Input(shape=(idimensions))
         model = Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                              padding='causal', dilation_rate=dilation[0],
+                              padding=padding, dilation_rate=dilation[0],
                               kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
 
@@ -106,7 +108,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         for i in range(1, len(filters)):
             model = Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                              padding='causal', dilation_rate=dilation[i],
+                              padding=padding, dilation_rate=dilation[i],
                               kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
 
@@ -125,25 +127,4 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         self.model = Model(inputs=input, outputs=output)
 
 
-    # def evaluate(self, val_x, val_y, test_x, test_y):
-    #     batch_size = self.config['training']['batch']
-    #
-    #     if self.runconfig.best:
-    #         self.model = load_model(self.modfile)
-    #     val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
-    #     test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
-    #
-    #     # Maintained to be compatible with old configuration files
-    #     if type(self.config['data']['ahead'])==list:
-    #         ahead = self.config['data']['ahead'][1]
-    #     else:
-    #         ahead = self.config['data']['ahead']
-    #
-    #     lresults = []
-    #     for i in range(1, ahead + 1):
-    #         lresults.append((i,
-    #                          r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
-    #                          r2_score(test_y[:, i - 1], test_yp[:, i - 1])
-    #                          ))
-    #     return lresults
 

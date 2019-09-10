@@ -8,9 +8,8 @@
     "datasize": 43834,
     "testsize": 17534,
     "dataset": "onesitemanyvar",
-    "lag": 18,
-    "ahead": [1,12],
-      "decompose":[0,3]
+    "lag": 12,
+    "ahead": [1,12]
   },
   "arch": {
       "filters": [128],
@@ -25,7 +24,7 @@
       "activation_full":["elu",0.4] ,
       "full": [512,256],
       "fulldrop": 0.2,
-
+      "padding":"causal",
       "mode":"CNN_s2s"
   },
   "training": {
