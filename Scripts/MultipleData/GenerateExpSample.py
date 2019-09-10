@@ -29,6 +29,7 @@ from Wind.Misc import load_config_file
 from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 from pymongo import MongoClient
 from tqdm import tqdm
+import numpy as np
 
 
 # nsites  0 - 126691
@@ -38,7 +39,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default=None, required=True, help='Experiment configuration')
     parser.add_argument('--exp', default=None, required=True, help='Experiment name')
-    parser.add_argument('--test', action='store_true', default=False, help='Print the number of configurations')
     parser.add_argument('--sample', type=str, required=True, help='Name of the sample')
     parser.add_argument('--nsamp', type=int, default=2000, help='Size of the sample')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
@@ -67,13 +67,13 @@ if __name__ == '__main__':
     else:
         lsites = np.random.choice(range(126692), args.nsamp, replace=False)
         lsites = [f'{site // 500}-{site}' for site in lsites]
-        sampleconf = {'sample': 'init', 'sname': args.sample, 'sites': lbatches}
+        sampleconf = {'sample': 'init', 'sname': args.sample, 'sites': lsites}
         col.insert_one(sampleconf)
         ssites = lsites
 
     ids = int(time())
-    for i, site in tqdm(enumerate(range(args.isite, args.fsite + 1))):
-        config['data']['datanames'] = [site]
+    for i, site in tqdm(enumerate(ssites)):
+        config['data']['datanames'] = [f'{site}-12']
         site = config['data']['datanames'][0].split('-')
         config['site'] = '-'.join(site[:2])
         config['status'] = 'pending'

@@ -102,7 +102,29 @@ def apply_SSA_decomposition(var, ncomp, data):
         ssa.fit(mdec[i])
         ldec.append(ssa.decomposition())
     decvar = np.swapaxes(np.stack(ldec), 1, 2)
-    return np.concatenate((data, decvar), axis=2)
+    return np.concatenate((data[:,:,1:], decvar), axis=2)
+
+def apply_SSA_decomposition2(var, ncomp, data):
+    """
+    Applies SSA decomposition to one variable of the data
+
+    :param var:
+    :param ncomp:
+    :param data:
+    :return:
+    """
+    dmat = []
+    ssa = SSA(ncomp)
+    for m in range(data.shape[2]):
+        mdec = data[:, :, m]
+ 
+        ldec = []
+        for i in range(mdec.shape[0]):
+            ssa.fit(mdec[i])
+            ldec.append(ssa.decomposition())
+        decvar = np.swapaxes(np.stack(ldec), 1, 2)
+        dmat.append(decvar)
+    return np.concatenate(dmat, axis=2)
 
 
 
@@ -342,12 +364,13 @@ class Dataset:
         # Test and Val
         wind_test = data[datasize:datasize + testsize, :]
         test = lagged_matrix(wind_test, lag=lag, ahead=ahead, mode=mode)
-        if 'decompose' in self.config:
-            test= apply_SSA_decomposition(self.config['decompose'][0], self.config['decompose'][1], test)
 
         half_test = int(test.shape[0] / 2)
         val_x = test[:half_test, :lag]
         test_x = test[half_test:, :lag]
+        if 'decompose' in self.config:
+            val_x= apply_SSA_decomposition(self.config['decompose'][0], self.config['decompose'][1], val_x)
+            test_x= apply_SSA_decomposition(self.config['decompose'][0], self.config['decompose'][1], test_x)
 
         ########################################################
         if mode_x == '2D':

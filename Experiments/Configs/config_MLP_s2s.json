@@ -3,14 +3,14 @@
   "data": {
     "datanames": ["11-5548-12"],
     "scaler": "standard",
-    "vars": "all",
+      "vars": "all",
     "datasize": 43834,
     "testsize": 17534,
     "dataset": "onesitemanyvar",
-    "lag": 12,
+    "lag": 18,
     "fraction": 1,
       "ahead": [1,12],
-      "decompose":[0,5]
+      "decompose":[0,3]
   },
   "arch": {
       "drop": 0.3,

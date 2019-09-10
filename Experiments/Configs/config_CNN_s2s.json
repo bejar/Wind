@@ -10,7 +10,7 @@
     "dataset": "onesitemanyvar",
     "lag": 18,
     "ahead": [1,12],
-      "decompose":[0,5]
+      "decompose":[0,3]
   },
   "arch": {
       "filters": [128],
@@ -31,7 +31,7 @@
   "training": {
       "iter":1,
     "batch": 1000,
-      "epochs": 20,
+      "epochs": 200,
       "patience":10,
       "optimizer": "adamax",
     "lrate": 0.001
