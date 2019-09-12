@@ -23,6 +23,7 @@ from Wind.Preprocessing.Normalization import tanh_normalization
 import numpy as np
 import os
 from Wind.Util.Entropy import spectral_entropy, sample_entropy
+from Wind.Util.SSA import SSA
 
 try:
     import pysftp
@@ -81,6 +82,50 @@ def lagged_matrix(data, lag=1, ahead=0, mode=None):
         lvect.append(data[lag + ahead:, :])
 
     return np.stack(lvect, axis=1)
+
+
+def apply_SSA_decomposition(var, ncomp, data):
+    """
+    Applies SSA decomposition to one variable of the data
+
+    :param var:
+    :param ncomp:
+    :param data:
+    :return:
+    """
+    mdec = data[:, :, var]
+    # print(mdec.shape, ncomp)
+    ssa = SSA(ncomp)
+
+    ldec = []
+    for i in range(mdec.shape[0]):
+        ssa.fit(mdec[i])
+        ldec.append(ssa.decomposition())
+    decvar = np.swapaxes(np.stack(ldec), 1, 2)
+    return np.concatenate((data[:,:,1:], decvar), axis=2)
+
+def apply_SSA_decomposition2(var, ncomp, data):
+    """
+    Applies SSA decomposition to one variable of the data
+
+    :param var:
+    :param ncomp:
+    :param data:
+    :return:
+    """
+    dmat = []
+    ssa = SSA(ncomp)
+    for m in range(data.shape[2]):
+        mdec = data[:, :, m]
+ 
+        ldec = []
+        for i in range(mdec.shape[0]):
+            ssa.fit(mdec[i])
+            ldec.append(ssa.decomposition())
+        decvar = np.swapaxes(np.stack(ldec), 1, 2)
+        dmat.append(decvar)
+    return np.concatenate(dmat, axis=2)
+
 
 
 class Dataset:
@@ -288,6 +333,10 @@ class Dataset:
         # Train
         train = lagged_matrix(wind_train, lag=lag, ahead=ahead, mode=mode)
         train_x = train[:, :lag]
+        # Signal decomposition
+        if 'decompose' in self.config:
+            train_x = apply_SSA_decomposition(self.config['decompose'][0], self.config['decompose'][1], train_x)
+
 
         #######################################
         if mode_x == '2D':
@@ -315,9 +364,13 @@ class Dataset:
         # Test and Val
         wind_test = data[datasize:datasize + testsize, :]
         test = lagged_matrix(wind_test, lag=lag, ahead=ahead, mode=mode)
+
         half_test = int(test.shape[0] / 2)
         val_x = test[:half_test, :lag]
         test_x = test[half_test:, :lag]
+        if 'decompose' in self.config:
+            val_x= apply_SSA_decomposition(self.config['decompose'][0], self.config['decompose'][1], val_x)
+            test_x= apply_SSA_decomposition(self.config['decompose'][0], self.config['decompose'][1], test_x)
 
         ########################################################
         if mode_x == '2D':
@@ -675,7 +728,7 @@ if __name__ == '__main__':
     # cfile = "config_MLP_s2s_fut"
     # config = load_config_file(f"../TestConfigs/{cfile}.json")
     config = {
-     "data": {
+
          "datanames": ["10-5308-12"],
          "scaler": "standard",
          "vars": "all",
@@ -684,21 +737,22 @@ if __name__ == '__main__':
          "datasize": 43834,
          "testsize": 17534,
          "dataset": 1,
-         "lag": 18,
+         "lag": 12,
+        "decompose":[0, 5],
          "ahead": [1, 12]
-     }
+
      }
 
     # print(config)
-    mode = ('2D', '2D')
-    dataset = Dataset(config={"datanames": ["10-5308-12"], "vars": [0]}, data_path=wind_data_path)
+    mode = ('3D', '3D')
+    dataset = Dataset(config=config, data_path=wind_data_path)
 
-    dataset.load_raw_data()
+    # dataset.load_raw_data()
+    #
+    # print(dataset.compute_measures(window={'12h':12, '24h':24, '1w':168, '1m':720, '3m':2190, '6m':4380}))
 
-    print(dataset.compute_measures(window={'12h':12, '24h':24, '1w':168, '1m':720, '3m':2190, '6m':4380}))
-
-    # dataset.generate_dataset(ahead=[1, 12], mode=mode)
-    # # dataset.summary()
+    dataset.generate_dataset(ahead=[1, 12], mode=mode)
+    dataset.summary()
     #
     # dm = dataset.get_data_matrices()
     #

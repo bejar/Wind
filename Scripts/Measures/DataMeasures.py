@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    lim_sites = 126691
+    lim_sites = 126692
     # nsites = 100
     if args.isite > lim_sites:
         raise NameError('Initial site out of bounds')

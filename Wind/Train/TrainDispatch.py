@@ -21,14 +21,14 @@ __author__ = 'bejar'
 
 from Wind.Train.TrainingProcess import train_dirregression, train_persistence, train_sckit_dirregression, \
     train_sequence2sequence,train_sequence2sequence_tf, train_recursive_multi_sequence2sequence, \
-    train_sckit_sequence2sequence, train_sjoint_sequence2sequence
+    train_sckit_sequence2sequence, train_sjoint_sequence2sequence, train_gradient_boosting_sequence2sequence
 
 from Wind.Architectures import PersistenceArchitecture, PersistenceMeanArchitecture
 
 from Wind.Architectures import MLPDirRegressionArchitecture, MLPS2SArchitecture, MLPS2SFutureArchitecture, MLPS2SRecursiveArchitecture, \
     MLPCascadeS2SArchitecture
 
-from Wind.Architectures import CNNS2SArchitecture, CNNS2SCrazyIvanArchitecture, CNNS2SCrazyIvan2HArchitecture, CNNS2S2DArchitecture,  \
+from Wind.Architectures import CNNS2SArchitecture, CNNS2SCrazyIvanArchitecture, CNNS2SCrazyIvan2HArchitecture, CNNS2SCrazyIvan3HArchitecture, CNNS2S2DArchitecture,  \
     CNNS2SSkipArchitecture, CNNSeparableS2SArchitecture, CNNSeparable2LS2SArchitecture, CNNSeparable3LS2SArchitecture,\
     CNNSeparable4LS2SArchitecture, CNN2LS2SArchitecture, CNN3LS2SArchitecture, CNN4LS2SArchitecture
 
@@ -88,9 +88,10 @@ class TrainDispatch:
         self.model_dict['MLP_s2s_fut'] = (train_sequence2sequence, MLPS2SFutureArchitecture)
 
         self.model_dict['MLP_dir_reg'] = self.model_dict['mlpdir'] = (train_dirregression, MLPDirRegressionArchitecture)
-
         self.model_dict['MLP_s2s_rec'] = (train_recursive_multi_sequence2sequence, MLPS2SRecursiveArchitecture)
         self.model_dict['MLP_s2s_sjoint'] = (train_sjoint_sequence2sequence, MLPS2SArchitecture)
+
+        self.model_dict['MLP_s2s_gb'] = (train_gradient_boosting_sequence2sequence, MLPS2SArchitecture)
 
         # Convolutional models
 
@@ -107,6 +108,9 @@ class TrainDispatch:
 
         self.model_dict['CNN_CI_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvanArchitecture)
         self.model_dict['CNN_CI_2H_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvan2HArchitecture)
+        self.model_dict['CNN_CI_3H_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvan3HArchitecture)
+
+        self.model_dict['CNN_s2s_gb'] = self.model_dict['convos2s'] = (train_gradient_boosting_sequence2sequence, CNNS2SArchitecture)
 
     def dispatch(self, mode):
         """

@@ -1,0 +1,25 @@
+{ "_id": "00000000",
+    "experiment": "TEST",
+  "data": {
+    "datanames": ["10-5308-12"],
+    "scaler": "standard",
+     "vars": "all",
+    "datasize": 43834,
+    "testsize": 17534,
+    "dataset": 0,
+    "lag": 18,
+    "ahead": 12,
+        "fraction": 1,
+     "dmatrix": "normal"
+  },
+  "arch": {
+    "kernel" : "rbf",
+    "C" : 0.01,
+    "epsilon": 0.01,
+    "degree": 2,
+    "coef0": 1,
+    "mode": "SVM_dir_reg"
+  },
+  "training":{
+  }
+}

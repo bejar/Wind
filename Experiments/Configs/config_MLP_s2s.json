@@ -1,15 +1,16 @@
 {"_id": "00000000",
   "experiment": "TEST",
   "data": {
-    "datanames": ["11-5794-12"],
+    "datanames": ["11-5548-12"],
     "scaler": "standard",
-    "vars": "all",
+      "vars": "all",
     "datasize": 43834,
     "testsize": 17534,
-    "dataset": 1,
-    "lag": 12,
+    "dataset": "onesitemanyvar",
+    "lag": 18,
     "fraction": 1,
-    "ahead": [1,12]
+      "ahead": [1,12],
+      "decompose":[0,3]
   },
   "arch": {
       "drop": 0.3,

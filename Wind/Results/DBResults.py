@@ -224,6 +224,28 @@ class DBResults:
                 if self.exp_result2['validation'][i,0] == 0:
                     self.exp_result2['validation'][i] = vmean
 
+    def extract_result(self, summary='sum', dset='val'):
+        """
+        Returns an array with the results of the current selected sites
+
+        :param dset:
+        :return:
+        """
+        if not self.exp_result:
+            raise NameError("No results yet retrieved")
+
+        vsel = 'validation' if dset ==  'val' else 'test'
+
+        if type(summary) == int:
+            sumres = self.exp_result[vsel][self.selection, summary]
+        elif summary == 'sum':
+            sumres = np.sum(self.exp_result[vsel][self.selection], axis=1)
+        else:
+            sumres = self.exp_result[vsel][self.selection, 0]
+
+        return(np.stack((self.selection, sumres), axis=-1))
+
+
     def retrieve_results_multiple(self, lquery, error='R2'):
         """
         Retrieves a list of sets of results to compare them (just for ANOVA for now)
@@ -318,6 +340,8 @@ class DBResults:
 
         self.exp_df = pd.DataFrame(ddata)
         self.exp_df_vars = arch + train + data
+        for v in self.exp_df_vars+['hour','site']:
+            self.exp_df[v] = self.exp_df[v].astype('category')
 
     def results_dataframe_aggregate(self,threshold=None,notebook=True):
         """
@@ -326,12 +350,14 @@ class DBResults:
         if self.exp_df is None:
             raise NameError("No results dataframe retrieved")
         if not self.exp_df_agg:
-            self.exp_df = self.exp_df.groupby(by=['site']+self.exp_df_vars,as_index=False).sum()
-            self.exp_df.drop(columns=['hour', 'site'], inplace=True)
+            self.exp_df = self.exp_df.groupby(by=['site']+self.exp_df_vars,as_index=False, observed=True).sum()
+#            self.exp_df.drop(columns=['hour', 'site'], inplace=True)
+            self.exp_df.drop(columns=['site'], inplace=True)
             print(len(self.exp_df))
-            self.exp_df = self.exp_df.groupby(by=self.exp_df_vars,as_index=False).agg({'test':['mean','count'], 'val':'mean', })
+            self.exp_df = self.exp_df.groupby(by=self.exp_df_vars,as_index=False, observed=True).agg({'test':['mean','count'], 'val':'mean', })
             self.exp_df_agg = True
         if threshold:
+            print(f"Total={len(self.exp_df)} Thres={len(self.exp_df[self.exp_df['test']['mean'] > threshold])}")
             if notebook:
                 return self.exp_df[self.exp_df['test']['mean'] > threshold].style.highlight_max()
             else:
@@ -1150,6 +1176,8 @@ class DBResults:
                     cmap="Reds", shade=True, shade_lowest=False, ax=axes.flat[1], cbar=True)
 
         plt.show()
+
+    # ---- Statistical tests
 
     def compare_2samp(self, summary='sum',dset=('val', 'test')):
         """

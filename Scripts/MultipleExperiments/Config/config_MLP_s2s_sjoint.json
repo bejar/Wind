@@ -1,0 +1,28 @@
+{"_id": "00000000",
+  "experiment": "TEST",
+  "data": {
+      "datanames": ["11-5794-12"],
+      "scaler": "standard",
+      "vars": "all",
+    "datasize": 43834,
+    "testsize": 17534,
+      "dataset": 1,
+      "lag": 6,
+      "ahead": [1,12],
+    "slice": 2
+  },
+  "arch": {
+      "drop": 0.3,
+    "activation": "relu",
+      "full": [256, 128],
+      "mode":"MLP_s2s_sjoint"
+  },
+  "training": {
+    "iter":1,
+    "batch": 1024,
+    "epochs": 1,
+          "patience":10,
+      "optimizer": "adamax",
+    "lrate": 0.001
+  }
+}
