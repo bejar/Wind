@@ -155,7 +155,7 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
 
         for units in full:
             model = TimeDistributed(Dense(units=units))(model)
-            model = TimeDistributed(generate_activation(activation))(model)
+            model = TimeDistributed(generate_activation(activation_full))(model)
             model = TimeDistributed(Dropout(rate=fulldrop))(model)
 
 
