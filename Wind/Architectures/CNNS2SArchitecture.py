@@ -90,6 +90,11 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         idimensions = self.config['idimensions']
         odimensions = self.config['odimensions']
 
+        if 'batchnorm' in self.config['arch']:
+            bnorm = self.config['arch']['batchnorm']
+        else:
+            bnorm = False
+
         if k_reg == 'l1':
             k_regularizer = l1(k_regw)
         elif k_reg == 'l2':
@@ -102,6 +107,8 @@ class CNNS2SArchitecture(NNS2SArchitecture):
                               padding=padding, dilation_rate=dilation[0],
                               kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
+        if bnorm:
+            model = BatchNormalization()(model)
 
         if drop != 0:
             model = Dropout(rate=drop)(model)
@@ -111,6 +118,8 @@ class CNNS2SArchitecture(NNS2SArchitecture):
                               padding=padding, dilation_rate=dilation[i],
                               kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
+            if bnorm:
+                model = BatchNormalization()(model)
 
             if drop != 0:
                 model = Dropout(rate=drop)(model)
@@ -119,6 +128,9 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         for l in full_layers:
             model= Dense(l)(model)
             model = generate_activation(activationfl)(model)
+            if bnorm:
+                model = BatchNormalization()(model)
+
             if fulldrop != 0:
                 model = Dropout(rate=fulldrop)(model)
 

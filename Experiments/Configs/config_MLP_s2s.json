@@ -7,10 +7,9 @@
     "datasize": 43834,
     "testsize": 17534,
     "dataset": "onesitemanyvar",
-    "lag": 18,
+    "lag": 12,
     "fraction": 1,
-      "ahead": [1,12],
-      "decompose":[0,3]
+      "ahead": [1,12]
   },
   "arch": {
       "drop": 0.3,

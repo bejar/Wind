@@ -2,7 +2,7 @@
    "_id": "00000000",
       "experiment": "TEST",
   "data": {
-    "datanames": ["11-5794-12"],
+    "datanames": ["11-5548-12"],
     "scaler": "standard",
     "vars": "all",
     "datasize": 43834,
@@ -24,7 +24,7 @@
       "activation_full":["elu",0.4] ,
       "full": [512,256],
       "fulldrop": 0.2,
-      "padding":"causal",
+      "padding":"valid",
       "mode":"CNN_s2s"
   },
   "training": {
