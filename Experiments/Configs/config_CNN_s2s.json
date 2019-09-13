@@ -24,7 +24,8 @@
       "activation_full":["elu",0.4] ,
       "full": [512,256],
       "fulldrop": 0.2,
-      "padding":"valid",
+      "padding":"same",
+    "batchnorm": true,
       "mode":"CNN_s2s"
   },
   "training": {
