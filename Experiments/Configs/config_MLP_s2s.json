@@ -1,7 +1,7 @@
 {"_id": "00000000",
   "experiment": "TEST",
   "data": {
-    "datanames": ["11-5548-12"],
+    "datanames": ["11-5648-12"],
     "scaler": "standard",
       "vars": "all",
     "datasize": 43834,
@@ -19,10 +19,11 @@
   },
   "training": {
     "iter":1,
-    "batch": 1024,
+    "batch": 128,
     "epochs": 200,
     "patience":10,
     "optimizer": "adamax",
-    "lrate": 0.001
+      "lrate": 0.002,
+      "RLROP":{"patience":5, "factor":0.5}
   }
 }

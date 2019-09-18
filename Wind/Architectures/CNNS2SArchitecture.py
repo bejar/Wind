@@ -94,6 +94,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             bnorm = self.config['arch']['batchnorm']
         else:
             bnorm = False
+        bias = True if 'bias' not in self.config['arch'] else self.config['arch']['bias']
 
         if k_reg == 'l1':
             k_regularizer = l1(k_regw)
@@ -104,7 +105,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         input = Input(shape=(idimensions))
         model = Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                              padding=padding, dilation_rate=dilation[0],
+                              padding=padding, dilation_rate=dilation[0], use_bias=bias,
                               kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
         if bnorm:
@@ -115,7 +116,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         for i in range(1, len(filters)):
             model = Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                              padding=padding, dilation_rate=dilation[i],
+                              padding=padding, dilation_rate=dilation[i], use_bias=bias,
                               kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
             if bnorm:

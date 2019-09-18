@@ -27,8 +27,8 @@ except ImportError:
 else:
    _has_pydot = True
 
-from keras.optimizers import RMSprop
-from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
+from keras.optimizers import RMSprop, Adamax
+from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint, ReduceLROnPlateau
 
 try:
     from keras.utils import multi_gpu_model
@@ -79,6 +79,11 @@ class NNArchitecture(Architecture):
                                      save_weights_only=False, mode='auto', period=1)
             cbacks.append(mcheck)
 
+        if 'RLROP' in self.config['training']:
+            rlrop = ReduceLROnPlateau(monitor='val_loss', factor=self.config['training']['RLROP']['factor'],
+                                             patience=self.config['training']['RLROP']['patience'])
+            cbacks.append(rlrop)
+
         if self.runconfig.early:
             patience = self.config['training']['patience'] if 'patience' in self.config['training'] else 5
 
@@ -90,6 +95,11 @@ class NNArchitecture(Architecture):
                 optimizer = RMSprop(lr=self.config['training']['lrate'])
             else:
                 optimizer = RMSprop(lr=0.001)
+ #       elif optimizer == 'adamax':
+ #           if 'lrate' in self.config['training']:
+ #               optimizer = Adamax(lr=self.config['training']['lrate'])
+ #           else:
+ #               optimizer = Adamax()
 
         if 'loss' in self.config['training']:
             if self.config['training']['loss'] in regression_losses:
