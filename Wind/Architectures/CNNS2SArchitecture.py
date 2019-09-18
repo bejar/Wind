@@ -24,6 +24,7 @@ from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Dropout, Conv1D, Flatten, Input, BatchNormalization
 from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
+from Wind.Train.Layers import squeeze_and_excitation
 
 from keras.regularizers import l1, l2
 
@@ -96,6 +97,11 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             bnorm = False
         bias = True if 'bias' not in self.config['arch'] else self.config['arch']['bias']
 
+        if 'squeeze' in self.config['arch']:
+            squeeze = self.config['arch']['squeeze']
+        else:
+            squeeze = None
+
         if k_reg == 'l1':
             k_regularizer = l1(k_regw)
         elif k_reg == 'l2':
@@ -114,6 +120,9 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         if drop != 0:
             model = Dropout(rate=drop)(model)
 
+        if squeeze is not None:
+            model = squeeze_and_excitation(model, ratio=squeeze)
+
         for i in range(1, len(filters)):
             model = Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
                               padding=padding, dilation_rate=dilation[i], use_bias=bias,
@@ -124,6 +133,9 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
             if drop != 0:
                 model = Dropout(rate=drop)(model)
+
+            if squeeze is not None:
+                model = squeeze_and_excitation(model, ratio=squeeze)
 
         model = Flatten()(model)
         for l in full_layers:

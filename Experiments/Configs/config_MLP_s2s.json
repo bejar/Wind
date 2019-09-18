@@ -15,6 +15,7 @@
       "drop": 0.3,
     "activation": ["leaky", 0.2],
       "full": [512,256],
+      "batchnorm":false,
     "mode":"MLP_s2s"
   },
   "training": {
@@ -23,7 +24,6 @@
     "epochs": 200,
     "patience":10,
     "optimizer": "adamax",
-      "lrate": 0.002,
       "RLROP":{"patience":5, "factor":0.5}
   }
 }

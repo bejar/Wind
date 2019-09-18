@@ -24,14 +24,15 @@
       "activation_full":["elu",0.4] ,
       "full": [512,256],
       "fulldrop": 0.2,
-      "padding":"same",
+      "padding":"causal",
       "batchnorm": false,
-      "bias":false,
+      "bias":true,
+      "squeeze":16,
       "mode":"CNN_s2s"
   },
   "training": {
       "iter":1,
-    "batch": 1000,
+    "batch": 1024,
       "epochs": 200,
       "patience":10,
       "optimizer": "adamax",
