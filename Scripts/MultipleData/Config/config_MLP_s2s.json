@@ -8,8 +8,7 @@
     "testsize": 17534,
       "dataset": 1,
       "lag": 12,
-      "ahead": [1,12],
-    "decompose":[0,3]
+      "ahead": [1,12]
   },
   "arch": {
       "drop": 0.3,
