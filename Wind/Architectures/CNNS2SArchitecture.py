@@ -21,7 +21,7 @@ CNNS2SArchitecture
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
-from keras.layers import Dense, Dropout, Conv1D, Flatten, Input
+from keras.layers import Dense, Dropout, Conv1D, Flatten, Input, BatchNormalization
 from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
 
@@ -90,6 +90,12 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         idimensions = self.config['idimensions']
         odimensions = self.config['odimensions']
 
+        if 'batchnorm' in self.config['arch']:
+            bnorm = self.config['arch']['batchnorm']
+        else:
+            bnorm = False
+        bias = True if 'bias' not in self.config['arch'] else self.config['arch']['bias']
+
         if k_reg == 'l1':
             k_regularizer = l1(k_regw)
         elif k_reg == 'l2':
@@ -99,18 +105,22 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         input = Input(shape=(idimensions))
         model = Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                              padding=padding, dilation_rate=dilation[0],
+                              padding=padding, dilation_rate=dilation[0], use_bias=bias,
                               kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
+        if bnorm:
+            model = BatchNormalization()(model)
 
         if drop != 0:
             model = Dropout(rate=drop)(model)
 
         for i in range(1, len(filters)):
             model = Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                              padding=padding, dilation_rate=dilation[i],
+                              padding=padding, dilation_rate=dilation[i], use_bias=bias,
                               kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
+            if bnorm:
+                model = BatchNormalization()(model)
 
             if drop != 0:
                 model = Dropout(rate=drop)(model)
@@ -119,6 +129,9 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         for l in full_layers:
             model= Dense(l)(model)
             model = generate_activation(activationfl)(model)
+            if bnorm:
+                model = BatchNormalization()(model)
+
             if fulldrop != 0:
                 model = Dropout(rate=fulldrop)(model)
 

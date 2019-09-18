@@ -41,6 +41,7 @@ if __name__ == '__main__':
     parser.add_argument('--exp', default=None, required=True, help='Experiment name')
     parser.add_argument('--sample', type=str, required=True, help='Name of the sample')
     parser.add_argument('--nsamp', type=int, default=2000, help='Size of the sample')
+    parser.add_argument('--samptype', type=str, default='normal', help='Name of the sample')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     args = parser.parse_args()
 
@@ -65,11 +66,23 @@ if __name__ == '__main__':
     if sample is not None:
         ssites =  sample['sites']
     else:
-        lsites = np.random.choice(range(126692), args.nsamp, replace=False)
-        lsites = [f'{site // 500}-{site}' for site in lsites]
+        if args.samptype == 'specent':
+            measures = col.find({'experiment': 'measures'})
+            ames = []
+            for m in measures:
+                ames.append((m['result']['SpecEnt'], m['site'])
+            ames = sorted(ames)
+            lsites = []
+            for i in range(10):
+                sites = np.random.choice(range(12669*i, 12669*(i+1)), args.nsamp//10, replace=False)
+                lsites.extend([ames[v][1] for v in sites])              
+        else:
+            lsites = np.random.choice(range(126692), args.nsamp, replace=False)
+            lsites = [f'{site // 500}-{site}' for site in lsites]
         sampleconf = {'sample': 'init', 'sname': args.sample, 'sites': lsites}
         col.insert_one(sampleconf)
         ssites = lsites
+
 
     ids = int(time())
     for i, site in tqdm(enumerate(ssites)):

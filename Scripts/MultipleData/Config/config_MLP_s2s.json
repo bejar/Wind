@@ -7,7 +7,7 @@
     "datasize": 43834,
     "testsize": 17534,
       "dataset": 1,
-      "lag": 18,
+      "lag": 12,
       "ahead": [1,12],
     "decompose":[0,3]
   },
@@ -19,10 +19,10 @@
   },
   "training": {
     "iter":1,
-    "batch": 1024,
+    "batch": 128,
     "epochs": 200,
           "patience":10,
       "optimizer": "adamax",
-    "lrate": 0.001
+      "RLROP":{"patience":5, "factor":0.5}
   }
 }

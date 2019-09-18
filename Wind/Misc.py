@@ -21,6 +21,7 @@ import json
 import numpy as np
 from time import strftime
 from Wind.Config.Paths import wind_jobs_path
+from numpy import cumsum, log, polyfit, sqrt, std, subtract
 
 try:
     from pymongo import MongoClient
@@ -170,6 +171,22 @@ def SampEn(U, m, r):
 
     return -np.log(_phi(m + 1) / _phi(m))
 
+
+def hurst(ts, maxlag=200):
+    """Returns the Hurst Exponent of the time series vector ts"""
+    # Create the range of lag values
+    lags = range(2, maxlag)
+
+    # Calculate the array of the variances of the lagged differences
+    # Here it calculates the variances, but why it uses
+    # standard deviation and then make a root of it?
+    tau = [sqrt(std(subtract(ts[lag:], ts[:-lag]))) for lag in lags]
+
+    # Use a linear fit to estimate the Hurst Exponent
+    poly = polyfit(log(lags), log(tau), 1)
+
+    # Return the Hurst exponent from the polyfit output
+    return poly[0]*2.0
 
 if __name__ == '__main__':
 

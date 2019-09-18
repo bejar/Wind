@@ -62,6 +62,7 @@ from .CNNSeparableS2SArchitecture import CNNSeparableS2SArchitecture
 from .CNNSeparable2LS2SArchitecture import CNNSeparable2LS2SArchitecture
 from .CNNSeparable3LS2SArchitecture import CNNSeparable3LS2SArchitecture
 from .CNNSeparable4LS2SArchitecture import CNNSeparable4LS2SArchitecture
+from .CNNLoCoS2SArchitecture import CNNLoCoS2SArchitecture
 
 __author__ = 'bejar'
 
@@ -79,6 +80,7 @@ __all__ = ['Architecture',
            'CNN2LS2SArchitecture',
            'CNN3LS2SArchitecture',
            'CNN4LS2SArchitecture',
+           'CNNLoCoS2SArchitecture',
            'RNNS2SArchitecture',
            'RNNS2SSelfAttentionArchitecture',
            'RNNEncoderDecoderS2SAttentionArchitecture',

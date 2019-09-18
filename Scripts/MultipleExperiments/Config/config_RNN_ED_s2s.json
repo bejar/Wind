@@ -22,6 +22,7 @@
     "nlayersD": 2,
     "activation": "relu",
     "activation_r": "hard_sigmoid",
+     "activation_full": ["elu",0.4],
     "CuDNN": false,
     "rnn": "GRU",
     "mode": "RNN_ED_s2s"

@@ -84,7 +84,7 @@ def lagged_matrix(data, lag=1, ahead=0, mode=None):
     return np.stack(lvect, axis=1)
 
 
-def apply_SSA_decomposition(var, ncomp, data):
+def apply_SSA_decomposition_one(var, ncomp, data):
     """
     Applies SSA decomposition to one variable of the data
 
@@ -104,7 +104,27 @@ def apply_SSA_decomposition(var, ncomp, data):
     decvar = np.swapaxes(np.stack(ldec), 1, 2)
     return np.concatenate((data[:,:,1:], decvar), axis=2)
 
-def apply_SSA_decomposition2(var, ncomp, data):
+def select_SSA_decomposition_one(ncomp, comp, data):
+    """
+    Applies SSA decomposition to one variable of the data
+
+    :param var:
+    :param ncomp:
+    :param data:
+    :return:
+    """
+    mdec = data[:, :, var]
+    # print(mdec.shape, ncomp)
+    ssa = SSA(ncomp)
+
+    ldec = []
+    for i in range(mdec.shape[0]):
+        ssa.fit(mdec[i])
+        ldec.append(ssa.decomposition())
+    decvar = np.swapaxes(np.stack(ldec), 1, 2)
+    return np.concatenate((data[:,:,1:], decvar), axis=2)
+
+def apply_SSA_decomposition_all(ncomp, data):
     """
     Applies SSA decomposition to one variable of the data
 
@@ -335,7 +355,12 @@ class Dataset:
         train_x = train[:, :lag]
         # Signal decomposition
         if 'decompose' in self.config:
-            train_x = apply_SSA_decomposition(self.config['decompose'][0], self.config['decompose'][1], train_x)
+            components = self.config['decompose']['components']
+            if type(self.config['decompose']['var']) == int:
+                var = self.config['decompose']['var']
+                train_x = apply_SSA_decomposition_one(var, components, train_x)
+            else:
+                train_x = apply_SSA_decomposition_all(components, train_x)
 
 
         #######################################
@@ -369,8 +394,14 @@ class Dataset:
         val_x = test[:half_test, :lag]
         test_x = test[half_test:, :lag]
         if 'decompose' in self.config:
-            val_x= apply_SSA_decomposition(self.config['decompose'][0], self.config['decompose'][1], val_x)
-            test_x= apply_SSA_decomposition(self.config['decompose'][0], self.config['decompose'][1], test_x)
+            components = self.config['decompose']['components']
+            if type(self.config['decompose']['var']) == int:
+                var = self.config['decompose']['var']
+                val_x= apply_SSA_decomposition_one(var, components, val_x)
+                test_x= apply_SSA_decomposition_one(var, components, test_x)
+            else:
+                val_x= apply_SSA_decomposition_all(components, val_x)
+                test_x= apply_SSA_decomposition_all(components, test_x)
 
         ########################################################
         if mode_x == '2D':
