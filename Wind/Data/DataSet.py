@@ -155,7 +155,6 @@ def aggregate_average(data, step):
     :return:
     """
     res = np.zeros((data.shape[0], data.shape[1]//step))
-    print(res.shape)
     for i in range(data.shape[1]//step):
         res[:,i] = np.sum(data[:,i*step:(i+1)*step], axis=1)
     res /= step
@@ -392,7 +391,6 @@ class Dataset:
                 if self.config['aggregate']['method'] == 'average':
                     step = self.config['aggregate']['step']
                     train_y = aggregate_average(train_y,step)
-                    print(step)
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
         elif mode_y == '2D':
             train_y = train[:, -slice:, 0]
@@ -466,7 +464,6 @@ class Dataset:
             val_y = test[:half_test, -slice:, 0]
             test_y = test[half_test:, -slice:, 0]
 
-        print(train_y.shape)
         return train_x, train_y, val_x, val_y, test_x, test_y
 
     def load_raw_data(self, remote=False):

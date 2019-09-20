@@ -466,7 +466,7 @@ def train_sequence2sequence(architecture, config, runconfig):
     #if 'aggregate' in config['data']:
     #    step = config['data']['aggregate']['step']
     #    ahead = [ahead[0], ahead[1]//step]
-    
+
     if 'iter' in config['training']:
         niter = config['training']['iter']
     else:
@@ -484,7 +484,7 @@ def train_sequence2sequence(architecture, config, runconfig):
     dataset = Dataset(config=config['data'], data_path=wind_data_path)
     dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
     train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
-    print(train_y.shape)
+
 
     if type(train_x) != list:
         config['idimensions'] = train_x.shape[1:]
