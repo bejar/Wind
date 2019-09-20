@@ -464,7 +464,7 @@ class Dataset:
             val_y = test[:half_test, -slice:, 0]
             test_y = test[half_test:, -slice:, 0]
 
-        print(train_x.shape)
+        print(train_y.shape)
         return train_x, train_y, val_x, val_y, test_x, test_y
 
     def load_raw_data(self, remote=False):
