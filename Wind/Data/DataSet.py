@@ -146,7 +146,19 @@ def apply_SSA_decomposition_all(ncomp, data):
         dmat.append(decvar)
     return np.concatenate(dmat, axis=2)
 
+def aggregate_average(data, step):
+    """
+    Aggregates a data matrix averaging step columns
 
+    :param data:
+    :param step:
+    :return:
+    """
+    res = np.zeros((data.shape[0], data.shape[1]//step))
+    for i in range(data.shape[1]//step):
+        res[:,i] = np.sum(data[:,i*step:(i+1)*step], axis=1)
+    res /= step
+    return res
 
 class Dataset:
     """
@@ -375,9 +387,17 @@ class Dataset:
 
         if mode_y == '3D':
             train_y = train[:, -slice:, 0]
+            if 'aggregate' in self.config:
+                if self.config['aggregate']['method'] == 'average':
+                    step = self.config['aggregate']['step']
+                    train_y = aggregate_average(train_y,step)
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
         elif mode_y == '2D':
             train_y = train[:, -slice:, 0]
+            if 'aggregate' in self.config:
+                if self.config['aggregate']['method'] == 'average':
+                    step = self.config['aggregate']['step']
+                    train_y = aggregate_average(train_y,step)
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
         elif mode_y == '1D':
             train_y = train[:, -1:, 0]
@@ -417,11 +437,21 @@ class Dataset:
         if mode_y == '3D':
             val_y = test[:half_test, -slice:, 0]
             test_y = test[half_test:, -slice:, 0]
+            if 'aggregate' in self.config:
+                if self.config['aggregate']['method'] == 'average':
+                    step = self.config['aggregate']['step']
+                    val_y = aggregate_average(val_y,step)
+                    test_y = aggregate_average(test_y,step)
             val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
             test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
         elif mode_y == '2D':
             val_y = test[:half_test, -slice:, 0]
             test_y = test[half_test:, -slice:, 0]
+            if 'aggregate' in self.config:
+                if self.config['aggregate']['method'] == 'average':
+                    step = self.config['aggregate']['step']
+                    val_y = aggregate_average(val_y,step)
+                    test_y = aggregate_average(test_y,step)
             val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1]))
             test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
         elif mode_y == '1D':
@@ -760,29 +790,26 @@ if __name__ == '__main__':
     # config = load_config_file(f"../TestConfigs/{cfile}.json")
     config = {
 
-         "datanames": ["10-5308-12"],
+         "datanames": ["155-77651-01"],
          "scaler": "standard",
          "vars": "all",
-         "dmatrix": "future",
-         "varsf": [1],
          "datasize": 43834,
          "testsize": 17534,
          "dataset": 1,
-         "lag": 12,
-        "decompose":[0, 5],
-         "ahead": [1, 12]
-
+         "lag": 72,
+        "aggregate":{"method":"average", "step":12},
+         "ahead": [1, 144]
      }
 
     # print(config)
-    mode = ('3D', '3D')
+    mode = ('2D', '2D')
     dataset = Dataset(config=config, data_path=wind_data_path)
 
     # dataset.load_raw_data()
     #
     # print(dataset.compute_measures(window={'12h':12, '24h':24, '1w':168, '1m':720, '3m':2190, '6m':4380}))
 
-    dataset.generate_dataset(ahead=[1, 12], mode=mode)
+    dataset.generate_dataset(ahead=[1, 144], mode=mode)
     dataset.summary()
     #
     # dm = dataset.get_data_matrices()

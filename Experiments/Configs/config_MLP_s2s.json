@@ -22,7 +22,7 @@
     "iter":1,
     "batch": 128,
     "epochs": 200,
-    "patience":10,
+      "patience":10,
     "optimizer": "adamax",
       "RLROP":{"patience":5, "factor":0.5}
   }
