@@ -58,7 +58,7 @@ class NNS2SArchitecture(NNArchitecture):
             iahead = 1
             ahead = self.config['data']['ahead']
 
-        if 'aggregate' in self.onfig['data']:
+        if 'aggregate' in self.config['data']:
             step = self.config['data']['aggregate']['step']
             ahead //= step
 
