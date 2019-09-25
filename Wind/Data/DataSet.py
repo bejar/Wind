@@ -365,6 +365,13 @@ class Dataset:
         # Train
         train = lagged_matrix(wind_train, lag=lag, ahead=ahead, mode=mode)
         train_x = train[:, :lag]
+
+        if 'aggregate' in self.config:
+            if 'x' in self.config['aggregate']['what']:
+                if self.config['aggregate']['method'] == 'average':
+                    step = self.config['aggregate']['step']
+                    train_x = aggregate_average(train_x, step)
+
         # Signal decomposition
         if 'decompose' in self.config:
             components = self.config['decompose']['components']
@@ -388,16 +395,18 @@ class Dataset:
         if mode_y == '3D':
             train_y = train[:, -slice:, 0]
             if 'aggregate' in self.config:
-                if self.config['aggregate']['method'] == 'average':
-                    step = self.config['aggregate']['step']
-                    train_y = aggregate_average(train_y,step)
+                if 'y' in self.config['aggregate']['what']:
+                    if self.config['aggregate']['method'] == 'average':
+                        step = self.config['aggregate']['step']
+                        train_y = aggregate_average(train_y,step)
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
         elif mode_y == '2D':
             train_y = train[:, -slice:, 0]
             if 'aggregate' in self.config:
-                if self.config['aggregate']['method'] == 'average':
-                    step = self.config['aggregate']['step']
-                    train_y = aggregate_average(train_y,step)
+                if 'y' in self.config['aggregate']['what']:
+                    if self.config['aggregate']['method'] == 'average':
+                        step = self.config['aggregate']['step']
+                        train_y = aggregate_average(train_y,step)
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
         elif mode_y == '1D':
             train_y = train[:, -1:, 0]
@@ -413,6 +422,14 @@ class Dataset:
         half_test = int(test.shape[0] / 2)
         val_x = test[:half_test, :lag]
         test_x = test[half_test:, :lag]
+
+        if 'aggregate' in self.config:
+            if 'x' in self.config['aggregate']['what']:
+                if self.config['aggregate']['method'] == 'average':
+                    step = self.config['aggregate']['step']
+                    val_x = aggregate_average(val_x, step)
+                    test_x = aggregate_average(val_x, step)
+
         if 'decompose' in self.config:
             components = self.config['decompose']['components']
             if type(self.config['decompose']['var']) == int:
@@ -438,20 +455,22 @@ class Dataset:
             val_y = test[:half_test, -slice:, 0]
             test_y = test[half_test:, -slice:, 0]
             if 'aggregate' in self.config:
-                if self.config['aggregate']['method'] == 'average':
-                    step = self.config['aggregate']['step']
-                    val_y = aggregate_average(val_y,step)
-                    test_y = aggregate_average(test_y,step)
+                if 'y' in self.config['aggregate']['what']:
+                    if self.config['aggregate']['method'] == 'average':
+                        step = self.config['aggregate']['step']
+                        val_y = aggregate_average(val_y,step)
+                        test_y = aggregate_average(test_y,step)
             val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
             test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
         elif mode_y == '2D':
             val_y = test[:half_test, -slice:, 0]
             test_y = test[half_test:, -slice:, 0]
             if 'aggregate' in self.config:
-                if self.config['aggregate']['method'] == 'average':
-                    step = self.config['aggregate']['step']
-                    val_y = aggregate_average(val_y,step)
-                    test_y = aggregate_average(test_y,step)
+                 if 'y' in self.config['aggregate']['what']:
+                    if self.config['aggregate']['method'] == 'average':
+                        step = self.config['aggregate']['step']
+                        val_y = aggregate_average(val_y,step)
+                        test_y = aggregate_average(test_y,step)
             val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1]))
             test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
         elif mode_y == '1D':
