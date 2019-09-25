@@ -443,7 +443,7 @@ class Dataset:
                 if self.config['aggregate']['method'] == 'average':
                     step = self.config['aggregate']['step']
                     val_x = aggregate_average_all(val_x, step)
-                    test_x = aggregate_average_all(val_x, step)
+                    test_x = aggregate_average_all(test_x, step)
 
         if 'decompose' in self.config:
             components = self.config['decompose']['components']
