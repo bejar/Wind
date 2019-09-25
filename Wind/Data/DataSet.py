@@ -160,6 +160,21 @@ def aggregate_average(data, step):
     res /= step
     return res
 
+def aggregate_average_all(data, step):
+    """
+    Aggregates a data matrix averaging step columns for all the variables
+
+    :param data:
+    :param step:
+    :return:
+    """
+    res = np.zeros((data.shape[0], data.shape[1]//step, data.shape[2]))
+    for j in range(data.shape[2]):
+        for i in range(data.shape[1]//step):
+            res[:,i,j] = np.sum(data[:,i*step:(i+1)*step,j], axis=1)
+    res /= step
+    return res
+
 class Dataset:
     """
     Class to generate the data matrices (train, validation and test)
@@ -370,7 +385,7 @@ class Dataset:
             if 'x' in self.config['aggregate']['what']:
                 if self.config['aggregate']['method'] == 'average':
                     step = self.config['aggregate']['step']
-                    train_x = aggregate_average(train_x, step)
+                    train_x = aggregate_average_all(train_x, step)
 
         # Signal decomposition
         if 'decompose' in self.config:
@@ -427,8 +442,8 @@ class Dataset:
             if 'x' in self.config['aggregate']['what']:
                 if self.config['aggregate']['method'] == 'average':
                     step = self.config['aggregate']['step']
-                    val_x = aggregate_average(val_x, step)
-                    test_x = aggregate_average(val_x, step)
+                    val_x = aggregate_average_all(val_x, step)
+                    test_x = aggregate_average_all(val_x, step)
 
         if 'decompose' in self.config:
             components = self.config['decompose']['components']
