@@ -21,6 +21,7 @@ from keras.models import Sequential, load_model, Model
 from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector, Dropout, Input
 from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
+from Wind.Train.Layers import generate_recurrent_layer
 
 
 try:
@@ -64,6 +65,7 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
             "nlayersD": 1,
             "activation": "relu",
             "activation_r": "hard_sigmoid",
+            "bidirectiolal":[false, false] <- bidirectional [encoder, decoder]
             "CuDNN": false,
             "rnn": "GRU",
             "mode": "RNN_ED_s2s"
@@ -85,6 +87,23 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
         k_regw = self.config['arch']['k_regw']
         rnntype = self.config['arch']['rnn']
         CuDNN = self.config['arch']['CuDNN']
+
+        if "bidirectional" in self.config['arch']:
+            bidire = self.config['arch']['bidirectional'][0]
+            bidird = self.config['arch']['bidirectional'][1]
+            bimerge = self.config['arch']['bimerge']
+
+        if 'backwards' in self.config['arch']:
+            backwards = self.config['arch']['backwards']
+        else:
+            backwards = False
+
+        # GRU parameter for alternative implementation
+        if 'after' in self.config['arch']:
+            after = self.config['arch']['after']
+        else:
+            after = False
+
         if 'full' in self.config['arch']:
             full = self.config['arch']['full']
             fulldrop = self.config['arch']['fulldrop']
@@ -110,45 +129,56 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
         else:
             k_regularizer = None
 
-
-        RNN = LSTM if rnntype == 'LSTM' else GRU
-
+        # RNN = LSTM if rnntype == 'LSTM' else GRU
 
         input = Input(shape=(idimensions))
 
         if nlayersE == 1:
-            model = RNN(neuronsE, input_shape=(idimensions), implementation=impl,
-                               recurrent_dropout=drop, recurrent_activation=activation_r,
-                               recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)(input)
+
+            model = generate_recurrent_layer(neuronsE, impl, drop, activation_r, rec_regularizer, k_regularizer, backwards,
+                             rnntype, after, bidire, bimerge, rseq=False)(input)
+
+            # model = RNN(neuronsE, input_shape=(idimensions), implementation=impl,
+            #                    recurrent_dropout=drop, recurrent_activation=activation_r,
+            #                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)(input)
             model = generate_activation(activation)(model)
 
         else:
-            model = RNN(neuronsE, input_shape=(idimensions), implementation=impl,
-                               recurrent_dropout=drop, recurrent_activation=activation_r,
-                               return_sequences=True, recurrent_regularizer=rec_regularizer,
-                               kernel_regularizer=k_regularizer)(input)
+            model = generate_recurrent_layer(neuronsE, impl, drop, activation_r, rec_regularizer, k_regularizer, backwards,
+                             rnntype, after, bidire, bimerge, rseq=True)(input)
+            # model = RNN(neuronsE, input_shape=(idimensions), implementation=impl,
+            #                    recurrent_dropout=drop, recurrent_activation=activation_r,
+            #                    return_sequences=True, recurrent_regularizer=rec_regularizer,
+            #                    kernel_regularizer=k_regularizer)(input)
             model = generate_activation(activation)(model)
 
             for i in range(1, nlayersE - 1):
-                model = RNN(neuronsE, recurrent_dropout=drop, implementation=impl,
-                                   recurrent_activation=activation_r, return_sequences=True,
-                                   recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)(model)
+                model = generate_recurrent_layer(neuronsE, impl, drop, activation_r, rec_regularizer, k_regularizer, backwards,
+                             rnntype, after, bidire, bimerge, rseq=True)(model)
+
+                # model = RNN(neuronsE, recurrent_dropout=drop, implementation=impl,
+                #                    recurrent_activation=activation_r, return_sequences=True,
+                #                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)(model)
                 model = generate_activation(activation)(model)
 
+            model = generate_recurrent_layer(neuronsE, impl, drop, activation_r, rec_regularizer, k_regularizer, backwards,
+                             rnntype, after, bidire, bimerge, rseq=False)(model)
 
-            model = RNN(neuronsE, recurrent_dropout=drop,
-                               recurrent_activation=activation_r, implementation=impl,
-                               recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)(model)
+            # model = RNN(neuronsE, recurrent_dropout=drop,
+            #                    recurrent_activation=activation_r, implementation=impl,
+            #                    recurrent_regularizer=rec_regularizer, kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
 
         model = RepeatVector(odimensions)(model)
 
 
         for i in range(nlayersD):
-            model = RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
-                               recurrent_activation=activation_r,
-                               return_sequences=True, recurrent_regularizer=rec_regularizer,
-                               kernel_regularizer=k_regularizer)(model)
+            model = generate_recurrent_layer(neuronsD, impl, drop, activation_r, rec_regularizer, k_regularizer, backwards,
+                             rnntype, after, bidird, bimerge, rseq=True)(model)
+            # model = RNN(neuronsD, recurrent_dropout=drop, implementation=impl,
+            #                    recurrent_activation=activation_r,
+            #                    return_sequences=True, recurrent_regularizer=rec_regularizer,
+            #                    kernel_regularizer=k_regularizer)(model)
 
             model = generate_activation(activation)(model)
 
@@ -157,7 +187,6 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
             model = TimeDistributed(Dense(units=units))(model)
             model = TimeDistributed(generate_activation(activation_full))(model)
             model = TimeDistributed(Dropout(rate=fulldrop))(model)
-
 
         output = TimeDistributed(Dense(1))(model)
         self.model = Model(inputs=input, outputs=output)

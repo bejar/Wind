@@ -106,7 +106,7 @@ def change_config(config, param, sites):
         for sec in param:
             for p in param[sec]:
                 conf[sec][p] = param[sec][p]
-        conf['data']['datanames'] = [f'{s}-12']
+        conf['data']['datanames'] = [f'{s}-{args.ext:02d}']
         conf['site'] = s
         lconf.append(conf)
     return lconf
@@ -673,6 +673,8 @@ if __name__ == '__main__':
     parser.add_argument('--equalize', action='store_true', default=False, help='Equalize the number of experiments for the top npar configurations')
     parser.add_argument('--nbatches', type=int, default=1,
                         help='Number of batches of sites for new configurations or intensification')
+    parser.add_argument('--ext', type=int, default=12,
+                        help='Extension of the datafiles')
 
     args = parser.parse_args()
 

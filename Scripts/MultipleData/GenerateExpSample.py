@@ -44,6 +44,7 @@ if __name__ == '__main__':
     parser.add_argument('--nsamp', type=int, default=2000, help='Size of the sample')
     parser.add_argument('--samptype', type=str, default='normal', help='Name of the sample')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
+    parser.add_argument('--res', default=12, type=int, help='File names resolution extension')
     args = parser.parse_args()
 
     config = load_config_file(args.config)
@@ -78,7 +79,7 @@ if __name__ == '__main__':
 
     ids = int(time())
     for i, site in tqdm(enumerate(ssites)):
-        config['data']['datanames'] = [f'{site}-12']
+        config['data']['datanames'] = [f'{site}-{args.res:02d}']
         site = config['data']['datanames'][0].split('-')
         config['site'] = '-'.join(site[:2])
         config['status'] = 'pending'
