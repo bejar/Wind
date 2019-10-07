@@ -123,7 +123,7 @@ class NNArchitecture(Architecture):
             pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
                        verbose=self.runconfig.verbose, callbacks=cbacks)
 
-    def evaluate(self, val_x, val_y, test_x, test_y):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None):
         """
         Evaluates a trained model, loads the best if it is configured to do so
         Computes the R² for validation and test
@@ -141,7 +141,7 @@ class NNArchitecture(Architecture):
 
         val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
         test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
-        return ErrorMeasure().compute_errors(val_y, val_yp, test_y, test_yp)
+        return ErrorMeasure().compute_errors(val_y, val_yp, test_y, test_yp, scaler=scaler)
 
 
     def save(self, postfix):

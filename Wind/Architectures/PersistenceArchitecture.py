@@ -65,7 +65,7 @@ class PersistenceArchitecture(Architecture):
                 print(f"# {c} = {self.config['training'][c]}")
             print("---------------------------------------")
 
-    def evaluate(self, val_x, val_y, test_x, test_y):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None):
         """
         Evaluates the training
         :return:
@@ -78,11 +78,6 @@ class PersistenceArchitecture(Architecture):
 
         lresults = []
         for i in range(1, ahead + 1):
-            # lresults.append((i,
-            #                  r2_score(val_x[:, -1] , val_y[:, i - 1]),
-            #                  r2_score(test_x[:, -1] , test_y[:, i - 1])
-            #                  ))
-            #
             lresults.append([i]  + ErrorMeasure().compute_errors(val_x[:, -1],
                                                                  val_y[:, i - 1],
                                                                  test_x[:, -1],

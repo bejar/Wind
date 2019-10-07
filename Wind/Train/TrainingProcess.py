@@ -516,7 +516,10 @@ def train_sequence2sequence(architecture, config, runconfig):
         ############################################
         # Results
 
-        lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
+        if 'descale' in config['training'] and config['training']['descale']:
+            lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y,scaler=dataset.scaler))
+        else:
+            lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 

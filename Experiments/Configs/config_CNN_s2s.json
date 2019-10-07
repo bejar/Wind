@@ -21,13 +21,12 @@
     "rec_regw": 0.1,
       "drop": 0.3,
       "activation": ["elu",0.4],
+      "fulltype": "mlp",
       "activation_full":["elu",0.4] ,
       "full": [512,256],
       "fulldrop": 0.2,
       "padding":"causal",
       "batchnorm": false,
-      "bias":false,
-      "squeeze":16,
       "mode":"CNN_s2s"
   },
   "training": {

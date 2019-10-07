@@ -31,7 +31,7 @@ class NNS2SArchitecture(NNArchitecture):
     Class for all the neural networks models based on sequence to sequence
 
     """
-    def evaluate(self, val_x, val_y, test_x, test_y):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None):
         """
         Evaluates the trained model with validation and test
 
@@ -66,7 +66,8 @@ class NNS2SArchitecture(NNArchitecture):
 
         for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
             lresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
-                                                               val_yp[:, i - 1],
-                                                               test_y[:, i - 1],
-                                                               test_yp[:, i - 1]))
+                                                                val_yp[:, i - 1],
+                                                                test_y[:, i - 1],
+                                                                test_yp[:, i - 1],
+                                                                scaler=scaler))
         return lresults

@@ -187,7 +187,7 @@ class RNNS2SSelfAttentionArchitecture(NNS2SArchitecture):
         self.model = Model(inputs=input, outputs=output)
         # self.model = Model(inputs=input, outputs=reg)
 
-    def evaluate(self, val_x, val_y, test_x, test_y):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None):
         """
         Evaluates the trained model with validation and test
         this function uses a custom object
@@ -222,7 +222,7 @@ class RNNS2SSelfAttentionArchitecture(NNS2SArchitecture):
             lresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
                                                                val_yp[:, i - 1],
                                                                test_y[:, i - 1],
-                                                               test_yp[:, i - 1]))
+                                                               test_yp[:, i - 1],scaler=scaler))
         return lresults
 
 

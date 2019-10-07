@@ -32,7 +32,7 @@ __author__ = 'bejar'
 
 class CNNS2S2DArchitecture(NNS2SArchitecture):
     """
-    Class for convolutional sequence to sequence architecture
+    Class for convolutional sequence to sequence architecture with 2D convolutions
 
     """
     modfile = None

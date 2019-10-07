@@ -21,7 +21,7 @@ CNNS2SArchitecture
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
-from keras.layers import Dense, Dropout, Conv1D, Flatten, Input, BatchNormalization
+from keras.layers import Dense, Dropout, Conv1D, Flatten, Input, BatchNormalization, GlobalAveragePooling1D
 from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
 from Wind.Train.Layers import squeeze_and_excitation
@@ -57,9 +57,14 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             "rec_regw": 0.1,
             "drop": 0,
             "activation": "relu",
+            "squeeze":ratio,
+            "padding":"causal/same/valid",
+            "bias": true/false,
+            "batchnorm":true/false,
             "activation_full": "linear",
             "full": [16,8],
             "fulldrop": 0,
+            "fulltype": "mlp/conv"
             "mode":"CNN_s2s"
         }
 
@@ -78,9 +83,6 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         else:
             strides = self.config['arch']['strides']
             dilation = [1] * len(strides)
-        activationfl = self.config['arch']['activation_full']
-        fulldrop = self.config['arch']['fulldrop']
-        full_layers = self.config['arch']['full']
 
         activation = self.config['arch']['activation']
 
@@ -137,17 +139,38 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             if squeeze is not None:
                 model = squeeze_and_excitation(model, ratio=squeeze)
 
-        model = Flatten()(model)
-        for l in full_layers:
-            model= Dense(l)(model)
-            model = generate_activation(activationfl)(model)
-            if bnorm:
-                model = BatchNormalization()(model)
+        if self.config['arch']['fulltype'] == 'mlp':
+            # MLP output, full/fulldrop/activation are used to build a MLP with a final layer that is linear with odimensions
+            activationfl = self.config['arch']['activation_full']
+            fulldrop = self.config['arch']['fulldrop']
+            full_layers = self.config['arch']['full']
+            model = Flatten()(model)
 
+            for l in full_layers:
+                model= Dense(l)(model)
+                model = generate_activation(activationfl)(model)
+                if bnorm:
+                    model = BatchNormalization()(model)
+
+                if fulldrop != 0:
+                    model = Dropout(rate=fulldrop)(model)
+
+            output = Dense(odimensions, activation='linear')(model)
+        elif self.config['arch']['fulltype'] == 'conv': # "conv"
+            # Fully convolutional output, size 1 stride 1 convolution with odimensions filters
+            activationfl = self.config['arch']['activation_full']
+            fulldrop = self.config['arch']['fulldrop']
+            model = Conv1D(odimensions, kernel_size=1, strides=1)(model)
+            model = generate_activation(activationfl)(model)
             if fulldrop != 0:
                 model = Dropout(rate=fulldrop)(model)
+            model = Flatten()(model)
+            # model = GlobalAveragePooling1D()(model)
+            output = Dense(odimensions, activation='linear')(model)
+        else:
+            model = Flatten()(model)
+            output = Dense(odimensions, activation='linear')(model)
 
-        output = Dense(odimensions, activation='linear')(model)
 
         self.model = Model(inputs=input, outputs=output)
 

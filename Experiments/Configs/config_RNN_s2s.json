@@ -21,7 +21,7 @@
     "activation": "linear",
     "activation_r": "hard_sigmoid",
     "CuDNN": false,
-    "bidirectional": true,
+    "bidirectional": false,
     "bimerge":"ave",
       "rnn": "GRU",
       "after":false,

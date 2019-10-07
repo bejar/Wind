@@ -206,6 +206,7 @@ class Dataset:
                     'manysitemanyvarstackneigh']
     generated = False
     raw_data = None
+    scaler = None # Scaler object so data can be rescaled after training
 
     def __init__(self, config, data_path):
         """
@@ -265,7 +266,10 @@ class Dataset:
         """
         if 'scaler' in self.config and self.config['scaler'] in self.scalers:
             scaler = self.scalers[self.config['scaler']]
-            data = scaler.fit_transform(data)
+            tmpdata = scaler.fit_transform(data)
+            self.scaler = scaler.fit(data[:, 0].reshape(-1, 1))  # saves the scaler for the first variable for descaling
+            data = tmpdata
+
         #else:
         #    scaler = StandardScaler()
         #    data = scaler.fit_transform(data)
@@ -360,7 +364,9 @@ class Dataset:
         """
         if 'scaler' in self.config and self.config['scaler'] in self.scalers:
             scaler = self.scalers[self.config['scaler']]
-            data = scaler.fit_transform(data)
+            tmpdata = scaler.fit_transform(data)
+            self.scaler = scaler.fit(data[:, 0].reshape(-1, 1))  # saves the scaler for the first variable for descaling
+            data = tmpdata
         #else:
         #    scaler = StandardScaler()
         #    data = scaler.fit_transform(data)

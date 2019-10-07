@@ -88,7 +88,7 @@ class ErrorMeasure:
 
 
 
-    def compute_errors(self, val_y, val_yp, test_y, test_yp):
+    def compute_errors(self, val_y, val_yp, test_y, test_yp, scaler=None):
         """
 
         :param val_x:
@@ -100,9 +100,15 @@ class ErrorMeasure:
 
         lerr = []
 
-        for f in self.error_func:
-            lerr.append(f(val_y,val_yp))
-            lerr.append(f(test_y, test_yp))
+
+        if scaler is not None:
+            for f in self.error_func:
+                lerr.append(f(scaler.inverse_transform(val_y.reshape(-1, 1)),scaler.inverse_transform(val_yp.reshape(-1, 1))))
+                lerr.append(f(scaler.inverse_transform(test_y.reshape(-1, 1)), scaler.inverse_transform(test_yp.reshape(-1, 1))))
+        else:
+            for f in self.error_func:
+                lerr.append(f(val_y, val_yp))
+                lerr.append(f(test_y, test_yp))
 
         return lerr
 
