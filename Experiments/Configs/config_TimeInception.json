@@ -12,18 +12,19 @@
     "ahead": [1,12]
   },
   "arch": {
-      "filters": 32,
+      "filters": 128,
       "strides": [1],
-      "kernel_size": [3,5],
+      "kernel_size": [3,5,7],
       "dilation": false,
-      "residual": false,
-      "bottleneck": false,
+      "residual": true,
+      "bottleneck": true,
+      "padding":"same",
       "depth": 1,
-      "drop": 0.1,
-      "activation": "relu",
-      "activation_full": "linear",
-      "fulldrop": 0.1,
-      "full": [16,8],
+      "drop": 0.3,
+      "activation": ["elu",0.4],
+      "activation_full": ["elu",0.4],
+      "fulldrop": 0.2,
+      "full": [512,256],
       "mode":"TimeInception"
   },
   "training": {

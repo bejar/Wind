@@ -102,10 +102,10 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         for d in range(depth):
 
-            x = self._inception_module(x, filters, kernel_size, activation, bottle)
+            x = self.inception_module(x, filters, kernel_size, activation, bottle,padding, drop)
 
             if residual and d % 3 == 2:
-                x = self.shortcut_layer(input_res, x)
+                x = self.shortcut_layer(input_res, x, padding)
                 input_res = x
 
         gap_layer = GlobalAveragePooling1D()(x)
@@ -129,11 +129,11 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         self.model = Model(inputs=input, outputs=output)
 
-    def _inception_module(self, input_tensor, filters, kernel_size, activation, bottleneck, stride=1):
+    def inception_module(self, input_tensor, filters, kernel_size, activation, bottleneck, padding, drop, stride=1):
 
         if bottleneck and int(input_tensor.shape[-1]) > 1:
             input_inception = Conv1D(filters=self.bottleneck_size, kernel_size=1,
-                                     padding='same', activation=activation, use_bias=False)(input_tensor)
+                                     padding=padding, activation=activation, use_bias=False)(input_tensor)
             input_inception = generate_activation(activation)(input_inception)
         else:
             input_inception = input_tensor
@@ -142,14 +142,17 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         for i in range(len(kernel_size)):
             layer = Conv1D(filters=filters, kernel_size=kernel_size[i],
-                                    strides=stride, padding='same',
+                                    strides=stride, padding=padding,
                                     use_bias=False)(input_inception)
+            layer = generate_activation(activation)(layer)
+            if drop != 0:
+                layer = Dropout(rate=drop)(layer)
             conv_list.append(generate_activation(activation)(layer))
 
-        max_pool_1 = MaxPool1D(pool_size=3, strides=stride, padding='same')(input_tensor)
+        max_pool_1 = MaxPool1D(pool_size=3, strides=stride, padding=padding)(input_tensor)
 
         conv_6 = Conv1D(filters=filters, kernel_size=1,
-                        padding='same', activation=activation, use_bias=False)(max_pool_1)
+                        padding=padding, use_bias=False)(max_pool_1)
         conv6 = generate_activation(activation)(conv_6)
 
         conv_list.append(conv_6)
@@ -159,9 +162,9 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
         x = generate_activation(activation)(x)
         return x
 
-    def _shortcut_layer(self, input_tensor, out_tensor):
+    def shortcut_layer(self, input_tensor, out_tensor,padding):
         shortcut_y = Conv1D(filters=int(out_tensor.shape[-1]), kernel_size=1,
-                            padding='same', use_bias=False)(input_tensor)
+                            padding=padding, use_bias=False)(input_tensor)
         shortcut_y = BatchNormalization()(shortcut_y)
 
         x = Add()([shortcut_y, out_tensor])
