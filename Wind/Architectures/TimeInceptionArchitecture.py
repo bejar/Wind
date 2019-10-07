@@ -83,6 +83,7 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         residual = self.config['arch']['residual']
         bottle = self.config['arch']['bottleneck']
+        bsize = self.config['arch']['bottleneck_size']
         depth = self.config['arch']['depth']
 
         # Extra added from training function
@@ -102,7 +103,7 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         for d in range(depth):
 
-            x = self.inception_module(x, filters, kernel_size, activation, bottle,padding, drop)
+            x = self.inception_module(x, filters, kernel_size, activation, bottle, bsize,padding, drop)
 
             if residual and d % 3 == 2:
                 x = self.shortcut_layer(input_res, x, padding)
@@ -129,11 +130,11 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         self.model = Model(inputs=input, outputs=output)
 
-    def inception_module(self, input_tensor, filters, kernel_size, activation, bottleneck, padding, drop, stride=1):
+    def inception_module(self, input_tensor, filters, kernel_size, activation, bottleneck, bottleneck_size,padding, drop, stride=1):
 
         if bottleneck and int(input_tensor.shape[-1]) > 1:
-            input_inception = Conv1D(filters=self.bottleneck_size, kernel_size=1,
-                                     padding=padding, activation=activation, use_bias=False)(input_tensor)
+            input_inception = Conv1D(filters=bottleneck_size, kernel_size=1,
+                                     padding=padding, use_bias=False)(input_tensor)
             input_inception = generate_activation(activation)(input_inception)
         else:
             input_inception = input_tensor

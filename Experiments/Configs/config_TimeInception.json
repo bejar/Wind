@@ -18,6 +18,7 @@
       "dilation": false,
       "residual": true,
       "bottleneck": true,
+      "bottleneck_size": 4,
       "padding":"same",
       "depth": 1,
       "drop": 0.3,
