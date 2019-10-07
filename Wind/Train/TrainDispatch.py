@@ -39,6 +39,7 @@ from Wind.Architectures import KNNDirRegressionArchitecture, RandomForestDirRegr
     AdaBoostDirRegressionArchitecture, KNNS2SArchitecture, ElasticNetS2SArchitecture, XGBoostDirRegressionArchitecture, \
     RandomForestS2SArchitecture, ExtraTreesS2SArchitecture
 
+from Wind.Architectures import TimeInceptionArchitecture
 
 
 class TrainDispatch:
@@ -113,6 +114,8 @@ class TrainDispatch:
         self.model_dict['CNN_s2s_gb'] = (train_gradient_boosting_sequence2sequence, CNNS2SArchitecture)
 
         self.model_dict['CNN_LC_s2s'] = (train_sequence2sequence, CNNLoCoS2SArchitecture)
+
+        self.model_dict['TimeInception'] = (train_sequence2sequence, TimeInceptionArchitecture)
 
     def dispatch(self, mode):
         """

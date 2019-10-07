@@ -22,7 +22,6 @@ CNNS2SArchitecture
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Dropout, Conv1D, Flatten, Input, BatchNormalization, GlobalAveragePooling1D
-from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
 from Wind.Train.Layers import squeeze_and_excitation
 
