@@ -106,7 +106,7 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
             x = self.inception_module(x, filters, kernel_size, activation, bottle, bsize,padding, drop)
 
             if residual and d % 3 == 2:
-                x = self.shortcut_layer(input_res, x, padding)
+                x = self.shortcut_layer(input_res, x, padding, activation)
                 input_res = x
 
         gap_layer = GlobalAveragePooling1D()(x)
@@ -163,7 +163,7 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
         x = generate_activation(activation)(x)
         return x
 
-    def shortcut_layer(self, input_tensor, out_tensor,padding):
+    def shortcut_layer(self, input_tensor, out_tensor,padding, activation):
         shortcut_y = Conv1D(filters=int(out_tensor.shape[-1]), kernel_size=1,
                             padding=padding, use_bias=False)(input_tensor)
         shortcut_y = BatchNormalization()(shortcut_y)
