@@ -139,9 +139,9 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         if bottleneck and int(input_tensor.shape[-1]) > 1:
             if separable:
-                layer = SeparableConv1D(filters=filters, kernel_size=1,
+                input_inception = SeparableConv1D(filters=filters, kernel_size=1,
                                         strides=stride, padding=padding,
-                                        use_bias=bias,depth_multiplier=depth_mul)(input_inception)
+                                        use_bias=bias,depth_multiplier=depth_mul)(input_tensor)
             else:
                 input_inception = Conv1D(filters=bottleneck_size, kernel_size=1,
                                          padding=padding, use_bias=bias)(input_tensor)
