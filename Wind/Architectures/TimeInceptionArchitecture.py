@@ -24,7 +24,7 @@ https://github.com/hfawaz/InceptionTime
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Dropout, Conv1D, Flatten, Input, BatchNormalization, \
-    GlobalAveragePooling1D, Concatenate, MaxPool1D, Add
+    GlobalAveragePooling1D, Concatenate, MaxPool1D, Add, SeparableConv1D
 from Wind.Train.Activations import generate_activation
 
 __author__ = 'bejar'
@@ -94,7 +94,11 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
             bnorm = self.config['arch']['batchnorm']
         else:
             bnorm = False
+
         bias = True if 'bias' not in self.config['arch'] else self.config['arch']['bias']
+        separable = False if 'separable' not in self.config['arch'] else self.config['arch']['separable']
+        depth_multiplier = 1 if 'depth_multiplier' not in self.config['arch']  else self.config['arch']['depth_multiplier']
+
 
         input = Input(shape=(idimensions))
 
@@ -103,7 +107,7 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         for d in range(depth):
 
-            x = self.inception_module(x, filters, kernel_size, activation, bottle, bsize,padding, drop, bnorm)
+            x = self.inception_module(x, filters, kernel_size, activation, bottle, bsize,padding, drop, bnorm, bias, separable, depth_multiplier)
 
             if residual and d % 3 == 2:
                 x = self.shortcut_layer(input_res, x, padding, activation, bnorm)
@@ -130,11 +134,12 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         self.model = Model(inputs=input, outputs=output)
 
-    def inception_module(self, input_tensor, filters, kernel_size, activation, bottleneck, bottleneck_size,padding, drop, bnorm, stride=1):
+    def inception_module(self, input_tensor, filters, kernel_size, activation, bottleneck, bottleneck_size,padding,
+                         drop, bnorm, bias, separable,depth_mul, stride=1):
 
         if bottleneck and int(input_tensor.shape[-1]) > 1:
             input_inception = Conv1D(filters=bottleneck_size, kernel_size=1,
-                                     padding=padding, use_bias=False)(input_tensor)
+                                     padding=padding, use_bias=bias)(input_tensor)
             input_inception = generate_activation(activation)(input_inception)
         else:
             input_inception = input_tensor
@@ -142,9 +147,15 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
         conv_list = []
 
         for i in range(len(kernel_size)):
-            layer = Conv1D(filters=filters, kernel_size=kernel_size[i],
-                                    strides=stride, padding=padding,
-                                    use_bias=False)(input_inception)
+            if separable:
+                layer = SeparableConv1Dfilters=filters, kernel_size=kernel_size[i],
+                                        strides=stride, padding=padding,
+                                        use_bias=bias,depth_multiplier=depth_mul)(input_inception)
+            else:
+                layer = Conv1D(filters=filters, kernel_size=kernel_size[i],
+                                        strides=stride, padding=padding,
+                                        use_bias=bias)(input_inception)
+
             layer = generate_activation(activation)(layer)
             if drop != 0:
                 layer = Dropout(rate=drop)(layer)
