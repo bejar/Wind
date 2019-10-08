@@ -103,10 +103,10 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         for d in range(depth):
 
-            x = self.inception_module(x, filters, kernel_size, activation, bottle, bsize,padding, drop)
+            x = self.inception_module(x, filters, kernel_size, activation, bottle, bsize,padding, drop, bnorm)
 
             if residual and d % 3 == 2:
-                x = self.shortcut_layer(input_res, x, padding, activation)
+                x = self.shortcut_layer(input_res, x, padding, activation, bnorm)
                 input_res = x
 
         gap_layer = GlobalAveragePooling1D()(x)
@@ -130,7 +130,7 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         self.model = Model(inputs=input, outputs=output)
 
-    def inception_module(self, input_tensor, filters, kernel_size, activation, bottleneck, bottleneck_size,padding, drop, stride=1):
+    def inception_module(self, input_tensor, filters, kernel_size, activation, bottleneck, bottleneck_size,padding, drop, bnorm, stride=1):
 
         if bottleneck and int(input_tensor.shape[-1]) > 1:
             input_inception = Conv1D(filters=bottleneck_size, kernel_size=1,
@@ -148,7 +148,7 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
             layer = generate_activation(activation)(layer)
             if drop != 0:
                 layer = Dropout(rate=drop)(layer)
-            conv_list.append(generate_activation(activation)(layer))
+            conv_list.append(layer)
 
         max_pool_1 = MaxPool1D(pool_size=3, strides=stride, padding=padding)(input_tensor)
 
@@ -159,14 +159,16 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
         conv_list.append(conv_6)
 
         x = Concatenate(axis=2)(conv_list)
-        x = BatchNormalization()(x)
+        if bnorm:
+            x = BatchNormalization()(x)
         x = generate_activation(activation)(x)
         return x
 
-    def shortcut_layer(self, input_tensor, out_tensor,padding, activation):
+    def shortcut_layer(self, input_tensor, out_tensor,padding, activation, bnorm):
         shortcut_y = Conv1D(filters=int(out_tensor.shape[-1]), kernel_size=1,
                             padding=padding, use_bias=False)(input_tensor)
-        shortcut_y = BatchNormalization()(shortcut_y)
+        if bnorm:
+            shortcut_y = BatchNormalization()(shortcut_y)
 
         x = Add()([shortcut_y, out_tensor])
         x = generate_activation(activation)(x)
