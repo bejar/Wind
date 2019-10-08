@@ -148,7 +148,7 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         for i in range(len(kernel_size)):
             if separable:
-                layer = SeparableConv1Dfilters=filters, kernel_size=kernel_size[i],
+                layer = SeparableConv1D(filters=filters, kernel_size=kernel_size[i],
                                         strides=stride, padding=padding,
                                         use_bias=bias,depth_multiplier=depth_mul)(input_inception)
             else:
