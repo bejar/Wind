@@ -64,6 +64,8 @@ from .CNNSeparable3LS2SArchitecture import CNNSeparable3LS2SArchitecture
 from .CNNSeparable4LS2SArchitecture import CNNSeparable4LS2SArchitecture
 from .CNNLoCoS2SArchitecture import CNNLoCoS2SArchitecture
 
+from .TimeInceptionArchitecture import TimeInceptionArchitecture
+
 __author__ = 'bejar'
 
 __all__ = ['Architecture',
@@ -105,5 +107,6 @@ __all__ = ['Architecture',
            'RandomForestS2SArchitecture',
            'AdaBoostDirRegressionArchitecture',
            'ExtraTreesS2SArchitecture',
-           'ElasticNetS2SArchitecture'
+           'ElasticNetS2SArchitecture',
+           'TimeInceptionArchitecture'
           ]

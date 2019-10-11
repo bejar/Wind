@@ -1,7 +1,7 @@
 {"_id": "00000000",
   "experiment": "TEST",
   "data": {
-    "datanames": ["11-5648-12"],
+    "datanames": ["11-5794-12"],
     "scaler": "standard",
       "vars": "all",
     "datasize": 43834,
@@ -15,15 +15,15 @@
       "drop": 0.3,
     "activation": ["leaky", 0.2],
       "full": [512,256],
+      "batchnorm":false,
     "mode":"MLP_s2s"
   },
   "training": {
     "iter":1,
     "batch": 128,
     "epochs": 200,
-    "patience":10,
+      "patience":10,
     "optimizer": "adamax",
-      "lrate": 0.002,
       "RLROP":{"patience":5, "factor":0.5}
   }
 }

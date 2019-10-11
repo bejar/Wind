@@ -103,7 +103,7 @@ class Architecture:
             print("---------------------------------------")
         self.model.summary()
 
-    def evaluate(self, val_x, val_y, test_x, test_y):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None):
         """
         Evaluates the trained model for validation and test
 

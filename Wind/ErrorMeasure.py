@@ -59,17 +59,59 @@ def mase_error(y,yp):
     q = np.sum(np.abs(y[1:]-y[0:-1]) / (len(y) - 1))
     return mae/q
 
+def nrmse_error(y,yp):
+    """
+    Normalize Root Mean Square Error
+    :param y:
+    :param yp:
+    :return:
+    """
 
+    ymax = np.max(y)
+    ymin = np.min(y)
+    if ymin<0:
+        ymax = ymax - ymin
+
+    # return (100.0/ymax) * np.sqrt(np.sum((y-yp)**2)/len(y))
+    return (100.0/ymax) * rmse_error(y,yp)
+
+def nmae_error(y,yp):
+    """
+    Normalize Mean Square Error
+    :param y:
+    :param yp:
+    :return:
+    """
+
+    ymax = np.max(y)
+    ymin = np.min(y)
+    if ymin<0:
+        ymax = ymax - ymin
+
+    # return (100.0/ymax) * np.sum(np.abs(y-yp)/len(y))
+    return (100.0/ymax) *  mean_absolute_error(y,yp)
+
+def rmse_error(y,yp):
+    """
+    Root Mean Square Error
+    :param y:
+    :param yp:
+    :return:
+    """
+    return np.sqrt(mean_squared_error(y,yp))
 
 class ErrorMeasure:
     """
     Compute the error measures from the data and predictions
     """
     error_names = []
-    errors = ['R2', 'MSE', 'MAE']
+    errors = ['R2', 'MSE', 'MAE', 'RMSE', 'nRMSE', 'nMAE']
     error_dict = {'R2': r2_score,
                   'MSE': mean_squared_error,
-                 'MAE' :mean_absolute_error,
+                   'RMSE': rmse_error,
+                   'nRMSE': nrmse_error,
+                'MAE' :mean_absolute_error,
+                'nMAE' :nmae_error,
                   'sMAPE':smape_error,
                   'MAPE':mape_error,
                   'MASE':mase_error}
@@ -88,7 +130,7 @@ class ErrorMeasure:
 
 
 
-    def compute_errors(self, val_y, val_yp, test_y, test_yp):
+    def compute_errors(self, val_y, val_yp, test_y, test_yp, scaler=None):
         """
 
         :param val_x:
@@ -100,9 +142,15 @@ class ErrorMeasure:
 
         lerr = []
 
-        for f in self.error_func:
-            lerr.append(f(val_y,val_yp))
-            lerr.append(f(test_y, test_yp))
+
+        if scaler is not None:
+            for f in self.error_func:
+                lerr.append(f(scaler.inverse_transform(val_y.reshape(-1, 1)),scaler.inverse_transform(val_yp.reshape(-1, 1))))
+                lerr.append(f(scaler.inverse_transform(test_y.reshape(-1, 1)), scaler.inverse_transform(test_yp.reshape(-1, 1))))
+        else:
+            for f in self.error_func:
+                lerr.append(f(val_y, val_yp))
+                lerr.append(f(test_y, test_yp))
 
         return lerr
 

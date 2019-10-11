@@ -84,6 +84,7 @@ from time import time
 
 from Wind.Misc import load_config_file
 from Wind.Private.DBConfig import mongolocaltest, mongoconnection
+from Wind.Util.Sample import uniform_sample, entropy_sample
 from copy import deepcopy
 from pymongo import MongoClient
 from tqdm import tqdm
@@ -105,7 +106,7 @@ def change_config(config, param, sites):
         for sec in param:
             for p in param[sec]:
                 conf[sec][p] = param[sec][p]
-        conf['data']['datanames'] = [f'{s}-12']
+        conf['data']['datanames'] = [f'{s}-{args.ext:02d}']
         conf['site'] = s
         lconf.append(conf)
     return lconf
@@ -662,6 +663,7 @@ if __name__ == '__main__':
 
     # Strategies/Stages
     parser.add_argument('--init', type=int, default=None, help='Initialize the random sites for exploration')
+    parser.add_argument('--samp', type=str, default='normal', help='Sampling type for sites sample generation')
     parser.add_argument('--refexp', default=None, help='Use reference experiment (Name)')
 
     parser.add_argument('--random', action='store_true', default=False, help='Generate random configurations')
@@ -671,6 +673,8 @@ if __name__ == '__main__':
     parser.add_argument('--equalize', action='store_true', default=False, help='Equalize the number of experiments for the top npar configurations')
     parser.add_argument('--nbatches', type=int, default=1,
                         help='Number of batches of sites for new configurations or intensification')
+    parser.add_argument('--ext', type=int, default=12,
+                        help='Extension of the datafiles')
 
     args = parser.parse_args()
 
@@ -704,11 +708,15 @@ if __name__ == '__main__':
             raise NameError("Experiment already initialized")
         else:
             # Pick random sites and divide it in batches
-            lsites = np.random.choice(range(126692), args.init, replace=False)
-            lsites = [f'{site // 500}-{site}' for site in lsites]
-            lbatches = []
-            for i in range(0, len(lsites), BATCH):
-                lbatches.append(lsites[i:i + BATCH])
+            if args.samp == 'specent':
+                lbatches = entropy_sample(args.init, batch=BATCH)
+            else:
+                lbarches = uniform_sample(args.init, batch=BATCH)
+            # lsites = np.random.choice(range(126692), args.init, replace=False)
+            # lsites = [f'{site // 500}-{site}' for site in lsites]
+            # lbatches = []
+            # for i in range(0, len(lsites), BATCH):
+            #     lbatches.append(lsites[i:i + BATCH])
             expconf = {'SMAC': 'init', 'smexperiment': args.exp, 'batch': BATCH, 'sites': lbatches}
             col.insert_one(expconf)
 

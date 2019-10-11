@@ -31,7 +31,7 @@ class SCKS2SArchitecture(SCKArchitecture):
     Class for all the neural networks models based on sequence to sequence
 
     """
-    def evaluate(self, val_x, val_y, test_x, test_y):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None):
         """
         Evaluates the trained model with validation and test
 
@@ -60,6 +60,6 @@ class SCKS2SArchitecture(SCKArchitecture):
             lresults.append([p] + ErrorMeasure().compute_errors(val_y[:, i - 1],
                                                                val_yp[:, i - 1],
                                                                test_y[:, i - 1],
-                                                               test_yp[:, i - 1]))
+                                                               test_yp[:, i - 1], scaler))
 
         return lresults

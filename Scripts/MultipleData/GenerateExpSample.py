@@ -27,6 +27,7 @@ from time import time
 
 from Wind.Misc import load_config_file
 from Wind.Private.DBConfig import mongoconnection, mongolocaltest
+from Wind.Util.Sample import uniform_sample, entropy_sample
 from pymongo import MongoClient
 from tqdm import tqdm
 import numpy as np
@@ -43,6 +44,7 @@ if __name__ == '__main__':
     parser.add_argument('--nsamp', type=int, default=2000, help='Size of the sample')
     parser.add_argument('--samptype', type=str, default='normal', help='Name of the sample')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
+    parser.add_argument('--res', default=12, type=int, help='File names resolution extension')
     args = parser.parse_args()
 
     config = load_config_file(args.config)
@@ -67,18 +69,9 @@ if __name__ == '__main__':
         ssites =  sample['sites']
     else:
         if args.samptype == 'specent':
-            measures = col.find({'experiment': 'measures'})
-            ames = []
-            for m in measures:
-                ames.append((m['result']['SpecEnt'], m['site'])
-            ames = sorted(ames)
-            lsites = []
-            for i in range(10):
-                sites = np.random.choice(range(12669*i, 12669*(i+1)), args.nsamp//10, replace=False)
-                lsites.extend([ames[v][1] for v in sites])              
+            lsites = entropy_sample(args.nsamp)
         else:
-            lsites = np.random.choice(range(126692), args.nsamp, replace=False)
-            lsites = [f'{site // 500}-{site}' for site in lsites]
+            lsites = uniform_sample(args.nsamp)
         sampleconf = {'sample': 'init', 'sname': args.sample, 'sites': lsites}
         col.insert_one(sampleconf)
         ssites = lsites
@@ -86,7 +79,7 @@ if __name__ == '__main__':
 
     ids = int(time())
     for i, site in tqdm(enumerate(ssites)):
-        config['data']['datanames'] = [f'{site}-12']
+        config['data']['datanames'] = [f'{site}-{args.res:02d}']
         site = config['data']['datanames'][0].split('-')
         config['site'] = '-'.join(site[:2])
         config['status'] = 'pending'

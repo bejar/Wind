@@ -11,7 +11,7 @@
       "ahead": [1,12]
   },
   "arch": {
-    "neurons":32,
+    "neurons":128,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",
@@ -23,8 +23,9 @@
     "CuDNN": false,
     "bidirectional": false,
     "bimerge":"ave",
-    "rnn": "GRU",
-    "full": [32],
+      "rnn": "GRU",
+      "after":false,
+    "full": [512],
     "activation_full": ["elu",0.4],
     "fulldrop": 0.4,
     "mode": "RNN_s2s"
@@ -32,7 +33,7 @@
   "training": {
     "iter":1,
     "batch": 1024,
-    "epochs": 5,
+    "epochs": 100,
     "patience": 10,
     "optimizer": "adamax",
     "lrate": 0.001

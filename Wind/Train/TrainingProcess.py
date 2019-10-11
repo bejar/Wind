@@ -100,8 +100,10 @@ def train_dirregression(architecture, config, runconfig):
 
             ############################################
             # Results
-
-            lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
+            if 'descale' not in config['training'] or config['training']['descale']:
+                lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y, scaler=dataset.scaler))
+            else:
+                lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
 
             print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -190,7 +192,10 @@ def train_sjoint_sequence2sequence(architecture, config, runconfig):
             arch.train(train_x, train_y[:,ahead[0]-1:ahead[1]], val_x, val_y[:,ahead[0]-1:ahead[1]])
             ############################################
             # Results
-            lresults.extend(arch.evaluate(val_x, val_y[:,ahead[0]-1:ahead[1]], test_x, test_y[:,ahead[0]-1:ahead[1]]))
+            if 'descale' not in config['training'] or config['training']['descale']:
+                lresults.extend(arch.evaluate(val_x, val_y[:,ahead[0]-1:ahead[1]], test_x, test_y[:,ahead[0]-1:ahead[1]], scaler=dataset.scaler))
+            else:
+                lresults.extend(arch.evaluate(val_x, val_y[:,ahead[0]-1:ahead[1]], test_x, test_y[:,ahead[0]-1:ahead[1]]))
 
             print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -296,15 +301,25 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
             ############################################
             # Results and Add the new predictions to the saved ones
             if config['rdimensions'] == 0:
-                lresults.extend(arch.evaluate(val_x, val_y[:,ahead[0]-1:ahead[1]], test_x, test_y[:,ahead[0]-1:ahead[1]]))
+                if 'descale' not in config['training'] or config['training']['descale']:
+                    lresults.extend(arch.evaluate(val_x, val_y[:,ahead[0]-1:ahead[1]], test_x, test_y[:,ahead[0]-1:ahead[1]], scaler=dataset.scaler))
+                else:
+                    lresults.extend(arch.evaluate(val_x, val_y[:,ahead[0]-1:ahead[1]], test_x, test_y[:,ahead[0]-1:ahead[1]]))
                 rec_train_pred_x = arch.predict(train_x)
                 rec_val_pred_x = arch.predict(val_x)
                 rec_test_pred_x = arch.predict(test_x)
                 # print(f"TRshape:{train_x.shape} Vshape:{val_x.shape} TSshape:{test_x.shape}")
                 # print(f"RTR:{rec_train_pred_x.shape} RV:{rec_val_pred_x.shape} RTS:{rec_test_pred_x.shape}")
             else:
-                lresults.extend(arch.evaluate([val_x, rec_val_pred_x], val_y[:,ahead[0]-1:ahead[1]],
-                                              [test_x, rec_test_pred_x], test_y[:,ahead[0]-1:ahead[1]]))
+
+                if 'descale' not in config['training'] or config['training']['descale']:
+                    lresults.extend(arch.evaluate([val_x, rec_val_pred_x], val_y[:,ahead[0]-1:ahead[1]],
+                                                  [test_x, rec_test_pred_x], test_y[:,ahead[0]-1:ahead[1]], scaler=dataset.scaler))
+                else:
+                    lresults.extend(arch.evaluate([val_x, rec_val_pred_x], val_y[:,ahead[0]-1:ahead[1]],
+                                                  [test_x, rec_test_pred_x], test_y[:,ahead[0]-1:ahead[1]]))
+
+
                 rec_train_pred_x = np.concatenate((rec_train_pred_x, arch.predict([train_x, rec_train_pred_x])), axis=1)
                 rec_val_pred_x = np.concatenate((rec_val_pred_x, arch.predict([val_x, rec_val_pred_x])), axis=1)
                 rec_test_pred_x = np.concatenate((rec_test_pred_x, arch.predict([test_x, rec_test_pred_x])), axis=1)
@@ -408,7 +423,7 @@ def train_gradient_boosting_sequence2sequence(architecture, config, runconfig):
             # Residual of the prediction for the next step
             n_train_y = train_y - boost_train_predict_y
             n_val_y = val_y - boost_val_predict_y
-            print(ErrorMeasure().compute_errors(val_y[:, 0], boost_val_predict_y[:, 0], test_y[:, 0], boost_test_predict_y[:, 0]))
+            # print(ErrorMeasure().compute_errors(val_y[:, 0], boost_val_predict_y[:, 0], test_y[:, 0], boost_test_predict_y[:, 0]))
             alpha *= decay
 
             # Reset the model
@@ -435,10 +450,17 @@ def train_gradient_boosting_sequence2sequence(architecture, config, runconfig):
         itresults = []
 
         for i, p in zip(range(1, ahead + 1), range(iahead, config['data']['ahead'][1]+1)):
-            itresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
-                                                               boost_val_predict_y[:, i - 1],
-                                                               test_y[:, i - 1],
-                                                               boost_test_predict_y[:, i - 1]))
+
+            if 'descale' not in config['training'] or config['training']['descale']:
+                itresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
+                                                                   boost_val_predict_y[:, i - 1],
+                                                                   test_y[:, i - 1],
+                                                                   boost_test_predict_y[:, i - 1], scaler=dataset.scaler))
+            else:
+                itresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
+                                                                   boost_val_predict_y[:, i - 1],
+                                                                   test_y[:, i - 1],
+                                                                   boost_test_predict_y[:, i - 1]))
 
         lresults.extend(itresults)
 
@@ -463,6 +485,9 @@ def train_sequence2sequence(architecture, config, runconfig):
     """
 
     ahead = config['data']['ahead'] if (type(config['data']['ahead']) == list) else [1, config['data']['ahead']]
+    #if 'aggregate' in config['data']:
+    #    step = config['data']['aggregate']['step']
+    #    ahead = [ahead[0], ahead[1]//step]
 
     if 'iter' in config['training']:
         niter = config['training']['iter']
@@ -471,6 +496,9 @@ def train_sequence2sequence(architecture, config, runconfig):
 
     if type(ahead) == list:
         odimensions = ahead[1] - ahead[0] + 1
+        if 'aggregate' in config['data']:
+            step = config['data']['aggregate']['step']
+            odimensions //= step
     else:
         odimensions = ahead
 
@@ -478,6 +506,7 @@ def train_sequence2sequence(architecture, config, runconfig):
     dataset = Dataset(config=config['data'], data_path=wind_data_path)
     dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
     train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
+
 
     if type(train_x) != list:
         config['idimensions'] = train_x.shape[1:]
@@ -509,7 +538,10 @@ def train_sequence2sequence(architecture, config, runconfig):
         ############################################
         # Results
 
-        lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
+        if 'descale' not in config['training'] or config['training']['descale']:
+            lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y,scaler=dataset.scaler))
+        else:
+            lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -551,7 +583,10 @@ def train_persistence(architecture, config, runconfig):
         if runconfig.verbose:
             dataset.summary()
 
-        lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
+        if 'descale' not in config['training'] or config['training']['descale']:
+            lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y,scaler=dataset.scaler))
+        else:
+            lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -606,7 +641,10 @@ def train_sckit_dirregression(architecture, config, runconfig):
 
         ############################################
         # Results
-        lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
+        if 'descale' not in config['training'] or config['training']['descale']:
+            lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y,scaler=dataset.scaler))
+        else:
+            lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -656,7 +694,10 @@ def train_sckit_sequence2sequence(architecture, config, runconfig):
 
     ############################################
     # Results
-    lresults = arch.evaluate(val_x, val_y, test_x, test_y)
+    if 'descale' not  in config['training'] or config['training']['descale']:
+        lresults = arch.evaluate(val_x, val_y, test_x, test_y, scaler=dataset.scaler)
+    else:
+        lresults = arch.evaluate(val_x, val_y, test_x, test_y)
 
     print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -733,7 +774,10 @@ def train_sequence2sequence_tf(architecture, config, runconfig):
         ############################################
         # Results
 
-        lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
+        if 'descale' not in config['training'] or config['training']['descale']:
+            lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y,scaler=dataset.scaler))
+        else:
+            lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 

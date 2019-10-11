@@ -50,7 +50,7 @@ class PersistenceMeanArchitecture(PersistenceArchitecture):
         pass
 
 
-    def evaluate(self, val_x, val_y, test_x, test_y):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None):
         """
         Evaluates the training
         :return:
@@ -71,7 +71,7 @@ class PersistenceMeanArchitecture(PersistenceArchitecture):
                             ErrorMeasure().compute_errors((val_x[:, -1] * a) + ((1 - a) * np.mean(val_x, axis=1)),
                                                         val_y[:, i - 1],
                                                         (test_x[:, -1] * a) + ((1 - a) * np.mean(test_x, axis=1)),
-                                                        test_y[:, i - 1]))
+                                                        test_y[:, i - 1], scaler=scaler))
 
         return lresults
 

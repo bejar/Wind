@@ -19,11 +19,13 @@ RNNS2SArchitecture
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
 from keras.layers import LSTM, GRU, Dense, Flatten, Dropout, Bidirectional, Input, TimeDistributed, RepeatVector, \
-    Lambda, Activation, Permute, multiply
+    Lambda, Activation, Permute, multiply,Layer
 from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
 from keras import backend as K
 from Wind.Util.SelfAttention import SelfAttention
+from Wind.ErrorMeasure import ErrorMeasure
+
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
 except ImportError:
@@ -174,8 +176,7 @@ class RNNS2SSelfAttentionArchitecture(NNS2SArchitecture):
         # model = Dense(1, activation='linear')(sent_representation)
         # # model = Flatten()(reg)
 
-        model = SelfAttention()(model)
-
+        model = SelfAttention(attention_type= 'additive')(model)
         for nn in full:
             model = Dense(nn)(model)
             model = generate_activation(activation_full)(model)
@@ -186,21 +187,42 @@ class RNNS2SSelfAttentionArchitecture(NNS2SArchitecture):
         self.model = Model(inputs=input, outputs=output)
         # self.model = Model(inputs=input, outputs=reg)
 
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None):
+        """
+        Evaluates the trained model with validation and test
+        this function uses a custom object
 
-    # def evaluate(self, val_x, val_y, test_x, test_y):
-    #     batch_size = self.config['training']['batch']
-    #
-    #     if self.runconfig.best:
-    #         self.model = load_model(self.modfile)
-    #     val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
-    #     test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
-    #
-    #     ahead = self.config['data']['ahead']
-    #
-    #     lresults = []
-    #     for i in range(1, ahead + 1):
-    #         lresults.append((i,
-    #                          r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
-    #                          r2_score(test_y[:, i - 1], test_yp[:, i - 1])
-    #                          ))
-    #     return lresults
+        Overrides parent function
+
+        :param val_x:
+        :param val_y:
+        :param test_x:
+        :param test_y:
+        :return:
+        """
+        batch_size = self.config['training']['batch']
+
+        if self.runconfig.best:
+                self.model = load_model(self.modfile, custom_objects={"SelfAttention":SelfAttention})
+#                self.model = load_model(self.modfile)
+        val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
+        test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
+
+        # Maintained to be compatible with old configuration files
+        if type(self.config['data']['ahead'])==list:
+            iahead = self.config['data']['ahead'][0]
+            ahead = (self.config['data']['ahead'][1] - self.config['data']['ahead'][0]) + 1
+        else:
+            iahead = 1
+            ahead = self.config['data']['ahead']
+
+        lresults = []
+
+        for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
+            lresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
+                                                               val_yp[:, i - 1],
+                                                               test_y[:, i - 1],
+                                                               test_yp[:, i - 1],scaler=scaler))
+        return lresults
+
+
