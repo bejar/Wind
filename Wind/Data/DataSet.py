@@ -175,6 +175,41 @@ def aggregate_average_all(data, step):
     res /= step
     return res
 
+
+def aggregate_max_min(data, step, aggmax=True):
+    """
+    Aggregates a data matrix computing max or min of step columns
+
+    :param data:
+    :param step:
+    :return:
+    """
+    res = np.zeros((data.shape[0], data.shape[1]//step))
+    for i in range(data.shape[1]//step):
+        if aggmax:
+            res[:,i] = np.max(data[:,i*step:(i+1)*step], axis=1)
+        else:
+            res[:,i] = np.min(data[:,i*step:(i+1)*step], axis=1)
+    return res
+
+def aggregate_max_min_all(data, step, aggmax=True):
+    """
+    Aggregates a data matrix computing max or min of step columns for all the variables
+
+    :param data:
+    :param step:
+    :return:
+    """
+    res = np.zeros((data.shape[0], data.shape[1]//step, data.shape[2]))
+    for j in range(data.shape[2]):
+        for i in range(data.shape[1]//step):
+            if aggmax:
+                res[:,i,j] = np.max(data[:,i*step:(i+1)*step,j], axis=1)
+            else:
+                res[:,i,j] = np.min(data[:,i*step:(i+1)*step,j], axis=1)
+    return res
+
+
 class Dataset:
     """
     Class to generate the data matrices (train, validation and test)
@@ -389,9 +424,14 @@ class Dataset:
 
         if 'aggregate' in self.config:
             if 'x' in self.config['aggregate']['what']:
+                step = self.config['aggregate']['step']
                 if self.config['aggregate']['method'] == 'average':
-                    step = self.config['aggregate']['step']
                     train_x = aggregate_average_all(train_x, step)
+                elif self.config['aggregate']['method'] == 'max':
+                    train_x = aggregate_max_min_all(train_x, step, aggmax=True)
+                elif self.config['aggregate']['method'] == 'min':
+                    train_x = aggregate_max_min_all(train_x, step, aggmax=False)
+
 
         # Signal decomposition
         if 'decompose' in self.config:
@@ -417,17 +457,27 @@ class Dataset:
             train_y = train[:, -slice:, 0]
             if 'aggregate' in self.config:
                 if 'y' in self.config['aggregate']['what']:
+                    step = self.config['aggregate']['step']
                     if self.config['aggregate']['method'] == 'average':
-                        step = self.config['aggregate']['step']
                         train_y = aggregate_average(train_y,step)
+                    elif self.config['aggregate']['method'] == 'max':
+                        train_y = aggregate_max_min(train_y, step, aggmax=True)
+                    elif self.config['aggregate']['method'] == 'min':
+                        train_y = aggregate_max_min(train_y, step, aggmax=False)
+
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
         elif mode_y == '2D':
             train_y = train[:, -slice:, 0]
             if 'aggregate' in self.config:
                 if 'y' in self.config['aggregate']['what']:
+                    step = self.config['aggregate']['step']
                     if self.config['aggregate']['method'] == 'average':
-                        step = self.config['aggregate']['step']
                         train_y = aggregate_average(train_y,step)
+                    elif self.config['aggregate']['method'] == 'max':
+                        train_y = aggregate_max_min(train_y, step, aggmax=True)
+                    elif self.config['aggregate']['method'] == 'min':
+                        train_y = aggregate_max_min(train_y, step, aggmax=False)
+
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
         elif mode_y == '1D':
             train_y = train[:, -1:, 0]
@@ -446,10 +496,17 @@ class Dataset:
 
         if 'aggregate' in self.config:
             if 'x' in self.config['aggregate']['what']:
+                step = self.config['aggregate']['step']
                 if self.config['aggregate']['method'] == 'average':
-                    step = self.config['aggregate']['step']
                     val_x = aggregate_average_all(val_x, step)
                     test_x = aggregate_average_all(test_x, step)
+                elif self.config['aggregate']['method'] == 'max':
+                    val_x = aggregate_max_min_all(val_x, step, aggmax=True)
+                    test_x = aggregate_max_min_all(test_x, step, aggmax=True)
+                elif self.config['aggregate']['method'] == 'min':
+                    val_x = aggregate_max_min_all(val_x, step, aggmax=False)
+                    test_x = aggregate_max_min_all(test_x, step, aggmax=False)
+
 
         if 'decompose' in self.config:
             components = self.config['decompose']['components']
@@ -477,10 +534,18 @@ class Dataset:
             test_y = test[half_test:, -slice:, 0]
             if 'aggregate' in self.config:
                 if 'y' in self.config['aggregate']['what']:
+                    step = self.config['aggregate']['step']
                     if self.config['aggregate']['method'] == 'average':
-                        step = self.config['aggregate']['step']
                         val_y = aggregate_average(val_y,step)
                         test_y = aggregate_average(test_y,step)
+                    elif self.config['aggregate']['method'] == 'max':
+                        val_y = aggregate_max_min(val_y,step, aggmax=True)
+                        test_y = aggregate_max_min(test_y,step, aggmax=True)
+                    elif self.config['aggregate']['method'] == 'min':
+                        val_y = aggregate_max_min(val_y,step, aggmax=False)
+                        test_y = aggregate_max_min(test_y,step, aggmax=False)
+
+
             val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
             test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
         elif mode_y == '2D':
@@ -488,10 +553,17 @@ class Dataset:
             test_y = test[half_test:, -slice:, 0]
             if 'aggregate' in self.config:
                  if 'y' in self.config['aggregate']['what']:
+                    step = self.config['aggregate']['step']
                     if self.config['aggregate']['method'] == 'average':
-                        step = self.config['aggregate']['step']
                         val_y = aggregate_average(val_y,step)
                         test_y = aggregate_average(test_y,step)
+                    elif self.config['aggregate']['method'] == 'max':
+                        val_y = aggregate_max_min(val_y,step, aggmax=True)
+                        test_y = aggregate_max_min(test_y,step, aggmax=True)
+                    elif self.config['aggregate']['method'] == 'min':
+                        val_y = aggregate_max_min(val_y,step, aggmax=False)
+                        test_y = aggregate_max_min(test_y,step, aggmax=False)
+
             val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1]))
             test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
         elif mode_y == '1D':
