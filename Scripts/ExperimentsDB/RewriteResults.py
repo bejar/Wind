@@ -36,7 +36,7 @@ if __name__ == '__main__':
     parser.add_argument('--thres', type=float, default=2.0,  help='Rewriting threshold')    
     parser.add_argument('--exp', default='convos2s',  help='Experiment Type')    
     parser.add_argument('--status', default='done',  help='Experiment status')
-    parser.add_argument('--noupdate', action='store_true', default=False, help='copy files')
+    parser.add_argument('--noupdate', action='store_true', default=False, help='Do not change anything')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
 
     args = parser.parse_args()
