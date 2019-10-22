@@ -102,7 +102,8 @@ def apply_SSA_decomposition_one(var, ncomp, data):
         ssa.fit(mdec[i])
         ldec.append(ssa.decomposition())
     decvar = np.swapaxes(np.stack(ldec), 1, 2)
-    return np.concatenate((data[:,:,1:], decvar), axis=2)
+    return np.concatenate((data[:, :, 1:], decvar), axis=2)
+
 
 def select_SSA_decomposition_one(ncomp, comp, data):
     """
@@ -122,7 +123,8 @@ def select_SSA_decomposition_one(ncomp, comp, data):
         ssa.fit(mdec[i])
         ldec.append(ssa.decomposition())
     decvar = np.swapaxes(np.stack(ldec), 1, 2)
-    return np.concatenate((data[:,:,1:], decvar), axis=2)
+    return np.concatenate((data[:, :, 1:], decvar), axis=2)
+
 
 def apply_SSA_decomposition_all(ncomp, data):
     """
@@ -137,7 +139,7 @@ def apply_SSA_decomposition_all(ncomp, data):
     ssa = SSA(ncomp)
     for m in range(data.shape[2]):
         mdec = data[:, :, m]
- 
+
         ldec = []
         for i in range(mdec.shape[0]):
             ssa.fit(mdec[i])
@@ -145,6 +147,28 @@ def apply_SSA_decomposition_all(ncomp, data):
         decvar = np.swapaxes(np.stack(ldec), 1, 2)
         dmat.append(decvar)
     return np.concatenate(dmat, axis=2)
+
+def apply_SSA_decomposition_y(ncomp, data):
+    """
+    Applies SSA decomposition to one variable of the data
+
+    :param var:
+    :param ncomp:
+    :param data:
+    :return:
+    """
+    mdec = data
+    # print(mdec.shape, ncomp)
+    ssa = SSA(ncomp)
+
+    ldec = []
+    for i in range(mdec.shape[0]):
+        ssa.fit(mdec[i])
+        ldec.append(ssa.decomposition())
+    decvar = np.swapaxes(np.stack(ldec), 1, 2)
+    # print(decvar.shape)
+    return decvar
+
 
 def aggregate_average(data, step):
     """
@@ -154,11 +178,12 @@ def aggregate_average(data, step):
     :param step:
     :return:
     """
-    res = np.zeros((data.shape[0], data.shape[1]//step))
-    for i in range(data.shape[1]//step):
-        res[:,i] = np.sum(data[:,i*step:(i+1)*step], axis=1)
+    res = np.zeros((data.shape[0], data.shape[1] // step))
+    for i in range(data.shape[1] // step):
+        res[:, i] = np.sum(data[:, i * step:(i + 1) * step], axis=1)
     res /= step
     return res
+
 
 def aggregate_average_all(data, step):
     """
@@ -168,10 +193,10 @@ def aggregate_average_all(data, step):
     :param step:
     :return:
     """
-    res = np.zeros((data.shape[0], data.shape[1]//step, data.shape[2]))
+    res = np.zeros((data.shape[0], data.shape[1] // step, data.shape[2]))
     for j in range(data.shape[2]):
-        for i in range(data.shape[1]//step):
-            res[:,i,j] = np.sum(data[:,i*step:(i+1)*step,j], axis=1)
+        for i in range(data.shape[1] // step):
+            res[:, i, j] = np.sum(data[:, i * step:(i + 1) * step, j], axis=1)
     res /= step
     return res
 
@@ -184,13 +209,14 @@ def aggregate_max_min(data, step, aggmax=True):
     :param step:
     :return:
     """
-    res = np.zeros((data.shape[0], data.shape[1]//step))
-    for i in range(data.shape[1]//step):
+    res = np.zeros((data.shape[0], data.shape[1] // step))
+    for i in range(data.shape[1] // step):
         if aggmax:
-            res[:,i] = np.max(data[:,i*step:(i+1)*step], axis=1)
+            res[:, i] = np.max(data[:, i * step:(i + 1) * step], axis=1)
         else:
-            res[:,i] = np.min(data[:,i*step:(i+1)*step], axis=1)
+            res[:, i] = np.min(data[:, i * step:(i + 1) * step], axis=1)
     return res
+
 
 def aggregate_max_min_all(data, step, aggmax=True):
     """
@@ -200,13 +226,13 @@ def aggregate_max_min_all(data, step, aggmax=True):
     :param step:
     :return:
     """
-    res = np.zeros((data.shape[0], data.shape[1]//step, data.shape[2]))
+    res = np.zeros((data.shape[0], data.shape[1] // step, data.shape[2]))
     for j in range(data.shape[2]):
-        for i in range(data.shape[1]//step):
+        for i in range(data.shape[1] // step):
             if aggmax:
-                res[:,i,j] = np.max(data[:,i*step:(i+1)*step,j], axis=1)
+                res[:, i, j] = np.max(data[:, i * step:(i + 1) * step, j], axis=1)
             else:
-                res[:,i,j] = np.min(data[:,i*step:(i+1)*step,j], axis=1)
+                res[:, i, j] = np.min(data[:, i * step:(i + 1) * step, j], axis=1)
     return res
 
 
@@ -235,13 +261,13 @@ class Dataset:
     mode = None
     ## Functions to use for scaling the data
     scalers = {'standard': StandardScaler(), 'minmax': MinMaxScaler(feature_range=(-1, 1)),
-               'tanh': tanh_normalization(), 'robustscaler':RobustScaler(), 'quantile':QuantileTransformer()}
+               'tanh': tanh_normalization(), 'robustscaler': RobustScaler(), 'quantile': QuantileTransformer()}
     ## Strings corresponding to the different dataset configurations
     dataset_type = ['onesiteonevar', 'onesitemanyvar', 'manysiteonevar', 'manysitemanyvar', 'manysitemanyvarstack',
                     'manysitemanyvarstackneigh']
     generated = False
     raw_data = None
-    scaler = None # Scaler object so data can be rescaled after training
+    scaler = None  # Scaler object so data can be rescaled after training
 
     def __init__(self, config, data_path):
         """
@@ -305,7 +331,7 @@ class Dataset:
             self.scaler = scaler.fit(data[:, 0].reshape(-1, 1))  # saves the scaler for the first variable for descaling
             data = tmpdata
 
-        #else:
+        # else:
         #    scaler = StandardScaler()
         #    data = scaler.fit_transform(data)
 
@@ -402,7 +428,7 @@ class Dataset:
             tmpdata = scaler.fit_transform(data)
             self.scaler = scaler.fit(data[:, 0].reshape(-1, 1))  # saves the scaler for the first variable for descaling
             data = tmpdata
-        #else:
+        # else:
         #    scaler = StandardScaler()
         #    data = scaler.fit_transform(data)
         # print('DATA Dim =', data.shape)
@@ -422,26 +448,23 @@ class Dataset:
         train = lagged_matrix(wind_train, lag=lag, ahead=ahead, mode=mode)
         train_x = train[:, :lag]
 
-        if 'aggregate' in self.config:
-            if 'x' in self.config['aggregate']['what']:
-                step = self.config['aggregate']['step']
-                if self.config['aggregate']['method'] == 'average':
-                    train_x = aggregate_average_all(train_x, step)
-                elif self.config['aggregate']['method'] == 'max':
-                    train_x = aggregate_max_min_all(train_x, step, aggmax=True)
-                elif self.config['aggregate']['method'] == 'min':
-                    train_x = aggregate_max_min_all(train_x, step, aggmax=False)
-
+        if 'aggregate' in self.config and 'x' in self.config['aggregate']:
+            step = self.config['aggregate']['x']['step']
+            if self.config['aggregate']['x']['method'] == 'average':
+                train_x = aggregate_average_all(train_x, step)
+            elif self.config['aggregate']['x']['method'] == 'max':
+                train_x = aggregate_max_min_all(train_x, step, aggmax=True)
+            elif self.config['aggregate']['x']['method'] == 'min':
+                train_x = aggregate_max_min_all(train_x, step, aggmax=False)
 
         # Signal decomposition
-        if 'decompose' in self.config:
-            components = self.config['decompose']['components']
-            if type(self.config['decompose']['var']) == int:
-                var = self.config['decompose']['var']
+        if 'decompose' in self.config and 'x' in self.config['decompose']:
+            components = self.config['decompose']['x']['components']
+            if type(self.config['decompose']['x']['var']) == int:
+                var = self.config['decompose']['x']['var']
                 train_x = apply_SSA_decomposition_one(var, components, train_x)
             else:
                 train_x = apply_SSA_decomposition_all(components, train_x)
-
 
         #######################################
         if mode_x == '2D':
@@ -452,31 +475,39 @@ class Dataset:
             # Add an extra dimension to simulate that we have only one channel
             train_x = np.reshape(train_x, (train_x.shape[0], train_x.shape[1], train_x.shape[2], 1))
 
-
         if mode_y == '3D':
             train_y = train[:, -slice:, 0]
-            if 'aggregate' in self.config:
-                if 'y' in self.config['aggregate']['what']:
-                    step = self.config['aggregate']['step']
-                    if self.config['aggregate']['method'] == 'average':
-                        train_y = aggregate_average(train_y,step)
-                    elif self.config['aggregate']['method'] == 'max':
-                        train_y = aggregate_max_min(train_y, step, aggmax=True)
-                    elif self.config['aggregate']['method'] == 'min':
-                        train_y = aggregate_max_min(train_y, step, aggmax=False)
+            if 'aggregate' in self.config and 'y' in self.config['aggregate']:
+                step = self.config['aggregate']['y']['step']
+                if self.config['aggregate']['y']['method'] == 'average':
+                    train_y = aggregate_average(train_y, step)
+                elif self.config['aggregate']['y']['method'] == 'max':
+                    train_y = aggregate_max_min(train_y, step, aggmax=True)
+                elif self.config['aggregate']['y']['method'] == 'min':
+                    train_y = aggregate_max_min(train_y, step, aggmax=False)
+            # Decompose prediction and keep one of the components
+            if 'decompose' in self.config and 'y' in self.config['decompose']:
+                components = self.config['decompose']['y']['components']
+                dec_y = apply_SSA_decomposition_y(components, train_y)
+                train_y = dec_y[:, :,self.config['decompose']['y']['var']]
 
+            # We need an additional third dimension
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
         elif mode_y == '2D':
             train_y = train[:, -slice:, 0]
-            if 'aggregate' in self.config:
-                if 'y' in self.config['aggregate']['what']:
-                    step = self.config['aggregate']['step']
-                    if self.config['aggregate']['method'] == 'average':
-                        train_y = aggregate_average(train_y,step)
-                    elif self.config['aggregate']['method'] == 'max':
-                        train_y = aggregate_max_min(train_y, step, aggmax=True)
-                    elif self.config['aggregate']['method'] == 'min':
-                        train_y = aggregate_max_min(train_y, step, aggmax=False)
+            if 'aggregate' in self.config and 'y' in self.config['aggregate']:
+                step = self.config['aggregate']['y']['step']
+                if self.config['aggregate']['y']['method'] == 'average':
+                    train_y = aggregate_average(train_y, step)
+                elif self.config['aggregate']['y']['method'] == 'max':
+                    train_y = aggregate_max_min(train_y, step, aggmax=True)
+                elif self.config['aggregate']['y']['method'] == 'min':
+                    train_y = aggregate_max_min(train_y, step, aggmax=False)
+            # Decompose prediction and keep one of the components
+            if 'decompose' in self.config and 'y' in self.config['decompose']:
+                components = self.config['decompose']['y']['components']
+                dec_y = apply_SSA_decomposition_y(components, train_y)
+                train_y = dec_y[:, :, self.config['decompose']['y']['var']]
 
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1]))
         elif mode_y == '1D':
@@ -494,29 +525,27 @@ class Dataset:
         val_x = test[:half_test, :lag]
         test_x = test[half_test:, :lag]
 
-        if 'aggregate' in self.config:
-            if 'x' in self.config['aggregate']['what']:
-                step = self.config['aggregate']['step']
-                if self.config['aggregate']['method'] == 'average':
-                    val_x = aggregate_average_all(val_x, step)
-                    test_x = aggregate_average_all(test_x, step)
-                elif self.config['aggregate']['method'] == 'max':
-                    val_x = aggregate_max_min_all(val_x, step, aggmax=True)
-                    test_x = aggregate_max_min_all(test_x, step, aggmax=True)
-                elif self.config['aggregate']['method'] == 'min':
-                    val_x = aggregate_max_min_all(val_x, step, aggmax=False)
-                    test_x = aggregate_max_min_all(test_x, step, aggmax=False)
+        if 'aggregate' in self.config and 'x' in self.config['aggregate']:
+            step = self.config['aggregate']['x']['step']
+            if self.config['aggregate']['x']['method'] == 'average':
+                val_x = aggregate_average_all(val_x, step)
+                test_x = aggregate_average_all(test_x, step)
+            elif self.config['aggregate']['x']['method'] == 'max':
+                val_x = aggregate_max_min_all(val_x, step, aggmax=True)
+                test_x = aggregate_max_min_all(test_x, step, aggmax=True)
+            elif self.config['aggregate']['x']['method'] == 'min':
+                val_x = aggregate_max_min_all(val_x, step, aggmax=False)
+                test_x = aggregate_max_min_all(test_x, step, aggmax=False)
 
-
-        if 'decompose' in self.config:
-            components = self.config['decompose']['components']
-            if type(self.config['decompose']['var']) == int:
-                var = self.config['decompose']['var']
-                val_x= apply_SSA_decomposition_one(var, components, val_x)
-                test_x= apply_SSA_decomposition_one(var, components, test_x)
+        if 'decompose' in self.config and 'x' in self.config['decompose']:
+            components = self.config['decompose']['x']['components']
+            if type(self.config['decompose']['x']['var']) == int:
+                var = self.config['decompose']['x']['var']
+                val_x = apply_SSA_decomposition_one(var, components, val_x)
+                test_x = apply_SSA_decomposition_one(var, components, test_x)
             else:
-                val_x= apply_SSA_decomposition_all(components, val_x)
-                test_x= apply_SSA_decomposition_all(components, test_x)
+                val_x = apply_SSA_decomposition_all(components, val_x)
+                test_x = apply_SSA_decomposition_all(components, test_x)
 
         ########################################################
         if mode_x == '2D':
@@ -532,37 +561,48 @@ class Dataset:
         if mode_y == '3D':
             val_y = test[:half_test, -slice:, 0]
             test_y = test[half_test:, -slice:, 0]
-            if 'aggregate' in self.config:
-                if 'y' in self.config['aggregate']['what']:
-                    step = self.config['aggregate']['step']
-                    if self.config['aggregate']['method'] == 'average':
-                        val_y = aggregate_average(val_y,step)
-                        test_y = aggregate_average(test_y,step)
-                    elif self.config['aggregate']['method'] == 'max':
-                        val_y = aggregate_max_min(val_y,step, aggmax=True)
-                        test_y = aggregate_max_min(test_y,step, aggmax=True)
-                    elif self.config['aggregate']['method'] == 'min':
-                        val_y = aggregate_max_min(val_y,step, aggmax=False)
-                        test_y = aggregate_max_min(test_y,step, aggmax=False)
-
+            if 'aggregate' in self.config and 'y' in self.config['aggregate']:
+                step = self.config['aggregate']['step']
+                if self.config['aggregate']['method'] == 'average':
+                    val_y = aggregate_average(val_y, step)
+                    test_y = aggregate_average(test_y, step)
+                elif self.config['aggregate']['method'] == 'max':
+                    val_y = aggregate_max_min(val_y, step, aggmax=True)
+                    test_y = aggregate_max_min(test_y, step, aggmax=True)
+                elif self.config['aggregate']['method'] == 'min':
+                    val_y = aggregate_max_min(val_y, step, aggmax=False)
+                    test_y = aggregate_max_min(test_y, step, aggmax=False)
+            # Decompose prediction and keep one of the components
+            if 'decompose' in self.config and 'y' in self.config['decompose']:
+                components = self.config['decompose']['y']['components']
+                dec_y = apply_SSA_decomposition_y(components, val_y)
+                val_y = dec_y[:, :,self.config['decompose']['y']['var']]
+                dec_y = apply_SSA_decomposition_y(components, test_y)
+                test_y = dec_y[:, :,self.config['decompose']['y']['var']]
 
             val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
             test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
         elif mode_y == '2D':
             val_y = test[:half_test, -slice:, 0]
             test_y = test[half_test:, -slice:, 0]
-            if 'aggregate' in self.config:
-                 if 'y' in self.config['aggregate']['what']:
-                    step = self.config['aggregate']['step']
-                    if self.config['aggregate']['method'] == 'average':
-                        val_y = aggregate_average(val_y,step)
-                        test_y = aggregate_average(test_y,step)
-                    elif self.config['aggregate']['method'] == 'max':
-                        val_y = aggregate_max_min(val_y,step, aggmax=True)
-                        test_y = aggregate_max_min(test_y,step, aggmax=True)
-                    elif self.config['aggregate']['method'] == 'min':
-                        val_y = aggregate_max_min(val_y,step, aggmax=False)
-                        test_y = aggregate_max_min(test_y,step, aggmax=False)
+            if 'aggregate' in self.config and 'y' in self.config['aggregate']:
+                step = self.config['aggregate']['y']['step']
+                if self.config['aggregate']['y']['method'] == 'average':
+                    val_y = aggregate_average(val_y, step)
+                    test_y = aggregate_average(test_y, step)
+                elif self.config['aggregate']['y']['method'] == 'max':
+                    val_y = aggregate_max_min(val_y, step, aggmax=True)
+                    test_y = aggregate_max_min(test_y, step, aggmax=True)
+                elif self.config['aggregate']['y']['method'] == 'min':
+                    val_y = aggregate_max_min(val_y, step, aggmax=False)
+                    test_y = aggregate_max_min(test_y, step, aggmax=False)
+            if 'decompose' in self.config and 'y' in self.config['decompose']:
+                # Decompose prediction and keep one of the components
+                components = self.config['decompose']['y']['components']
+                dec_y = apply_SSA_decomposition_y(components, val_y)
+                val_y = dec_y[:, :,self.config['decompose']['y']['var']]
+                dec_y = apply_SSA_decomposition_y(components, test_y)
+                test_y = dec_y[:, :,self.config['decompose']['y']['var']]
 
             val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1]))
             test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
@@ -584,7 +624,7 @@ class Dataset:
         :return:
         """
         datanames = self.config['datanames']
-        d=datanames[0]  # just the main dataset
+        d = datanames[0]  # just the main dataset
 
         vars = self.config['vars']
         if 'angle' in self.config:
@@ -597,7 +637,7 @@ class Dataset:
             srv.get(remote_wind_data_path + f"/{d}.npy", self.data_path + f"/{d}.npy")
             srv.close()
         if angle:
-            wind = np.load(self.data_path+'_angle' + f"/{d}.npy")
+            wind = np.load(self.data_path + '_angle' + f"/{d}.npy")
         else:
             wind = np.load(self.data_path + f"/{d}.npy")
 
@@ -646,7 +686,7 @@ class Dataset:
         else:
             angle = False
 
-        #ahead = self.config['ahead'] if (type(self.config['ahead']) == list) else [1, self.config['ahead']]
+        # ahead = self.config['ahead'] if (type(self.config['ahead']) == list) else [1, self.config['ahead']]
 
         if type(ahead) == list:
             dahead = ahead[1]
@@ -672,7 +712,7 @@ class Dataset:
                 srv.get(remote_wind_data_path + f"/{d}.npy", self.data_path + f"/{d}.npy")
                 srv.close()
             if angle:
-                wind[d] = np.load(self.data_path+'_angle' + f"/{d}.npy")
+                wind[d] = np.load(self.data_path + '_angle' + f"/{d}.npy")
             else:
                 wind[d] = np.load(self.data_path + f"/{d}.npy")
             if remote:
@@ -790,10 +830,9 @@ class Dataset:
                    [self.test_x[:, :, 0].reshape(self.test_x.shape[0], self.test_x.shape[1], 1),
                     self.test_x[:, :, 1:]], self.test_y
         else:
-            return [self.train_x[:, :horizon].train_x[:, horizon:,]], self.train_y, \
+            return [self.train_x[:, :horizon].train_x[:, horizon:, ]], self.train_y, \
                    [self.val_x[:, :horizon], self.val_x[:, :horizon]], self.val_y, \
                    [self.test_x[:, :horizon], self.test_x[:, :horizon]], self.test_y
-
 
     def auxiliary_future(self):
         """
@@ -819,13 +858,16 @@ class Dataset:
             test_x_future = self.test_x[dahead:, -slice:, future]
         else:
             nvars = len(self.config['vars'])
-            train_x_future = self.train_x[datalag-1:, (future*datalag)+ahead[0]:(future*datalag)+ahead[0]+slice]
-            val_x_future = self.val_x[datalag-1:, (future*datalag)+ahead[0]:(future*datalag)+ahead[0]+slice]
-            test_x_future = self.test_x[datalag-1:, (future*datalag)+ahead[0]:(future*datalag)+ahead[0]+slice]
+            train_x_future = self.train_x[datalag - 1:,
+                             (future * datalag) + ahead[0]:(future * datalag) + ahead[0] + slice]
+            val_x_future = self.val_x[datalag - 1:, (future * datalag) + ahead[0]:(future * datalag) + ahead[0] + slice]
+            test_x_future = self.test_x[datalag - 1:,
+                            (future * datalag) + ahead[0]:(future * datalag) + ahead[0] + slice]
 
         # We lose the last datalag-1 examples because we do not have their full future in the data matrix
-        return [self.train_x[:-(datalag-1)], train_x_future], self.train_y[:-(datalag-1)], [self.val_x[:-(datalag-1)], val_x_future], self.val_y[:-(datalag-1)],\
-               [self.test_x[:-(datalag-1)], test_x_future], self.test_y[:-(datalag-1)]
+        return [self.train_x[:-(datalag - 1)], train_x_future], self.train_y[:-(datalag - 1)], [
+            self.val_x[:-(datalag - 1)], val_x_future], self.val_y[:-(datalag - 1)], \
+               [self.test_x[:-(datalag - 1)], test_x_future], self.test_y[:-(datalag - 1)]
 
     def summary(self):
         """
@@ -871,24 +913,23 @@ class Dataset:
             raise NameError("Raw data is not loaded")
 
         if var > self.raw_data.shape[1]:
-             raise NameError("Invalid variable number")
+            raise NameError("Invalid variable number")
 
+        dvals = {}
+        dvals['SpecEnt'] = spectral_entropy(self.raw_data[:, var], sf=1)
+        dvals['SampEnt'] = sample_entropy(self.raw_data[:, var], order=2)
 
-        dvals={}
-        dvals['SpecEnt'] = spectral_entropy(self.raw_data[:,var],sf=1)
-        dvals['SampEnt'] = sample_entropy(self.raw_data[:,var],order=2)
-
-        data = self.raw_data[:,var]
+        data = self.raw_data[:, var]
         for w in window:
             lw = window[w]
             length = int(data.shape[0] / lw)
             size = lw * length
             datac = data[:size]
             datac = datac.reshape(-1, lw)
-            means = np.mean(datac,axis=1)
-            vars = np.std(datac,axis=1)
+            means = np.mean(datac, axis=1)
+            vars = np.std(datac, axis=1)
             dvals[f'Stab{w}'] = np.std(means)
-            dvals[f'Lump{w}']= np.std(vars)
+            dvals[f'Lump{w}'] = np.std(vars)
 
         return dvals
 
@@ -902,16 +943,16 @@ if __name__ == '__main__':
     # config = load_config_file(f"../TestConfigs/{cfile}.json")
     config = {
 
-         "datanames": ["155-77651-01"],
-         "scaler": "standard",
-         "vars": "all",
-         "datasize": 43834,
-         "testsize": 17534,
-         "dataset": 1,
-         "lag": 72,
-        "aggregate":{"method":"average", "step":12},
-         "ahead": [1, 144]
-     }
+        "datanames": ["155-77651-01"],
+        "scaler": "standard",
+        "vars": "all",
+        "datasize": 43834,
+        "testsize": 17534,
+        "dataset": 1,
+        "lag": 72,
+        "aggregate": {"method": "average", "step": 12},
+        "ahead": [1, 144]
+    }
 
     # print(config)
     mode = ('2D', '2D')
@@ -944,4 +985,3 @@ if __name__ == '__main__':
     # print(valx[2,:18])
     # print(valx[2,18:36])
     # print(valx_f[0,:])
-
