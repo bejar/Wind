@@ -39,6 +39,8 @@ mongoconnection = MongoData('mongodb://localhost:27017/', 'Database', 'User', 'P
 # Mongo local connection
 mongolocal = MongoData('mongodb://localhost:27017/', 'Database', 'User', 'Password',
                             'Collection')
+mongolocalmeasures = MongoData('mongodb://localhost:27017/', 'Database', 'User', 'Password',
+                            'Collection')
 
 # Token for mapbox.com to be able to plot maps with geographical information with plotly
 mapbox_token = ""
