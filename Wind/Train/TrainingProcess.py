@@ -496,8 +496,8 @@ def train_sequence2sequence(architecture, config, runconfig):
 
     if type(ahead) == list:
         odimensions = ahead[1] - ahead[0] + 1
-        if 'aggregate' in config['data']:
-            step = config['data']['aggregate']['step']
+        if 'aggregate' in config['data'] and 'y' in config['data']['aggregate']:
+            step = config['data']['aggregate']['y']['step']
             odimensions //= step
     else:
         odimensions = ahead
