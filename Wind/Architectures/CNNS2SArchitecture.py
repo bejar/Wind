@@ -138,7 +138,24 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             if squeeze is not None:
                 model = squeeze_and_excitation(model, ratio=squeeze)
 
-        if self.config['arch']['fulltype'] == 'mlp':
+        if 'fulltype' not in self.config['arch']:
+            # MLP output, full/fulldrop/activation are used to build a MLP with a final layer that is linear with odimensions
+            activationfl = self.config['arch']['activation_full']
+            fulldrop = self.config['arch']['fulldrop']
+            full_layers = self.config['arch']['full']
+            model = Flatten()(model)
+
+            for l in full_layers:
+                model= Dense(l)(model)
+                model = generate_activation(activationfl)(model)
+                if bnorm:
+                    model = BatchNormalization()(model)
+
+                if fulldrop != 0:
+                    model = Dropout(rate=fulldrop)(model)
+
+            output = Dense(odimensions, activation='linear')(model)
+        elif self.config['arch']['fulltype'] == 'mlp':
             # MLP output, full/fulldrop/activation are used to build a MLP with a final layer that is linear with odimensions
             activationfl = self.config['arch']['activation_full']
             fulldrop = self.config['arch']['fulldrop']
