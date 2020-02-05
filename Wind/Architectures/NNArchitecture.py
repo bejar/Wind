@@ -39,6 +39,7 @@ else:
 
 from time import time
 import os
+import h5py
 
 from Wind.Train.Losses import regression_losses
 from Wind.ErrorMeasure import ErrorMeasure
@@ -95,11 +96,6 @@ class NNArchitecture(Architecture):
                 optimizer = RMSprop(lr=self.config['training']['lrate'])
             else:
                 optimizer = RMSprop(lr=0.001)
- #       elif optimizer == 'adamax':
- #           if 'lrate' in self.config['training']:
- #               optimizer = Adamax(lr=self.config['training']['lrate'])
- #           else:
- #               optimizer = Adamax()
 
         if 'loss' in self.config['training']:
             if self.config['training']['loss'] in regression_losses:
@@ -123,11 +119,12 @@ class NNArchitecture(Architecture):
             pmodel.fit(train_x, train_y, batch_size=batch_size, epochs=nepochs, validation_data=(val_x, val_y),
                        verbose=self.runconfig.verbose, callbacks=cbacks)
 
-    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None, save_errors=None):
         """
         Evaluates a trained model, loads the best if it is configured to do so
         Computes the R² for validation and test
 
+        :param save_errors:
         :param val_x:
         :param val_y:
         :param test_x:
@@ -141,6 +138,21 @@ class NNArchitecture(Architecture):
 
         val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
         test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
+
+        if save_errors is not None:
+            f = h5py.File(f'errors{self.modname}-S{self.config["data"]["datanames"][0]}{save_errors}.hdf5', 'w')
+            dgroup = f.create_group('errors')
+            dgroup.create_dataset('val_y', val_y.shape, dtype='f', data=val_y, compression='gzip')
+            dgroup.create_dataset('val_yp', val_yp.shape, dtype='f', data=val_yp, compression='gzip')
+            dgroup.create_dataset('test_y', test_y.shape, dtype='f', data=test_y, compression='gzip')
+            dgroup.create_dataset('test_yp', test_yp.shape, dtype='f', data=test_y, compression='gzip')
+            if scaler is not None:
+                # Unidimensional vectors
+                dgroup.create_dataset('val_yu', val_y.shape, dtype='f', data=scaler.inverse_transform(val_y.reshape(-1, 1)), compression='gzip')
+                dgroup.create_dataset('val_ypu', val_yp.shape, dtype='f', data=scaler.inverse_transform(val_yp.reshape(-1, 1)), compression='gzip')
+                dgroup.create_dataset('test_yu', test_y.shape, dtype='f', data=scaler.inverse_transform(test_y.reshape(-1, 1)), compression='gzip')
+                dgroup.create_dataset('test_ypu', test_yp.shape, dtype='f', data=scaler.inverse_transform(test_yp.reshape(-1, 1)), compression='gzip')
+
         return ErrorMeasure().compute_errors(val_y, val_yp, test_y, test_yp, scaler=scaler)
 
 
@@ -156,7 +168,7 @@ class NNArchitecture(Architecture):
             except Exception:
                 pass
         else:
-            os.rename(self.modfile, 'model%s-S%s%s.h5' % (self.modname, self.config['data']['datanames'][0], postfix))
+            os.rename(self.modfile, f'model{self.modname}-S{self.config["data"]["datanames"][0]}{postfix}.h5')
 
     def plot(self):
         """

@@ -65,9 +65,10 @@ class PersistenceArchitecture(Architecture):
                 print(f"# {c} = {self.config['training'][c]}")
             print("---------------------------------------")
 
-    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None, save_errors=None):
         """
         Evaluates the training
+        :param save_errors:
         :return:
         """
 

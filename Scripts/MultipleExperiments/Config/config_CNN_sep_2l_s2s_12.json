@@ -1,0 +1,46 @@
+{ 
+   "_id": "00000000",
+      "experiment": "TEST",
+  "data": {
+    "datanames": ["11-5794-12"],
+    "scaler": "standard",
+    "vars": "all",
+    "datasize": 526008,
+    "testsize": 210408,
+    "dataset": "onesitemanyvar",
+    "lag": 144,
+    "ahead": [1,144],
+      "aggregate":{"what":["y"],"method":"average","step":12}
+  },
+  "arch": {
+      "filters": [32],
+      "strides": [1],
+      "kernel_size": [3],
+       "depth_multiplier": 1,
+       "activation": "relu",
+      "drop": 0,
+      "filters2": [32],
+      "strides2": [1],
+      "kernel_size2": [3],
+       "depth_multiplier2": 1,
+       "activation2": "relu",
+      "drop2": 0,
+  "dilation": false,
+    "k_reg": "None",
+      "k_regw": 0.1,
+    "rec_reg": "None",
+    "rec_regw": 0.1,
+      "activation_full": "linear",
+      "fulldrop": 0,
+      "full": [16,8],
+      "mode":"CNN_sep_2l_s2s"
+  },
+  "training": {
+    "iter": 1,
+    "batch": 1024,
+      "epochs": 200,
+      "patience":10,
+      "optimizer": "adamax",
+    "lrate": 0.001
+  }
+}
