@@ -562,14 +562,14 @@ class Dataset:
             val_y = test[:half_test, -slice:, 0]
             test_y = test[half_test:, -slice:, 0]
             if 'aggregate' in self.config and 'y' in self.config['aggregate']:
-                step = self.config['aggregate']['step']
-                if self.config['aggregate']['method'] == 'average':
+                step = self.config['aggregate']['y']['step']
+                if self.config['aggregate']['y']['method'] == 'average':
                     val_y = aggregate_average(val_y, step)
                     test_y = aggregate_average(test_y, step)
-                elif self.config['aggregate']['method'] == 'max':
+                elif self.config['aggregate']['y']['method'] == 'max':
                     val_y = aggregate_max_min(val_y, step, aggmax=True)
                     test_y = aggregate_max_min(test_y, step, aggmax=True)
-                elif self.config['aggregate']['method'] == 'min':
+                elif self.config['aggregate']['y']['method'] == 'min':
                     val_y = aggregate_max_min(val_y, step, aggmax=False)
                     test_y = aggregate_max_min(test_y, step, aggmax=False)
             # Decompose prediction and keep one of the components
