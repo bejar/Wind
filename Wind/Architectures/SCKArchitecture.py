@@ -19,6 +19,7 @@ SCKArchitecture
 
 from Wind.Architectures.Architecture import Architecture
 from Wind.ErrorMeasure import ErrorMeasure
+import h5py
 
 __author__ = 'bejar'
 
@@ -40,13 +41,28 @@ class SCKArchitecture(Architecture):
         """
         self.model.fit(train_x, train_y)
 
-    def evaluate(self, val_x, val_y, test_x, test_y):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None, save_errors=None):
         """
         Evaluates the training
+        :param save_errors:
         :return:
         """
         val_yp = self.model.predict(val_x)
         test_yp = self.model.predict(test_x)
+
+        if save_errors is not None:
+            f = h5py.File(f'errors{self.modname}-S{self.config["data"]["datanames"][0]}{save_errors}.hdf5', 'w')
+            dgroup = f.create_group('errors')
+            dgroup.create_dataset('val_y', val_y.shape, dtype='f', data=val_y, compression='gzip')
+            dgroup.create_dataset('val_yp', val_yp.shape, dtype='f', data=val_yp, compression='gzip')
+            dgroup.create_dataset('test_y', test_y.shape, dtype='f', data=test_y, compression='gzip')
+            dgroup.create_dataset('test_yp', test_yp.shape, dtype='f', data=test_y, compression='gzip')
+            if scaler is not None:
+                # Unidimensional vectors
+                dgroup.create_dataset('val_yu', val_y.shape, dtype='f', data=scaler.inverse_transform(val_y.reshape(-1, 1)), compression='gzip')
+                dgroup.create_dataset('val_ypu', val_yp.shape, dtype='f', data=scaler.inverse_transform(val_yp.reshape(-1, 1)), compression='gzip')
+                dgroup.create_dataset('test_yu', test_y.shape, dtype='f', data=scaler.inverse_transform(test_y.reshape(-1, 1)), compression='gzip')
+                dgroup.create_dataset('test_ypu', test_yp.shape, dtype='f', data=scaler.inverse_transform(test_yp.reshape(-1, 1)), compression='gzip')
 
         return ErrorMeasure().compute_errors(val_y, val_yp, test_y, test_yp)
 

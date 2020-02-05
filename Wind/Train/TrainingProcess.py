@@ -193,9 +193,12 @@ def train_sjoint_sequence2sequence(architecture, config, runconfig):
             ############################################
             # Results
             if 'descale' not in config['training'] or config['training']['descale']:
-                lresults.extend(arch.evaluate(val_x, val_y[:,ahead[0]-1:ahead[1]], test_x, test_y[:,ahead[0]-1:ahead[1]], scaler=dataset.scaler))
+                lresults.extend(
+                    arch.evaluate(val_x, val_y[:, ahead[0] - 1:ahead[1]], test_x, test_y[:, ahead[0] - 1:ahead[1]],
+                                  scaler=dataset.scaler))
             else:
-                lresults.extend(arch.evaluate(val_x, val_y[:,ahead[0]-1:ahead[1]], test_x, test_y[:,ahead[0]-1:ahead[1]]))
+                lresults.extend(
+                    arch.evaluate(val_x, val_y[:, ahead[0] - 1:ahead[1]], test_x, test_y[:, ahead[0] - 1:ahead[1]]))
 
             print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -302,9 +305,12 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
             # Results and Add the new predictions to the saved ones
             if config['rdimensions'] == 0:
                 if 'descale' not in config['training'] or config['training']['descale']:
-                    lresults.extend(arch.evaluate(val_x, val_y[:,ahead[0]-1:ahead[1]], test_x, test_y[:,ahead[0]-1:ahead[1]], scaler=dataset.scaler))
+                    lresults.extend(
+                        arch.evaluate(val_x, val_y[:, ahead[0] - 1:ahead[1]], test_x, test_y[:, ahead[0] - 1:ahead[1]],
+                                      scaler=dataset.scaler))
                 else:
-                    lresults.extend(arch.evaluate(val_x, val_y[:,ahead[0]-1:ahead[1]], test_x, test_y[:,ahead[0]-1:ahead[1]]))
+                    lresults.extend(
+                        arch.evaluate(val_x, val_y[:, ahead[0] - 1:ahead[1]], test_x, test_y[:, ahead[0] - 1:ahead[1]]))
                 rec_train_pred_x = arch.predict(train_x)
                 rec_val_pred_x = arch.predict(val_x)
                 rec_test_pred_x = arch.predict(test_x)
@@ -313,11 +319,12 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
             else:
 
                 if 'descale' not in config['training'] or config['training']['descale']:
-                    lresults.extend(arch.evaluate([val_x, rec_val_pred_x], val_y[:,ahead[0]-1:ahead[1]],
-                                                  [test_x, rec_test_pred_x], test_y[:,ahead[0]-1:ahead[1]], scaler=dataset.scaler))
+                    lresults.extend(arch.evaluate([val_x, rec_val_pred_x], val_y[:, ahead[0] - 1:ahead[1]],
+                                                  [test_x, rec_test_pred_x], test_y[:, ahead[0] - 1:ahead[1]],
+                                                  scaler=dataset.scaler))
                 else:
-                    lresults.extend(arch.evaluate([val_x, rec_val_pred_x], val_y[:,ahead[0]-1:ahead[1]],
-                                                  [test_x, rec_test_pred_x], test_y[:,ahead[0]-1:ahead[1]]))
+                    lresults.extend(arch.evaluate([val_x, rec_val_pred_x], val_y[:, ahead[0] - 1:ahead[1]],
+                                                  [test_x, rec_test_pred_x], test_y[:, ahead[0] - 1:ahead[1]]))
 
 
                 rec_train_pred_x = np.concatenate((rec_train_pred_x, arch.predict([train_x, rec_train_pred_x])), axis=1)
@@ -537,11 +544,13 @@ def train_sequence2sequence(architecture, config, runconfig):
 
         ############################################
         # Results
-
+        saverrors = None
+        if 'saverrors' in config['training'] and config['training']['saverrors']:
+            saverrors = f'-{ahead[0]}-{ahead[1]}-R{iter}'
         if 'descale' not in config['training'] or config['training']['descale']:
-            lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y,scaler=dataset.scaler))
+            lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y, scaler=dataset.scaler, save_errors=saverrors))
         else:
-            lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
+            lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y, save_errors=saverrors))
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -584,7 +593,7 @@ def train_persistence(architecture, config, runconfig):
             dataset.summary()
 
         if 'descale' not in config['training'] or config['training']['descale']:
-            lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y,scaler=dataset.scaler))
+            lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y, scaler=dataset.scaler))
         else:
             lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
 
@@ -642,7 +651,7 @@ def train_sckit_dirregression(architecture, config, runconfig):
         ############################################
         # Results
         if 'descale' not in config['training'] or config['training']['descale']:
-            lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y,scaler=dataset.scaler))
+            lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y, scaler=dataset.scaler))
         else:
             lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
 
@@ -775,7 +784,7 @@ def train_sequence2sequence_tf(architecture, config, runconfig):
         # Results
 
         if 'descale' not in config['training'] or config['training']['descale']:
-            lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y,scaler=dataset.scaler))
+            lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y, scaler=dataset.scaler))
         else:
             lresults.extend(arch.evaluate(val_x, val_y, test_x, test_y))
 

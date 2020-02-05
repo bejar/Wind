@@ -17,14 +17,13 @@ RNNS2SArchitecture
 """
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model, Model
-from keras.layers import LSTM, GRU, Dense, Flatten, Dropout, Bidirectional, Input, TimeDistributed, RepeatVector, \
-    Lambda, Activation, Permute, multiply,Layer
-from sklearn.metrics import r2_score
+from keras.models import load_model, Model
+from keras.layers import LSTM, GRU, Dense,  Dropout, Input
 from Wind.Train.Activations import generate_activation
-from keras import backend as K
+
 from Wind.Util.SelfAttention import SelfAttention
 from Wind.ErrorMeasure import ErrorMeasure
+import h5py
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -187,13 +186,14 @@ class RNNS2SSelfAttentionArchitecture(NNS2SArchitecture):
         self.model = Model(inputs=input, outputs=output)
         # self.model = Model(inputs=input, outputs=reg)
 
-    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None, save_errors=None):
         """
         Evaluates the trained model with validation and test
         this function uses a custom object
 
         Overrides parent function
 
+        :param save_errors:
         :param val_x:
         :param val_y:
         :param test_x:
@@ -215,6 +215,14 @@ class RNNS2SSelfAttentionArchitecture(NNS2SArchitecture):
         else:
             iahead = 1
             ahead = self.config['data']['ahead']
+
+        if save_errors is not None:
+            f = h5py.File(f'errors{self.modname}-S{self.config["data"]["datanames"][0]}{save_errors}.hdf5', 'w')
+            dgroup = f.create_group('errors')
+            dgroup.create_dataset('val_y', val_y.shape, dtype='f', data=val_y, compression='gzip')
+            dgroup.create_dataset('val_yp', val_yp.shape, dtype='f', data=val_yp, compression='gzip')
+            dgroup.create_dataset('test_y', test_y.shape, dtype='f', data=test_y, compression='gzip')
+            dgroup.create_dataset('test_yp', test_yp.shape, dtype='f', data=test_y, compression='gzip')
 
         lresults = []
 

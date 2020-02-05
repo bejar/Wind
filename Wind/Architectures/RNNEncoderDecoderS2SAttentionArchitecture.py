@@ -162,11 +162,12 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
 
         self.model = Model(inputs=[enc_input, dec_input], outputs=output)
 
-    def evaluate(self, val_x, val_y, test_x, test_y):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None:
         """
         The evaluation for this architecture is iterative, for each step a new time in the future is predicted
         using the results of the previous steps, the result is appended for the next step
 
+        :param save_errors:
         :param val_x:
         :param val_y:
         :param test_x:
