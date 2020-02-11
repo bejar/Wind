@@ -1,13 +1,13 @@
 """
-.. module:: CNNS2SArchitecture
+.. module:: CNNMIMOOSkipArchitecture
 
 CNNS2SArchitecture
 *************
 
 
-:Description: CNNS2SArchitecture
+:Description: CNNMIMOSkipArchitecture
 
-    Class for convolutional sequence to sequence architecture
+    Class for convolutional sequence to sequence architecture with skip/residual connections
 
 
 :Authors: bejar
@@ -20,9 +20,8 @@ CNNS2SArchitecture
 """
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model, Model
+from keras.models import Model
 from keras.layers import Dense, Dropout, Conv1D, Flatten, Input, Concatenate
-from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
 
 from keras.regularizers import l1, l2
@@ -30,14 +29,12 @@ from keras.regularizers import l1, l2
 __author__ = 'bejar'
 
 
-class CNNS2SSkipArchitecture(NNS2SArchitecture):
+class CNNMIMOSkipArchitecture(NNS2SArchitecture):
     """
-    Class for convolutional sequence to sequence architecture with skip conection that connects directly the
-    input to the fully connected layer
-
+    Class for convolutional sequence to sequence architecture with skip/residual
     """
     modfile = None
-    modname = 'CNNS2SSKIP'
+    modname = 'CNNMIMOSKIP'
     data_mode = ('3D', '2D') #'cnn'
 
     def generate_model(self):
@@ -105,7 +102,10 @@ class CNNS2SSkipArchitecture(NNS2SArchitecture):
         if drop != 0:
             model = Dropout(rate=drop)(model)
 
+        last2 = model # keep for generating the skip connections
+        last1 = input
         for i in range(1, len(filters)):
+            model = Concatenate()([model, last1])
             model = Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
                               padding='causal', dilation_rate=dilation[i],
                               kernel_regularizer=k_regularizer)(model)
@@ -113,9 +113,11 @@ class CNNS2SSkipArchitecture(NNS2SArchitecture):
 
             if drop != 0:
                 model = Dropout(rate=drop)(model)
+            last1 = last2
+            last2 = model
 
-
-        model = Concatenate()([Flatten()(input), Flatten()(model)])
+        #model = Concatenate()([Flatten()(input), Flatten()(model)])
+        model = Flatten()(model)
         for l in full_layers:
             model= Dense(l)(model)
             model = generate_activation(activationfl)(model)
