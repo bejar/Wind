@@ -30,7 +30,8 @@ from Wind.Architectures import MLPDirRegressionArchitecture, MLPS2SArchitecture,
 
 from Wind.Architectures import CNNS2SArchitecture, CNNS2SCrazyIvanArchitecture, CNNS2SCrazyIvan2HArchitecture, CNNS2SCrazyIvan3HArchitecture, CNNS2S2DArchitecture,  \
     CNNS2SSkipArchitecture, CNNSeparableS2SArchitecture, CNNSeparable2LS2SArchitecture, CNNSeparable3LS2SArchitecture,\
-    CNNSeparable4LS2SArchitecture, CNN2LS2SArchitecture, CNN3LS2SArchitecture, CNN4LS2SArchitecture, CNNLoCoS2SArchitecture, CNNMIMOSkipArchitecture
+    CNNSeparable4LS2SArchitecture, CNN2LS2SArchitecture, CNN3LS2SArchitecture, CNN4LS2SArchitecture, CNNLoCoS2SArchitecture, CNNMIMOSkipArchitecture, \
+    CNNMIMOResidualArchitecture
 
 from Wind.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2SArchitecture, RNNS2SArchitecture, \
     RNNEncoderDecoderS2SAttentionArchitecture, RNNS2SSelfAttentionArchitecture, RNNEncoderDecoderS2SDepArchitecture
@@ -116,6 +117,7 @@ class TrainDispatch:
         self.model_dict['CNN_LC_s2s'] = (train_sequence2sequence, CNNLoCoS2SArchitecture)
 
         self.model_dict['CNN_skip_mimo'] = (train_sequence2sequence, CNNMIMOSkipArchitecture)
+        self.model_dict['CNN_res_mimo'] = (train_sequence2sequence, CNNMIMOResidualArchitecture)
 
         self.model_dict['TimeInception'] = (train_sequence2sequence, TimeInceptionArchitecture)
 
