@@ -132,7 +132,7 @@ class CNNMIMOResidualArchitecture(NNS2SArchitecture):
 
             last1 = last2
             last2 = model
-
+        model = Add()([model, last1])
         #model = Concatenate()([Flatten()(input), Flatten()(model)])
         model = Flatten()(model)
         for l in full_layers:
