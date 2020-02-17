@@ -95,6 +95,7 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
         else:
             bidire = False
             bidird = False
+            bimerge = None
 
         if 'backwards' in self.config['arch']:
             backwards = self.config['arch']['backwards']
@@ -113,6 +114,9 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
             activation_full = self.config['arch']['activation_full']
         else:
             full = []
+            fulldrop = 0
+            activation_full = 'linear'
+
         # Extra added from training function
         idimensions = self.config['idimensions']
         odimensions = self.config['odimensions']
