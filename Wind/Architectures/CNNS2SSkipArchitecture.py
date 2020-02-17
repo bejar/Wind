@@ -32,7 +32,8 @@ __author__ = 'bejar'
 
 class CNNS2SSkipArchitecture(NNS2SArchitecture):
     """
-    Class for convolutional sequence to sequence architecture
+    Class for convolutional sequence to sequence architecture with skip conection that connects directly the
+    input to the fully connected layer
 
     """
     modfile = None

@@ -63,6 +63,8 @@ from .CNNSeparable2LS2SArchitecture import CNNSeparable2LS2SArchitecture
 from .CNNSeparable3LS2SArchitecture import CNNSeparable3LS2SArchitecture
 from .CNNSeparable4LS2SArchitecture import CNNSeparable4LS2SArchitecture
 from .CNNLoCoS2SArchitecture import CNNLoCoS2SArchitecture
+from .CNNMIMOSkipArchitecture import CNNMIMOSkipArchitecture
+from .CNNMIMOResidualArchitecture import CNNMIMOResidualArchitecture
 
 from .TimeInceptionArchitecture import TimeInceptionArchitecture
 
@@ -103,6 +105,8 @@ __all__ = ['Architecture',
            'CNNSeparable3LS2SArchitecture',
            'CNNSeparable4LS2SArchitecture',
            'CNNS2SSkipArchitecture',
+           'CNNMIMOSkipArchitecture',
+           'CNNMIMOResidualArchitecture',
            'RandomForestDirRegressionArchitecture',
            'RandomForestS2SArchitecture',
            'AdaBoostDirRegressionArchitecture',

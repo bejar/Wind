@@ -170,7 +170,7 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
 
         conv_6 = Conv1D(filters=filters, kernel_size=1,
                         padding=padding, use_bias=bias)(max_pool_1)
-        conv6 = generate_activation(activation)(conv_6)
+        conv_6 = generate_activation(activation)(conv_6)
 
         conv_list.append(conv_6)
 
@@ -180,9 +180,9 @@ class TimeInceptionArchitecture(NNS2SArchitecture):
         x = generate_activation(activation)(x)
         return x
 
-    def shortcut_layer(self, input_tensor, out_tensor,padding, activation, bnorm):
+    def shortcut_layer(self, input_tensor, out_tensor, padding, activation, bnorm):
         shortcut_y = Conv1D(filters=int(out_tensor.shape[-1]), kernel_size=1,
-                            padding=padding, use_bias=bias)(input_tensor)
+                            padding=padding, use_bias=False)(input_tensor)
         if bnorm:
             shortcut_y = BatchNormalization()(shortcut_y)
 
