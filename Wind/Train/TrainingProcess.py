@@ -105,7 +105,7 @@ def train_dirregression(architecture, config, runconfig):
             else:
                 lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
 
-            print(strftime('%Y-%m-%d %H:%M:%S'))
+            print(strftime('%Y-%m-%d %H:%M:%S'),f"Steps Ahead = {ahead}")
 
             # Update result in db
             if config is not None and not runconfig.proxy:
@@ -200,7 +200,7 @@ def train_sjoint_sequence2sequence(architecture, config, runconfig):
                 lresults.extend(
                     arch.evaluate(val_x, val_y[:, ahead[0] - 1:ahead[1]], test_x, test_y[:, ahead[0] - 1:ahead[1]]))
 
-            print(strftime('%Y-%m-%d %H:%M:%S'))
+            print(strftime('%Y-%m-%d %H:%M:%S'),f"Steps Ahead = {ahead}")
 
             # Update result in db
             if config is not None and not runconfig.proxy:

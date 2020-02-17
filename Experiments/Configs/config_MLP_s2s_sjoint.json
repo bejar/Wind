@@ -9,7 +9,7 @@
       "dataset": 1,
       "lag": 12,
       "ahead": [1,12],
-    "slice": 6
+    "slice": 1
   },
   "arch": {
       "drop": 0.3,
