@@ -50,8 +50,7 @@ class MLPDirRegressionArchitecture(NNArchitecture):
 
 
         # self.model = Sequential()
-        # self.model.add(Input(shape=(idimensions)))
-        # self.model.add(Dense(full_layers[0]))
+        # self.model.add(Dense(full_layers[0], input_shape=(idimensions)))
         # self.model.add(generate_activation(activation))
         # self.model.add(Dropout(rate=dropout))
         # for units in full_layers[1:]:
@@ -71,7 +70,6 @@ class MLPDirRegressionArchitecture(NNArchitecture):
             layer = generate_activation(activation)(layer)
             layer = Dropout(rate=dropout)(layer)
 
-        # layer = Flatten()(layer)
         output = Dense(1, activation='linear')(layer)
 
         self.model = Model(inputs=data_input, outputs=output)
