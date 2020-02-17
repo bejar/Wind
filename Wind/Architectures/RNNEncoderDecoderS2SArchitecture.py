@@ -92,6 +92,9 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
             bidire = self.config['arch']['bidirectional'][0]
             bidird = self.config['arch']['bidirectional'][1]
             bimerge = self.config['arch']['bimerge']
+        else:
+            bidire = False
+            bidird = False
 
         if 'backwards' in self.config['arch']:
             backwards = self.config['arch']['backwards']
