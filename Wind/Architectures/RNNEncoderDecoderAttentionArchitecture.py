@@ -20,7 +20,7 @@ from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from Wind.Util.AttentionDecoder import AttentionDecoder
 from keras.models import load_model, Model
 from keras.layers import LSTM, GRU, Dense, TimeDistributed, Input
-from keras.layers import Activation, dot, concatenate, Permute
+from keras.layers import Activation, dot, concatenate, Permute, Dropout
 from Wind.Train.Activations import generate_activation
 from Wind.Train.Layers import generate_recurrent_layer
 import numpy as np
@@ -95,6 +95,7 @@ class RNNEncoderDecoderAttentionArchitecture(NNS2SArchitecture):
         CuDNN = self.config['arch']['CuDNN']
         # neuronsD = self.config['arch']['neuronsD']
         full_layers = self.config['arch']['full']
+        fulldrop = self.config['arch']['fulldrop']
 
         # Extra added from training function
         idimensions = self.config['idimensions']
@@ -142,9 +143,13 @@ class RNNEncoderDecoderAttentionArchitecture(NNS2SArchitecture):
         decoder = AttentionDecoder(attsize, odimensions)(encoder)
         decoder = Permute((2,1))(decoder)
 
-        output = TimeDistributed(Dense(full_layers[0], activation=activation_fl))(decoder)
+        output = TimeDistributed(Dense(full_layers[0]))(decoder)
+        output = TimeDistributed(generate_activation(activation_fl))(output)
+        output = TimeDistributed(Dropout(rate=fulldrop))(output)
         for l in full_layers[1:]:
-            output = TimeDistributed(Dense(l, activation=activation_fl))(output)
+            output = TimeDistributed(Dense(l))(output)
+            output = TimeDistributed(generate_activation(activation_fl))(output)
+            output = TimeDistributed(Dropout(rate=fulldrop))(output)
 
         output = TimeDistributed(Dense(1, activation="linear"))(output)
 
