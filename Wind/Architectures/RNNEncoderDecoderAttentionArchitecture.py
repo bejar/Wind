@@ -141,7 +141,7 @@ class RNNEncoderDecoderAttentionArchitecture(NNS2SArchitecture):
             #     encoder)
 
         decoder = AttentionDecoder(attsize, odimensions)(encoder)
-        decoder = Permute((2,1))(decoder)
+        # decoder = Permute((2,1))(decoder)
 
         output = TimeDistributed(Dense(full_layers[0]))(decoder)
         output = TimeDistributed(generate_activation(activation_fl))(output)
