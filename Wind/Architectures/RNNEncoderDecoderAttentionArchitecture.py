@@ -157,7 +157,8 @@ class RNNEncoderDecoderAttentionArchitecture(NNS2SArchitecture):
         batch_size = self.config['training']['batch']
 
         if self.runconfig.best:
-            self.model = load_model(self.modfile)
+            self.model = load_model(self.modfile, custom_objects={"AttentionDecoder": AttentionDecoder})
+            # self.model = load_model(self.modfile)
 
         # if type(self.config['data']['ahead']) == list:
         #     ahead = self.config['data']['ahead'][1]
