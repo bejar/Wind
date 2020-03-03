@@ -144,8 +144,9 @@ class RNNEncoderDecoderAttentionArchitecture(NNS2SArchitecture):
 
     def evaluate(self, val_x, val_y, test_x, test_y, scaler=None, save_errors=None):
         """
-        The evaluation for this architecture is iterative, for each step a new time in the future is predicted
-        using the results of the previous steps, the result is appended for the next step
+        Evaluates the trained model with validation and test
+
+        Overrides parent function
 
         :param save_errors:
         :param val_x:
@@ -159,11 +160,8 @@ class RNNEncoderDecoderAttentionArchitecture(NNS2SArchitecture):
         if self.runconfig.best:
             self.model = load_model(self.modfile, custom_objects={"AttentionDecoder": AttentionDecoder})
             # self.model = load_model(self.modfile)
-
-        # if type(self.config['data']['ahead']) == list:
-        #     ahead = self.config['data']['ahead'][1]
-        # else:
-        #     ahead = self.config['data']['ahead']
+        val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
+        test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
 
         # Maintained to be compatible with old configuration files
         if type(self.config['data']['ahead'])==list:
@@ -173,23 +171,9 @@ class RNNEncoderDecoderAttentionArchitecture(NNS2SArchitecture):
             iahead = 1
             ahead = self.config['data']['ahead']
 
-        # The input for the first step is the last column of the training (t-1)
-        val_x_tfi = val_x[0][:, -1, 0]
-        val_x_tfi = val_x_tfi.reshape(val_x_tfi.shape[0], 1, 1)
-        test_x_tfi = test_x[0][:, -1, 0]
-        test_x_tfi = test_x_tfi.reshape(test_x_tfi.shape[0], 1, 1)
-
-        # Copy the first slice (time step 1)
-        val_x_tf = val_x_tfi.copy()
-        test_x_tf = test_x_tfi.copy()
-
-        lresults = []
-        for i in range(1, ahead + 1):
-            val_yp = self.model.predict([val_x[0], val_x_tf], batch_size=batch_size, verbose=0)
-            test_yp = self.model.predict([test_x[0], test_x_tf], batch_size=batch_size, verbose=0)
-
-            val_x_tf = np.concatenate((val_x_tfi, val_yp), axis=1)
-            test_x_tf = np.concatenate((test_x_tfi, test_yp), axis=1)
+        if 'aggregate' in self.config['data'] and 'y' in self.config['data']['aggregate']:
+            step = self.config['data']['aggregate']['y']['step']
+            ahead //= step
 
         if save_errors is not None:
             f = h5py.File(f'errors{self.modname}-S{self.config["data"]["datanames"][0]}{save_errors}.hdf5', 'w')
@@ -205,14 +189,11 @@ class RNNEncoderDecoderAttentionArchitecture(NNS2SArchitecture):
                 dgroup.create_dataset('test_yu', test_y.shape, dtype='f', data=scaler.inverse_transform(test_y), compression='gzip')
                 dgroup.create_dataset('test_ypu', test_yp.shape, dtype='f', data=scaler.inverse_transform(test_yp), compression='gzip')
 
-
-        # After the loop we have all the predictions for the ahead range
+        lresults = []
         for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
             lresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
-                                                               val_yp[:, i - 1],
-                                                               test_y[:, i - 1],
-                                                               test_yp[:, i - 1]))
-
-
+                                                                val_yp[:, i - 1],
+                                                                test_y[:, i - 1],
+                                                                test_yp[:, i - 1],
+                                                                scaler=scaler))
         return lresults
-
