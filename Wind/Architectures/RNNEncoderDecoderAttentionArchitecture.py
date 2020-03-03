@@ -21,6 +21,8 @@ from Wind.Util.AttentionDecoder import AttentionDecoder
 from keras.models import load_model, Model
 from keras.layers import LSTM, GRU, Dense, TimeDistributed, Input
 from keras.layers import Activation, dot, concatenate, Permute
+from Wind.Train.Activations import generate_activation
+from Wind.Train.Layers import generate_recurrent_layer
 import numpy as np
 from Wind.ErrorMeasure import ErrorMeasure
 import h5py
@@ -118,17 +120,24 @@ class RNNEncoderDecoderAttentionArchitecture(NNS2SArchitecture):
 
         # Encoder RNN - First Input
         enc_input = Input(shape=(idimensions))
-        encoder = RNN(neurons, implementation=impl,
-                      recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                      recurrent_regularizer=rec_regularizer, return_sequences=True, kernel_regularizer=k_regularizer)(
-            enc_input)
+        encoder = generate_recurrent_layer(neurons, impl, drop, activation_r, rec_regularizer, k_regularizer, False,
+                         rnntype, False, False, None, rseq=True)(enc_input)
+        encoder = generate_activation(activation)(encoder)
+        # encoder = RNN(neurons, implementation=impl,
+        #               recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+        #               recurrent_regularizer=rec_regularizer, return_sequences=True, kernel_regularizer=k_regularizer)(
+        #     enc_input)
 
         for i in range(1, nlayersE):
-            encoder = RNN(neurons, implementation=impl,
-                          recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
-                          recurrent_regularizer=rec_regularizer, return_sequences=True,
-                          kernel_regularizer=k_regularizer)(
-                encoder)
+            encoder = generate_recurrent_layer(neurons, impl, drop, activation_r, rec_regularizer, k_regularizer, False,
+                         rnntype, False, False, None, rseq=True)(enc_input)
+            encoder = generate_activation(activation)(encoder)
+
+            # encoder = RNN(neurons, implementation=impl,
+            #               recurrent_dropout=drop, activation=activation, recurrent_activation=activation_r,
+            #               recurrent_regularizer=rec_regularizer, return_sequences=True,
+            #               kernel_regularizer=k_regularizer)(
+            #     encoder)
 
         decoder = AttentionDecoder(attsize, odimensions)(encoder)
         decoder = Permute((2,1))(decoder)
