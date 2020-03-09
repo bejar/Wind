@@ -18,7 +18,7 @@ RNNEncoderDecoderS2SArchitecture
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
-from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector, Dropout, Input
+from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector, Dropout, Input, Concatenate
 from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
 from Wind.Train.Layers import generate_recurrent_layer
@@ -159,8 +159,10 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
                              rnntype, after, bidire, bimerge, rseq=False)(model)
             model = generate_activation(activation)(model)
 
+        
         model = RepeatVector(odimensions)(model)
 
+        decoder = model  # Keep decoder user for reusing it
 
         for i in range(nlayersD):
             model = generate_recurrent_layer(neuronsD, impl, drop, activation_r, rec_regularizer, k_regularizer, backwards,
@@ -169,6 +171,7 @@ class RNNEncoderDecoderS2SArchitecture(NNS2SArchitecture):
             model = generate_activation(activation)(model)
 
 
+        model = Concatenate()([decoder, model])
         for units in full:
             model = TimeDistributed(Dense(units=units))(model)
             model = TimeDistributed(generate_activation(activation_full))(model)

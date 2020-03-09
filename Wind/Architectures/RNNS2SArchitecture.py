@@ -6,7 +6,7 @@ RNNS2SArchitecture
 
 :Description: RNNS2SArchitecture
 
-    RNN with multople regression
+    RNN with multiple regression
 
 :Authors:
     bejar
