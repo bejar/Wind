@@ -12,4 +12,4 @@ module load  gcc/6.4.0  cuda/9.1 cudnn/7.1.3 openmpi/3.0.0 atlas/3.10.3 scalapac
 PYTHONPATH=/gpfs/projects/bsc28/bsc28642/Wind/Code/Wind:$PYTHONPATH
 export PYTHONPATH
 
-python3 DataMeasures.py --isite 50000 --nsites 10000 --ncores 40
+python3 DataMeasures.py --isite 0 --nsites 10 --ncores 40

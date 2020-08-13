@@ -49,15 +49,14 @@ def compute_values(lsites, windows, tstamp, measures):
     """
     Computes Dataset values
     """
-
     for s in lsites:
-        print(s, flush=True)
         dmeasures = {}
+        print(f"{s // 500}-{s}-12", flush=True)
+        dataset = Dataset(config={"datanames": [f"{s // 500}-{s}-12"], "vars": "all"}, data_path=wind_data_path)
+        dataset.load_raw_data()
         for i, v in enumerate(vars):
-            dataset = Dataset(config={"datanames": [f"{s//500}-{s}-12"],  "vars": "all"}, data_path=wind_data_path)
-            dataset.load_raw_data()
+            print(f'{i} - {v}', flush=True)
             dmeasures[v] = dataset.compute_decomposition(i, window=windows) if measures == 'stl' else dataset.compute_measures(i, window=windows)
-
         saveconfig(s, dmeasures, tstamp)
 
 if __name__ == '__main__':
