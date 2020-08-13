@@ -37,19 +37,15 @@ def saveconfig(site, results, tstamp):
     :param proxy:
     :return:
     """
-    config = {}
-    config['experiment'] = 'measures'
-    config['site'] = f"{site//500}-{site}"
-    config['result'] = results
-    config['etime'] = strftime('%Y-%m-%d %H:%M:%S')
-    config['_id'] = f'{tstamp}{site:05d}'
+    config = {'experiment': 'measures', 'site': f"{site // 500}-{site}", 'result': results,
+              'etime': strftime('%Y-%m-%d %H:%M:%S'), '_id': f'{tstamp}{site:05d}'}
     sconf = json.dumps(config)
     fconf = open(wind_res_path + '/measure' + config['_id'] + '.json', 'w')
     fconf.write(sconf + '\n')
     fconf.close()
 
 
-def compute_values(lsites, windows, tstamp):
+def compute_values(lsites, windows, tstamp, measures):
     """
     Computes Dataset values
     """
@@ -60,7 +56,7 @@ def compute_values(lsites, windows, tstamp):
         for i, v in enumerate(vars):
             dataset = Dataset(config={"datanames": [f"{s//500}-{s}-12"],  "vars": "all"}, data_path=wind_data_path)
             dataset.load_raw_data()
-            dmeasures[v] = dataset.compute_measures(i, window=windows)
+            dmeasures[v] = dataset.compute_decomposition(i, window=windows) if measures == 'stl' else dataset.compute_measures(i, window=windows)
 
         saveconfig(s, dmeasures, tstamp)
 
@@ -69,6 +65,7 @@ if __name__ == '__main__':
     parser.add_argument('--isite', type=int, default=0,  help='Initial Site')
     parser.add_argument('--nsites', type=int, default=10000,  help='Number of sites')
     parser.add_argument('--ncores', type=int, default=40, help='Experiment ID')
+    parser.add_argument('--measures', type=str, default='stl', help='type of measures')
 
     args = parser.parse_args()
 
@@ -88,6 +85,6 @@ if __name__ == '__main__':
     for i in range(ncores):
         lparts.append(lsites[i*len(lsites)//ncores:(i+1)*len(lsites)//ncores])
 
-    res = Parallel(n_jobs=ncores)(delayed(compute_values)(sites, windows, tstamp) for sites in lparts)
+    res = Parallel(n_jobs=ncores)(delayed(compute_values)(sites, windows, tstamp, args.measures) for sites in lparts)
 
 

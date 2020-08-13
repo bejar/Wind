@@ -24,6 +24,7 @@ import numpy as np
 import os
 from Wind.Util.Entropy import spectral_entropy, sample_entropy
 from Wind.Util.SSA import SSA
+from statsmodels.tsa.seasonal import STL
 
 try:
     import pysftp
@@ -918,6 +919,30 @@ class Dataset:
             print(f"Lag= {self.config['lag']}")
             print(f"Ahead= {self.config['ahead']}")
             print("------------------------------------")
+
+    def compute_decomposition(self, var, window=None):
+        """
+        Computes measures using STL decomposition of the variable
+        :return:
+        """
+        if self.raw_data is None:
+            raise NameError("Raw data is not loaded")
+
+        if var > self.raw_data.shape[1]:
+            raise NameError("Invalid variable number")
+        dvals = {}
+        data = self.raw_data[:, var]
+        for w in window:
+            lw = window[w]
+            stl = STL(data, period=lw)
+            result = stl.fit()
+            vresidual = np.std(result.resid)
+            vtrend = np.std(data-result.seasonal)
+            vseasonal = np.std(data-result.trend)
+            dvals[f'Trend{w}'] = 1 - (vresidual/vtrend)
+            dvals[f'Season{w}'] = 1 - (vresidual/vseasonal)
+
+        return dvals
 
     def compute_measures(self, var, window=None):
         """
