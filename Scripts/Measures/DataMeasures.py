@@ -55,7 +55,7 @@ def compute_values(lsites, windows, tstamp, measures):
         dataset = Dataset(config={"datanames": [f"{s // 500}-{s}-12"], "vars": "all"}, data_path=wind_data_path)
         dataset.load_raw_data()
         for i, v in enumerate(vars):
-            print(f'{i} - {v}', flush=True)
+            print(f'{i} - {v} {strftime("%Y-%m-%d %H:%M:%S")}', flush=True)
             dmeasures[v] = dataset.compute_decomposition(i, window=windows) if measures == 'stl' else dataset.compute_measures(i, window=windows)
         saveconfig(s, dmeasures, tstamp)
 
