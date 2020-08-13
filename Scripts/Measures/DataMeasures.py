@@ -38,7 +38,7 @@ def saveconfig(site, results, tstamp):
     :param proxy:
     :return:
     """
-    config = {'experiment': 'measures', 'site': f"{site // 500}-{site}", 'result': results,
+    config = {'experiment': 'stl', 'site': f"{site // 500}-{site}", 'result': results,
               'etime': strftime('%Y-%m-%d %H:%M:%S'), '_id': f'{tstamp}{site:05d}'}
     sconf = json.dumps(config)
     fconf = open(wind_res_path + '/measure' + config['_id'] + '.json', 'w')
