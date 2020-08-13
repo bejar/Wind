@@ -29,7 +29,8 @@ import argparse
 __author__ = 'bejar'
 
 
-vars = ['wind_speed', 'temperature', 'density', 'pressure', 'wind_direction_cos', 'wind_direction_sin']
+# vars = ['wind_speed', 'temperature', 'density', 'pressure', 'wind_direction_cos', 'wind_direction_sin']
+vars = ['wind_speed', 'temperature', 'density', 'pressure']
 
 def saveconfig(site, results, tstamp):
     """
@@ -59,6 +60,7 @@ def compute_values(lsites, windows, tstamp, measures):
             dmeasures[v] = dataset.compute_decomposition(i, window=windows) if measures == 'stl' else dataset.compute_measures(i, window=windows)
         saveconfig(s, dmeasures, tstamp)
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--isite', type=int, default=0,  help='Initial Site')
@@ -73,7 +75,8 @@ if __name__ == '__main__':
     if args.isite > lim_sites:
         raise NameError('Initial site out of bounds')
 
-    windows = {'12h':12, '24h':24, '1w':168, '1m':720, '3m':2190, '6m':4380}
+    # windows = {'12h':12, '24h':24, '1w':168, '1m':720, '3m':2190, '6m':4380}
+    windows = {'12h':12, '24h':24, '1m':720}
     if (args.isite+args.nsites) <= lim_sites:
         lsites = range(args.isite, args.isites+args.nsites)
     else:
