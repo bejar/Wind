@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
     windows = {'12h':12, '24h':24, '1w':168, '1m':720, '3m':2190, '6m':4380}
     if (args.isite+args.nsites) <= lim_sites:
-        lsites = range(args.isite, args.nsites+args.nsites)
+        lsites = range(args.isite, args.isites+args.nsites)
     else:
         lsites = range(args.isite, lim_sites)
     ncores = args.ncores  # multiprocessing.cpu_count()
