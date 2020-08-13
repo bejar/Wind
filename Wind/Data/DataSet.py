@@ -105,7 +105,7 @@ def apply_SSA_decomposition_one(var, ncomp, data):
     return np.concatenate((data[:, :, 1:], decvar), axis=2)
 
 
-def select_SSA_decomposition_one(ncomp, comp, data):
+def select_SSA_decomposition_one(ncomp, var, data):
     """
     Applies SSA decomposition to one variable of the data
 
@@ -148,11 +148,11 @@ def apply_SSA_decomposition_all(ncomp, data):
         dmat.append(decvar)
     return np.concatenate(dmat, axis=2)
 
+
 def apply_SSA_decomposition_y(ncomp, data):
     """
     Applies SSA decomposition to one variable of the data
 
-    :param var:
     :param ncomp:
     :param data:
     :return:
@@ -489,7 +489,7 @@ class Dataset:
             if 'decompose' in self.config and 'y' in self.config['decompose']:
                 components = self.config['decompose']['y']['components']
                 dec_y = apply_SSA_decomposition_y(components, train_y)
-                train_y = dec_y[:, :,self.config['decompose']['y']['var']]
+                train_y = dec_y[:, :, self.config['decompose']['y']['var']]
 
             # We need an additional third dimension
             train_y = np.reshape(train_y, (train_y.shape[0], train_y.shape[1], 1))
@@ -576,9 +576,9 @@ class Dataset:
             if 'decompose' in self.config and 'y' in self.config['decompose']:
                 components = self.config['decompose']['y']['components']
                 dec_y = apply_SSA_decomposition_y(components, val_y)
-                val_y = dec_y[:, :,self.config['decompose']['y']['var']]
+                val_y = dec_y[:, :, self.config['decompose']['y']['var']]
                 dec_y = apply_SSA_decomposition_y(components, test_y)
-                test_y = dec_y[:, :,self.config['decompose']['y']['var']]
+                test_y = dec_y[:, :, self.config['decompose']['y']['var']]
 
             val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1], 1))
             test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1], 1))
@@ -600,9 +600,9 @@ class Dataset:
                 # Decompose prediction and keep one of the components
                 components = self.config['decompose']['y']['components']
                 dec_y = apply_SSA_decomposition_y(components, val_y)
-                val_y = dec_y[:, :,self.config['decompose']['y']['var']]
+                val_y = dec_y[:, :, self.config['decompose']['y']['var']]
                 dec_y = apply_SSA_decomposition_y(components, test_y)
-                test_y = dec_y[:, :,self.config['decompose']['y']['var']]
+                test_y = dec_y[:, :, self.config['decompose']['y']['var']]
 
             val_y = np.reshape(val_y, (val_y.shape[0], val_y.shape[1]))
             test_y = np.reshape(test_y, (test_y.shape[0], test_y.shape[1]))
@@ -680,6 +680,7 @@ class Dataset:
 
         lag = self.config['lag']
         vars = self.config['vars']
+        period = self.config['period'] if 'period' in self.config else None
         wind = {}
         if 'angle' in self.config:
             angle = self.config['angle']
@@ -724,6 +725,22 @@ class Dataset:
                     if type(v) != int or v > wind[d].shape[1]:
                         raise NameError('Error in variable selection')
                 wind[d] = wind[d][:, vars]
+            # If the period flag is on we add sinusoidal variables to the data with period a day and a year
+            if period is not None:
+                day = np.zeros((wind[d].shape[0],1))
+                freq = int(24 * 60 / period)
+                for i in range(freq):
+                    day[i::freq] = np.sin((2*np.pi/freq)*i)
+                print(day.shape)
+                year = np.zeros((wind[d].shape[0],1))
+                freq = int(365 * 24 * 60 / period)
+                for i in range(freq):
+                    year[i::freq] = np.sin((2*np.pi/freq)*i)
+                print(year.shape)
+                print(wind[d].shape)
+                wind[d] = np.concatenate((wind[d], day, year), axis=1)
+
+
 
         if (self.config['dataset'] == 0) or (self.config['dataset'] == 'onesiteonevar'):
             if not ensemble:
@@ -941,18 +958,29 @@ if __name__ == '__main__':
 
     # cfile = "config_MLP_s2s_fut"
     # config = load_config_file(f"../TestConfigs/{cfile}.json")
-    config = {
-
-        "datanames": ["155-77651-01"],
-        "scaler": "standard",
-        "vars": "all",
-        "datasize": 43834,
-        "testsize": 17534,
-        "dataset": 1,
-        "lag": 72,
-        "aggregate": {"method": "average", "step": 12},
-        "ahead": [1, 144]
-    }
+    # config = {
+    #
+    #     "datanames": ["155-77651-01"],
+    #     "scaler": "standard",
+    #     "vars": "all",
+    #     "datasize": 43834,
+    #     "testsize": 17534,
+    #     "dataset": 1,
+    #     "lag": 72,
+    #     "aggregate": {"method": "average", "step": 12},
+    #     "ahead": [1, 144]
+    # }
+    config={
+    "datanames": ["11-5795-12"],
+    "scaler": "standard",
+    "vars": "all",
+    "period":60,
+    "datasize": 43834,
+    "testsize": 17534,
+    "dataset": "onesitemanyvar",
+    "lag": 12,
+    "ahead": [1,12]
+  }
 
     # print(config)
     mode = ('2D', '2D')
@@ -962,7 +990,7 @@ if __name__ == '__main__':
     #
     # print(dataset.compute_measures(window={'12h':12, '24h':24, '1w':168, '1m':720, '3m':2190, '6m':4380}))
 
-    dataset.generate_dataset(ahead=[1, 144], mode=mode)
+    dataset.generate_dataset(ahead=[1, 12], mode=mode)
     dataset.summary()
     #
     # dm = dataset.get_data_matrices()
