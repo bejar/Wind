@@ -1,7 +1,7 @@
 { "_id": "00000000",
     "experiment": "MULTIPLE",
   "data": {
-    "datanames": ["11-5794-12"],
+    "datanames": ["11-5793-12"],
     "scaler": "standard",
     "vars": "all",
     "datasize": 43834,
@@ -12,8 +12,8 @@
     "fraction": 1
   },
   "arch": {
-    "neuronsE":16,
-    "neuronsD":16,
+    "neuronsE":64,
+    "neuronsD":64,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",
