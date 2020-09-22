@@ -87,19 +87,20 @@ class DBMeasures:
             warnings.warn('No coordinates file found, maps will not be available')
         self.exp_measures={}
 
-    def retrieve_measures(self):
+    def retrieve_measures(self, measure='measures'):
         """
         Retrieves measures from the DB for a query
 
         :param query:
         :return:
         """
-        lexp = self.col.find({'experiment':'measures'})
-
+        lexp = self.col.find({'experiment':measure})
+        one = None
         for exp in lexp:
             self.exp_measures[int(exp['site'].split('-')[1])] = exp['result']
-        self.variables= list(exp['result'].keys())
-        self.measures = list(exp['result'][self.variables[0]].keys())
+            one = exp['result']
+        self.variables= list(one.keys())
+        self.measures = list(one[self.variables[0]].keys())
         self.osel = list(self.exp_measures.keys())
         self.selection = self.osel
 

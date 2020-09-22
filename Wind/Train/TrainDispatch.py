@@ -34,7 +34,7 @@ from Wind.Architectures import CNNS2SArchitecture, CNNS2SCrazyIvanArchitecture, 
     CNNMIMOResidualArchitecture
 
 from Wind.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2SArchitecture, RNNS2SArchitecture, \
-    RNNEncoderDecoderS2SAttentionArchitecture, RNNS2SSelfAttentionArchitecture, RNNEncoderDecoderS2SDepArchitecture
+    RNNEncoderDecoderS2SAttentionArchitecture, RNNS2SSelfAttentionArchitecture, RNNEncoderDecoderS2SDepArchitecture, RNNEncoderDecoderAttentionArchitecture
 
 from Wind.Architectures import KNNDirRegressionArchitecture, RandomForestDirRegressionArchitecture, SVMDirRegressionArchitecture, \
     AdaBoostDirRegressionArchitecture, KNNS2SArchitecture, ElasticNetS2SArchitecture, XGBoostDirRegressionArchitecture, \
@@ -81,7 +81,8 @@ class TrainDispatch:
         self.model_dict['RNN_ED_s2s_att'] = (train_sequence2sequence_tf, RNNEncoderDecoderS2SAttentionArchitecture)
 
         self.model_dict['RNN_s2s'] = (train_sequence2sequence, RNNS2SArchitecture)
-        self.model_dict['RNN_s2s_att'] = (train_sequence2sequence, RNNS2SSelfAttentionArchitecture)
+        self.model_dict['RNN_s2s_self_att'] = (train_sequence2sequence, RNNS2SSelfAttentionArchitecture)
+        self.model_dict['RNN_s2s_att'] = (train_sequence2sequence, RNNEncoderDecoderAttentionArchitecture)
 
         # MLP models
 

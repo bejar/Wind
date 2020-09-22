@@ -11,8 +11,8 @@
     "ahead": [1,12]
   },
   "arch": {
-    "neuronsE":196,
-    "neuronsD":128,
+    "neuronsE":256,
+    "neuronsD":196,
     "k_reg": "None",
     "k_regw": 0.1,
     "rec_reg": "None",

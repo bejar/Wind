@@ -19,10 +19,10 @@ RNNEncoderDecoderS2SArchitecture
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import load_model, Model
 from keras.layers import LSTM, GRU, Dense, TimeDistributed, Input
-from sklearn.metrics import r2_score
 from keras.layers import Activation, dot, concatenate
 import numpy as np
 from Wind.ErrorMeasure import ErrorMeasure
+import h5py
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM
@@ -162,7 +162,7 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
 
         self.model = Model(inputs=[enc_input, dec_input], outputs=output)
 
-    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None):
+    def evaluate(self, val_x, val_y, test_x, test_y, scaler=None, save_errors=None):
         """
         The evaluation for this architecture is iterative, for each step a new time in the future is predicted
         using the results of the previous steps, the result is appended for the next step
@@ -210,18 +210,28 @@ class RNNEncoderDecoderS2SAttentionArchitecture(NNS2SArchitecture):
             val_x_tf = np.concatenate((val_x_tfi, val_yp), axis=1)
             test_x_tf = np.concatenate((test_x_tfi, test_yp), axis=1)
 
-        # After the loop we have all the predictions for the ahead range
+        if save_errors is not None:
+            f = h5py.File(f'errors{self.modname}-S{self.config["data"]["datanames"][0]}{save_errors}.hdf5', 'w')
+            dgroup = f.create_group('errors')
+            dgroup.create_dataset('val_y', val_y.shape, dtype='f', data=val_y, compression='gzip')
+            dgroup.create_dataset('val_yp', val_yp.shape, dtype='f', data=val_yp, compression='gzip')
+            dgroup.create_dataset('test_y', test_y.shape, dtype='f', data=test_y, compression='gzip')
+            dgroup.create_dataset('test_yp', test_yp.shape, dtype='f', data=test_y, compression='gzip')
+            if scaler is not None:
+                # n-dimensional vectors
+                dgroup.create_dataset('val_yu', val_y.shape, dtype='f', data=scaler.inverse_transform(val_y), compression='gzip')
+                dgroup.create_dataset('val_ypu', val_yp.shape, dtype='f', data=scaler.inverse_transform(val_yp), compression='gzip')
+                dgroup.create_dataset('test_yu', test_y.shape, dtype='f', data=scaler.inverse_transform(test_y), compression='gzip')
+                dgroup.create_dataset('test_ypu', test_yp.shape, dtype='f', data=scaler.inverse_transform(test_yp), compression='gzip')
 
+
+        # After the loop we have all the predictions for the ahead range
         for i, p in zip(range(1, ahead + 1), range(iahead, self.config['data']['ahead'][1]+1)):
             lresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
                                                                val_yp[:, i - 1],
                                                                test_y[:, i - 1],
                                                                test_yp[:, i - 1]))
-        # for i in range(1, ahead + 1):
-        #     lresults.append((i,
-        #                      r2_score(val_y[:, i - 1], val_yp[:, i - 1]),
-        #                      r2_score(test_y[:, i - 1], test_yp[:, i - 1])
-        #                      ))
+
 
         return lresults
 

@@ -50,7 +50,7 @@ current configurations. The configurations are pick after a maximum of --confexp
   --mutate [0-1] mutation probability
 
  python3 GenerateExpConfPseudoSMAC.py --config config_***.json --pconfig pconfig_***.json  --exp experiment
- --exploit genetic --npar 99 --print --nbatches 9 --confexp 9999 --nbest 99- -cross 0.9 --mutate 0.9
+ --exploit genetic --npar 99 --print --nbatches 9 --confexp 9999 --nbest 99 --cross 0.9 --mutate 0.9
 
 NOTE: For exploitation the criteria used to select a candidate is:
     Select if the prediction + (--std * experiments stdv) is larger that the best prediction
