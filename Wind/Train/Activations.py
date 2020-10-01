@@ -57,7 +57,7 @@ def generate_activation(act_par):
     else:
         raise NameError("Wrong parameters for activation layer")
 
-def snake(X):
+def snake(x):
     """
     Snake activation function
 
