@@ -48,6 +48,8 @@ def generate_activation(act_par):
         elif len(act_par) == 1:
             if act_par[0] == 'snake':
                 return Activation(snake)
+            elif act_par[0] == 'xsin':
+                return Activation(xsin)
             else:
                 return Activation(act_par[0])
         else:
@@ -69,4 +71,19 @@ def snake(x):
     """
     return x + (x*x) - (x*x*x/3)
 
+def xsin(x):
+    """
+    Snake activation function
+
+      f(x) = x + sin(x)
+
+      The function is computed used the first terms of the Taylor series decomposition
+    :param X:
+    :return:
+    """
+    return 2*x + (x*x*x/6) + (x*x*x*x*x/120)
+
+
+
 get_custom_objects().update({'snake': Activation(snake)})
+get_custom_objects().update({'xsin': Activation(xsin)})
