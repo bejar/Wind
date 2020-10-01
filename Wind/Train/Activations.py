@@ -84,7 +84,7 @@ def snake5(x):
     :param X:
     :return:
     """
-    return x + (1/5 * tf.sin(5*x) * tf.sin(5*x))
+    return x + (2 * tf.sin(0.5*x) * tf.sin(0.5*x))
 
 def xsin(x):
     """
