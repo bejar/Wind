@@ -22,7 +22,6 @@ from keras.layers import LeakyReLU, PReLU, ELU
 from keras.layers import Activation
 from keras import backend as K
 from keras.utils.generic_utils import get_custom_objects
-from K.math import sin
 __author__ = 'bejar'
 
 
