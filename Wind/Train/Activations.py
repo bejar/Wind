@@ -71,7 +71,7 @@ def snake(x):
     :param X:
     :return:
     """
-    return x + (sin(a*x) * sin(a*x))
+    return x + (K.math.sin(x) * K.math.sin(x))
     #return x + (x*x) - (x*x*x/3)
 
 def snake5(x):
@@ -84,7 +84,7 @@ def snake5(x):
     :param X:
     :return:
     """
-    return x + (1/5 * sin(5*x) * sin(5*x))
+    return x + (1/5 * K.math.sin(5*x) * K.math.sin(5*x))
 
 def xsin(x):
     """
