@@ -52,7 +52,7 @@ def generate_activation(act_par):
                 return Activation(snake5)
             elif act_par[0] == 'xsin':
                 return Activation(xsin)
-            elif act_par[0] == 'xsin':
+            elif act_par[0] == 'swish':
                 return Activation(swish)
             else:
                 return Activation(act_par[0])
