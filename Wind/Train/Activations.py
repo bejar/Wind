@@ -22,7 +22,7 @@ from keras.layers import LeakyReLU, PReLU, ELU
 from keras.layers import Activation
 from keras import backend as K
 from keras.utils.generic_utils import get_custom_objects
-
+from tf.math import sin
 __author__ = 'bejar'
 
 
@@ -48,6 +48,8 @@ def generate_activation(act_par):
         elif len(act_par) == 1:
             if act_par[0] == 'snake':
                 return Activation(snake)
+            elif act_par[0] == 'snake5':
+                return Activation(snake5)
             elif act_par[0] == 'xsin':
                 return Activation(xsin)
             else:
@@ -69,7 +71,20 @@ def snake(x):
     :param X:
     :return:
     """
-    return x + (x*x) - (x*x*x/3)
+    return x + (sin(a*x) * sin(a*x))
+    #return x + (x*x) - (x*x*x/3)
+
+def snake5(x):
+    """
+    Snake activation function
+
+      f(x) = x + sin(x)**2
+
+      The function is computed used the first terms of the Taylor series decomposition
+    :param X:
+    :return:
+    """
+    return x + (1/5 * sin(5*x) * sin(5*x))
 
 def xsin(x):
     """
@@ -87,3 +102,4 @@ def xsin(x):
 
 get_custom_objects().update({'snake': Activation(snake)})
 get_custom_objects().update({'xsin': Activation(xsin)})
+get_custom_objects().update({'snake5': Activation(snake5)})
