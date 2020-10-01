@@ -47,7 +47,7 @@ def generate_activation(act_par):
                 raise NameError("No such Activation layer")
         elif len(act_par) == 1:
             if act_par[0] == 'snake':
-                return snake
+                return Activation(snake)
             else:
                 return Activation(act_par[0])
         else:
