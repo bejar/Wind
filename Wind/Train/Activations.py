@@ -69,4 +69,4 @@ def snake(X):
     """
     return x + (x**2) - (x**3)/3
 
-get_custom_objects().update({'snake': Activation(custom_activation)})
+get_custom_objects().update({'snake': Activation(snake)})
