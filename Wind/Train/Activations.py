@@ -48,8 +48,10 @@ def generate_activation(act_par):
         elif len(act_par) == 1:
             if act_par[0] == 'snake':
                 return Activation(snake)
-            elif act_par[0] == 'snake5':
-                return Activation(snake5)
+            elif act_par[0] == 'snakeh2':
+                return Activation(snakeh2)
+            elif act_par[0] == 'snake2':
+                return Activation(snake2)
             elif act_par[0] == 'xsin':
                 return Activation(xsin)
             elif act_par[0] == 'swish':
@@ -76,7 +78,7 @@ def snake(x):
     return x + (tf.sin(x) * tf.sin(x))
     #return x + (x*x) - (x*x*x/3)
 
-def snake5(x):
+def snakeh2(x):
     """
     Snake activation function
 
@@ -87,6 +89,18 @@ def snake5(x):
     :return:
     """
     return x + (2 * tf.sin(0.5*x) * tf.sin(0.5*x))
+
+def snake2(x):
+    """
+    Snake activation function
+
+      f(x) = x + sin(x)**2
+
+      The function is computed used the first terms of the Taylor series decomposition
+    :param X:
+    :return:
+    """
+    return x + (0.5 * tf.sin(2*x) * tf.sin(2*x))
 
 def xsin(x):
     """
@@ -112,4 +126,5 @@ def swish(x):
 get_custom_objects().update({'swish': Activation(swish)})
 get_custom_objects().update({'snake': Activation(snake)})
 get_custom_objects().update({'xsin': Activation(xsin)})
-get_custom_objects().update({'snake5': Activation(snake5)})
+get_custom_objects().update({'snakeh2': Activation(snakeh2)})
+get_custom_objects().update({'snake2': Activation(snake2)})
