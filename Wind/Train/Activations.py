@@ -22,7 +22,7 @@ from keras.layers import LeakyReLU, PReLU, ELU
 from keras.layers import Activation
 from keras import backend as K
 from keras.utils.generic_utils import get_custom_objects
-from tensorflow.math import sin
+import tensorflow as tf
 __author__ = 'bejar'
 
 
@@ -71,7 +71,7 @@ def snake(x):
     :param X:
     :return:
     """
-    return x + (sin(x) * sin(x))
+    return x + (tf.sin(x) * tf.sin(x))
     #return x + (x*x) - (x*x*x/3)
 
 def snake5(x):
@@ -84,7 +84,7 @@ def snake5(x):
     :param X:
     :return:
     """
-    return x + (1/5 * sin(5*x) * sin(5*x))
+    return x + (1/5 * tf.sin(5*x) * tf.sin(5*x))
 
 def xsin(x):
     """
@@ -96,7 +96,7 @@ def xsin(x):
     :param X:
     :return:
     """
-    return x + sin(x)
+    return x + tf.sin(x)
 
 
 
