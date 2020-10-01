@@ -52,6 +52,8 @@ def generate_activation(act_par):
                 return Activation(snake5)
             elif act_par[0] == 'xsin':
                 return Activation(xsin)
+            elif act_par[0] == 'xsin':
+                return Activation(swish)
             else:
                 return Activation(act_par[0])
         else:
@@ -98,8 +100,16 @@ def xsin(x):
     """
     return x + tf.sin(x)
 
+def swish(x):
+    """
+    Swish activation function
+    f(x) = x * sigmoid(x)
+    :param x:
+    :return:
+    """
+    return x * tf.sigmoid(x)
 
-
+get_custom_objects().update({'swish': Activation(swish)})
 get_custom_objects().update({'snake': Activation(snake)})
 get_custom_objects().update({'xsin': Activation(xsin)})
 get_custom_objects().update({'snake5': Activation(snake5)})
