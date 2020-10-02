@@ -13,7 +13,7 @@
   },
   "arch": {
       "drop": 0.3,
-    "activation": ["leaky", 0.2],
+    "activation": ["snake"],
       "full": [512,256],
       "batchnorm":false,
     "mode":"MLP_s2s"
