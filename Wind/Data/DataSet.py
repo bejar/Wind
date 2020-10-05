@@ -24,7 +24,11 @@ import numpy as np
 import os
 from Wind.Util.Entropy import spectral_entropy, sample_entropy
 from Wind.Util.SSA import SSA
-from statsmodels.tsa.seasonal import STL
+
+try:
+    from statsmodels.tsa.seasonal import STL
+except Exception:
+    pass
 
 try:
     import pysftp
