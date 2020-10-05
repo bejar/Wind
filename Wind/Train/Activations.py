@@ -208,7 +208,7 @@ class Snakeh2(Activation):
 class Xsin(Activation):
     def __init__(self, activation, **kwargs):
         super(Xsin, self).__init__(activation, **kwargs)
-        self.__name__ = 'Xsin'
+        self.__name__ = 'xsin'
 
 
 get_custom_objects().update({'swish': Swish(swish)})
