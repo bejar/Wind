@@ -47,21 +47,21 @@ def generate_activation(act_par):
                 raise NameError("No such Activation layer")
         elif len(act_par) == 1:
             if act_par[0] == 'snake':
-                return Activation(snake)
+                return Snake(snake)
             elif act_par[0] == 'snakeh2':
-                return Activation(snakeh2)
+                return Snakeh2(snakeh2)
             elif act_par[0] == 'snake2':
-                return Activation(snake2)
+                return Snake2(snake2)
             elif act_par[0] == 'snake3':
-                return Activation(snake3)
+                return Snake3(snake3)
             elif act_par[0] == 'snake4':
-                return Activation(snake4)
+                return Snake4(snake4)
             elif act_par[0] == 'snake5':
-                return Activation(snake5)
+                return Snake5(snake5)
             elif act_par[0] == 'xsin':
-                return Activation(xsin)
+                return Xsin(xsin)
             elif act_par[0] == 'swish':
-                return Activation(swish)
+                return Swish(swish)
             else:
                 return Activation(act_par[0])
         else:
@@ -165,11 +165,55 @@ def swish(x):
     """
     return x * tf.sigmoid(x)
 
-get_custom_objects().update({'swish': Activation(swish)})
-get_custom_objects().update({'snake': Activation(snake)})
-get_custom_objects().update({'xsin': Activation(xsin)})
-get_custom_objects().update({'snakeh2': Activation(snakeh2)})
-get_custom_objects().update({'snake2': Activation(snake2)})
-get_custom_objects().update({'snake3': Activation(snake3)})
-get_custom_objects().update({'snake4': Activation(snake4)})
-get_custom_objects().update({'snake5': Activation(snake5)})
+get_custom_objects().update({'swish': Swish(swish)})
+get_custom_objects().update({'snake': Snake(snake)})
+get_custom_objects().update({'snakeh2': Snakeh2(snakeh2)})
+get_custom_objects().update({'snake2': Snake2(snake2)})
+get_custom_objects().update({'snake3': Snake3(snake3)})
+get_custom_objects().update({'snake4': Snake4(snake4)})
+get_custom_objects().update({'snake5': Snake5(snake5)})
+get_custom_objects().update({'xsin': Xsin(xsin)})
+
+
+class Swish(Activation):
+    def __init__(self, activation, **kwargs):
+        super(Swish, self).__init__(activation, **kwargs)
+        self.__name__ = 'swish'
+
+class Snake(Activation):
+    def __init__(self, activation, **kwargs):
+        super(Snake, self).__init__(activation, **kwargs)
+        self.__name__ = 'snake'
+
+class Snake2(Activation):
+    def __init__(self, activation, **kwargs):
+        super(Snake2, self).__init__(activation, **kwargs)
+        self.__name__ = 'snake2'
+
+class Snake3(Activation):
+    def __init__(self, activation, **kwargs):
+        super(Snake3, self).__init__(activation, **kwargs)
+        self.__name__ = 'snake3'
+
+
+class Snake4(Activation):
+    def __init__(self, activation, **kwargs):
+        super(Snake4, self).__init__(activation, **kwargs)
+        self.__name__ = 'snake4'
+
+
+class Snake5(Activation):
+    def __init__(self, activation, **kwargs):
+        super(Snake5, self).__init__(activation, **kwargs)
+        self.__name__ = 'snake5'
+
+
+class Snakeh2(Activation):
+    def __init__(self, activation, **kwargs):
+        super(Snakeh2, self).__init__(activation, **kwargs)
+        self.__name__ = 'snakeh2'
+
+class Xsin(Activation):
+    def __init__(self, activation, **kwargs):
+        super(Xsin, self).__init__(activation, **kwargs)
+        self.__name__ = 'Xsin'
