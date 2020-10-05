@@ -165,14 +165,6 @@ def swish(x):
     """
     return x * tf.sigmoid(x)
 
-get_custom_objects().update({'swish': Swish(swish)})
-get_custom_objects().update({'snake': Snake(snake)})
-get_custom_objects().update({'snakeh2': Snakeh2(snakeh2)})
-get_custom_objects().update({'snake2': Snake2(snake2)})
-get_custom_objects().update({'snake3': Snake3(snake3)})
-get_custom_objects().update({'snake4': Snake4(snake4)})
-get_custom_objects().update({'snake5': Snake5(snake5)})
-get_custom_objects().update({'xsin': Xsin(xsin)})
 
 
 class Swish(Activation):
@@ -217,3 +209,13 @@ class Xsin(Activation):
     def __init__(self, activation, **kwargs):
         super(Xsin, self).__init__(activation, **kwargs)
         self.__name__ = 'Xsin'
+
+
+get_custom_objects().update({'swish': Swish(swish)})
+get_custom_objects().update({'snake': Snake(snake)})
+get_custom_objects().update({'snakeh2': Snakeh2(snakeh2)})
+get_custom_objects().update({'snake2': Snake2(snake2)})
+get_custom_objects().update({'snake3': Snake3(snake3)})
+get_custom_objects().update({'snake4': Snake4(snake4)})
+get_custom_objects().update({'snake5': Snake5(snake5)})
+get_custom_objects().update({'xsin': Xsin(xsin)})
