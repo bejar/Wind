@@ -17,8 +17,9 @@ Error
 
 """
 
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import numpy as np
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+
 __author__ = 'bejar'
 
 

@@ -18,7 +18,9 @@ Corr_test
 """
 
 import numpy as np
-from Wind.Config.Paths import wind_data_path, wind_path, wind_NREL_data_path
+
+from Wind.Config.Paths import wind_data_path
+
 __author__ = 'bejar'
 
 

@@ -16,8 +16,8 @@ SSA
 :Created on: 30/06/2017 8:51 
 
 """
-from scipy.linalg import hankel, svd
 import numpy as np
+from scipy.linalg import hankel, svd
 
 __author__ = 'bejar'
 

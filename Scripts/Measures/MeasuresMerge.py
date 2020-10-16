@@ -17,18 +17,13 @@ MeasuresMerge
 
 """
 
-__author__ = 'bejar'
-import numpy as np
-import os
-from Wind.Config.Paths import wind_data_path, wind_res_path
-from Wind.Data import Dataset
-from joblib import Parallel, delayed
-import json
-from time import time, strftime
-import argparse
-from Wind.Private.DBConfig import mongoconnection, mongolocaltest, mongolocalmeasures
+
 from pymongo import MongoClient
 from tqdm import tqdm
+
+from Wind.Private.DBConfig import mongoconnection, mongolocaltest, mongolocalmeasures
+
+__author__ = 'bejar'
 
 if __name__ == '__main__':
 

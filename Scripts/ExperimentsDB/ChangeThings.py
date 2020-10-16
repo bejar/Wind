@@ -20,12 +20,11 @@ RewriteResults
 :Created on: 16/03/2018 13:26 
 
 """
-
 import argparse
-import numpy as np
-from Wind.Private.DBConfig import mongoconnection, mongolocaltest
+
 from pymongo import MongoClient
 
+from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 
 __author__ = 'bejar'
 

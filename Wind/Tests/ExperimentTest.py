@@ -23,6 +23,7 @@ from Wind.Train import TrainDispatch, RunConfig
 
 __author__ = 'bejar'
 
+
 def run_test(cfile):
     """
     Runs a configuration file
@@ -47,8 +48,8 @@ def run_test(cfile):
     lresults = train_process(architecture, config, runconfig)
     print(lresults)
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     run_test("config_CNN_s2s")
     # run_test("config_MLP_dir_reg")
     # run_test("config_MLP_s2s")
@@ -59,7 +60,6 @@ if __name__ == '__main__':
     # run_test("config_RNN_s2s")
     # run_test("config_RNN_ED_s2s_att")
     # run_test("config_RNN_ED_s2s_dep")
-    #run_test("config_SVM_dir_reg")
+    # run_test("config_SVM_dir_reg")
     # run_test("config_KNN_dir_reg")
     # run_test("config_KNN_dir_reg")
-

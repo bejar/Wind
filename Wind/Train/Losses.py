@@ -17,12 +17,11 @@ Losses
 
 """
 
-from keras import backend as K
+from functools import partial, update_wrapper
+
+import tensorflow as tf
 from tensorflow import losses
 
-import functools
-from functools import partial, update_wrapper
-import tensorflow as tf
 
 def wrapped_partial(func, *args, **kwargs):
     partial_func = partial(func, *args, **kwargs)

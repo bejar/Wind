@@ -22,15 +22,12 @@ except ImportError:
     _has_folium = False
 else:
     _has_folium = True
-# from geojson import LineString, FeatureCollection, Feature
-# import geojson
-# import numpy as np
 
-from Wind.Config import wind_path
 import numpy as np
 from sklearn.neighbors import KDTree
-from Wind.Config.Paths import wind_data_path
 
+from Wind.Config import wind_path
+from Wind.Config.Paths import wind_data_path
 
 __author__ = 'bejar'
 

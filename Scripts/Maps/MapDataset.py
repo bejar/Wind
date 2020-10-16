@@ -18,27 +18,28 @@ MapDataset
 """
 
 import argparse
-import numpy as np
 import os
-from Wind.Config.Paths import wind_data_path
-from Wind.Data import Dataset
-from Wind.Util.Maps import  create_plot
+
+import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 from tqdm import tqdm
-import multiprocessing
 
+from Wind.Config.Paths import wind_data_path
+from Wind.Data import Dataset
+from Wind.Util.Maps import create_plot
 
 __author__ = 'bejar'
+
 
 def compute_values(pos, lsites):
     """
     Computes Dataset values
     """
-    dres = {'Lat':[], 'Lon':[], 'Val':[], 'Site':[]}
+    dres = {'Lat': [], 'Lon': [], 'Val': [], 'Site': []}
     dmeasures = {}
-    for s in tqdm(lsites, position=pos): 
-        dataset = Dataset(config={"datanames": [f"{s//500}-{s}-12"],  "vars": [0]}, data_path=wind_data_path)
+    for s in tqdm(lsites, position=pos):
+        dataset = Dataset(config={"datanames": [f"{s // 500}-{s}-12"], "vars": [0]}, data_path=wind_data_path)
         dataset.load_raw_data()
         res = dataset.compute_measures(window=args.window)
         dres['Lat'].append(coords[s][1])
@@ -49,9 +50,8 @@ def compute_values(pos, lsites):
             else:
                 dmeasures[v] = [res[v]]
 
-        dres['Site'].append(f"{s//500}-{s}")
+        dres['Site'].append(f"{s // 500}-{s}")
     return dres, dmeasures
-
 
 
 if __name__ == '__main__':
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--sample', type=float, default=0.001, help='Sampling of the sites')
     parser.add_argument('--cores', type=int, default=2, help='Number of cores to use')
-    parser.add_argument('--window', type=int, default=[12],nargs=argparse.REMAINDER)
+    parser.add_argument('--window', type=int, default=[12], nargs=argparse.REMAINDER)
     args = parser.parse_args()
 
     if os.path.isfile(f'{wind_data_path}/Coords.npy'):
@@ -67,18 +67,17 @@ if __name__ == '__main__':
     else:
         raise NameError('No coordinates file found')
 
-    #datamap = args.measure
+    # datamap = args.measure
     nsites = 126691
-    lsites = np.random.choice(range(nsites), int(args.sample*nsites), replace=False)
-    #ncores = multiprocessing.cpu_count()
+    lsites = np.random.choice(range(nsites), int(args.sample * nsites), replace=False)
+    # ncores = multiprocessing.cpu_count()
     ncores = args.cores
 
     lparts = []
     for i in range(ncores):
-        lparts.append(lsites[i*len(lsites)//ncores:(i+1)*len(lsites)//ncores])
+        lparts.append(lsites[i * len(lsites) // ncores:(i + 1) * len(lsites) // ncores])
 
-    res = Parallel(n_jobs=ncores)(delayed(compute_values)(pos,sites) for pos, sites in enumerate(lparts))
-
+    res = Parallel(n_jobs=ncores)(delayed(compute_values)(pos, sites) for pos, sites in enumerate(lparts))
 
     dres, dmeasures = res[0]
 
@@ -87,10 +86,10 @@ if __name__ == '__main__':
             dres[d].extend(res[d])
         for d in dmeasures:
             dmeasures[d].extend(mes[d])
-    
-    #dres = {'Lat':[], 'Lon':[], 'Val':[], 'Site':[]}
-    #dmeasures = {}
-    #for s in tqdm(lsites):
+
+    # dres = {'Lat':[], 'Lon':[], 'Val':[], 'Site':[]}
+    # dmeasures = {}
+    # for s in tqdm(lsites):
     #    dataset = Dataset(config={"datanames": [f"{s//500}-{s}-12"],  "vars": [0]}, data_path=wind_data_path)
     #    dataset.load_raw_data()
     #    res = dataset.compute_measures(window=args.window)

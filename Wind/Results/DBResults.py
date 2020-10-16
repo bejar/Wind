@@ -16,23 +16,23 @@ DBResults
 :Created on: 10/12/2018 15:09 
 
 """
-import numpy as np
-import plotly.offline as py
-import plotly.graph_objs as go
-import pandas as pd
-import plotly.figure_factory as ff
-import seaborn as sns
-import matplotlib.pyplot as plt
-from scipy.stats import ks_2samp, ttest_rel,f_oneway
-from statsmodels.stats.multicomp import pairwise_tukeyhsd
-from statsmodels.stats.multicomp import MultiComparison
-from Wind.Config.Paths import wind_data_path
-from statsmodels.genmod.generalized_linear_model import GLM
-import matplotlib
-from matplotlib.axes import Axes
-from Wind.ErrorMeasure import ErrorMeasure
 import os
 import warnings
+
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import plotly.figure_factory as ff
+import plotly.graph_objs as go
+import plotly.offline as py
+import seaborn as sns
+from scipy.stats import ks_2samp, ttest_rel, f_oneway
+from statsmodels.genmod.generalized_linear_model import GLM
+from statsmodels.stats.multicomp import MultiComparison
+
+from Wind.Config.Paths import wind_data_path
+from Wind.ErrorMeasure import ErrorMeasure
 from Wind.Util.Maps import create_mapbox_plot, create_plot, create_plot_best
 
 try:
@@ -51,9 +51,14 @@ scl = [0, "rgb(150,0,90)"], [0.125, "rgb(0, 0, 200)"], [0.25, "rgb(0, 25, 255)"]
 
 sclbi = [0, "rgb(0,255,255)"], [0.49999, "rgb(0, 0, 255)"], [0.5, "rgb(0, 0, 0)"], [0.50001, "rgb(255, 0, 0)"], [1,
                                                                                                                  "rgb(255, 255, 0)"]
-sclbi = [0, "rgb(0,0,255)"], [0.49999, "rgb(0, 255, 255)"], [0.5, "rgb(0, 0, 0)"], [0.50001, "rgb(255, 255, 0)"], [1,"rgb(255, 0, 0)"]
-  
-sclbest = [0, "rgb(255,0,0)"], [0.1, "rgb(0,0,255)"], [0.2, "rgb(0,255,0)"], [0.3, "rgb(255,0,0)"], [0.4, "rgb(255,255,0)"], [0.5, "rgb(255,0,255)"], [0.4, "rgb(0,255,255)"]
+sclbi = [0, "rgb(0,0,255)"], [0.49999, "rgb(0, 255, 255)"], [0.5, "rgb(0, 0, 0)"], [0.50001, "rgb(255, 255, 0)"], [1,
+                                                                                                                   "rgb(255, 0, 0)"]
+
+sclbest = [0, "rgb(255,0,0)"], [0.1, "rgb(0,0,255)"], [0.2, "rgb(0,255,0)"], [0.3, "rgb(255,0,0)"], [0.4,
+                                                                                                     "rgb(255,255,0)"], [
+              0.5, "rgb(255,0,255)"], [0.4, "rgb(0,255,255)"]
+
+
 # Plotly colorscales
 #
 # [‘Blackbody’, ‘Bluered’, ‘Blues’, ‘Earth’, ‘Electric’, ‘Greens’, ‘Greys’, ‘Hot’, ‘Jet’,
@@ -105,9 +110,9 @@ class DBResults:
             self.coords = np.load(wind_data_path + '/Coords.npy')
         else:
             warnings.warn('No coordinates file found, maps will not be available')
-        self.exp_result={}
-        self.exp_result2={}
-        self.exp_lresults=[]
+        self.exp_result = {}
+        self.exp_result2 = {}
+        self.exp_lresults = []
         self.error = error
 
     def retrieve_results(self, query):
@@ -125,8 +130,8 @@ class DBResults:
         for exp in lexp:
             # To maintain backwards compatibility
             data = np.array(exp['result']) if 'result' in exp else np.array(exp['results'])
-            if len(data) == 0: #Hack to avoid sites with no results
-                data = np.zeros((12,3))
+            if len(data) == 0:  # Hack to avoid sites with no results
+                data = np.zeros((12, 3))
             # gets the number of the site and the columns with the errors
             errval, errtest = ErrorMeasure().get_error(data, self.error)
             ldata.append((int(exp['data']['datanames'][0].split('-')[1]), errval, errtest))
@@ -139,14 +144,13 @@ class DBResults:
         self.osel = list(range(self.exp_result['sites'].shape[0]))
         self.selection = list(range(self.exp_result['sites'].shape[0]))
         # fix missing values
-        tmean = np.mean(self.exp_result['test'],axis=0)
-        vmean = np.mean(self.exp_result['validation'],axis=0)
+        tmean = np.mean(self.exp_result['test'], axis=0)
+        vmean = np.mean(self.exp_result['validation'], axis=0)
         for i in range(len(self.exp_result['test'])):
-            if self.exp_result['test'][i,0] == 0:
+            if self.exp_result['test'][i, 0] == 0:
                 self.exp_result['test'][i] = tmean
-            if self.exp_result['validation'][i,0] == 0:
+            if self.exp_result['validation'][i, 0] == 0:
                 self.exp_result['validation'][i] = vmean
-
 
     def retrieve_results_compare(self, query1, query2):
         """
@@ -160,13 +164,12 @@ class DBResults:
         self.query = query1
         lexp = self.col.find(query1)
 
-
         ldata = []
         for exp in lexp:
             # To maintain backwards compatibility
             data = np.array(exp['result']) if 'result' in exp else np.array(exp['results'])
-            if len(data) == 0: #Hack to avoid sites with no results
-                data = np.zeros((12,3))
+            if len(data) == 0:  # Hack to avoid sites with no results
+                data = np.zeros((12, 3))
             # gets the number of the site and the columns with the errors
             errval, errtest = ErrorMeasure().get_error(data, self.error)
             ldata.append((int(exp['data']['datanames'][0].split('-')[1]), errval, errtest))
@@ -181,12 +184,12 @@ class DBResults:
         self.osel = list(range(self.exp_result['sites'].shape[0]))
         self.selection = list(range(self.exp_result['sites'].shape[0]))
         # fix missing values
-        tmean = np.mean(self.exp_result['test'],axis=0)
-        vmean = np.mean(self.exp_result['validation'],axis=0)
+        tmean = np.mean(self.exp_result['test'], axis=0)
+        vmean = np.mean(self.exp_result['validation'], axis=0)
         for i in range(len(self.exp_result['test'])):
-            if self.exp_result['test'][i,0] == 0:
+            if self.exp_result['test'][i, 0] == 0:
                 self.exp_result['test'][i] = tmean
-            if self.exp_result['validation'][i,0] == 0:
+            if self.exp_result['validation'][i, 0] == 0:
                 self.exp_result['validation'][i] = vmean
 
         # Result 2
@@ -197,12 +200,11 @@ class DBResults:
         for exp in lexp:
             # To maintain backwards compatibility
             data = np.array(exp['result']) if 'result' in exp else np.array(exp['results'])
-            if len(data) == 0: #Hack to avoid sites with no results
-                data = np.zeros((12,3))
+            if len(data) == 0:  # Hack to avoid sites with no results
+                data = np.zeros((12, 3))
             # gets the number of the site and the columns with the errors
             errval, errtest = ErrorMeasure().get_error(data, self.error)
             ldata.append((int(exp['data']['datanames'][0].split('-')[1]), errval, errtest))
-
 
         if len(ldata) == 0:
             raise NameError('No results retrieved with second query')
@@ -210,18 +212,18 @@ class DBResults:
         # Check that all the sites in one result set are in the other
         s1 = set(self.exp_result['sites'])
         s2 = set([v[0] for v in ldata])
-        if s1-s2:
+        if s1 - s2:
             raise NameError('Results not comparable, sites do not match')
         else:
             self.exp_result2['test'] = np.array([v[1] for v in ldata])
             self.exp_result2['validation'] = np.array([v[2] for v in ldata])
             # fix missing values
-            tmean = np.mean(self.exp_result2['test'],axis=0)
-            vmean = np.mean(self.exp_result2['validation'],axis=0)
+            tmean = np.mean(self.exp_result2['test'], axis=0)
+            vmean = np.mean(self.exp_result2['validation'], axis=0)
             for i in range(len(self.exp_result2['test'])):
-                if self.exp_result2['test'][i,0] == 0:
+                if self.exp_result2['test'][i, 0] == 0:
                     self.exp_result2['test'][i] = tmean
-                if self.exp_result2['validation'][i,0] == 0:
+                if self.exp_result2['validation'][i, 0] == 0:
                     self.exp_result2['validation'][i] = vmean
 
     def extract_result(self, summary='sum', dset='val'):
@@ -234,7 +236,7 @@ class DBResults:
         if not self.exp_result:
             raise NameError("No results yet retrieved")
 
-        vsel = 'validation' if dset ==  'val' else 'test'
+        vsel = 'validation' if dset == 'val' else 'test'
 
         if type(summary) == int:
             sumres = self.exp_result[vsel][self.selection, summary]
@@ -243,8 +245,7 @@ class DBResults:
         else:
             sumres = self.exp_result[vsel][self.selection, 0]
 
-        return(np.stack((self.selection, sumres), axis=-1))
-
+        return (np.stack((self.selection, sumres), axis=-1))
 
     def retrieve_results_multiple(self, lquery, error='R2'):
         """
@@ -255,7 +256,7 @@ class DBResults:
         :return:
         """
         self.lquery = lquery
-        self.exp_lresults=[]
+        self.exp_lresults = []
         for i, query in enumerate(lquery):
             lexp = self.col.find(query)
             exp_result = {}
@@ -279,7 +280,7 @@ class DBResults:
             if self.exp_lresults:
                 s1 = set(self.exp_lresults[0]['sites'])
                 s2 = set([v[0] for v in ldata])
-                if s1-s2:
+                if s1 - s2:
                     raise NameError(f'Results not comparable, sites do not match for {i}')
                 else:
                     exp_result['sites'] = np.array([v[0] for v in ldata])
@@ -292,12 +293,10 @@ class DBResults:
                 exp_result['validation'] = np.array([v[2] for v in ldata])
                 self.exp_lresults.append(exp_result)
 
-
         self.osel = list(range(self.exp_lresults[0]['sites'].shape[0]))
         self.selection = list(range(self.exp_lresults[0]['sites'].shape[0]))
 
-
-    def results_dataframe_retrieve(self, query, data=['vars', 'ahead', 'lag'], arch=[], train=[]):
+    def results_dataframe_retrieve(self, query, data=('vars', 'ahead', 'lag'), arch=(), train=()):
         """
         Retrieves the results from the query and builds a pandas dataframe with all the data
 
@@ -321,7 +320,7 @@ class DBResults:
             exdata = np.array(exp['result']) if 'result' in exp else np.array(exp['results'])
             errval, errtest = ErrorMeasure().get_error(exdata, self.error)
             for i in range(exdata.shape[0]):
-                lvals = [i+1]
+                lvals = [i + 1]
                 lvals.append(int(exp['data']['datanames'][0].split('-')[1]))
                 lvals.append(errval[i])
                 lvals.append(errtest[i])
@@ -340,21 +339,22 @@ class DBResults:
 
         self.exp_df = pd.DataFrame(ddata)
         self.exp_df_vars = arch + train + data
-        for v in self.exp_df_vars+['hour','site']:
+        for v in self.exp_df_vars + ['hour', 'site']:
             self.exp_df[v] = self.exp_df[v].astype('category')
 
-    def results_dataframe_aggregate(self,threshold=None,notebook=True):
+    def results_dataframe_aggregate(self, threshold=None, notebook=True):
         """
         Aggregates dataframe to show results
         """
         if self.exp_df is None:
             raise NameError("No results dataframe retrieved")
         if not self.exp_df_agg:
-            self.exp_df = self.exp_df.groupby(by=['site']+self.exp_df_vars,as_index=False, observed=True).sum()
-#            self.exp_df.drop(columns=['hour', 'site'], inplace=True)
+            self.exp_df = self.exp_df.groupby(by=['site'] + self.exp_df_vars, as_index=False, observed=True).sum()
+            #            self.exp_df.drop(columns=['hour', 'site'], inplace=True)
             self.exp_df.drop(columns=['site'], inplace=True)
             print(len(self.exp_df))
-            self.exp_df = self.exp_df.groupby(by=self.exp_df_vars,as_index=False, observed=True).agg({'test':['mean','count'], 'val':'mean', })
+            self.exp_df = self.exp_df.groupby(by=self.exp_df_vars, as_index=False, observed=True).agg(
+                {'test': ['mean', 'count'], 'val': 'mean', })
             self.exp_df_agg = True
         if threshold:
             print(f"Total={len(self.exp_df)} Thres={len(self.exp_df[self.exp_df['test']['mean'] > threshold])}")
@@ -367,7 +367,7 @@ class DBResults:
                 return self.exp_df.style.highlight_max()
             else:
                 return self.exp_df
-        
+
     def results_dataframe_graph(self, facet, att, count=False, threshold=None):
         """
         Plots training results
@@ -380,8 +380,8 @@ class DBResults:
         for v in sorted(df[facet].unique()):
             text = ''
             for a in att:
-                text += f'{a}:'+df[df[facet]==v][a].astype(str)+'-'
-            text += f'{facet}:'+df[df[facet]==v][facet].astype(str)
+                text += f'{a}:' + df[df[facet] == v][a].astype(str) + '-'
+            text += f'{facet}:' + df[df[facet] == v][facet].astype(str)
             if threshold is None:
                 vals = df[df[facet] == v]
             else:
@@ -397,13 +397,12 @@ class DBResults:
                 ))
             else:
                 trace.append(go.Scatter(
-                    x = vals['test']['mean'],
-                    y = vals['val']['mean'],
-                    text = text,
-                    mode = 'markers', name=v,
-                    marker={'size':np.log(df[df[facet]==v]['test']['count']+1)*4}
+                    x=vals['test']['mean'],
+                    y=vals['val']['mean'],
+                    text=text,
+                    mode='markers', name=v,
+                    marker={'size': np.log(df[df[facet] == v]['test']['count'] + 1) * 4}
                 ))
-
 
         py.iplot(trace, filename='basic-scatter')
 
@@ -498,7 +497,8 @@ class DBResults:
             raise NameError("Coordinates outside range, use longitude in [-130,-63] and latitude in [20, 50]")
 
         self.selection = [i for i in self.osel if
-                          (ilat <= self.coords[self.exp_result['sites'][i]][1] <= flat) and (ilon <= self.coords[self.exp_result['sites'][i]][0] <= flon)]
+                          (ilat <= self.coords[self.exp_result['sites'][i]][1] <= flat) and (
+                                      ilon <= self.coords[self.exp_result['sites'][i]][0] <= flon)]
 
     def sample(self, percentage):
         """
@@ -515,7 +515,8 @@ class DBResults:
         else:
             raise NameError("percentage must be in range (0-1]")
 
-    def plot_map(self, summary='sum', notebook=False, cmap=scl, mapbox=False, dset=('val', 'test'), figsize=(800, 400),mksize=2):
+    def plot_map(self, summary='sum', notebook=False, cmap=scl, mapbox=False, dset=('val', 'test'), figsize=(800, 400),
+                 mksize=2):
         """
         generates an html map with the results
 
@@ -553,7 +554,6 @@ class DBResults:
 
         site_coords = list(self.exp_result['sites'][self.selection])
         if 'test' in dset:
-
             testdf = pd.DataFrame({'Lon': np.append(self.coords[site_coords, 0], [0, 0]),
                                    'Lat': np.append(self.coords[site_coords, 1], [0, 0]),
                                    'Val': np.append(sumtest, extra),
@@ -580,7 +580,8 @@ class DBResults:
                             )
             if 'val' in dset:
                 create_plot(valdf,
-                            f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize, mksize=mksize
+                            f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize,
+                            mksize=mksize
                             )
 
     def plot_map_compare(self, summary='sum', notebook=False, compare='diff', cmap=sclbi, mapbox=False,
@@ -663,11 +664,12 @@ class DBResults:
                             )
             if 'val' in dset:
                 create_plot(valdf,
-                            f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize, mksize=mksize
+                            f"{title}-validation", notebook=notebook, tick=extra[0], cmap=cmap, figsize=figsize,
+                            mksize=mksize
                             )
 
     def plot_map_multiple(self, summary='sum', notebook=False, labels=None,
-                         dset=('val', 'test'), figsize=(800, 400), image=False, cmap=None):
+                          dset=('val', 'test'), figsize=(800, 400), image=False, cmap=None):
         """
         generates an html map with the results
 
@@ -689,7 +691,7 @@ class DBResults:
         title = 'NonSpecific'
         msumtest = []
         msumval = []
-        #labels = [l['experiment'] for l in self.lquery]
+        # labels = [l['experiment'] for l in self.lquery]
         for exp_result in self.exp_lresults:
             if type(summary) == int:
                 msumtest.append(exp_result['test'][self.selection, summary])
@@ -704,8 +706,8 @@ class DBResults:
         msumtest = np.stack(msumtest, axis=1)
         msumtval = np.stack(msumval, axis=1)
 
-        difftest = np.argmax(msumtest,axis=1)
-        diffval = np.argmax(msumtval,axis=1)
+        difftest = np.argmax(msumtest, axis=1)
+        diffval = np.argmax(msumtval, axis=1)
 
         site_coords = list(self.exp_lresults[0]['sites'][self.selection])
         if 'test' in dset:
@@ -721,14 +723,15 @@ class DBResults:
 
         if 'test' in dset:
             create_plot_best(testdf,
-                        f"{title}-test", notebook=notebook, figsize=figsize, labels=labels,cmap=cmap
-                        )
+                             f"{title}-test", notebook=notebook, figsize=figsize, labels=labels, cmap=cmap
+                             )
         if 'val' in dset:
             create_plot_best(valdf,
-                        f"{title}-validation", notebook=notebook, figsize=figsize, labels=labels,cmap=cmap
-                        )
+                             f"{title}-validation", notebook=notebook, figsize=figsize, labels=labels, cmap=cmap
+                             )
 
-    def plot_distplot(self, summary='sum', seaborn=True, notebook=False, dset=('val', 'test'), figsize=(800, 400), title=None, labels=None,font=None, save=None, saveformat='pdf'):
+    def plot_distplot(self, summary='sum', seaborn=True, notebook=False, dset=('val', 'test'), figsize=(800, 400),
+                      title=None, labels=None, font=None, save=None, saveformat='pdf'):
         """
         Generates a distplot of the results
 
@@ -750,15 +753,15 @@ class DBResults:
         if type(summary) == int:
             sumtest = self.exp_result['test'][self.selection, summary]
             sumval = self.exp_result['validation'][self.selection, summary]
-            #extra = [1, 0]
+            # extra = [1, 0]
         elif summary == 'sum':
             sumtest = np.sum(self.exp_result['test'][self.selection], axis=1)
             sumval = np.sum(self.exp_result['validation'][self.selection], axis=1)
-            #extra = [10, 0]
+            # extra = [10, 0]
         else:
             sumtest = self.exp_result['test'][self.selection, 0]
             sumval = self.exp_result['validation'][self.selection, 0]
-            #extra = [10, 1]
+            # extra = [10, 1]
 
         data = []
         if 'test' in dset:
@@ -780,7 +783,7 @@ class DBResults:
             if font is not None:
                 matplotlib.rcParams.update({'font.size': font})
             fig = plt.figure(figsize=figsize)
-            for v,l in zip(data, labels):
+            for v, l in zip(data, labels):
                 sns.distplot(v, label=l, kde=True, norm_hist=True)
                 plt.legend(labels=labels, title=title)
 
@@ -794,7 +797,7 @@ class DBResults:
             if save is not None:
                 plt.savefig(f"{save}.{saveformat}", format=saveformat)
 
-            for v ,l in zip(data, labels):
+            for v, l in zip(data, labels):
                 print(f'MEAN ({l})= {np.mean(v)}')
                 print(f'StDev ({l})= {np.std(v)}')
 
@@ -809,7 +812,7 @@ class DBResults:
                 py.iplot(fig, filename=f"./{title}-distplot.html")
 
     def plot_distplot_compare(self, summary='sum', compare='diff', seaborn=True, notebook=False, dset=('val', 'test'),
-                              figsize=(800, 400), title=None, labels=None,font=None, save=None, saveformat='pdf'):
+                              figsize=(800, 400), title=None, labels=None, font=None, save=None, saveformat='pdf'):
         """
         Generates a distplot for the comparison of the results results
 
@@ -891,7 +894,7 @@ class DBResults:
             if font is not None:
                 matplotlib.rcParams.update({'font.size': font})
             plt.figure(figsize=figsize)
-            for v,l in zip(data, labels):
+            for v, l in zip(data, labels):
                 sns.distplot(v, label=l, kde=True, norm_hist=True)
                 plt.legend(labels=labels, title=title)
             if save is not None:
@@ -906,7 +909,8 @@ class DBResults:
             else:
                 py.iplot(fig, filename=f"./{title}-distplot.html")
 
-    def plot_densplot(self, plot='kde', glm=False, test=False, summary='sum', figsize=(8, 8), font=None, save=None, saveformat='pdf'):
+    def plot_densplot(self, plot='kde', glm=False, test=False, summary='sum', figsize=(8, 8), font=None, save=None,
+                      saveformat='pdf'):
         """
         Generates a density plot comparing test and validation
 
@@ -930,12 +934,12 @@ class DBResults:
             sumtest = self.exp_result['test'][self.selection, 0]
             sumval = self.exp_result['validation'][self.selection, 0]
 
-        data = pd.DataFrame({'test':sumtest, 'validation':sumval})
+        data = pd.DataFrame({'test': sumtest, 'validation': sumval})
         if font is not None:
             matplotlib.rcParams.update({'font.size': font})
         fig = plt.figure(figsize=figsize)
         if plot == 'kde':
-            sns.kdeplot(data['test'],data['validation'], shade=True, n_levels=10, cbar=True, shade_lowest=False)
+            sns.kdeplot(data['test'], data['validation'], shade=True, n_levels=10, cbar=True, shade_lowest=False)
             ax = fig.axes[0]
             ax.set_xlabel(r'$\sum_{i=1}^{12}R^2$ test')
             ax.set_ylabel(r'$\sum_{i=1}^{12}R^2$ validation')
@@ -943,7 +947,8 @@ class DBResults:
                 plt.savefig(f"{save}.pdf", format=saveformat)
 
         elif plot == 'regression':
-            sns.regplot('test','validation', data=data, truncate=True, line_kws={'color':'red', 'linewidth':2,'linestyle':'--'})
+            sns.regplot('test', 'validation', data=data, truncate=True,
+                        line_kws={'color': 'red', 'linewidth': 2, 'linestyle': '--'})
             ax = fig.axes[0]
             ax.set_xlabel(r'$\sum_{i=1}^{12}R^2$ test')
             ax.set_ylabel(r'$\sum_{i=1}^{12}R^2$ validation')
@@ -951,7 +956,7 @@ class DBResults:
                 plt.savefig(f"{save}.pdf", format=saveformat)
 
         else:
-            sns.scatterplot('test','validation', data=data)
+            sns.scatterplot('test', 'validation', data=data)
             if save is not None:
                 plt.savefig(f"{save}.{saveformat}", format=saveformat)
 
@@ -963,8 +968,6 @@ class DBResults:
             print('--- Distribution Test ---')
             print(ks_2samp(sumtest, sumval))
             print(ttest_rel(sumtest, sumval))
-
-            
 
     def plot_densplot_compare(self, plot='kde', glm=False, summary='sum', figsize=(8, 8), save=None, saveformat='pdf'):
         """
@@ -997,25 +1000,27 @@ class DBResults:
             sumtest2 = self.exp_result2['test'][self.selection, 0]
             sumval2 = self.exp_result2['validation'][self.selection, 0]
 
-        data1 = pd.DataFrame({'test':sumtest, 'validation':sumval})
-        data2 = pd.DataFrame({'test':sumtest2, 'validation':sumval2})
+        data1 = pd.DataFrame({'test': sumtest, 'validation': sumval})
+        data2 = pd.DataFrame({'test': sumtest2, 'validation': sumval2})
 
         plt.figure(figsize=figsize)
         if plot == 'kde':
-            sns.kdeplot(data1['test'],data1['validation'], cmap="Reds", n_levels=10, cbar=True, shade_lowest=False)
-            sns.kdeplot(data2['test'],data2['validation'], cmap="Blues", n_levels=10, cbar=True, shade_lowest=False)
+            sns.kdeplot(data1['test'], data1['validation'], cmap="Reds", n_levels=10, cbar=True, shade_lowest=False)
+            sns.kdeplot(data2['test'], data2['validation'], cmap="Blues", n_levels=10, cbar=True, shade_lowest=False)
             if save is not None:
                 plt.savefig(f"{save}.pdf", format=saveformat)
 
         elif plot == 'regression':
-            sns.regplot('test','validation', data=data1,truncate=True, line_kws={'color':'red', 'linewidth':2,'linestyle':'--'})
-            sns.regplot('test','validation', data=data2,truncate=True, line_kws={'color':'blue', 'linewidth':2,'linestyle':'--'})
+            sns.regplot('test', 'validation', data=data1, truncate=True,
+                        line_kws={'color': 'red', 'linewidth': 2, 'linestyle': '--'})
+            sns.regplot('test', 'validation', data=data2, truncate=True,
+                        line_kws={'color': 'blue', 'linewidth': 2, 'linestyle': '--'})
             if save is not None:
                 plt.savefig(f"{save}.pdf", format=saveformat)
 
         else:
-            sns.scatterplot('test','validation', data=data1)
-            sns.scatterplot('test','validation', data=data2)
+            sns.scatterplot('test', 'validation', data=data1)
+            sns.scatterplot('test', 'validation', data=data2)
             if save is not None:
                 plt.savefig(f"{save}.{saveformat}", format=saveformat)
 
@@ -1027,7 +1032,8 @@ class DBResults:
             result = model.fit()
             print(result.summary())
 
-    def plot_hours_boxplot(self, dset=('val', 'test'), figsize=(8, 4), title=None, font=None, save=None, saveformat='pdf'):
+    def plot_hours_boxplot(self, dset=('val', 'test'), figsize=(8, 4), title=None, font=None, save=None,
+                           saveformat='pdf'):
         """
         Plots the accuracy for each hour in a boxplot
 
@@ -1042,9 +1048,8 @@ class DBResults:
                 title = 'NonSpecific'
 
         data = np.array([])
-        hour = np.array([],dtype=int)
+        hour = np.array([], dtype=int)
         exp = np.array([])
-
 
         if font is not None:
             matplotlib.rcParams.update({'font.size': font})
@@ -1052,18 +1057,18 @@ class DBResults:
         if 'test' in dset:
             for i in range(self.exp_result['test'].shape[1]):
                 data = np.append(data, self.exp_result['test'][self.selection, i])
-                hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
-                exp = np.append(exp, np.array(['test']*len(self.selection)))
+                hour = np.append(hour, np.array([int(i + 1)] * len(self.selection)))
+                exp = np.append(exp, np.array(['test'] * len(self.selection)))
 
         if 'val' in dset:
             for i in range(self.exp_result['validation'].shape[1]):
                 data = np.append(data, self.exp_result['validation'][self.selection, i])
-                hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
-                exp = np.append(exp, np.array(['val']*len(self.selection)))
+                hour = np.append(hour, np.array([int(i + 1)] * len(self.selection)))
+                exp = np.append(exp, np.array(['val'] * len(self.selection)))
 
-        df = pd.DataFrame({'hour':hour, 'acc':data, title:exp})
+        df = pd.DataFrame({'hour': hour, 'acc': data, title: exp})
         fig = plt.figure(figsize=figsize, dpi=100)
-        sns.boxplot(x='hour', y='acc', hue=title,data=df)
+        sns.boxplot(x='hour', y='acc', hue=title, data=df)
         ax = fig.axes[0]
         ax.set_ylabel(r'$R^2$')
         ax.set_ylabel(r'$R^2$')
@@ -1071,8 +1076,8 @@ class DBResults:
             plt.savefig(f"{save}.{saveformat}", format=saveformat)
         plt.show()
 
-
-    def plot_hours_boxplot_compare(self, dset=('val', 'test'), figsize=(16, 4), title=None, labels=None, font=None, save=None, saveformat='pdf'):
+    def plot_hours_boxplot_compare(self, dset=('val', 'test'), figsize=(16, 4), title=None, labels=None, font=None,
+                                   save=None, saveformat='pdf'):
         """
         Plots the accuracy for each hour in a boxplot
 
@@ -1093,45 +1098,43 @@ class DBResults:
             labels = [self.query['experiment'], self.query2['experiment']]
 
         data = np.array([])
-        hour = np.array([],dtype=int)
+        hour = np.array([], dtype=int)
         exp = np.array([])
 
         if 'test' in dset:
 
             for i in range(self.exp_result['test'].shape[1]):
                 data = np.append(data, self.exp_result['test'][self.selection, i])
-                hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
-                exp = np.append(exp, np.array(['test '+ labels[0]]*len(self.selection)))
+                hour = np.append(hour, np.array([int(i + 1)] * len(self.selection)))
+                exp = np.append(exp, np.array(['test ' + labels[0]] * len(self.selection)))
 
             for i in range(self.exp_result2['test'].shape[1]):
                 data = np.append(data, self.exp_result2['test'][self.selection, i])
-                hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
-                exp = np.append(exp, np.array(['test '+labels[1]]*len(self.selection)))
+                hour = np.append(hour, np.array([int(i + 1)] * len(self.selection)))
+                exp = np.append(exp, np.array(['test ' + labels[1]] * len(self.selection)))
 
         if 'val' in dset:
             for i in range(self.exp_result['validation'].shape[1]):
                 data = np.append(data, self.exp_result['validation'][self.selection, i])
-                hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
-                exp = np.append(exp, np.array(['val '+labels[0]]*len(self.selection)))
+                hour = np.append(hour, np.array([int(i + 1)] * len(self.selection)))
+                exp = np.append(exp, np.array(['val ' + labels[0]] * len(self.selection)))
 
             for i in range(self.exp_result2['validation'].shape[1]):
                 data = np.append(data, self.exp_result2['validation'][self.selection, i])
-                hour = np.append(hour, np.array([int(i+1)]*len(self.selection)))
-                exp = np.append(exp, np.array(['val '+ labels[1]]*len(self.selection)))
+                hour = np.append(hour, np.array([int(i + 1)] * len(self.selection)))
+                exp = np.append(exp, np.array(['val ' + labels[1]] * len(self.selection)))
 
         if font is not None:
             matplotlib.rcParams.update({'font.size': font})
-        df = pd.DataFrame({'hour':hour, 'acc':data, title:exp})
+        df = pd.DataFrame({'hour': hour, 'acc': data, title: exp})
         plt.figure(figsize=figsize, dpi=100)
-        sns.boxplot(x='hour', y='acc', hue=title,data=df)
+        sns.boxplot(x='hour', y='acc', hue=title, data=df)
         ax = plt.axes()
         ax.set_ylabel(r'$R^2$')
 
         if save is not None:
             plt.savefig(f"{save}.{saveformat}", format=saveformat)
         plt.show()
-
-
 
     def plot_2DKDEplot(self, summary='sum', notebook=False, dset=('val', 'test'), figsize=(800, 400)):
         """
@@ -1179,7 +1182,7 @@ class DBResults:
 
     # ---- Statistical tests
 
-    def compare_2samp(self, summary='sum',dset=('val', 'test')):
+    def compare_2samp(self, summary='sum', dset=('val', 'test')):
         """
         Computes a 2 sided kolmogorov-smirnov test for equality of distribution
         Computes a T-test for two related samples for identical average
@@ -1210,16 +1213,16 @@ class DBResults:
 
         res = {}
         if 'test' in dset:
-            res['test'] ={}
+            res['test'] = {}
             res['test']['KS2samp'] = ks_2samp(sumtest, sumtest2)
             res['test']['T-test'] = ttest_rel(sumtest, sumtest2)
         if 'val' in dset:
-            res['val']={}
+            res['val'] = {}
             res['val']['KS2samp'] = ks_2samp(sumval, sumval2)
             res['val']['T-test'] = ttest_rel(sumval, sumval2)
         return res
 
-    def compare_ANOVA(self, summary='sum',dset=('val', 'test'), labels=None):
+    def compare_ANOVA(self, summary='sum', dset=('val', 'test'), labels=None):
         """
         Computes a 2 sided kolmogorov-smirnov test for equality of distribution
 
@@ -1235,7 +1238,7 @@ class DBResults:
         msumval = []
         categories = []
         for i, exp_result in enumerate(self.exp_lresults):
-            categories.extend([labels[i]]*len(self.selection))
+            categories.extend([labels[i]] * len(self.selection))
             if type(summary) == int:
                 msumtest.append(exp_result['test'][self.selection, summary])
                 msumval.append(exp_result['validation'][self.selection, summary])
@@ -1248,11 +1251,11 @@ class DBResults:
 
         f, p = f_oneway(*msumtest)
 
-        print ('One-way ANOVA Test set')
-        print ('=============')
+        print('One-way ANOVA Test set')
+        print('=============')
 
-        print ('F value:', f)
-        print ('P value:', p, '\n')
+        print('F value:', f)
+        print('P value:', p, '\n')
 
         mc = MultiComparison(np.hstack(msumtest), categories)
         result = mc.tukeyhsd()
@@ -1261,11 +1264,11 @@ class DBResults:
 
         f, p = f_oneway(*msumtest)
 
-        print ('One-way ANOVA Validation set')
-        print ('=============')
+        print('One-way ANOVA Validation set')
+        print('=============')
 
-        print ('F value:', f)
-        print ('P value:', p, '\n')
+        print('F value:', f)
+        print('P value:', p, '\n')
 
         mc = MultiComparison(np.hstack(msumval), categories)
         result = mc.tukeyhsd()
@@ -1317,7 +1320,8 @@ class DBResults:
 
 
 if __name__ == '__main__':
-    from Wind.Private.DBConfig import mongolocal, mongolocaltest
+    from Wind.Private.DBConfig import mongolocaltest
+
     # query1 = {"experiment": "MLP_s2s_2","status":"done"}
     # query2 = {"experiment": "RNN_s2s","status":"done"}
     # results = DBResults(conn=mongolocal)
@@ -1328,9 +1332,9 @@ if __name__ == '__main__':
     # results.plot_densplot_compare(plot='scatter', summary='sum')
     # plt.show()
 
-    query={'experiment':'mlps2ssjointsmac', 'status':'done'}
+    query = {'experiment': 'mlps2ssjointsmac', 'status': 'done'}
 
     results = DBResults(conn=mongolocaltest)
-    #results = DBResults()
+    # results = DBResults()
 
-    results.results_dataframe_retrieve(query, arch=['activation', 'full','drop' ], data=['lag','slice'])
+    results.results_dataframe_retrieve(query, arch=['activation', 'full', 'drop'], data=['lag', 'slice'])

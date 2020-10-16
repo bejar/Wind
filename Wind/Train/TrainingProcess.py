@@ -17,27 +17,15 @@ TrainingProcess
 
 """
 
-try:
-    from keras.layers import CuDNNGRU, CuDNNLSTM
-except ImportError:
-    _has_CuDNN = False
-else:
-    _has_CuDNN = True
-
-try:
-    from keras.utils import multi_gpu_model
-except ImportError:
-    _has_multigpu = False
-else:
-    _has_multigpu = True
-
-import tensorflow as tf
-from Wind.Data.DataSet import Dataset
-from Wind.Config import wind_data_path
-from time import strftime
-from Wind.DataBaseConfigurations import updateprocess
-import numpy as np
 from copy import deepcopy
+from time import strftime
+
+import numpy as np
+import tensorflow as tf
+
+from Wind.Config import wind_data_path
+from Wind.Data.DataSet import Dataset
+from Wind.DataBaseConfigurations import updateprocess
 from Wind.ErrorMeasure import ErrorMeasure
 
 __author__ = 'bejar'
@@ -105,7 +93,7 @@ def train_dirregression(architecture, config, runconfig):
             else:
                 lresults.append([ahead] + arch.evaluate(val_x, val_y, test_x, test_y))
 
-            print(strftime('%Y-%m-%d %H:%M:%S'),f"Steps Ahead = {ahead}")
+            print(strftime('%Y-%m-%d %H:%M:%S'), f"Steps Ahead = {ahead}")
 
             # Update result in db
             if config is not None and not runconfig.proxy:
@@ -142,7 +130,6 @@ def train_sjoint_sequence2sequence(architecture, config, runconfig):
     # if (sahead - (iahead-1)) % slice != 0:
     #     raise NameError("SJOINT: slice has to be a divisor of the horizon length")
 
-
     lresults = []
     if 'iter' in config['training']:
         niter = config['training']['iter']
@@ -150,9 +137,8 @@ def train_sjoint_sequence2sequence(architecture, config, runconfig):
         niter = 1
 
     lmodels = []
-    steps = [[i,j] for i,j in zip(range(iahead, sahead+1, slice), range(slice, sahead+slice+1,slice))]
+    steps = [[i, j] for i, j in zip(range(iahead, sahead + 1, slice), range(slice, sahead + slice + 1, slice))]
     steps[-1][1] = sahead
-
 
     for iter in range(niter):
         # Loads the dataset once and slices the y matrix for training and evaluation
@@ -189,7 +175,7 @@ def train_sjoint_sequence2sequence(architecture, config, runconfig):
 
             ############################################
             # Training with the current slice
-            arch.train(train_x, train_y[:,ahead[0]-1:ahead[1]], val_x, val_y[:,ahead[0]-1:ahead[1]])
+            arch.train(train_x, train_y[:, ahead[0] - 1:ahead[1]], val_x, val_y[:, ahead[0] - 1:ahead[1]])
             ############################################
             # Results
             if 'descale' not in config['training'] or config['training']['descale']:
@@ -200,7 +186,7 @@ def train_sjoint_sequence2sequence(architecture, config, runconfig):
                 lresults.extend(
                     arch.evaluate(val_x, val_y[:, ahead[0] - 1:ahead[1]], test_x, test_y[:, ahead[0] - 1:ahead[1]]))
 
-            print(strftime('%Y-%m-%d %H:%M:%S'),f"Steps Ahead = {ahead}")
+            print(strftime('%Y-%m-%d %H:%M:%S'), f"Steps Ahead = {ahead}")
 
             # Update result in db
             if config is not None and not runconfig.proxy:
@@ -212,6 +198,7 @@ def train_sjoint_sequence2sequence(architecture, config, runconfig):
     arch.log_result(lresults)
 
     return lresults
+
 
 def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
     """
@@ -241,7 +228,7 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
 
     lresults = []
     lmodels = []
-    steps = [[i,j] for i,j in zip(range(iahead, sahead+1, slice), range(slice, sahead+slice+1,slice))]
+    steps = [[i, j] for i, j in zip(range(iahead, sahead + 1, slice), range(slice, sahead + slice + 1, slice))]
     steps[-1][1] = sahead
 
     ### Accumulated recursive predictions for train, validation and test
@@ -261,7 +248,6 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
                 print(f"Steps Ahead = {ahead}")
 
             # Dataset (the y matrices depend on the slice used for prediction
-
 
             ############################################
             # Model
@@ -295,11 +281,11 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
             # Training
             # print(f'Ahead: {ahead[0] - 1}  {ahead[1]}')
             if config['rdimensions'] == 0:
-                arch.train(train_x, train_y[:,ahead[0]-1:ahead[1]], val_x, val_y[:,ahead[0]-1:ahead[1]])
+                arch.train(train_x, train_y[:, ahead[0] - 1:ahead[1]], val_x, val_y[:, ahead[0] - 1:ahead[1]])
             else:
                 # Train using the predictions of the previous iteration
-                arch.train([train_x, rec_train_pred_x], train_y[:,ahead[0]-1:ahead[1]],
-                           [val_x, rec_val_pred_x], val_y[:,ahead[0]-1:ahead[1]])
+                arch.train([train_x, rec_train_pred_x], train_y[:, ahead[0] - 1:ahead[1]],
+                           [val_x, rec_val_pred_x], val_y[:, ahead[0] - 1:ahead[1]])
 
             ############################################
             # Results and Add the new predictions to the saved ones
@@ -325,7 +311,6 @@ def train_recursive_multi_sequence2sequence(architecture, config, runconfig):
                 else:
                     lresults.extend(arch.evaluate([val_x, rec_val_pred_x], val_y[:, ahead[0] - 1:ahead[1]],
                                                   [test_x, rec_test_pred_x], test_y[:, ahead[0] - 1:ahead[1]]))
-
 
                 rec_train_pred_x = np.concatenate((rec_train_pred_x, arch.predict([train_x, rec_train_pred_x])), axis=1)
                 rec_val_pred_x = np.concatenate((rec_val_pred_x, arch.predict([val_x, rec_val_pred_x])), axis=1)
@@ -422,7 +407,7 @@ def train_gradient_boosting_sequence2sequence(architecture, config, runconfig):
             boost_train_predict_y = boost_train_pred[0]
             boost_val_predict_y = boost_val_pred[0]
             boost_test_predict_y = boost_test_pred[0]
-            for m in range(1,len(boost_train_pred)):
+            for m in range(1, len(boost_train_pred)):
                 boost_train_predict_y += (alpha * boost_train_pred[m])
                 boost_val_predict_y += (alpha * boost_val_pred[m])
                 boost_test_predict_y += (alpha * boost_test_pred[m])
@@ -447,7 +432,7 @@ def train_gradient_boosting_sequence2sequence(architecture, config, runconfig):
         # Results
 
         # Maintained to be compatible with old configuration files
-        if type(config['data']['ahead'])==list:
+        if type(config['data']['ahead']) == list:
             iahead = config['data']['ahead'][0]
             ahead = (config['data']['ahead'][1] - config['data']['ahead'][0]) + 1
         else:
@@ -456,23 +441,23 @@ def train_gradient_boosting_sequence2sequence(architecture, config, runconfig):
 
         itresults = []
 
-        for i, p in zip(range(1, ahead + 1), range(iahead, config['data']['ahead'][1]+1)):
+        for i, p in zip(range(1, ahead + 1), range(iahead, config['data']['ahead'][1] + 1)):
 
             if 'descale' not in config['training'] or config['training']['descale']:
-                itresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
-                                                                   boost_val_predict_y[:, i - 1],
-                                                                   test_y[:, i - 1],
-                                                                   boost_test_predict_y[:, i - 1], scaler=dataset.scaler))
+                itresults.append([p] + ErrorMeasure().compute_errors(val_y[:, i - 1],
+                                                                     boost_val_predict_y[:, i - 1],
+                                                                     test_y[:, i - 1],
+                                                                     boost_test_predict_y[:, i - 1],
+                                                                     scaler=dataset.scaler))
             else:
-                itresults.append([p]  + ErrorMeasure().compute_errors(val_y[:, i - 1],
-                                                                   boost_val_predict_y[:, i - 1],
-                                                                   test_y[:, i - 1],
-                                                                   boost_test_predict_y[:, i - 1]))
+                itresults.append([p] + ErrorMeasure().compute_errors(val_y[:, i - 1],
+                                                                     boost_val_predict_y[:, i - 1],
+                                                                     test_y[:, i - 1],
+                                                                     boost_test_predict_y[:, i - 1]))
 
         lresults.extend(itresults)
 
         print(strftime('%Y-%m-%d %H:%M:%S'))
-
 
     arch.log_result(lresults)
 
@@ -492,7 +477,7 @@ def train_sequence2sequence(architecture, config, runconfig):
     """
 
     ahead = config['data']['ahead'] if (type(config['data']['ahead']) == list) else [1, config['data']['ahead']]
-    #if 'aggregate' in config['data']:
+    # if 'aggregate' in config['data']:
     #    step = config['data']['aggregate']['step']
     #    ahead = [ahead[0], ahead[1]//step]
 
@@ -513,7 +498,6 @@ def train_sequence2sequence(architecture, config, runconfig):
     dataset = Dataset(config=config['data'], data_path=wind_data_path)
     dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
     train_x, train_y, val_x, val_y, test_x, test_y = dataset.get_data_matrices()
-
 
     if type(train_x) != list:
         config['idimensions'] = train_x.shape[1:]
@@ -559,7 +543,6 @@ def train_sequence2sequence(architecture, config, runconfig):
     arch.log_result(lresults)
 
     return lresults
-
 
 
 def train_persistence(architecture, config, runconfig):
@@ -680,7 +663,6 @@ def train_sckit_sequence2sequence(architecture, config, runconfig):
 
     # lresults = []
 
-
     # Dataset
     dataset = Dataset(config=config['data'], data_path=wind_data_path)
     dataset.generate_dataset(ahead=ahead, mode=architecture.data_mode, remote=runconfig.remote)
@@ -703,7 +685,7 @@ def train_sckit_sequence2sequence(architecture, config, runconfig):
 
     ############################################
     # Results
-    if 'descale' not  in config['training'] or config['training']['descale']:
+    if 'descale' not in config['training'] or config['training']['descale']:
         lresults = arch.evaluate(val_x, val_y, test_x, test_y, scaler=dataset.scaler)
     else:
         lresults = arch.evaluate(val_x, val_y, test_x, test_y)
@@ -776,7 +758,6 @@ def train_sequence2sequence_tf(architecture, config, runconfig):
 
         ############################################
         # Training
-
 
         arch.train(train_x, train_y, val_x, val_y)
 

@@ -19,13 +19,12 @@ CNNS2SArchitecture
 
 """
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Dropout, Conv1D, Flatten, Input
-from sklearn.metrics import r2_score
-from Wind.Train.Activations import generate_activation
-
+from keras.models import Model
 from keras.regularizers import l1, l2
+
+from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind.Train.Activations import generate_activation
 
 __author__ = 'bejar'
 

@@ -16,8 +16,8 @@ Layers
 :Created on: 18/09/2019 12:46 
 
 """
-from keras.layers import GlobalAveragePooling1D, Multiply, Dense, LSTM, GRU, Flatten, Dropout, Bidirectional, Input
 from keras import backend as K
+from keras.layers import GlobalAveragePooling1D, Multiply, Dense, LSTM, GRU, Bidirectional
 
 __author__ = 'bejar'
 
