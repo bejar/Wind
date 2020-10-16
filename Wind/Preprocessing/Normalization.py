@@ -35,7 +35,7 @@ class tanh_normalization:
         """
         pass
 
-    def fit(self,X):
+    def fit(self, X):
         """
         Just computes the parameters for the normalization
         :param X:
@@ -50,7 +50,7 @@ class tanh_normalization:
         :param X:
         :return:
         """
-        return 0.5 * (np.tanh(0.01 * (X - self.mu) /self.sigma) + 1)
+        return 0.5 * (np.tanh(0.01 * (X - self.mu) / self.sigma) + 1)
 
     def fit_transform(self, X):
         """
@@ -75,7 +75,7 @@ class sigmoid_normalization:
         """
         pass
 
-    def fit(self,X):
+    def fit(self, X):
         """
         nothing to do for fitting
         :param X:
@@ -83,14 +83,14 @@ class sigmoid_normalization:
         """
         pass
 
-    def transform(self,X):
+    def transform(self, X):
         """
         Computes the tanh transformation
         :param X:
         :return:
         """
         tmp = np.exp(-X)
-        return 1.0/(1.0 - tmp)
+        return 1.0 / (1.0 - tmp)
 
     def fit_transform(self, X):
         """

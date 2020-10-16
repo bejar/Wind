@@ -16,14 +16,14 @@ DBMeasures
 :Created on: 03/09/2019 13:09 
 
 """
-import numpy as np
-
-from Wind.Config.Paths import wind_data_path
-from Wind.ErrorMeasure import ErrorMeasure
 import os
 import warnings
-from Wind.Util.Maps import create_mapbox_plot, create_plot, create_plot_best
+
+import numpy as np
 import pandas as pd
+
+from Wind.Config.Paths import wind_data_path
+from Wind.Util.Maps import create_plot
 
 try:
     from pymongo import MongoClient
@@ -210,7 +210,7 @@ class DBMeasures:
 
 
 if __name__ == '__main__':
-    from Wind.Private.DBConfig import mongolocal, mongolocaltest
+    from Wind.Private.DBConfig import mongolocaltest
 
     results = DBMeasures(conn=mongolocaltest)
 

@@ -18,15 +18,17 @@ TransformData
 
 """
 
-from netCDF4 import Dataset
-import numpy as np
-import time
-from Wind.Config.Paths import wind_data_path, wind_data_path_a, wind_path, wind_NREL_data_path
 import argparse
+import time
 from time import strftime
-from tqdm import tqdm
-from Wind.Private.DBConfig import mongoconnection, mongolocaltest
+
+import numpy as np
+from netCDF4 import Dataset
 from pymongo import MongoClient
+from tqdm import tqdm
+
+from Wind.Config.Paths import wind_data_path, wind_data_path_a, wind_NREL_data_path
+from Wind.Private.DBConfig import mongolocaltest
 
 __author__ = 'bejar'
 

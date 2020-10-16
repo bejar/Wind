@@ -16,14 +16,12 @@ UploadResults
 :Created on: 16/03/2018 13:26 
 
 """
-
 import argparse
-from time import time
+import json
+
+from pymongo import MongoClient
 
 from Wind.Private.DBConfig import mongoconnection
-from copy import deepcopy
-from pymongo import MongoClient
-import json
 
 __author__ = 'bejar'
 

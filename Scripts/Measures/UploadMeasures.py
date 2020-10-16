@@ -16,17 +16,16 @@ UploadMeasures
 :Created on: 22/07/2019 10:18 
 
 """
-
-from __future__ import print_function
 import argparse
-from Wind.Misc import load_config_file
-from Wind.Private.DBConfig import mongoconnection, mongolocaltest
-from pymongo import MongoClient
 import glob
-import numpy as np
-from tqdm import tqdm
 import os
 import time
+
+from pymongo import MongoClient
+from tqdm import tqdm
+
+from Wind.Misc import load_config_file
+from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 
 __author__ = 'bejar'
 

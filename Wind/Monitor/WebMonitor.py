@@ -16,20 +16,20 @@ WebMonitor
 :Date:  18/03/2018
 """
 
+import json
 import socket
+from time import strftime
 
+import StringIO
+import matplotlib
 from flask import Flask, render_template, request
 from flask.logging import default_handler
 from pymongo import MongoClient
+
 from Wind.Private.DBConfig import mongoconnection
-from time import time, strftime
-import json
-import StringIO
-import matplotlib
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 import logging
 
 import base64

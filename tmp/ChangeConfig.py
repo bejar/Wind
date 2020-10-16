@@ -16,11 +16,9 @@ ChangeConfig
 :Created on: 19/12/2018 11:39 
 
 """
-
-
-import numpy as np
-from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 from pymongo import MongoClient
+
+from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 
 __author__ = 'bejar'
 

@@ -16,11 +16,13 @@ Training
 :Created on: 06/04/2018 14:32 
 
 """
-import requests
-from time import strftime
-import socket
 import json
+import socket
+from time import strftime
+
 import numpy as np
+import requests
+
 from Wind.Config.Paths import wind_res_path
 
 try:

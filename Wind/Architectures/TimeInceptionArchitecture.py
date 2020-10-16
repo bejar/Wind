@@ -22,8 +22,8 @@ https://github.com/hfawaz/InceptionTime
 """
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model, Model
-from keras.layers import Dense, Dropout, Conv1D, Flatten, Input, BatchNormalization, \
+from keras.models import load_model, Model
+from keras.layers import Dense, Dropout, Conv1D, Input, BatchNormalization, \
     GlobalAveragePooling1D, Concatenate, MaxPool1D, Add, SeparableConv1D
 from Wind.Train.Activations import generate_activation
 

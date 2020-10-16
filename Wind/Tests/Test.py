@@ -23,17 +23,11 @@ from Wind.Train import RunConfig
 
 __author__ = 'bejar'
 
-
-
-
-
 if __name__ == '__main__':
-
     config = load_config_file("../examples/config_RNN_ED_s2s.json", id=True)
-    config['idimensions'] = (12,6)
+    config['idimensions'] = (12, 6)
     config['odimensions'] = 12
-    runconfig = RunConfig(1,0, False,False,False,False,False,False,False)
-
+    runconfig = RunConfig(1, 0, False, False, False, False, False, False, False)
 
     print(config)
     net = RNNS2SArchitecture(config, runconfig)

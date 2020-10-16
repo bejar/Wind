@@ -16,15 +16,17 @@ DataSet
 
 """
 
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, QuantileTransformer
-from Wind.Config.Paths import remote_data, remote_wind_data_path
-from Wind.Spatial.Util import get_all_neighbors, get_closest_k_neighbors
-from Wind.Preprocessing.Normalization import tanh_normalization
-import numpy as np
 import os
+
+import numpy as np
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, QuantileTransformer
+from statsmodels.tsa.seasonal import STL
+
+from Wind.Config.Paths import remote_data, remote_wind_data_path
+from Wind.Preprocessing.Normalization import tanh_normalization
+from Wind.Spatial.Util import get_all_neighbors, get_closest_k_neighbors
 from Wind.Util.Entropy import spectral_entropy, sample_entropy
 from Wind.Util.SSA import SSA
-from statsmodels.tsa.seasonal import STL
 
 try:
     import pysftp
@@ -728,20 +730,18 @@ class Dataset:
                 wind[d] = wind[d][:, vars]
             # If the period flag is on we add sinusoidal variables to the data with period a day and a year
             if period is not None:
-                day = np.zeros((wind[d].shape[0],1))
+                day = np.zeros((wind[d].shape[0], 1))
                 freq = int(24 * 60 / period)
                 for i in range(freq):
-                    day[i::freq] = np.sin((2*np.pi/freq)*i)
+                    day[i::freq] = np.sin((2 * np.pi / freq) * i)
                 print(day.shape)
-                year = np.zeros((wind[d].shape[0],1))
+                year = np.zeros((wind[d].shape[0], 1))
                 freq = int(365 * 24 * 60 / period)
                 for i in range(freq):
-                    year[i::freq] = np.sin((2*np.pi/freq)*i)
+                    year[i::freq] = np.sin((2 * np.pi / freq) * i)
                 print(year.shape)
                 print(wind[d].shape)
                 wind[d] = np.concatenate((wind[d], day, year), axis=1)
-
-
 
         if (self.config['dataset'] == 0) or (self.config['dataset'] == 'onesiteonevar'):
             if not ensemble:
@@ -937,10 +937,10 @@ class Dataset:
             stl = STL(data, period=lw)
             result = stl.fit()
             vresidual = np.std(result.resid)
-            vtrend = np.std(data-result.seasonal)
-            vseasonal = np.std(data-result.trend)
-            dvals[f'Trend{w}'] = 1 - (vresidual/vtrend)
-            dvals[f'Season{w}'] = 1 - (vresidual/vseasonal)
+            vtrend = np.std(data - result.seasonal)
+            vseasonal = np.std(data - result.trend)
+            dvals[f'Trend{w}'] = 1 - (vresidual / vtrend)
+            dvals[f'Season{w}'] = 1 - (vresidual / vseasonal)
 
         return dvals
 
@@ -957,9 +957,8 @@ class Dataset:
         if var > self.raw_data.shape[1]:
             raise NameError("Invalid variable number")
 
-        dvals = {}
-        dvals['SpecEnt'] = spectral_entropy(self.raw_data[:, var], sf=1)
-        dvals['SampEnt'] = sample_entropy(self.raw_data[:, var], order=2)
+        dvals = {'SpecEnt': spectral_entropy(self.raw_data[:, var], sf=1),
+                 'SampEnt': sample_entropy(self.raw_data[:, var], order=2)}
 
         data = self.raw_data[:, var]
         for w in window:
@@ -977,9 +976,7 @@ class Dataset:
 
 
 if __name__ == '__main__':
-    from Wind.Misc import load_config_file
     from Wind.Config import wind_data_path
-    import matplotlib.pyplot as plt
 
     # cfile = "config_MLP_s2s_fut"
     # config = load_config_file(f"../TestConfigs/{cfile}.json")
@@ -995,17 +992,17 @@ if __name__ == '__main__':
     #     "aggregate": {"method": "average", "step": 12},
     #     "ahead": [1, 144]
     # }
-    config={
-    "datanames": ["11-5795-12"],
-    "scaler": "standard",
-    "vars": "all",
-    "period":60,
-    "datasize": 43834,
-    "testsize": 17534,
-    "dataset": "onesitemanyvar",
-    "lag": 12,
-    "ahead": [1,12]
-  }
+    config = {
+        "datanames": ["11-5795-12"],
+        "scaler": "standard",
+        "vars": "all",
+        "period": 60,
+        "datasize": 43834,
+        "testsize": 17534,
+        "dataset": "onesitemanyvar",
+        "lag": 12,
+        "ahead": [1, 12]
+    }
 
     # print(config)
     mode = ('2D', '2D')

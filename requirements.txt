@@ -5,3 +5,17 @@ matplotlib
 seaborn
 scikit-learn
 tqdm
+numpy
+pandas
+pymongo
+plotly
+statsmodels
+scipy
+dash
+Flask
+pydot
+h5py
+xgboost
+requests
+numba
+joblib

@@ -16,8 +16,6 @@ Dashboards
 :Created on: 21/03/2018 14:27 
 
 """
-
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html

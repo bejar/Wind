@@ -28,7 +28,6 @@ class MongoData:
         self.passwd = passwd
         self.col = collect
 
-
     def __repr__(self):
         print(self.server, self.db, self.col)
 
@@ -38,9 +37,9 @@ mongoconnection = MongoData('mongodb://localhost:27017/', 'Database', 'User', 'P
 
 # Mongo local connection
 mongolocal = MongoData('mongodb://localhost:27017/', 'Database', 'User', 'Password',
-                            'Collection')
+                       'Collection')
 mongolocalmeasures = MongoData('mongodb://localhost:27017/', 'Database', 'User', 'Password',
-                            'Collection')
+                               'Collection')
 
 # Token for mapbox.com to be able to plot maps with geographical information with plotly
 mapbox_token = ""

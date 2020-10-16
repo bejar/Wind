@@ -14,17 +14,13 @@ WindPrediction
 :Created on: 06/09/2017 9:47 
 
 """
-
-from __future__ import print_function
-
+import argparse
+import os
 from time import strftime
 
-from Wind.Misc import load_config_file
 from Wind.DataBaseConfigurations import getconfig, saveconfig
+from Wind.Misc import load_config_file
 from Wind.Train import TrainDispatch, RunConfig
-
-import os
-import argparse
 
 __author__ = 'bejar'
 

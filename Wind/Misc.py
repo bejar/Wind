@@ -18,10 +18,12 @@ Util
 """
 
 import json
-import numpy as np
 from time import strftime
+
+import numpy as np
+from numpy import log, polyfit, sqrt, std, subtract
+
 from Wind.Config.Paths import wind_jobs_path
-from numpy import cumsum, log, polyfit, sqrt, std, subtract
 
 try:
     from pymongo import MongoClient

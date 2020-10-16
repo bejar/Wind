@@ -23,6 +23,7 @@ from keras.layers import Activation
 from keras import backend as K
 from keras.utils.generic_utils import get_custom_objects
 import tensorflow as tf
+
 __author__ = 'bejar'
 
 
@@ -65,6 +66,7 @@ def generate_activation(act_par):
     else:
         raise NameError("Wrong parameters for activation layer")
 
+
 def snake(x):
     """
     Snake activation function
@@ -72,11 +74,12 @@ def snake(x):
       f(x) = x + sin(x)**2
 
       The function is computed used the first terms of the Taylor series decomposition
-    :param X:
+    :param x:
     :return:
     """
     return x + (tf.sin(x) * tf.sin(x))
-    #return x + (x*x) - (x*x*x/3)
+    # return x + (x*x) - (x*x*x/3)
+
 
 def snakeh2(x):
     """
@@ -85,10 +88,11 @@ def snakeh2(x):
       f(x) = x + sin(x)**2
 
       The function is computed used the first terms of the Taylor series decomposition
-    :param X:
+    :param x:
     :return:
     """
-    return x + (2 * tf.sin(0.5*x) * tf.sin(0.5*x))
+    return x + (2 * tf.sin(0.5 * x) * tf.sin(0.5 * x))
+
 
 def snake2(x):
     """
@@ -97,10 +101,11 @@ def snake2(x):
       f(x) = x + sin(x)**2
 
       The function is computed used the first terms of the Taylor series decomposition
-    :param X:
+    :param x:
     :return:
     """
-    return x + (0.5 * tf.sin(2*x) * tf.sin(2*x))
+    return x + (0.5 * tf.sin(2 * x) * tf.sin(2 * x))
+
 
 def xsin(x):
     """
@@ -109,10 +114,11 @@ def xsin(x):
       f(x) = x + sin(x)
 
       The function is computed used the first terms of the Taylor series decomposition
-    :param X:
+    :param x:
     :return:
     """
     return x + tf.sin(x)
+
 
 def swish(x):
     """
@@ -122,6 +128,7 @@ def swish(x):
     :return:
     """
     return x * tf.sigmoid(x)
+
 
 get_custom_objects().update({'swish': Activation(swish)})
 get_custom_objects().update({'snake': Activation(snake)})
