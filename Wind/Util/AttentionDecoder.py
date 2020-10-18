@@ -24,7 +24,7 @@ Borrwed from
 import tensorflow as tf
 from keras import backend as K
 from keras import regularizers, constraints, initializers, activations
-from keras.layers.recurrent import Recurrent
+from keras.layers.recurrent import RNN
 from keras.engine import InputSpec
 #from .tdd import _time_distributed_dense
 
@@ -74,7 +74,7 @@ def _time_distributed_dense(x, w, b=None, dropout=None,
         x = K.reshape(x, (-1, timesteps, output_dim))
     return x
 
-class AttentionDecoder(Recurrent):
+class AttentionDecoder(RNN):
 
     def __init__(self, units, output_dim,
                  activation='tanh',
