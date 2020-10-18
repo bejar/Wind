@@ -21,6 +21,7 @@ from time import strftime
 from Wind.DataBaseConfigurations import getconfig, saveconfig
 from Wind.Misc import load_config_file
 from Wind.Train import TrainDispatchTF2, RunConfig
+__TF2__ = True
 
 __author__ = 'bejar'
 

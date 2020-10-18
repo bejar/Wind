@@ -42,7 +42,7 @@ from Wind.Train.TrainingProcess import train_dirregression, train_sckit_dirregre
     train_sckit_sequence2sequence, train_sjoint_sequence2sequence, train_gradient_boosting_sequence2sequence
 
 
-class TrainDispatch:
+class TrainDispatchTF2:
 
     model_dict = {}
 
