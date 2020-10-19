@@ -5,6 +5,7 @@
     "datanames": ["11-5794-12"],
     "scaler": "standard",
     "vars": "all",
+    "period":60,
     "datasize": 43834,
     "testsize": 17534,
     "dataset": "onesitemanyvar",
