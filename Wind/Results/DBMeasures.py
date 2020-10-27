@@ -87,6 +87,8 @@ class DBMeasures:
             warnings.warn('No coordinates file found, maps will not be available')
         self.exp_measures={}
 
+
+
     def retrieve_measures(self, measure='measures'):
         """
         Retrieves measures from the DB for a query
@@ -103,6 +105,7 @@ class DBMeasures:
         self.measures = list(one[self.variables[0]].keys())
         self.osel = list(self.exp_measures.keys())
         self.selection = self.osel
+
 
     def sample(self, percentage):
         """
