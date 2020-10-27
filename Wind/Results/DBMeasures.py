@@ -106,7 +106,6 @@ class DBMeasures:
         self.osel = list(self.exp_measures.keys())
         self.selection = self.osel
 
-
     def sample(self, percentage):
         """
         Picks a random sample from the measures
