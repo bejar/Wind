@@ -1,0 +1,1 @@
+python3 ExtractConfig.py --nconfig 500 --jph 75 --machine power --exp CNNSEPnewact --bsc --testdb --rand --nrep 20 

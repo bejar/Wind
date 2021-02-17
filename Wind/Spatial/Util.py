@@ -26,7 +26,7 @@ else:
 import numpy as np
 from sklearn.neighbors import KDTree
 
-from Wind.Config import wind_path
+from Wind.Config import wind_path, MAX_SITES
 from Wind.Config.Paths import wind_data_path
 
 __author__ = 'bejar'
@@ -81,6 +81,30 @@ def get_closest_k_neighbors(site, radius, k):
     lneighbor = tree.query_radius(coords[isite, :].reshape(1, -1), r=radius, sort_results=True, count_only=False, return_distance=True)[0][0]
 
     return ["%d-%d-%d" % (v // 500, v, agg) for v in lneighbor[:k+1]]
+
+def get_random_k_nonneighbors(site, radius, k):
+    """
+    Generates a list of random sites outside a radious of a given site
+    """
+    coords = np.load(wind_data_path + '/Coords.npy')
+    tree = KDTree(coords, leaf_size=1)
+    isite = int(site.split('-')[1])
+    agg = int(site.split('-')[2])
+
+    # retrieve a list of the 250 neighbors around a radius
+    lneighbor = tree.query_radius(coords[isite, :].reshape(1, -1), r=radius, sort_results=True, count_only=False, return_distance=True)[0][0]
+    lneighbor = set(lneighbor[:250])
+    nnonneigh = 0
+    lnonneighbor = []
+    while nnonneigh <= k:
+        rsite = np.random.randint(0, MAX_SITES)
+        if rsite not in lneighbor:
+            lnonneighbor.append(rsite)
+            nnonneigh += 1
+
+    return ["%d-%d-%d" % (v // 500, v, agg) for v in lnonneighbor[:k]]
+
+
 
 
 def get_all_neighbors(site, radius):

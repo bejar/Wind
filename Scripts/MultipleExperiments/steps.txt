@@ -1,0 +1,6 @@
+python3 GenerateExpConfPseudoSMAC.py --testdb --config Config/config_RNN_ED_s2s.json --pconfig Config/pconfig_RNN_s2s.json --exp RNN_ED_VAR_smac --refexp rnneds2ssmac
+python3 GenerateExpConfPseudoSMAC.py --testdb --config Config/config_RNN_ED_s2s.json --pconfig Config/pconfig_RNN_s2s.json --exp RNN_ED_VAR_smac --random --npar 10 --nbatches 1
+python3 GenerateExpConfPseudoSMAC.py --testdb --config Config/config_RNN_ED_s2s.json --pconfig Config/pconfig_RNN_ED_s2s.json --exp RNN_ED_VAR_smac --npar 25 --nbatches 1 --exploit random --nbest 10  --confexp 100
+python3 GenerateExpConfPseudoSMAC.py --testdb --config Config/config_RNN_ED_s2s.json --pconfig Config/pconfig_RNN_ED_s2s.json --exp RNN_ED_VAR_smac --npar 25 --nbatches 4 --exploit genetic --nbest 10  --confexp 1000  --cross 0.9 --mutate 0.9
+python3 GenerateExpConfPseudoSMAC.py --testdb --config  Config/config_CNN_sep_s2s.json --pconfig  Config/pconfig_CNN_sep_s2s.json --exp CNNSEPnewact  --exploit genetic --npar 20 --nbatches 4 --confexp 1000 --nbest 30 --cross 0.9 --mutate 0.9 --print --std 0.5 
+python3 GenerateExpConfPseudoSMAC.py --testdb --config  Config/config_CNN_sep_s2s.json --pconfig  Config/pconfig_CNN_sep_s2s.json --exp CNNSEPnewact --intensify --npar 25 --nbatches 2

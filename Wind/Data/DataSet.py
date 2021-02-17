@@ -24,7 +24,7 @@ from statsmodels.tsa.seasonal import STL
 
 from Wind.Config.Paths import remote_data, remote_wind_data_path
 from Wind.Preprocessing.Normalization import tanh_normalization
-from Wind.Spatial.Util import get_all_neighbors, get_closest_k_neighbors
+from Wind.Spatial.Util import get_all_neighbors, get_closest_k_neighbors, get_random_k_nonneighbors
 from Wind.Util.Entropy import spectral_entropy, sample_entropy
 from Wind.Util.SSA import SSA
 
@@ -665,6 +665,7 @@ class Dataset:
           3 = All sites - all variables
           4 = All sites - all variables stacked
           5 = Uses neighbor sites around a radius
+          6 = Uses random sites outside a radius
 
         :param ens_slice: (not yet used)
         :param remote: Use remote data
@@ -709,6 +710,17 @@ class Dataset:
                 datanames = get_closest_k_neighbors(datanames[0], radius, self.config['nneighbors'])
             else:
                 datanames = get_all_neighbors(datanames[0], radius)
+
+        # Augment the dataset with the random not neighbors (out of a radius)
+        if self.config['dataset'] == 6:
+            if 'radius' not in self.config:
+                raise NameError("Radius missing for neighbours augmented dataset")
+            else:
+                radius = self.config['radius']
+            nonneigh = 100 if 'nonneighbors' not in self.config else self.config['nonneighbors']
+            datanames = get_random_k_nonneighbors(datanames[0], radius, self.config['nneighbors'])
+            datanames += datanames[0]
+
         # Reads numpy arrays for all sites and keeps only selected columns
         for d in datanames:
             if remote:
@@ -784,6 +796,20 @@ class Dataset:
             self.train_x = np.vstack([x[0] for x in stacked])
             self.train_y = np.vstack([x[1] for x in stacked])
 
+            self.val_x = stacked[0][2]
+            self.val_y = stacked[0][3]
+            self.test_x = stacked[0][4]
+            self.test_y = stacked[0][5]
+        # Training augmenting the dataset with random sites outside a radius
+        elif self.config['dataset'] == 6:
+            stacked = [self._generate_dataset_multiple_var(wind[d], datasize, testsize,
+                                                           lag=lag, ahead=dahead, slice=slice, mode=mode) for d in
+                       datanames]
+            # Training with all the sites
+            self.train_x = np.vstack([x[0] for x in stacked])
+            self.train_y = np.vstack([x[1] for x in stacked])
+
+            # Testing and validating only with the experiment site
             self.val_x = stacked[0][2]
             self.val_y = stacked[0][3]
             self.test_x = stacked[0][4]
