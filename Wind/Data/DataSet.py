@@ -20,7 +20,12 @@ import os
 
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, QuantileTransformer
-from statsmodels.tsa.seasonal import STL
+
+try:
+    from statsmodels.tsa.seasonal import STL
+except Exception:
+    pass
+
 
 from Wind.Config.Paths import remote_data, remote_wind_data_path
 from Wind.Preprocessing.Normalization import tanh_normalization
