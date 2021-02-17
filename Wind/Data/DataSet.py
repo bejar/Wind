@@ -272,7 +272,7 @@ class Dataset:
                'tanh': tanh_normalization(), 'robustscaler': RobustScaler(), 'quantile': QuantileTransformer()}
     ## Strings corresponding to the different dataset configurations
     dataset_type = ['onesiteonevar', 'onesitemanyvar', 'manysiteonevar', 'manysitemanyvar', 'manysitemanyvarstack',
-                    'manysitemanyvarstackneigh']
+                    'manysitemanyvarstackneigh','manysitemanyvarstacknonneigh']
     generated = False
     raw_data = None
     scaler = None  # Scaler object so data can be rescaled after training
@@ -724,7 +724,7 @@ class Dataset:
                 radius = self.config['radius']
             nonneigh = 100 if 'nonneighbors' not in self.config else self.config['nonneighbors']
             nndnames= get_random_k_nonneighbors(datanames[0], radius, nonneigh)
-            print(nndnames)
+            # print(nndnames)
             datanames.extend(nndnames)
 
         # Reads numpy arrays for all sites and keeps only selected columns
