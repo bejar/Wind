@@ -723,8 +723,9 @@ class Dataset:
             else:
                 radius = self.config['radius']
             nonneigh = 100 if 'nonneighbors' not in self.config else self.config['nonneighbors']
-            datanames = get_random_k_nonneighbors(datanames[0], radius, self.config['nneighbors'])
-            datanames += datanames[0]
+            nndnames= get_random_k_nonneighbors(datanames[0], radius, nonneigh)
+            print(nndnames)
+            datanames.extend(nndnames)
 
         # Reads numpy arrays for all sites and keeps only selected columns
         for d in datanames:

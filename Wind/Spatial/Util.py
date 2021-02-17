@@ -105,8 +105,6 @@ def get_random_k_nonneighbors(site, radius, k):
     return ["%d-%d-%d" % (v // 500, v, agg) for v in lnonneighbor[:k]]
 
 
-
-
 def get_all_neighbors(site, radius):
     """
     Returns all site neighbors of a site inside a cluster
