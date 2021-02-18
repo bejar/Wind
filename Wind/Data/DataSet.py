@@ -752,13 +752,13 @@ class Dataset:
                 freq = int(24 * 60 / period)
                 for i in range(freq):
                     day[i::freq] = np.sin((2 * np.pi / freq) * i)
-                print(day.shape)
+                # print(day.shape)
                 year = np.zeros((wind[d].shape[0], 1))
                 freq = int(365 * 24 * 60 / period)
                 for i in range(freq):
                     year[i::freq] = np.sin((2 * np.pi / freq) * i)
-                print(year.shape)
-                print(wind[d].shape)
+                # print(year.shape)
+                # print(wind[d].shape)
                 wind[d] = np.concatenate((wind[d], day, year), axis=1)
 
         if (self.config['dataset'] == 0) or (self.config['dataset'] == 'onesiteonevar'):
