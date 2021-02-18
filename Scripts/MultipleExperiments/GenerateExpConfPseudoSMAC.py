@@ -83,7 +83,7 @@ import argparse
 from time import time
 
 from Wind.Misc import load_config_file
-from Wind.Private.DBConfig import mongolocaltest, mongoconnection
+from Wind.Private.DBConfig import mongolocaltest, mongoconnection, mongolocalmeasures
 from Wind.Util.Sample import uniform_sample, entropy_sample
 from copy import deepcopy
 from pymongo import MongoClient
@@ -689,7 +689,7 @@ if __name__ == '__main__':
 
     # DB stuff
     if args.testdb:
-        mongoconnection = mongolocaltest
+        mongoconnection = mongolocalmeasures
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.user is not None:

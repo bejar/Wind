@@ -296,7 +296,7 @@ class DBResults:
         self.osel = list(range(self.exp_lresults[0]['sites'].shape[0]))
         self.selection = list(range(self.exp_lresults[0]['sites'].shape[0]))
 
-    def results_dataframe_retrieve(self, query, data=('vars', 'ahead', 'lag'), arch=(), train=()):
+    def results_dataframe_retrieve(self, query, data=['vars', 'ahead', 'lag'], arch=[], train=[]):
         """
         Retrieves the results from the query and builds a pandas dataframe with all the data
 
@@ -515,7 +515,7 @@ class DBResults:
         else:
             raise NameError("percentage must be in range (0-1]")
 
-    def plot_map(self, summary='sum', notebook=False, cmap=scl, mapbox=False, dset=('val', 'test'), figsize=(800, 400),
+    def plot_map(self, summary='sum', notebook=False, cmap=scl, mapbox=False, dset=['val', 'test'], figsize=(800, 400),
                  mksize=2):
         """
         generates an html map with the results
@@ -585,7 +585,7 @@ class DBResults:
                             )
 
     def plot_map_compare(self, summary='sum', notebook=False, compare='diff', cmap=sclbi, mapbox=False,
-                         dset=('val', 'test'), figsize=(800, 400), mksize=2):
+                         dset=['val', 'test'], figsize=(800, 400), mksize=2):
         """
         generates an html map with the results
 
@@ -730,7 +730,7 @@ class DBResults:
                              f"{title}-validation", notebook=notebook, figsize=figsize, labels=labels, cmap=cmap
                              )
 
-    def plot_distplot(self, summary='sum', seaborn=True, notebook=False, dset=('val', 'test'), figsize=(800, 400),
+    def plot_distplot(self, summary='sum', seaborn=True, notebook=False, dset=['val', 'test'], figsize=(800, 400),
                       title=None, labels=None, font=None, save=None, saveformat='pdf'):
         """
         Generates a distplot of the results
@@ -811,7 +811,7 @@ class DBResults:
             else:
                 py.iplot(fig, filename=f"./{title}-distplot.html")
 
-    def plot_distplot_compare(self, summary='sum', compare='diff', seaborn=True, notebook=False, dset=('val', 'test'),
+    def plot_distplot_compare(self, summary='sum', compare='diff', seaborn=True, notebook=False, dset=['val', 'test'],
                               figsize=(800, 400), title=None, labels=None, font=None, save=None, saveformat='pdf'):
         """
         Generates a distplot for the comparison of the results results

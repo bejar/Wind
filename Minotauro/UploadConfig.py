@@ -25,7 +25,7 @@ from pymongo import MongoClient
 from tqdm import tqdm
 
 from Wind.Misc import load_config_file
-from Wind.Private.DBConfig import mongoconnection, mongolocaltest
+from Wind.Private.DBConfig import mongoconnection, mongolocalmeasures
 
 __author__ = 'bejar'
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
         lfiles = sorted(lfiles)
 
     if args.testdb:
-        mongoconnection = mongolocaltest
+        mongoconnection = mongolocalmeasures
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.user is not None:

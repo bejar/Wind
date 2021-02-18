@@ -20,7 +20,7 @@ ExtractConfig
 
 import argparse
 import json
-from Wind.Private.DBConfig import mongolocaltest, mongoconnection
+from Wind.Private.DBConfig import mongolocaltest, mongoconnection, mongolocalmeasures
 from pymongo import MongoClient
 from shutil import copy
 from Wind.Config import wind_data_path, bsc_path, jobs_code_path, jobs_root_path
@@ -33,6 +33,7 @@ __author__ = 'bejar'
 
 # module load K80 cuda/8.0 mkl/2017.1 CUDNN/5.1.10-cuda_8.0 intel-opencl/2016 python/3.6.0+_ML
 # module load K80 impi/2018.1 mkl/2018.1 cuda/8.0 CUDNN/7.0.3 python/3.6.3_ML
+# module load  gcc/6.4.0  cuda/9.1 cudnn/7.1.3 openmpi/3.0.0 atlas/3.10.3 scalapack/2.0.2 fftw/3.3.7 szip/2.1.1 ffmpeg/4.0.2 opencv/3.4.1 python/3.6.5_ML
 
 
 # jobcontentmino= f"""#!/bin/bash
@@ -70,7 +71,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.testdb:
-        mongoconnection = mongolocaltest
+        mongoconnection = mongolocalmeasures
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.user is not None:
@@ -148,7 +149,7 @@ ulimit -s 10240
 #SBATCH --gres=gpu:1
 #SBATCH --mem={args.mem}
 module purge
-module load  gcc/6.4.0  cuda/9.1 cudnn/7.1.3 openmpi/3.0.0 atlas/3.10.3 scalapack/2.0.2 fftw/3.3.7 szip/2.1.1 ffmpeg/4.0.2 opencv/3.4.1 python/3.6.5_ML
+module load  gcc/8.3.0 cuda/10.2 cudnn/7.6.4 nccl/2.4.8 tensorrt/6.0.1 openmpi/4.0.1 atlas/3.10.3 scalapack/2.0.2 fftw/3.3.8 szip/2.1.1 ffmpeg/4.2.1 opencv/4.1.1 python/3.7.4_ML
 PYTHONPATH={jobs_code_path}
 export PYTHONPATH
 
