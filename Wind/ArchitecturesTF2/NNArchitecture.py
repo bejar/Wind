@@ -17,6 +17,7 @@ NNArchitecture
 """
 
 from tensorflow.keras.models import load_model
+import shutil
 
 from Wind.Architectures.Architecture import Architecture
 
@@ -165,7 +166,8 @@ class NNArchitecture(Architecture):
         """
         if not self.runconfig.save:# or not self.runconfig.best):
             try:
-                os.remove(self.modfile)
+                shutil.rmtree(self.modfile)
+                # os.remove(self.modfile)
             except Exception:
                 pass
         else:

@@ -21,7 +21,7 @@ ExpCheck
 
 """
 import argparse
-from Wind.Private.DBConfig import mongolocaltest, mongoconnection
+from Wind.Private.DBConfig import mongolocaltest, mongoconnection, mongolocalmeasures
 from pymongo import MongoClient
 
 __author__ = 'bejar'
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.testdb:
-        mongoconnection = mongolocaltest
+        mongoconnection = mongolocalmeasures
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.user is not None:
