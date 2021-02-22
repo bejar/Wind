@@ -167,9 +167,11 @@ class NNArchitecture(Architecture):
         if not self.runconfig.save:# or not self.runconfig.best):
             try:
                 shutil.rmtree(self.modfile)
+                print(f'erasing {self.modfile} suceeded')
                 # os.remove(self.modfile)
             except Exception:
-                pass
+                print(f'erasing {self.modfile} failed')
+                #pass
         else:
             os.rename(self.modfile, f'model{self.modname}-S{self.config["data"]["datanames"][0]}{postfix}.h5')
 
