@@ -18,6 +18,7 @@ NNArchitecture
 
 from Wind.Architectures.Architecture import Architecture
 from keras.models import load_model
+import shutil
 
 try:
    from keras.utils import plot_model
@@ -162,13 +163,28 @@ class NNArchitecture(Architecture):
         :param postfix:
         :return:
         """
+        print('SAVING MODEL WRONG METHOD')
         if not self.runconfig.save:# or not self.runconfig.best):
+            print("!!!!SAVING MODEL!!!!")
             try:
-                os.remove(self.modfile)
+                shutil.rmtree(self.modfile)
+                print(f'erasing {self.modfile} suceeded')
+                # os.remove(self.modfile)
             except Exception:
-                pass
+                print(f'erasing {self.modfile} failed')
+                #pass
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         else:
+            print('WTF!!!!!!!!')
             os.rename(self.modfile, f'model{self.modname}-S{self.config["data"]["datanames"][0]}{postfix}.h5')
+        print('SAVE ENDS!!!!!!!!!')
+        # if not self.runconfig.save:# or not self.runconfig.best):
+        #     try:
+        #         os.remove(self.modfile)
+        #     except Exception:
+        #         pass
+        # else:
+        #     os.rename(self.modfile, f'model{self.modname}-S{self.config["data"]["datanames"][0]}{postfix}.h5')
 
     def plot(self):
         """

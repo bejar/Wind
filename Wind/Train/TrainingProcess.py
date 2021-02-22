@@ -540,7 +540,7 @@ def train_sequence2sequence(architecture, config, runconfig):
 
         print(strftime('Saving MODEL'))
         arch.save(f'-{ahead[0]}-{ahead[1]}-R{iter}')
-
+        print(strftime('MODEL SAVED !!!!!!!!!'))
     arch.log_result(lresults)
 
     return lresults

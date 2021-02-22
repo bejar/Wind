@@ -178,6 +178,7 @@ class NNArchitecture(Architecture):
         else:
             print('WTF!!!!!!!!')
             os.rename(self.modfile, f'model{self.modname}-S{self.config["data"]["datanames"][0]}{postfix}.h5')
+        print('SAVE ENDS!!!!!!!!!')
 
     def plot(self):
         """
