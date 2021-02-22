@@ -179,7 +179,7 @@ uname -a
                         f"python WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
                 else:
                     batchjob.write(
-                        f"python3 WindExperimentBatch.py --best --early --gpu --mino --gpulog --config {config['_id']}\n")
+                        f"python3 WindExperimentBatchTF2.py --best --early --gpu --mino --gpulog --config {config['_id']}\n")
                         #f"mpirun python WindExperimentBatch.py --best --early --gpu --gpulog --mino --config {config['_id']}\n")
 
                 col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})

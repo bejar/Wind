@@ -164,21 +164,14 @@ class NNArchitecture(Architecture):
         :param postfix:
         :return:
         """
-        print('SAVING MODEL')
         if not self.runconfig.save:# or not self.runconfig.best):
-            print("!!!!SAVING MODEL!!!!")
             try:
                 shutil.rmtree(self.modfile)
-                print(f'erasing {self.modfile} suceeded')
                 # os.remove(self.modfile)
             except Exception:
-                print(f'erasing {self.modfile} failed')
-                #pass
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                pass
         else:
-            print('WTF!!!!!!!!')
             os.rename(self.modfile, f'model{self.modname}-S{self.config["data"]["datanames"][0]}{postfix}.h5')
-        print('SAVE ENDS!!!!!!!!!')
 
     def plot(self):
         """
