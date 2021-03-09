@@ -16,30 +16,15 @@ RNNS2SArchitecture
 :Date:  13/07/2018
 """
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import load_model, Model
-from keras.layers import LSTM, GRU, Dense,  Dropout, Input
-from Wind.Train.Activations import generate_activation
-
-from Wind.Util.SelfAttention import SelfAttention
-from Wind.ErrorMeasure import ErrorMeasure
 import h5py
+from tensorflow.keras.layers import LSTM, GRU, Dense, Dropout, Input
+from tensorflow.keras.models import load_model, Model
+from tensorflow.keras.regularizers import l1, l2
 
-try:
-    from keras.layers import CuDNNGRU, CuDNNLSTM
-except ImportError:
-    _has_CuDNN = False
-else:
-    _has_CuDNN = True
-
-from keras.regularizers import l1, l2
-
-try:
-    from keras.utils import multi_gpu_model
-except ImportError:
-    _has_multigpu = False
-else:
-    _has_multigpu = True
+from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind.ErrorMeasure import ErrorMeasure
+from Wind.Train.Activations import generate_activation
+from Wind.Util.SelfAttention import SelfAttention
 
 __author__ = 'bejar'
 

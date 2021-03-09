@@ -16,11 +16,10 @@ MLPDirRegressionArchitecture
 :Created on: 04/09/2018 7:58 
 
 """
-from Wind.Architectures.NNArchitecture import NNArchitecture
+from tensorflow.keras.layers import Dense, Dropout, Input
+from tensorflow.keras.models import Model
 
-from keras.models import Model, Sequential
-from keras.layers import Dense, Dropout
-from keras.layers import Flatten, Input
+from Wind.Architectures.NNArchitecture import NNArchitecture
 from Wind.Train.Activations import generate_activation
 
 __author__ = 'bejar'
@@ -48,7 +47,6 @@ class MLPDirRegressionArchitecture(NNArchitecture):
         # Extra added from training function
         idimensions = self.config['idimensions']
 
-
         # self.model = Sequential()
         # self.model.add(Dense(full_layers[0], input_shape=(idimensions)))
         # self.model.add(generate_activation(activation))
@@ -73,4 +71,3 @@ class MLPDirRegressionArchitecture(NNArchitecture):
         output = Dense(1, activation='linear')(layer)
 
         self.model = Model(inputs=data_input, outputs=output)
-

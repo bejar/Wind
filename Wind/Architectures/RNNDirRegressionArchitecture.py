@@ -17,9 +17,10 @@ RNNDirRegressionArchitecture
 
 """
 
+from tensorflow.keras.layers import LSTM, GRU, Bidirectional, Dense
+from tensorflow.keras.models import Sequential
+
 from Wind.Architectures.NNArchitecture import NNArchitecture
-from keras.models import Sequential
-from keras.layers import LSTM, GRU, Bidirectional, Dense
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM

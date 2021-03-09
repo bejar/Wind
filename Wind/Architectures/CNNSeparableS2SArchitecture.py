@@ -19,13 +19,12 @@ CNNS2SArchitecture
 
 """
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model, Model
-from keras.layers import Dense, Dropout, SeparableConv1D, Flatten, Input, BatchNormalization
-from sklearn.metrics import r2_score
-from Wind.Train.Activations import generate_activation
+from tensorflow.keras.layers import Dense, Dropout, SeparableConv1D, Flatten, Input, BatchNormalization
+from tensorflow.keras.models import Model
+from tensorflow.keras.regularizers import l1, l2
 
-from keras.regularizers import l1, l2
+from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind.Train.Activations import generate_activation
 
 __author__ = 'bejar'
 
@@ -37,7 +36,7 @@ class CNNSeparableS2SArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'CNNS2S'
-    data_mode = ('3D', '2D') #'cnn'
+    data_mode = ('3D', '2D')  # 'cnn'
 
     def generate_model(self):
         """
@@ -105,8 +104,8 @@ class CNNSeparableS2SArchitecture(NNS2SArchitecture):
 
         input = Input(shape=(idimensions))
         model = SeparableConv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                              padding='same', dilation_rate=dilation[0],depth_multiplier=depth_multiplier,
-                              kernel_regularizer=k_regularizer)(input)
+                                padding='same', dilation_rate=dilation[0], depth_multiplier=depth_multiplier,
+                                kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
         if bnorm:
             model = BatchNormalization()(model)
@@ -116,8 +115,8 @@ class CNNSeparableS2SArchitecture(NNS2SArchitecture):
 
         for i in range(1, len(filters)):
             model = SeparableConv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                              padding='same', dilation_rate=dilation[i],depth_multiplier=depth_multiplier,
-                              kernel_regularizer=k_regularizer)(model)
+                                    padding='same', dilation_rate=dilation[i], depth_multiplier=depth_multiplier,
+                                    kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
             if bnorm:
                 model = BatchNormalization()(model)
@@ -127,7 +126,7 @@ class CNNSeparableS2SArchitecture(NNS2SArchitecture):
 
         model = Flatten()(model)
         for l in full_layers:
-            model= Dense(l)(model)
+            model = Dense(l)(model)
             model = generate_activation(activationfl)(model)
             if bnorm:
                 model = BatchNormalization()(model)
@@ -137,5 +136,3 @@ class CNNSeparableS2SArchitecture(NNS2SArchitecture):
         output = Dense(odimensions, activation='linear')(model)
 
         self.model = Model(inputs=input, outputs=output)
-
-

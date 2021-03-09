@@ -18,8 +18,9 @@ RandomForestDirRegressionArchitecture
 """
 
 
-from Wind.Architectures.SCKArchitecture import SCKArchitecture
 from sklearn.ensemble import RandomForestRegressor
+
+from Wind.Architectures.SCKArchitecture import SCKArchitecture
 
 __author__ = 'bejar'
 

@@ -21,14 +21,12 @@ CNNS2SCrazyIvanArchitecture
 
 __author__ = 'bejar'
 
+from tensorflow.keras.layers import Dense, Dropout, Conv1D, Flatten, Concatenate, Input
+from tensorflow.keras.models import Model
+from tensorflow.keras.regularizers import l1, l2
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model, Model
-from keras.layers import Dense, Dropout, Conv1D, Flatten, Concatenate, Input
-from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
-
-from keras.regularizers import l1, l2
 
 __author__ = 'bejar'
 
@@ -40,7 +38,7 @@ class CNNS2SCrazyIvan2HArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'CNNCI2HS2S'
-    data_mode = ('3D', '2D') #'cnn'
+    data_mode = ('3D', '2D')  # 'cnn'
 
     def generate_model(self):
         """
@@ -91,7 +89,6 @@ class CNNS2SCrazyIvan2HArchitecture(NNS2SArchitecture):
         fulldrop = self.config['arch']['fulldrop']
         full_layers = self.config['arch']['full']
 
-
         k_reg = self.config['arch']['k_reg']
         k_regw = self.config['arch']['k_regw']
 
@@ -106,14 +103,13 @@ class CNNS2SCrazyIvan2HArchitecture(NNS2SArchitecture):
         else:
             k_regularizer = None
 
-
         input = Input(shape=(idimensions))
 
         lconv = []
 
         # 1st head
         convomodel = Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size, strides=strides[0],
-                          padding='causal', kernel_regularizer=k_regularizer)(input)
+                            padding='causal', kernel_regularizer=k_regularizer)(input)
         convomodel = generate_activation(activation)(convomodel)
 
         if drop != 0:
@@ -122,7 +118,7 @@ class CNNS2SCrazyIvan2HArchitecture(NNS2SArchitecture):
 
         # 2nd head
         convomodel = Conv1D(filters2[0], input_shape=(idimensions), kernel_size=kernel_size2, strides=strides2[0],
-                          padding='causal', kernel_regularizer=k_regularizer)(input)
+                            padding='causal', kernel_regularizer=k_regularizer)(input)
         convomodel = generate_activation(activation)(convomodel)
 
         if drop != 0:
@@ -139,7 +135,7 @@ class CNNS2SCrazyIvan2HArchitecture(NNS2SArchitecture):
             fullout = generate_activation(activationfl)(fullout)
             fullout = Dropout(rate=fulldrop)(fullout)
 
-        #fullout = Flatten()(fullout)
+        # fullout = Flatten()(fullout)
 
         output = Dense(odimensions, activation='linear')(fullout)
 

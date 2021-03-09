@@ -18,10 +18,9 @@ CNNS2SArchitecture
 :Created on: 24/10/2018 8:10 
 
 """
-
-from keras.layers import Dense, Dropout, Conv2D, Flatten, Input
-from keras.models import Model
-from keras.regularizers import l1, l2
+from tensorflow.keras.models import Sequential, load_model, Model
+from tensorflow.keras.layers import Dense, Dropout, Conv2D, Flatten, Input
+from tensorflow.keras.regularizers import l1, l2
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from Wind.Train.Activations import generate_activation
@@ -71,10 +70,10 @@ class CNNS2S2DArchitecture(NNS2SArchitecture):
         # and the strides are all 1's
         if 'dilation' in self.config['arch'] and self.config['arch']['dilation']:
             dilation = self.config['arch']['strides']
-            strides = [[1,1]] * len(dilation)
+            strides = [[1, 1]] * len(dilation)
         else:
             strides = self.config['arch']['strides']
-            dilation = [[1,1]] * len(strides)
+            dilation = [[1, 1]] * len(strides)
         activationfl = self.config['arch']['activation_full']
         fulldrop = self.config['arch']['fulldrop']
         full_layers = self.config['arch']['full']
@@ -97,18 +96,19 @@ class CNNS2S2DArchitecture(NNS2SArchitecture):
 
         input = Input(shape=(idimensions))
         # We assume that the kernel size for the dimension corresponding to the variables is always the number of variables
-        model = Conv2D(filters[0], input_shape=(idimensions), kernel_size=[kernel_size[0],idimensions[1]], strides=[1,strides[0]],
-                              padding='same', dilation_rate=dilation[0],
-                              kernel_regularizer=k_regularizer)(input)
+        model = Conv2D(filters[0], input_shape=(idimensions), kernel_size=[kernel_size[0], idimensions[1]],
+                       strides=[1, strides[0]],
+                       padding='same', dilation_rate=dilation[0],
+                       kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
 
         if drop != 0:
             model = Dropout(rate=drop)(model)
 
         for i in range(1, len(filters)):
-            model = Conv2D(filters[i], kernel_size=[kernel_size[i], idimensions[0]], strides=[1,strides[i]],
-                              padding='same', dilation_rate=dilation[i],
-                              kernel_regularizer=k_regularizer)(model)
+            model = Conv2D(filters[i], kernel_size=[kernel_size[i], idimensions[0]], strides=[1, strides[i]],
+                           padding='same', dilation_rate=dilation[i],
+                           kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
 
             if drop != 0:
@@ -116,7 +116,7 @@ class CNNS2S2DArchitecture(NNS2SArchitecture):
 
         model = Flatten()(model)
         for l in full_layers:
-            model= Dense(l)(model)
+            model = Dense(l)(model)
             model = generate_activation(activationfl)(model)
             if fulldrop != 0:
                 model = Dropout(rate=fulldrop)(model)
@@ -124,5 +124,3 @@ class CNNS2S2DArchitecture(NNS2SArchitecture):
         output = Dense(odimensions, activation='linear')(model)
 
         self.model = Model(inputs=input, outputs=output)
-
-

@@ -20,14 +20,12 @@ CNNS2SArchitecture
 :Created on: 24/10/2018 8:10 
 
 """
+from tensorflow.keras.layers import Dense, Dropout, SeparableConv1D, Flatten, Input
+from tensorflow.keras.models import Model
+from tensorflow.keras.regularizers import l1, l2
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model, Model
-from keras.layers import Dense, Dropout, SeparableConv1D, Flatten, Input
-from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
-
-from keras.regularizers import l1, l2
 
 __author__ = 'bejar'
 
@@ -39,7 +37,7 @@ class CNNSeparable2LS2SArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'CNNS2S'
-    data_mode = ('3D', '2D') #'cnn'
+    data_mode = ('3D', '2D')  # 'cnn'
 
     def generate_model(self):
         """
@@ -84,7 +82,6 @@ class CNNSeparable2LS2SArchitecture(NNS2SArchitecture):
         depth_multiplier = self.config['arch']['depth_multiplier']
         activation = self.config['arch']['activation']
 
-
         # 2nd Layer
         drop2 = self.config['arch']['drop2']
         filters2 = self.config['arch']['filters2']
@@ -100,7 +97,6 @@ class CNNSeparable2LS2SArchitecture(NNS2SArchitecture):
 
         depth_multiplier2 = self.config['arch']['depth_multiplier2']
         activation2 = self.config['arch']['activation2']
-
 
         activationfl = self.config['arch']['activation_full']
         fulldrop = self.config['arch']['fulldrop']
@@ -122,17 +118,16 @@ class CNNSeparable2LS2SArchitecture(NNS2SArchitecture):
 
         input = Input(shape=(idimensions))
         model = SeparableConv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                              padding='same', dilation_rate=dilation[0],depth_multiplier=depth_multiplier,
-                              kernel_regularizer=k_regularizer)(input)
+                                padding='same', dilation_rate=dilation[0], depth_multiplier=depth_multiplier,
+                                kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
 
         if drop != 0:
             model = Dropout(rate=drop)(model)
 
-
         model = SeparableConv1D(filters2[0], kernel_size=kernel_size2[0], strides=strides2[0],
-                          padding='same', dilation_rate=dilation2[0],depth_multiplier=depth_multiplier2,
-                          kernel_regularizer=k_regularizer)(model)
+                                padding='same', dilation_rate=dilation2[0], depth_multiplier=depth_multiplier2,
+                                kernel_regularizer=k_regularizer)(model)
         model = generate_activation(activation2)(model)
 
         if drop != 0:
@@ -140,7 +135,7 @@ class CNNSeparable2LS2SArchitecture(NNS2SArchitecture):
 
         model = Flatten()(model)
         for l in full_layers:
-            model= Dense(l)(model)
+            model = Dense(l)(model)
             model = generate_activation(activationfl)(model)
             if fulldrop != 0:
                 model = Dropout(rate=fulldrop)(model)
@@ -148,5 +143,3 @@ class CNNSeparable2LS2SArchitecture(NNS2SArchitecture):
         output = Dense(odimensions, activation='linear')(model)
 
         self.model = Model(inputs=input, outputs=output)
-
-

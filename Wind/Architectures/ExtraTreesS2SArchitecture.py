@@ -17,12 +17,12 @@ RandomForestDirRegressionArchitecture
 
 """
 
+from sklearn.ensemble import ExtraTreesRegressor
 
 from Wind.Architectures.SCKS2SArchitecture import SCKS2SArchitecture
-from sklearn.ensemble import ExtraTreesRegressor
-from sklearn.tree import ExtraTreeRegressor
 
 __author__ = 'bejar'
+
 
 class ExtraTreesS2SArchitecture(SCKS2SArchitecture):
     """Direct regression architecture based on random forest
@@ -52,4 +52,4 @@ class ExtraTreesS2SArchitecture(SCKS2SArchitecture):
         """
         self.model = ExtraTreesRegressor(max_depth=self.config['arch']['max_depth'],
                                          n_estimators=self.config['arch']['n_estimators'],
-                                         max_features=self.config['arch']['max_features'],n_jobs=-1)
+                                         max_features=self.config['arch']['max_features'], n_jobs=-1)

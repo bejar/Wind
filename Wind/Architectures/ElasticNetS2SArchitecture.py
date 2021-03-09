@@ -17,10 +17,12 @@ KNNDirRegressionArchitecture
 
 """
 
-from Wind.Architectures.SCKS2SArchitecture import SCKS2SArchitecture
 from sklearn.linear_model import ElasticNet
 
+from Wind.Architectures.SCKS2SArchitecture import SCKS2SArchitecture
+
 __author__ = 'bejar'
+
 
 class ElasticNetS2SArchitecture(SCKS2SArchitecture):
     """S2S regression architecture based on ElasticNet
@@ -47,8 +49,5 @@ class ElasticNetS2SArchitecture(SCKS2SArchitecture):
         :return:
         """
         self.model = ElasticNet(alpha=self.config['arch']['alpha'],
-                                         l1_ratio=self.config['arch']['l1_ratio'],
+                                l1_ratio=self.config['arch']['l1_ratio'],
                                 max_iter=10000)
-
-
-

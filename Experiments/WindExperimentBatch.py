@@ -21,6 +21,12 @@ from time import strftime
 from Wind.DataBaseConfigurations import getconfig, saveconfig
 from Wind.Misc import load_config_file
 from Wind.Train import TrainDispatch, RunConfig
+import warnings
+import tensorflow as tf
+warnings.filterwarnings('ignore')
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+
+__TF2__ = True
 
 __author__ = 'bejar'
 

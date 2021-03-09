@@ -16,31 +16,15 @@ RNNS2SArchitecture
 :Date:  13/07/2018
 """
 
+from keras.layers import Dense, Flatten, Dropout, Input
+from keras.models import Model
+from tensorflow.keras.regularizers import l1, l2
+
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model, Model
-from keras.layers import LSTM, GRU, Dense, Flatten, Dropout, Bidirectional, Input
-from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
 from Wind.Train.Layers import generate_recurrent_layer
 
-try:
-    from keras.layers import CuDNNGRU, CuDNNLSTM
-except ImportError:
-    _has_CuDNN = False
-else:
-    _has_CuDNN = True
-
-from keras.regularizers import l1, l2
-
-try:
-    from keras.utils import multi_gpu_model
-except ImportError:
-    _has_multigpu = False
-else:
-    _has_multigpu = True
-
 __author__ = 'bejar'
-
 
 
 class RNNS2SArchitecture(NNS2SArchitecture):
@@ -134,26 +118,27 @@ class RNNS2SArchitecture(NNS2SArchitecture):
         input = Input(shape=(idimensions))
 
         if nlayersE == 1:
-            model = generate_recurrent_layer(neurons, impl, drop, activation_r, rec_regularizer, k_regularizer, backwards,
-                             rnntype, after, bidir, bimerge, rseq=True)(input)
+            model = generate_recurrent_layer(neurons, impl, drop, activation_r, rec_regularizer, k_regularizer,
+                                             backwards,
+                                             rnntype, after, bidir, bimerge, rseq=True)(input)
             model = generate_activation(activation)(model)
 
         else:
-            model = generate_recurrent_layer(neurons, impl, drop, activation_r, rec_regularizer, k_regularizer, backwards,
-                             rnntype, after, bidir, bimerge, rseq=True)(input)
+            model = generate_recurrent_layer(neurons, impl, drop, activation_r, rec_regularizer, k_regularizer,
+                                             backwards,
+                                             rnntype, after, bidir, bimerge, rseq=True)(input)
             model = generate_activation(activation)(model)
-
 
             for i in range(1, nlayersE - 1):
-                model = generate_recurrent_layer(neurons, impl, drop, activation_r, rec_regularizer, k_regularizer, backwards,
-                                 rnntype, after, bidir, bimerge, rseq=True)(model)
+                model = generate_recurrent_layer(neurons, impl, drop, activation_r, rec_regularizer, k_regularizer,
+                                                 backwards,
+                                                 rnntype, after, bidir, bimerge, rseq=True)(model)
                 model = generate_activation(activation)(model)
 
-
-            model = generate_recurrent_layer(neurons, impl, drop, activation_r, rec_regularizer, k_regularizer, backwards,
-                             rnntype, after, bidir, bimerge, rseq=True)(model)
+            model = generate_recurrent_layer(neurons, impl, drop, activation_r, rec_regularizer, k_regularizer,
+                                             backwards,
+                                             rnntype, after, bidir, bimerge, rseq=True)(model)
             model = generate_activation(activation)(model)
-
 
         model = Flatten()(model)
 
@@ -165,5 +150,3 @@ class RNNS2SArchitecture(NNS2SArchitecture):
         output = Dense(odimensions, activation='linear')(model)
 
         self.model = Model(inputs=input, outputs=output)
-
-

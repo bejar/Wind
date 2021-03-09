@@ -16,23 +16,13 @@ RNNEncoderDecoderS2SArchitecture
 :Date:  13/07/2018
 """
 
+from tensorflow.keras.layers import Dense, TimeDistributed, RepeatVector, Dropout, Input, Concatenate
+from tensorflow.keras.models import Model
+from tensorflow.keras.regularizers import l1, l2
+
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model, Model
-from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector, Dropout, Input, Concatenate
-from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
 from Wind.Train.Layers import generate_recurrent_layer
-
-
-try:
-    from keras.layers import CuDNNGRU, CuDNNLSTM
-except ImportError:
-    _has_CuDNN = False
-else:
-    _has_CuDNN = True
-
-from keras.regularizers import l1, l2
-
 
 __author__ = 'bejar'
 

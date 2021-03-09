@@ -19,13 +19,13 @@ CNNS2SArchitecture
 
 """
 
+from tensorflow.keras.layers import Dense, Dropout, Conv1D, Flatten, Input, BatchNormalization
+from tensorflow.keras.models import load_model, Model
+from tensorflow.keras.regularizers import l1, l2
+
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from Wind.Train.Activations import generate_activation
 from Wind.Train.Layers import squeeze_and_excitation
-
-from keras.models import Sequential, load_model, Model
-from keras.layers import Dense, Dropout, Conv1D, Flatten, Input, BatchNormalization, GlobalAveragePooling1D
-from keras.regularizers import l1, l2
 
 __author__ = 'bejar'
 
@@ -37,7 +37,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'CNNS2S'
-    data_mode = ('3D', '2D') #'cnn'
+    data_mode = ('3D', '2D')  # 'cnn'
 
     def generate_model(self):
         """
@@ -73,7 +73,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
         filters = self.config['arch']['filters']
         kernel_size = self.config['arch']['kernel_size']
 
-        padding = 'causal' if 'padding' not in self.config['arch'] else  self.config['arch']['padding']
+        padding = 'causal' if 'padding' not in self.config['arch'] else self.config['arch']['padding']
         # If there is a dilation field and it is true the strides field is the dilation rates
         # and the strides are all 1's
         if 'dilation' in self.config['arch'] and self.config['arch']['dilation']:
@@ -112,8 +112,8 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         input = Input(shape=(idimensions))
         model = Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                              padding=padding, dilation_rate=dilation[0], use_bias=bias,
-                              kernel_regularizer=k_regularizer)(input)
+                       padding=padding, dilation_rate=dilation[0], use_bias=bias,
+                       kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
         if bnorm:
             model = BatchNormalization()(model)
@@ -126,8 +126,8 @@ class CNNS2SArchitecture(NNS2SArchitecture):
 
         for i in range(1, len(filters)):
             model = Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                              padding=padding, dilation_rate=dilation[i], use_bias=bias,
-                              kernel_regularizer=k_regularizer)(model)
+                           padding=padding, dilation_rate=dilation[i], use_bias=bias,
+                           kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
             if bnorm:
                 model = BatchNormalization()(model)
@@ -146,7 +146,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             model = Flatten()(model)
 
             for l in full_layers:
-                model= Dense(l)(model)
+                model = Dense(l)(model)
                 model = generate_activation(activationfl)(model)
                 if bnorm:
                     model = BatchNormalization()(model)
@@ -163,7 +163,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             model = Flatten()(model)
 
             for l in full_layers:
-                model= Dense(l)(model)
+                model = Dense(l)(model)
                 model = generate_activation(activationfl)(model)
                 if bnorm:
                     model = BatchNormalization()(model)
@@ -172,7 +172,7 @@ class CNNS2SArchitecture(NNS2SArchitecture):
                     model = Dropout(rate=fulldrop)(model)
 
             output = Dense(odimensions, activation='linear')(model)
-        elif self.config['arch']['fulltype'] == 'conv': # "conv"
+        elif self.config['arch']['fulltype'] == 'conv':  # "conv"
             # Fully convolutional output, size 1 stride 1 convolution with odimensions filters
             activationfl = self.config['arch']['activation_full']
             fulldrop = self.config['arch']['fulldrop']
@@ -187,15 +187,14 @@ class CNNS2SArchitecture(NNS2SArchitecture):
             model = Flatten()(model)
             output = Dense(odimensions, activation='linear')(model)
 
-
         self.model = Model(inputs=input, outputs=output)
-
 
     def predict(self, val_x):
         """
         Returns the predictions of the model for some data
 
         :param val_x:
+        :param val_y:
         :return:
         """
         batch_size = self.config['training']['batch']

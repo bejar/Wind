@@ -17,12 +17,13 @@ RandomForestDirRegressionArchitecture
 
 """
 
-
-from Wind.Architectures.SCKArchitecture import SCKArchitecture
 from sklearn.ensemble import AdaBoostRegressor
 from sklearn.tree import DecisionTreeRegressor
 
+from Wind.Architectures.SCKArchitecture import SCKArchitecture
+
 __author__ = 'bejar'
+
 
 class AdaBoostDirRegressionArchitecture(SCKArchitecture):
     """Direct regression architecture based on random forest
@@ -52,5 +53,5 @@ class AdaBoostDirRegressionArchitecture(SCKArchitecture):
         """
         self.model = AdaBoostRegressor(base_estimator=DecisionTreeRegressor(max_depth=self.config['arch']['max_depth']),
                                        n_estimators=self.config['arch']['n_estimators'],
-                                         learning_rate=self.config['arch']['learning_rate'],
-                                         loss=self.config['arch']['loss'])
+                                       learning_rate=self.config['arch']['learning_rate'],
+                                       loss=self.config['arch']['loss'])

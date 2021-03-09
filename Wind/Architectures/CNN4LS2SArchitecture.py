@@ -19,9 +19,9 @@ CNNS2SArchitecture
 
 """
 
-from keras.layers import Dense, Dropout, Conv1D, Flatten, Input
-from keras.models import Model
-from keras.regularizers import l1, l2
+from tensorflow.keras.layers import Dense, Dropout, Conv1D, Flatten, Input
+from tensorflow.keras.models import Model
+from tensorflow.keras.regularizers import l1, l2
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from Wind.Train.Activations import generate_activation

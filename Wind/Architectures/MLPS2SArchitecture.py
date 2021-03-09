@@ -17,11 +17,11 @@ MLPS2SArchitecture
 
 """
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, Model, load_model
-from keras.layers import Dense, Dropout, GaussianNoise, Input, BatchNormalization
-from Wind.Train.Activations import generate_activation
+from tensorflow.keras.layers import Dense, Dropout, GaussianNoise, Input, BatchNormalization
+from tensorflow.keras.models import Model, load_model
 
+from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind.Train.Activations import generate_activation
 
 __author__ = 'bejar'
 

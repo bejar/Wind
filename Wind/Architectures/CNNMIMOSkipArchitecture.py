@@ -19,12 +19,12 @@ CNNS2SArchitecture
 
 """
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Model
-from keras.layers import Dense, Dropout, Conv1D, Flatten, Input, Concatenate
-from Wind.Train.Activations import generate_activation
+from tensorflow.keras.layers import Dense, Dropout, Conv1D, Flatten, Input, Concatenate
+from tensorflow.keras.models import Model
+from tensorflow.keras.regularizers import l1, l2
 
-from keras.regularizers import l1, l2
+from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind.Train.Activations import generate_activation
 
 __author__ = 'bejar'
 
@@ -35,7 +35,7 @@ class CNNMIMOSkipArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'CNNMIMOSKIP'
-    data_mode = ('3D', '2D') #'cnn'
+    data_mode = ('3D', '2D')  # 'cnn'
 
     def generate_model(self):
         """
@@ -95,20 +95,20 @@ class CNNMIMOSkipArchitecture(NNS2SArchitecture):
 
         input = Input(shape=(idimensions))
         model = Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                              padding='causal', dilation_rate=dilation[0],
-                              kernel_regularizer=k_regularizer)(input)
+                       padding='causal', dilation_rate=dilation[0],
+                       kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
 
         if drop != 0:
             model = Dropout(rate=drop)(model)
 
-        last2 = model # keep for generating the skip connections
+        last2 = model  # keep for generating the skip connections
         last1 = input
         for i in range(1, len(filters)):
             model = Concatenate()([model, last1])
             model = Conv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                              padding='causal', dilation_rate=dilation[i],
-                              kernel_regularizer=k_regularizer)(model)
+                           padding='causal', dilation_rate=dilation[i],
+                           kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
 
             if drop != 0:
@@ -117,10 +117,10 @@ class CNNMIMOSkipArchitecture(NNS2SArchitecture):
             last2 = model
 
         model = Concatenate()([model, last1])
-        #model = Concatenate()([Flatten()(input), Flatten()(model)])
+        # model = Concatenate()([Flatten()(input), Flatten()(model)])
         model = Flatten()(model)
         for l in full_layers:
-            model= Dense(l)(model)
+            model = Dense(l)(model)
             model = generate_activation(activationfl)(model)
             if fulldrop != 0:
                 model = Dropout(rate=fulldrop)(model)
@@ -128,4 +128,3 @@ class CNNMIMOSkipArchitecture(NNS2SArchitecture):
         output = Dense(odimensions, activation='linear')(model)
 
         self.model = Model(inputs=input, outputs=output)
-

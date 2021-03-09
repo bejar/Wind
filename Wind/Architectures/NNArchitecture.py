@@ -16,9 +16,10 @@ NNArchitecture
 :Date:  13/07/2018
 """
 
-from Wind.Architectures.Architecture import Architecture
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 import shutil
+
+from Wind.Architectures.Architecture import Architecture
 
 try:
    from keras.utils import plot_model
@@ -28,7 +29,7 @@ except ImportError:
 else:
    _has_pydot = True
 
-from keras.optimizers import RMSprop, Adamax
+from keras.optimizers import RMSprop
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint, ReduceLROnPlateau
 
 try:
@@ -168,16 +169,9 @@ class NNArchitecture(Architecture):
                 shutil.rmtree(self.modfile)
                 # os.remove(self.modfile)
             except Exception:
-                 pass
+                pass
         else:
             os.rename(self.modfile, f'model{self.modname}-S{self.config["data"]["datanames"][0]}{postfix}.h5')
-        # if not self.runconfig.save:# or not self.runconfig.best):
-        #     try:
-        #         os.remove(self.modfile)
-        #     except Exception:
-        #         pass
-        # else:
-        #     os.rename(self.modfile, f'model{self.modname}-S{self.config["data"]["datanames"][0]}{postfix}.h5')
 
     def plot(self):
         """

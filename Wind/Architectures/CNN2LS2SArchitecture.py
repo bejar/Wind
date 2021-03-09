@@ -19,12 +19,13 @@ CNNS2SArchitecture
 
 """
 
-from keras.layers import Dense, Dropout, Conv1D, Flatten, Input
-from keras.models import Model
-from keras.regularizers import l1, l2
-
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, Dropout, Conv1D, Flatten, Input
+
 from Wind.Train.Activations import generate_activation
+
+from tensorflow.keras.regularizers import l1, l2
 
 __author__ = 'bejar'
 
@@ -36,7 +37,7 @@ class CNN2LS2SArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'CNN2LS2S'
-    data_mode = ('3D', '2D') #'cnn'
+    data_mode = ('3D', '2D')  # 'cnn'
 
     def generate_model(self):
         """
@@ -88,7 +89,6 @@ class CNN2LS2SArchitecture(NNS2SArchitecture):
             strides2 = self.config['arch']['strides2']
             dilation2 = [1] * len(strides2)
 
-
         activationfl = self.config['arch']['activation_full']
         fulldrop = self.config['arch']['fulldrop']
         full_layers = self.config['arch']['full']
@@ -111,16 +111,16 @@ class CNN2LS2SArchitecture(NNS2SArchitecture):
 
         input = Input(shape=(idimensions))
         model = Conv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                              padding='causal', dilation_rate=dilation,
-                              kernel_regularizer=k_regularizer)(input)
+                       padding='causal', dilation_rate=dilation,
+                       kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
 
         if drop != 0:
             model = Dropout(rate=drop)(model)
 
         model = Conv1D(filters2[0], kernel_size=kernel_size2[0], strides=strides2[0],
-                          padding='causal', dilation_rate=dilation2,
-                          kernel_regularizer=k_regularizer)(model)
+                       padding='causal', dilation_rate=dilation2,
+                       kernel_regularizer=k_regularizer)(model)
         model = generate_activation(activation)(model)
 
         if drop2 != 0:
@@ -128,7 +128,7 @@ class CNN2LS2SArchitecture(NNS2SArchitecture):
 
         model = Flatten()(model)
         for l in full_layers:
-            model= Dense(l)(model)
+            model = Dense(l)(model)
             model = generate_activation(activationfl)(model)
             if fulldrop != 0:
                 model = Dropout(rate=fulldrop)(model)
@@ -136,7 +136,6 @@ class CNN2LS2SArchitecture(NNS2SArchitecture):
         output = Dense(odimensions, activation='linear')(model)
 
         self.model = Model(inputs=input, outputs=output)
-
 
     # def evaluate(self, val_x, val_y, test_x, test_y):
     #     batch_size = self.config['training']['batch']
@@ -159,4 +158,3 @@ class CNN2LS2SArchitecture(NNS2SArchitecture):
     #                          r2_score(test_y[:, i - 1], test_yp[:, i - 1])
     #                          ))
     #     return lresults
-

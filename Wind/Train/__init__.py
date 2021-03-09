@@ -19,7 +19,7 @@ __init__.py
 
 
 from .TrainDispatch import TrainDispatch
-from .TrainDispatchTF2 import TrainDispatchTF2
+#from .TrainDispatchTF2 import TrainDispatchTF2
 from Wind.Train.TrainingProcess import train_dirregression, train_persistence, train_sequence2sequence, train_sckit_dirregression
 from .RunConfig import RunConfig
 

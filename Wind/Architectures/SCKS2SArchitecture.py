@@ -17,9 +17,10 @@ NNS2SArchitecture
 
 """
 
+import h5py
+
 from Wind.Architectures.SCKArchitecture import SCKArchitecture
 from Wind.ErrorMeasure import ErrorMeasure
-import h5py
 
 __author__ = 'bejar'
 

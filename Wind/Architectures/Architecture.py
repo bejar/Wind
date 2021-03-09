@@ -21,22 +21,23 @@ __author__ = 'bejar'
 
 from Wind.ErrorMeasure import ErrorMeasure
 
+
 class Architecture:
     """Architecture
 
     Class for all the architectures
     """
-    ## Name to use for generating files from the architecture and experiment
+    # Name to use for generating files from the architecture and experiment
     modfile = None
-    ## Stores the experiment configuration
+    # Stores the experiment configuration
     config = None
-    ## Stores the configuration flags passed to the training script
+    # Stores the configuration flags passed to the training script
     runconfig = None
-    ## Stores the architecture generated
+    # Stores the architecture generated
     model = None
-    ## Stores the name of the architecture
+    # Stores the name of the architecture
     modname = None
-    ## Stores a pair that codes how the input and output data matrices have to be generated
+    # Stores a pair that codes how the input and output data matrices have to be generated
     data_mode = None
 
     def __init__(self, config, runconfig):
@@ -130,10 +131,9 @@ class Architecture:
         if not 'iter' in self.config['training']:
             nres = len(result)
         else:
-            nres = len(result)//self.config['training']['iter']
+            nres = len(result) // self.config['training']['iter']
 
         ErrorMeasure().print_errors(self.config['arch']['mode'], nres, result)
-
 
     def save(self, postfix):
         """

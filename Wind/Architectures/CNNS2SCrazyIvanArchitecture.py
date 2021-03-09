@@ -21,14 +21,12 @@ CNNS2SCrazyIvanArchitecture
 
 __author__ = 'bejar'
 
+from tensorflow.keras.layers import Dense, Dropout, Conv1D, Flatten, Concatenate, Input
+from tensorflow.keras.models import Model
+from tensorflow.keras.regularizers import l1, l2
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from keras.models import Sequential, load_model, Model
-from keras.layers import Dense, Dropout, Conv1D, Flatten, Concatenate, Input
-from sklearn.metrics import r2_score
 from Wind.Train.Activations import generate_activation
-
-from keras.regularizers import l1, l2
 
 __author__ = 'bejar'
 
@@ -40,7 +38,7 @@ class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'CNNCIS2S'
-    data_mode = ('3D', '2D') #'cnn'
+    data_mode = ('3D', '2D')  # 'cnn'
 
     def generate_model(self):
         """
@@ -97,7 +95,6 @@ class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
         else:
             k_regularizer = None
 
-
         input = Input(shape=(idimensions))
 
         lconv = []
@@ -105,7 +102,7 @@ class CNNS2SCrazyIvanArchitecture(NNS2SArchitecture):
         # Assumes several kernel sizes but only one layer for head
         for k in kernel_size:
             convomodel = Conv1D(filters[0], input_shape=(idimensions), kernel_size=k, strides=strides[0],
-                              padding='causal', kernel_regularizer=k_regularizer)(input)
+                                padding='causal', kernel_regularizer=k_regularizer)(input)
             convomodel = generate_activation(activation)(convomodel)
 
             if drop != 0:

@@ -29,6 +29,7 @@ class PersistenceArchitecture(Architecture):
     ## Data mode default for input, 1 dimensional output
     data_mode = ('2D', '2D')
     modname = 'Persistence'
+
     def generate_model(self):
         """
         Generates the model
@@ -79,11 +80,8 @@ class PersistenceArchitecture(Architecture):
 
         lresults = []
         for i in range(1, ahead + 1):
-            lresults.append([i]  + ErrorMeasure().compute_errors(val_x[:, -1],
-                                                                 val_y[:, i - 1],
-                                                                 test_x[:, -1],
-                                                                 test_y[:, i - 1]))
+            lresults.append([i] + ErrorMeasure().compute_errors(val_x[:, -1],
+                                                                val_y[:, i - 1],
+                                                                test_x[:, -1],
+                                                                test_y[:, i - 1]))
         return lresults
-
-
-

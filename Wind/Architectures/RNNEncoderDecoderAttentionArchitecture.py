@@ -16,25 +16,18 @@ RNNEncoderDecoderS2SArchitecture
 :Date:  13/07/2018
 """
 
+import h5py
+from tensorflow.keras.layers import LSTM, GRU, Dense, TimeDistributed, Input, Dropout
+from tensorflow.keras.models import load_model, Model
+
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from Wind.Util.AttentionDecoder import AttentionDecoder
-from keras.models import load_model, Model
-from keras.layers import LSTM, GRU, Dense, TimeDistributed, Input
-from keras.layers import Activation, dot, concatenate, Permute, Dropout
+from Wind.ErrorMeasure import ErrorMeasure
 from Wind.Train.Activations import generate_activation
 from Wind.Train.Layers import generate_recurrent_layer
-import numpy as np
-from Wind.ErrorMeasure import ErrorMeasure
-import h5py
+from Wind.Util.AttentionDecoder import AttentionDecoder
 
-try:
-    from keras.layers import CuDNNGRU, CuDNNLSTM
-except ImportError:
-    _has_CuDNN = False
-else:
-    _has_CuDNN = True
 
-from keras.regularizers import l1, l2
+from tensorflow.keras.regularizers import l1, l2
 
 try:
     from keras.utils import multi_gpu_model

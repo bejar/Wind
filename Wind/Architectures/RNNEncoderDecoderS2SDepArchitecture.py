@@ -16,20 +16,12 @@ RNNEncoderDecoderS2SArchitecture
 :Date:  13/07/2018
 """
 
+from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector, Input, concatenate
+from keras.models import Model
+from tensorflow.keras.regularizers import l1, l2
+
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from Wind.Architectures.Util import recurrent_encoder_functional, recurrent_decoder_functional
-from keras.models import load_model, Model
-from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector, Input, concatenate
-from sklearn.metrics import r2_score
-
-try:
-    from keras.layers import CuDNNGRU, CuDNNLSTM
-except ImportError:
-    _has_CuDNN = False
-else:
-    _has_CuDNN = True
-
-from keras.regularizers import l1, l2
 
 __author__ = 'bejar'
 
@@ -110,28 +102,26 @@ class RNNEncoderDecoderS2SDepArchitecture(NNS2SArchitecture):
         # Dependent variable input
         enc_Dep_input = Input(shape=(idimensions[0]))
         rec_Dep_input = recurrent_encoder_functional(RNN, nlayersE,
-                                                    neuronsE, impl, drop,
-                                                    activation, activation_r,
-                                                    rec_regularizer, k_regularizer, enc_Dep_input)
+                                                     neuronsE, impl, drop,
+                                                     activation, activation_r,
+                                                     rec_regularizer, k_regularizer, enc_Dep_input)
 
         # Auxiliary variables input
         enc_Aux_input = Input(shape=(idimensions[1]))
         rec_Aux_input = recurrent_encoder_functional(RNN, nlayersE,
-                                                    neuronsE, impl, drop,
-                                                    activation, activation_r,
-                                                    rec_regularizer, k_regularizer, enc_Aux_input)
-
+                                                     neuronsE, impl, drop,
+                                                     activation, activation_r,
+                                                     rec_regularizer, k_regularizer, enc_Aux_input)
 
         enc_input = concatenate([rec_Dep_input, rec_Aux_input])
 
         output = RepeatVector(odimensions)(enc_input)
 
         output = recurrent_decoder_functional(RNN, nlayersD,
-                                                    neuronsD, impl, drop,
-                                                    activation, activation_r,
-                                                    rec_regularizer, k_regularizer, output)
+                                              neuronsD, impl, drop,
+                                              activation, activation_r,
+                                              rec_regularizer, k_regularizer, output)
 
         output = TimeDistributed(Dense(1))(output)
 
         self.model = Model(inputs=[enc_Dep_input, enc_Aux_input], outputs=output)
-

@@ -19,9 +19,9 @@ CNNS2SArchitecture
 
 """
 
-from keras.layers import Dense, Dropout, Flatten, Input, LocallyConnected1D
-from keras.models import load_model, Model
-from keras.regularizers import l1, l2
+from tensorflow.keras.layers import Dense, Dropout, Flatten, Input, LocallyConnected1D
+from tensorflow.keras.models import load_model, Model
+from tensorflow.keras.regularizers import l1, l2
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from Wind.Train.Activations import generate_activation
@@ -36,7 +36,7 @@ class CNNLoCoS2SArchitecture(NNS2SArchitecture):
     """
     modfile = None
     modname = 'CNNLCS2S'
-    data_mode = ('3D', '2D') #'cnn'
+    data_mode = ('3D', '2D')  # 'cnn'
 
     def generate_model(self):
         """
@@ -67,7 +67,7 @@ class CNNLoCoS2SArchitecture(NNS2SArchitecture):
         kernel_size = self.config['arch']['kernel_size']
 
         # padding = 'causal' if 'padding' not in self.config['arch'] else  self.config['arch']['padding']
-        padding = 'valid' # LocallyConnected only supports valid padding
+        padding = 'valid'  # LocallyConnected only supports valid padding
 
         strides = self.config['arch']['strides']
 
@@ -91,10 +91,11 @@ class CNNLoCoS2SArchitecture(NNS2SArchitecture):
         else:
             k_regularizer = None
 
-        input = Input(shape=(idimensions))
-        model = LocallyConnected1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                              padding=padding, data_format='channels_last',
-                              kernel_regularizer=k_regularizer)(input)
+        input = Input(shape=idimensions)
+        model = LocallyConnected1D(filters[0], input_shape=idimensions, kernel_size=kernel_size[0],
+                                   strides=strides[0],
+                                   padding=padding, data_format='channels_last',
+                                   kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
 
         if drop != 0:
@@ -102,16 +103,16 @@ class CNNLoCoS2SArchitecture(NNS2SArchitecture):
 
         for i in range(1, len(filters)):
             model = LocallyConnected1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                              padding=padding, data_format='channels_last',
-                              kernel_regularizer=k_regularizer)(model)
+                                       padding=padding, data_format='channels_last',
+                                       kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
 
             if drop != 0:
                 model = Dropout(rate=drop)(model)
 
         model = Flatten()(model)
-        for l in full_layers:
-            model= Dense(l)(model)
+        for layer in full_layers:
+            model = Dense(layer)(model)
             model = generate_activation(activationfl)(model)
             if fulldrop != 0:
                 model = Dropout(rate=fulldrop)(model)
@@ -119,7 +120,6 @@ class CNNLoCoS2SArchitecture(NNS2SArchitecture):
         output = Dense(odimensions, activation='linear')(model)
 
         self.model = Model(inputs=input, outputs=output)
-
 
     def predict(self, val_x):
         """
