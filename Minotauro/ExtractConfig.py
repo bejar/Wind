@@ -20,7 +20,7 @@ ExtractConfig
 
 import argparse
 import json
-from Wind.Private.DBConfig import mongolocaltest, mongoconnection, mongolocalmeasures
+from Wind.Private.DBConfig import mongolocaltest, mongoconnection
 from pymongo import MongoClient
 from shutil import copy
 from Wind.Config import wind_data_path, bsc_path, jobs_code_path, jobs_root_path
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.testdb:
-        mongoconnection = mongolocalmeasures
+        mongoconnection = mongolocaltest
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.user is not None:
@@ -176,10 +176,10 @@ uname -a
                     copy(f"{wind_data_path}/{config['data']['datanames'][0]}.npy", f"{spath}/Data/")
                 if args.machine == 'mino':
                     batchjob.write(
-                        f"python WindExperimentBatch.py --best --early --gpu --mino --config {config['_id']}\n")
+                        f"python WindExperimentBatchTF1.py --best --early --gpu --mino --config {config['_id']}\n")
                 else:
                     batchjob.write(
-                        f"python3 WindExperimentBatchTF2.py --best --early --gpu --mino --gpulog --config {config['_id']}\n")
+                        f"python3 WindExperimentBatch.py --best --early --gpu --mino --gpulog --config {config['_id']}\n")
                         #f"mpirun python WindExperimentBatch.py --best --early --gpu --gpulog --mino --config {config['_id']}\n")
 
                 col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})

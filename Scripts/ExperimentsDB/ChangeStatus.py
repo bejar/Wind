@@ -25,7 +25,7 @@ TransformData
 
 
 import argparse
-from Wind.Private.DBConfig import mongoconnection, mongolocalmeasures
+from Wind.Private.DBConfig import mongoconnection, mongolocaltest
 from pymongo import MongoClient
 
 from tqdm import tqdm
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.testdb:
-        mongoconnection = mongolocalmeasures
+        mongoconnection = mongolocaltest
 
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]

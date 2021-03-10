@@ -25,7 +25,7 @@ from pymongo import MongoClient
 from tqdm import tqdm
 
 from Wind.Misc import load_config_file
-from Wind.Private.DBConfig import mongoconnection, mongolocalmeasures, mongolocaltest
+from Wind.Private.DBConfig import mongoconnection,  mongolocaltest
 
 __author__ = 'bejar'
 
