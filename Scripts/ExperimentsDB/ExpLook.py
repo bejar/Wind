@@ -34,7 +34,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.testdb:
-        mongoconnection = mongolocalmeasures
+        mongoconnection = mongolocaltest
     client = MongoClient(mongoconnection.server)
     db = client[mongoconnection.db]
     if mongoconnection.user is not None:

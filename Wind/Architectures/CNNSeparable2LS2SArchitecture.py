@@ -70,6 +70,7 @@ class CNNSeparable2LS2SArchitecture(NNS2SArchitecture):
         drop = self.config['arch']['drop']
         filters = self.config['arch']['filters']
         kernel_size = self.config['arch']['kernel_size']
+        padding = self.config['arch']['padding']
         # If there is a dilation field and it is true the strides field is the dilation rates
         # and the strides are all 1's
         if 'dilation' in self.config['arch'] and self.config['arch']['dilation']:
@@ -118,7 +119,7 @@ class CNNSeparable2LS2SArchitecture(NNS2SArchitecture):
 
         input = Input(shape=(idimensions))
         model = SeparableConv1D(filters[0], input_shape=(idimensions), kernel_size=kernel_size[0], strides=strides[0],
-                                padding='same', dilation_rate=dilation[0], depth_multiplier=depth_multiplier,
+                                padding=padding, dilation_rate=dilation[0], depth_multiplier=depth_multiplier,
                                 kernel_regularizer=k_regularizer)(input)
         model = generate_activation(activation)(model)
 
@@ -126,7 +127,7 @@ class CNNSeparable2LS2SArchitecture(NNS2SArchitecture):
             model = Dropout(rate=drop)(model)
 
         model = SeparableConv1D(filters2[0], kernel_size=kernel_size2[0], strides=strides2[0],
-                                padding='same', dilation_rate=dilation2[0], depth_multiplier=depth_multiplier2,
+                                padding=padding, dilation_rate=dilation2[0], depth_multiplier=depth_multiplier2,
                                 kernel_regularizer=k_regularizer)(model)
         model = generate_activation(activation2)(model)
 

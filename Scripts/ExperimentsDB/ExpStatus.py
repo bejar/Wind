@@ -18,7 +18,6 @@ ExpStatus.py
 :Created on: 16/03/2018 13:29 
 
 """
-from __future__ import print_function
 from Wind.Private.DBConfig import mongolocaltest, mongoconnection
 from pymongo import MongoClient
 import argparse
