@@ -36,7 +36,7 @@ from Wind.Architectures import PersistenceArchitecture, PersistenceMeanArchitect
 from Wind.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2SArchitecture, RNNS2SArchitecture, \
     RNNEncoderDecoderS2SAttentionArchitecture, RNNS2SSelfAttentionArchitecture, RNNEncoderDecoderS2SDepArchitecture, \
     RNNEncoderDecoderAttentionArchitecture
-from Wind.Architectures import TimeInceptionArchitecture
+from Wind.Architectures import TimeInceptionArchitecture, TCNArchitecture
 from Wind.Train.TrainingProcess import train_dirregression, train_sckit_dirregression, \
     train_sequence2sequence, train_sequence2sequence_tf, train_recursive_multi_sequence2sequence, \
     train_sckit_sequence2sequence, train_sjoint_sequence2sequence, train_gradient_boosting_sequence2sequence
@@ -120,6 +120,9 @@ class TrainDispatch:
         self.model_dict['CNN_res_mimo'] = (train_sequence2sequence, CNNMIMOResidualArchitecture)
 
         self.model_dict['TimeInception'] = (train_sequence2sequence, TimeInceptionArchitecture)
+
+        self.model_dict['TCN'] = (train_sequence2sequence, TCNArchitecture)
+
 
     def dispatch(self, mode):
         """

@@ -62,6 +62,7 @@ from .SCKS2SArchitecture import SCKS2SArchitecture
 from .SVMDirRegressionArchitecture import SVMDirRegressionArchitecture
 from .TimeInceptionArchitecture import TimeInceptionArchitecture
 from .XGBoostDirRegressionArchitecture import XGBoostDirRegressionArchitecture
+from .TCNArchitecture import TCNArchitecture
 
 __author__ = 'bejar'
 
@@ -109,5 +110,6 @@ __all__ = ['Architecture',
            'ExtraTreesS2SArchitecture',
            'ElasticNetS2SArchitecture',
            'TimeInceptionArchitecture',
-           'XGBoostDirRegressionArchitecture'
+           'XGBoostDirRegressionArchitecture',
+           'TCNArchitecture'
            ]

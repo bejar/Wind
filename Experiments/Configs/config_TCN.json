@@ -1,0 +1,38 @@
+{ 
+   "_id": "00000000",
+      "experiment": "TEST",
+  "data": {
+    "datanames": ["11-5795-12"],
+    "scaler": "standard",
+    "vars": "all",
+    "datasize": 43834,
+    "testsize": 17534,
+    "dataset": "onesitemanyvar",
+    "lag": 6,
+    "ahead": [1,12]
+  },
+  "arch": {
+      "filters": [1024, 256],
+      "strides": [1],
+    "dilated": false,
+      "kernel_size": [3],
+      "drop": 0.5,
+      "activation": "relu",
+      "fulltype": "mlp",
+      "activation_full": "relu",
+      "full": [1024],
+      "fulldrop": 0.2,
+      "padding":"causal",
+      "batchnorm": true,
+      "mode":"TCN"
+  },
+  "training": {
+      "iter":1,
+    "batch": 128,
+      "epochs": 200,
+      "patience":10,
+      "optimizer": "adamax",
+      "lrate": 0.001,
+      "RLROP":{"patience":5, "factor":0.5}
+  }
+}
