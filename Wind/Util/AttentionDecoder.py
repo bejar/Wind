@@ -295,7 +295,7 @@ class AttentionDecoder(RNN):
 
         ytm, stm = states
 
-        # repeat the hidden state to the length of the sequence
+        # n_blocks the hidden state to the length of the sequence
         _stm = K.repeat(stm, self.timesteps)
 
         # now multiplty the weight matrix with the repeated hidden state

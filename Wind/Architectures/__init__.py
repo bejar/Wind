@@ -63,6 +63,7 @@ from .SVMDirRegressionArchitecture import SVMDirRegressionArchitecture
 from .TimeInceptionArchitecture import TimeInceptionArchitecture
 from .XGBoostDirRegressionArchitecture import XGBoostDirRegressionArchitecture
 from .TCNArchitecture import TCNArchitecture
+from .NBeatsArchitecture import NBeatsArchitecture
 
 __author__ = 'bejar'
 
@@ -111,5 +112,6 @@ __all__ = ['Architecture',
            'ElasticNetS2SArchitecture',
            'TimeInceptionArchitecture',
            'XGBoostDirRegressionArchitecture',
-           'TCNArchitecture'
+           'TCNArchitecture',
+           'NBeatsArchitecture'
            ]

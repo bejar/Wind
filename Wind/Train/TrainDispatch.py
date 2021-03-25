@@ -36,7 +36,7 @@ from Wind.Architectures import PersistenceArchitecture, PersistenceMeanArchitect
 from Wind.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2SArchitecture, RNNS2SArchitecture, \
     RNNEncoderDecoderS2SAttentionArchitecture, RNNS2SSelfAttentionArchitecture, RNNEncoderDecoderS2SDepArchitecture, \
     RNNEncoderDecoderAttentionArchitecture
-from Wind.Architectures import TimeInceptionArchitecture, TCNArchitecture
+from Wind.Architectures import TimeInceptionArchitecture, TCNArchitecture, NBeatsArchitecture
 from Wind.Train.TrainingProcess import train_dirregression, train_sckit_dirregression, \
     train_sequence2sequence, train_sequence2sequence_tf, train_recursive_multi_sequence2sequence, \
     train_sckit_sequence2sequence, train_sjoint_sequence2sequence, train_gradient_boosting_sequence2sequence
@@ -94,6 +94,8 @@ class TrainDispatch:
         self.model_dict['MLP_s2s_sjoint'] = (train_sjoint_sequence2sequence, MLPS2SArchitecture)
 
         self.model_dict['MLP_s2s_gb'] = (train_gradient_boosting_sequence2sequence, MLPS2SArchitecture)
+
+        self.model_dict['NBeats'] = (train_sequence2sequence, NBeatsArchitecture)
 
         # Convolutional models
 

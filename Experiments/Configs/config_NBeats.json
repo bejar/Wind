@@ -1,0 +1,33 @@
+{"_id": "00000000",
+  "experiment": "TEST",
+  "data": {
+    "datanames": ["11-5795-12"],
+    "scaler": "standard",
+    "vars": "all",
+    "datasize": 43834,
+    "testsize": 17534,
+    "dataset": "onesitemanyvar",
+    "lag": 24,
+    "fraction": 1,
+      "ahead": [1,12]
+  },
+  "arch": {
+    "ninput": 192,
+    "nforecast": 1024,
+    "nbackcast": 192,
+    "nfull": 1024,
+      "niblocks": 2,
+      "neblocks": 7,
+      "dropout": 0.2,
+    "activation": ["elu",0.4],
+    "mode":"NBeats"
+  },
+  "training": {
+    "iter":1,
+    "batch": 256,
+    "epochs": 200,
+      "patience":10,
+    "optimizer": "adamax",
+      "RLROP":{"patience":5, "factor":0.5}
+  }
+}

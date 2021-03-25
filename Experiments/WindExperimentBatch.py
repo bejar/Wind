@@ -22,9 +22,11 @@ from Wind.DataBaseConfigurations import getconfig, saveconfig
 from Wind.Misc import load_config_file
 from Wind.Train import TrainDispatch, RunConfig
 import warnings
-import tensorflow as tf
+import logging
+logging.getLogger('tensorflow').disabled = True
+#logging.getLogger("tensorflow").setLevel(logging.WARNING)
 warnings.filterwarnings('ignore')
-tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+
 
 __TF2__ = True
 
@@ -53,7 +55,7 @@ if __name__ == '__main__':
                         help='Sectiom regexp for retrieving configs')
     parser.add_argument('--dev', default=None, required=False, type=str, help='Select cuda device')
     args = parser.parse_args()
-
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     if not args.gpulog:
         os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     if args.dev is not None:
