@@ -64,6 +64,7 @@ from .TimeInceptionArchitecture import TimeInceptionArchitecture
 from .XGBoostDirRegressionArchitecture import XGBoostDirRegressionArchitecture
 from .TCNArchitecture import TCNArchitecture
 from .NBeatsArchitecture import NBeatsArchitecture
+from .NaivePeriodicArchitecture import NaivePeriodicArchitecture
 
 __author__ = 'bejar'
 
@@ -113,5 +114,6 @@ __all__ = ['Architecture',
            'TimeInceptionArchitecture',
            'XGBoostDirRegressionArchitecture',
            'TCNArchitecture',
-           'NBeatsArchitecture'
+           'NBeatsArchitecture',
+           'NaivePeriodicArchitecture'
            ]

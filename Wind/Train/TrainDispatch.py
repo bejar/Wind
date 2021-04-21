@@ -37,6 +37,8 @@ from Wind.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2
     RNNEncoderDecoderS2SAttentionArchitecture, RNNS2SSelfAttentionArchitecture, RNNEncoderDecoderS2SDepArchitecture, \
     RNNEncoderDecoderAttentionArchitecture
 from Wind.Architectures import TimeInceptionArchitecture, TCNArchitecture, NBeatsArchitecture
+from Wind.Architectures import NaivePeriodicArchitecture
+
 from Wind.Train.TrainingProcess import train_dirregression, train_sckit_dirregression, \
     train_sequence2sequence, train_sequence2sequence_tf, train_recursive_multi_sequence2sequence, \
     train_sckit_sequence2sequence, train_sjoint_sequence2sequence, train_gradient_boosting_sequence2sequence
@@ -55,6 +57,7 @@ class TrainDispatch:
 
         self.model_dict['persistence'] = (train_sequence2sequence, PersistenceArchitecture)
         self.model_dict['persistencemean'] = (train_sequence2sequence, PersistenceMeanArchitecture)
+        self.model_dict['naiveperiodic'] = (train_sequence2sequence, NaivePeriodicArchitecture)
 
         # Scikit learn models
         self.model_dict['KNN_dir_reg'] = (train_sckit_dirregression, KNNDirRegressionArchitecture)
