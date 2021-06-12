@@ -49,7 +49,7 @@ from .NNS2SArchitecture import NNS2SArchitecture
 from .PersistenceArchitecture import PersistenceArchitecture
 from .PersistenceMeanArchitecture import PersistenceMeanArchitecture
 from .RNNDirRegressionArchitecture import RNNDirRegressionArchitecture
-from .RNNEncoderDecoderAttentionArchitecture import RNNEncoderDecoderAttentionArchitecture
+#from .RNNEncoderDecoderAttentionArchitecture import RNNEncoderDecoderAttentionArchitecture
 from .RNNEncoderDecoderS2SArchitecture import RNNEncoderDecoderS2SArchitecture
 from .RNNEncoderDecoderS2SAttentionArchitecture import RNNEncoderDecoderS2SAttentionArchitecture
 from .RNNEncoderDecoderS2SDepArchitecture import RNNEncoderDecoderS2SDepArchitecture
@@ -86,7 +86,7 @@ __all__ = ['Architecture',
            'RNNS2SArchitecture',
            'RNNS2SSelfAttentionArchitecture',
            'RNNEncoderDecoderS2SAttentionArchitecture',
-           'RNNEncoderDecoderAttentionArchitecture',
+#           'RNNEncoderDecoderAttentionArchitecture',
            'MLPS2SRecursiveArchitecture',
            'RNNEncoderDecoderS2SDepArchitecture',
            'KNNDirRegressionArchitecture',

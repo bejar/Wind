@@ -20,6 +20,7 @@ import os
 
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, QuantileTransformer
+import h5py
 
 try:
     from statsmodels.tsa.seasonal import STL
@@ -647,7 +648,11 @@ class Dataset:
         if angle:
             wind = np.load(self.data_path + '_angle' + f"/{d}.npy")
         else:
-            wind = np.load(self.data_path + f"/{d}.npy")
+            if  os.path.exists(self.dpath + '/{d}.hdf5'):
+                hf = h5py.File(self.dpath + '/{d}.hdf5', 'r')
+                wind = hf [f'{d}/Raw'][()]
+            else:
+                wind = np.load(self.data_path + f"/{d}.npy")
 
         if remote:
             os.remove(self.data_path + f"/{d}.npy")
@@ -736,7 +741,13 @@ class Dataset:
             if angle:
                 wind[d] = np.load(self.data_path + '_angle' + f"/{d}.npy")
             else:
-                wind[d] = np.load(self.data_path + f"/{d}.npy")
+                if os.path.exists(self.data_path + f'/{d}.hdf5'):
+                    hf = h5py.File(self.data_path + f'/{d}.hdf5', 'r')
+                    wind[d] = hf[f'{d}/Raw'][()]
+                else:
+                    wind[d] = np.load(self.data_path + f"/{d}.npy")
+
+                # wind[d] = np.load(self.data_path + f"/{d}.npy")
             if remote:
                 os.remove(self.data_path + f"/{d}.npy")
 

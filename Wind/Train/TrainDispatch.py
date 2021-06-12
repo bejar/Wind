@@ -34,8 +34,8 @@ from Wind.Architectures import MLPDirRegressionArchitecture, MLPS2SArchitecture,
     MLPCascadeS2SArchitecture
 from Wind.Architectures import PersistenceArchitecture, PersistenceMeanArchitecture
 from Wind.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2SArchitecture, RNNS2SArchitecture, \
-    RNNEncoderDecoderS2SAttentionArchitecture, RNNS2SSelfAttentionArchitecture, RNNEncoderDecoderS2SDepArchitecture, \
-    RNNEncoderDecoderAttentionArchitecture
+    RNNEncoderDecoderS2SAttentionArchitecture, RNNS2SSelfAttentionArchitecture, RNNEncoderDecoderS2SDepArchitecture
+#    RNNEncoderDecoderAttentionArchitecture
 from Wind.Architectures import TimeInceptionArchitecture, TCNArchitecture, NBeatsArchitecture
 from Wind.Architectures import NaivePeriodicArchitecture
 
@@ -84,7 +84,7 @@ class TrainDispatch:
 
         self.model_dict['RNN_s2s'] = (train_sequence2sequence, RNNS2SArchitecture)
         self.model_dict['RNN_s2s_self_att'] = (train_sequence2sequence, RNNS2SSelfAttentionArchitecture)
-        self.model_dict['RNN_s2s_att'] = (train_sequence2sequence, RNNEncoderDecoderAttentionArchitecture)
+     #   self.model_dict['RNN_s2s_att'] = (train_sequence2sequence, RNNEncoderDecoderAttentionArchitecture)
 
         # MLP models
 
