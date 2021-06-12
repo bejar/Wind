@@ -36,8 +36,8 @@ if __name__ == '__main__':
     for site in tqdm(range(args.isec, args.fsec + 1), desc='Section'):
         wfiles = [f"{site}-{i}-12" for i in range(site * 500, (site+1) * 500)]
         for wf in tqdm(wfiles, desc='Site'):
-            a = load(f'{wind_data_path}/{wf}.npy')
-            f = h5py.File('f{wind_data_path}/{wf}.hdf5', 'w')
+            a = load(f'{wind_path}/{wf}.npy')
+            f = h5py.File('f{wind_path}/{wf}.hdf5', 'w')
             dgroup = f.create_group('wf')
             dgroup.create_dataset('Raw', a.shape, dtype='f', data=a, compression='gzip')
             f.flush()
