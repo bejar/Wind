@@ -12,10 +12,9 @@
       "ahead": [1,12]
   },
   "arch": {
-      "drop": 0.3,
-    "activation": ["snake"],
-      "full": [512,256],
-      "batchnorm":false,
+    "drop": 0.2,
+    "activation": ["leaky",0.2],
+    "full": [1024, 512],
     "mode":"MLP_s2s"
   },
   "training": {

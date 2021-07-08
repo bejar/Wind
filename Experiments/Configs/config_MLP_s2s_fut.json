@@ -1,11 +1,11 @@
 {"_id": "00000000",
   "experiment": "TEST",
   "data": {
-    "datanames": ["11-5792-12"],
+    "datanames": ["11-5795-12"],
     "scaler": "standard",
     "vars": "all",
     "dmatrix": "future",
-    "varsf": [1],
+    "varsf": [6],
     "datasize": 43834,
     "testsize": 17534,
     "dataset": 1,
@@ -13,17 +13,18 @@
     "ahead": [1,12]
   },
   "arch": {
-    "drop": 0.4,
+    "drop": 0.2,
     "activation": ["leaky",0.2],
     "full": [1024, 512],
+    "funits": 512,
     "mode":"MLP_s2s_fut"
   },
   "training": {
     "iter":1,
-    "batch": 1024,
+    "batch": 128,
     "epochs": 200,
-    "patience":10,
+      "patience":10,
     "optimizer": "adamax",
-    "lrate": 0.001
+      "RLROP":{"patience":5, "factor":0.5}
   }
 }

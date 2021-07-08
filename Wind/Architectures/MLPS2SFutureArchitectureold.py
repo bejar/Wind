@@ -26,7 +26,7 @@ from Wind.Train.Activations import generate_activation
 __author__ = 'bejar'
 
 
-class MLPS2SFutureArchitecture(NNS2SArchitecture):
+class MLPS2SFutureArchitectureold(NNS2SArchitecture):
     """
     Multilayer perceptron sequence to sequence architecture
     with future values variables
@@ -34,7 +34,7 @@ class MLPS2SFutureArchitecture(NNS2SArchitecture):
     modfile = None
     modname = 'MLPS2SFuture'
     ## Data mode 2 dimensional input and 2 dimensional output
-    data_mode = ('2D', '2D')  # 'mlp'
+    data_mode = ('2D', '2D')  #'mlp'
 
     def generate_model(self):
         """
@@ -51,10 +51,14 @@ class MLPS2SFutureArchitecture(NNS2SArchitecture):
         idimensions = self.config['idimensions']
         odimension = self.config['odimensions']
 
+
         # Dependent variable input
         data_input = Input(shape=(idimensions[0]))
+        future_input = Input(shape=(idimensions[1]))
 
-        mlp_layers = Dense(full_layers[0])(data_input)
+        to_mlp = concatenate([data_input,future_input])
+
+        mlp_layers = Dense(full_layers[0])(to_mlp)
         mlp_layers = generate_activation(activation)(mlp_layers)
         mlp_layers = Dropout(rate=dropout)(mlp_layers)
         for units in full_layers[1:]:
@@ -62,13 +66,8 @@ class MLPS2SFutureArchitecture(NNS2SArchitecture):
             mlp_layers = generate_activation(activation)(mlp_layers)
             mlp_layers = Dropout(rate=dropout)(mlp_layers)
 
-        funits = self.config['arch']['funits']
-        future_input = Input(shape=(idimensions[1]))
-        mlp_layers = concatenate([mlp_layers, future_input])
-
-        # mlp_layers = Dense(units=funits)(mlp_layers)
-        # mlp_layers = generate_activation(activation)(mlp_layers)
-        # mlp_layers = Dropout(rate=dropout)(mlp_layers)
-
         output = Dense(odimension, activation='linear')(mlp_layers)
         self.model = Model(inputs=[data_input, future_input], outputs=output)
+
+
+
