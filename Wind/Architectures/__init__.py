@@ -44,6 +44,7 @@ from .MLPCascadeS2SArchitecture import MLPCascadeS2SArchitecture
 from .MLPDirRegressionArchitecture import MLPDirRegressionArchitecture
 from .MLPS2SArchitecture import MLPS2SArchitecture
 from .MLPS2SFutureArchitecture import MLPS2SFutureArchitecture
+from .MLPS2SSeparateArchitecture import MLPS2SSeparateArchitecture
 from .MLPS2SRecursiveArchitecture import MLPS2SRecursiveArchitecture
 from .NNS2SArchitecture import NNS2SArchitecture
 from .PersistenceArchitecture import PersistenceArchitecture
@@ -77,6 +78,7 @@ __all__ = ['Architecture',
            'MLPS2SArchitecture',
            'MLPCascadeS2SArchitecture',
            'MLPS2SFutureArchitecture',
+           'MLPS2SSeparateArchitecture',
            'MLPDirRegressionArchitecture',
            'CNNS2SArchitecture',
            'CNN2LS2SArchitecture',

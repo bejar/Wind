@@ -33,7 +33,7 @@ class MLPCascadeS2SArchitecture(NNS2SArchitecture):
     modfile = None
     modname = 'MLPCASS2S'
     ## Data mode 2 dimensional input and 2 dimensional output
-    data_mode = ('2D', '2D')  #'mlp'
+    data_mode = ('2D', '2D')  # 'mlp'
 
     def generate_model(self):
         """
@@ -60,7 +60,6 @@ class MLPCascadeS2SArchitecture(NNS2SArchitecture):
         # Extra added from training function
         idimensions = self.config['idimensions']
         odimension = self.config['odimensions']
-
 
         data_input = Input(shape=(idimensions))
 
@@ -89,6 +88,3 @@ class MLPCascadeS2SArchitecture(NNS2SArchitecture):
         output = Dense(odimension, activation='linear')(layer)
 
         self.model = Model(inputs=data_input, outputs=output)
-
-
-

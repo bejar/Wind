@@ -675,6 +675,7 @@ class Dataset:
           3 = All sites - all variables
           4 = All sites - all variables stacked
           5 = Uses neighbor sites around a radius
+          51 = Uses neighbor sites around a radius
           6 = Uses random sites outside a radius
 
         :param ens_slice: (not yet used)
@@ -743,7 +744,7 @@ class Dataset:
             else:
                 if os.path.exists(self.data_path + f'/{d}.hdf5'):
                     hf = h5py.File(self.data_path + f'/{d}.hdf5', 'r')
-                    wind[d] = hf[f'{d}/Raw'][()]
+                    wind[d] = hf[f'wf/Raw'][()]
                 else:
                     wind[d] = np.load(self.data_path + f"/{d}.npy")
 
@@ -816,6 +817,21 @@ class Dataset:
             self.val_x = stacked[0][2]
             self.val_y = stacked[0][3]
             self.test_x = stacked[0][4]
+            self.test_y = stacked[0][5]
+        # Adds several sites to the dataset but maintains on a la separate input, only for specific architectures that
+        # process the site and rest of sites with different branches
+        elif self.config['dataset'] == 51:
+            stacked = [self._generate_dataset_multiple_var(wind[d], datasize, testsize,
+                                                           lag=lag, ahead=dahead, slice=slice, mode=mode) for d in
+                       datanames]
+
+            # Training/validation/test has two sets of matrices, target site and near sites
+            self.train_x = [stacked[0][0], np.concatenate([x[0] for x in stacked[1:]], axis=1)]
+            self.train_y = stacked[0][1]
+
+            self.val_x = [stacked[0][2], np.concatenate([x[2] for x in stacked[1:]], axis=1)]
+            self.val_y = stacked[0][3]
+            self.test_x = [stacked[0][4], np.concatenate([x[4] for x in stacked[1:]], axis=1)]
             self.test_y = stacked[0][5]
         # Training augmenting the dataset with random sites outside a radius
         elif self.config['dataset'] == 6:
@@ -945,11 +961,29 @@ class Dataset:
                 print(f"Data fraction: {self.config['fraction']}")
             else:
                 print(f"Data fraction: 2")
-            print(f"Training:   X={self.train_x.shape} Y={self.train_y.shape}")
-            print(f"Validation: X={self.val_x.shape} Y={self.val_y.shape}")
-            print(f"Tests:      X={self.test_x.shape} T={self.test_y.shape}")
+            if type(self.train_x) == list:
+                for x in self.train_x:
+                    print(f"Training: X={x.shape}")
+                print(f"Training: Y={self.train_y.shape}")
+            else:
+                print(f"Training:   X={self.train_x.shape} Y={self.train_y.shape}")
+
+            if type(self.val_x) == list:
+                for x in self.val_x:
+                    print(f"Training: X={x.shape}")
+                print(f"Training: Y={self.val_y.shape}")
+            else:
+                print(f"Validation: X={self.val_x.shape} Y={self.val_y.shape}")
+
+            if type(self.test_x) == list:
+                for x in self.test_x:
+                    print(f"Training: X={x.shape}")
+                print(f"Training: Y={self.test_y.shape}")
+            else:
+                print(f"Tests:      X={self.test_x.shape} T={self.test_y.shape}")
+
             if type(self.config['dataset']) == int:
-                print(f"Dataset type= {self.dataset_type[self.config['dataset']]}")
+                print(f"Dataset type= {self.config['dataset']}")
             else:
                 print(f"Dataset type= {self.config['dataset']}")
             if 'scaler' in self.config:
@@ -1042,7 +1076,7 @@ if __name__ == '__main__':
         "period": 60,
         "datasize": 43834,
         "testsize": 17534,
-        "dataset": "onesitemanyvar",
+        "dataset": 51,
         "lag": 12,
         "ahead": [1, 12]
     }
