@@ -1,12 +1,12 @@
 {"_id": "00000000",
   "experiment": "TEST",
   "data": {
-    "datanames": ["11-5795-12"],
+    "datanames": ["11-5795-12","11-5799-12","11-5798-12", "11-5797-12", "11-5796-12", "11-5794-12","11-5793-12","11-5792-12",  "11-5791-12" ],
     "scaler": "standard",
       "vars": "all",
     "datasize": 43834,
     "testsize": 17534,
-    "dataset": "onesitemanyvar",
+    "dataset": 3,
     "lag": 12,
     "fraction": 1,
       "ahead": [1,12]
@@ -14,7 +14,7 @@
   "arch": {
     "drop": 0.3,
     "activation": ["leaky",0.2],
-    "full": [512,256],
+    "full": [1024,64],
     "mode":"MLP_s2s"
   },
   "training": {
