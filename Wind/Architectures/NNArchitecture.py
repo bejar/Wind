@@ -22,7 +22,7 @@ import shutil
 from Wind.Architectures.Architecture import Architecture
 
 try:
-   from tensorflow..keras.utils import plot_model
+   from tensorflow.keras.utils import plot_model
    import pydot
 except ImportError:
    _has_pydot = False
