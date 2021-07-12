@@ -7,9 +7,9 @@
     "datasize": 43834,
     "testsize": 17534,
     "dataset": 31,
-    "radius": 0.1,
+    "radius": 0.5,
     "corr": [0.7, 0.9],
-    "nneighbors": 100,
+    "nneighbors": 200,
     "lag": 12,
     "fraction": 1,
       "ahead": [1,12]
