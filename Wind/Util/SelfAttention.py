@@ -20,9 +20,9 @@ SelfAttention
 __author__ = 'bejar'
 
 
-from keras.layers import Layer
-from keras import initializers
-from keras import backend as K
+from tensorflow.keras.layers import Layer
+from tensorflow.keras import initializers
+from tensorflow.keras import backend as K
 
 
 class SelfAttention(Layer):
