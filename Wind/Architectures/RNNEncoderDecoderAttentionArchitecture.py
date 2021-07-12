@@ -30,7 +30,7 @@ from Wind.Util.AttentionDecoder import AttentionDecoder
 from tensorflow.keras.regularizers import l1, l2
 
 try:
-    from keras.utils import multi_gpu_model
+    from tensorflow.keras.utils import multi_gpu_model
 except ImportError:
     _has_multigpu = False
 else:

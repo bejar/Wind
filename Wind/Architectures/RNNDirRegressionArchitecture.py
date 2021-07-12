@@ -23,13 +23,13 @@ from tensorflow.keras.models import Sequential
 from Wind.Architectures.NNArchitecture import NNArchitecture
 
 try:
-    from keras.layers import CuDNNGRU, CuDNNLSTM
+    from tensorflow.keras.layers import CuDNNGRU, CuDNNLSTM
 except ImportError:
     _has_CuDNN = False
 else:
     _has_CuDNN = True
 
-from keras.regularizers import l1, l2
+from tensorflow.keras.regularizers import l1, l2
 
 __author__ = 'bejar'
 

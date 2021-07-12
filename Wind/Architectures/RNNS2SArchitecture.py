@@ -16,8 +16,8 @@ RNNS2SArchitecture
 :Date:  13/07/2018
 """
 
-from keras.layers import Dense, Flatten, Dropout, Input
-from keras.models import Model
+from tensorflow.keras.layers import Dense, Flatten, Dropout, Input
+from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l1, l2
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
