@@ -3,7 +3,7 @@
   "data": {
     "datanames": [ "11-5795-12"],
     "radius": 1,
-    "nneighbors": 5,
+    "nneighbors": 10,
     "scaler": "standard",
     "vars": "all",
     "datasize": 43834,
@@ -17,7 +17,7 @@
     "activation": ["leaky",0.2],
     "full": [512,256],
     "fulladd": [512,256],
-    "funits": 32,
+    "funits": 1024,
     "mode":"MLP_s2s_sep"
   },
   "training": {

@@ -1,12 +1,14 @@
 {"_id": "00000000",
   "experiment": "TEST",
   "data": {
-    "datanames": ["11-5795-12","11-5799-12","11-5798-12", "11-5797-12", "11-5796-12", "11-5794-12","11-5793-12","11-5792-12",  "11-5791-12" ],
+    "datanames": ["11-5795-12"],
     "scaler": "standard",
       "vars": "all",
     "datasize": 43834,
     "testsize": 17534,
-    "dataset": 3,
+    "dataset": 31,
+    "radius": 1,
+    "nneighbors": 10,
     "lag": 12,
     "fraction": 1,
       "ahead": [1,12]
