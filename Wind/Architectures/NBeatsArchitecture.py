@@ -24,8 +24,8 @@ NBeatsArchitecture
 __author__ = 'bejar'
 
 
-from keras.layers import Dense, Flatten, Dropout, Input, Add, Subtract
-from keras.models import Model
+from tensorflow.keras.layers import Dense, Flatten, Dropout, Input, Add, Subtract
+from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l1, l2
 
 from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
