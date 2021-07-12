@@ -29,11 +29,11 @@ except ImportError:
 else:
    _has_pydot = True
 
-from keras.optimizers import RMSprop
-from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint, ReduceLROnPlateau
+from tf.keras.optimizers import RMSprop
+from tf.keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint, ReduceLROnPlateau
 
 try:
-    from keras.utils import multi_gpu_model
+    from tf.keras.utils import multi_gpu_model
 except ImportError:
     _has_multigpu = False
 else:
