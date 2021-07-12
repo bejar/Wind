@@ -735,7 +735,6 @@ class Dataset:
 
         # Reads numpy arrays for all sites and keeps only selected columns
         for d in datanames:
-            print(d)
             if remote:
                 srv = pysftp.Connection(host=remote_data[0], username=remote_data[1])
                 srv.get(remote_wind_data_path + f"/{d}.npy", self.data_path + f"/{d}.npy")
@@ -773,6 +772,15 @@ class Dataset:
                 # print(year.shape)
                 # print(wind[d].shape)
                 wind[d] = np.concatenate((wind[d], day, year), axis=1)
+
+
+        # Remove all sites that have a correlation outside a limit
+        if 'corr' in self.config:
+            cmin,cmax = self.config['corr']
+            for d in wind:
+                if d != datanames[0]:
+                    if not (cmin < np.corrcoef(wind[d][:,0], wind[datanames[0]][:,0])[0,1]< cmax):
+                        del wind[d]
 
         if (self.config['dataset'] == 0) or (self.config['dataset'] == 'onesiteonevar'):
             if not ensemble:
