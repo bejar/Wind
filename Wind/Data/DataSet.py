@@ -722,6 +722,9 @@ class Dataset:
             else:
                 datanames = get_all_neighbors(datanames[0], radius)
 
+        for d in datanames:
+            print(d)
+
         # Augment the dataset with the random not neighbors (out of a radius)
         if self.config['dataset'] == 6:
             if 'radius' not in self.config:
@@ -779,6 +782,7 @@ class Dataset:
             cmin,cmax = self.config['corr']
             for d in wind:
                 if d != datanames[0]:
+                    print(d, np.corrcoef(wind[d][:,0], wind[datanames[0]][:,0])[0,1])
                     if not (cmin < np.corrcoef(wind[d][:,0], wind[datanames[0]][:,0])[0,1]< cmax):
                         datanames.remove(d)
         for d in datanames:
