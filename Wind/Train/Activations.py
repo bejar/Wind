@@ -21,7 +21,7 @@ from tensorflow.keras.layers import Activation
 from tensorflow.keras.layers import LeakyReLU, PReLU, ELU
 from tensorflow.keras.layers import Activation
 from tensorflow.keras import backend as K
-from tensorflow.keras.utils.generic_utils import get_custom_objects
+from tensorflow.keras.utils import get_custom_objects
 import tensorflow as tf
 
 __author__ = 'bejar'
