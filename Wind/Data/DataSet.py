@@ -712,7 +712,7 @@ class Dataset:
             slice = ahead
 
         # Augment the dataset with the closest neighbors
-        if self.config['dataset'] == 5 or self.config['dataset'] == 31:
+        if self.config['dataset'] == 5 or self.config['dataset'] == 31 or self.config['dataset'] == 51:
             if 'radius' not in self.config:
                 raise NameError("Radius missing for neighbours augmented dataset")
             else:
@@ -735,6 +735,7 @@ class Dataset:
 
         # Reads numpy arrays for all sites and keeps only selected columns
         for d in datanames:
+            print(d)
             if remote:
                 srv = pysftp.Connection(host=remote_data[0], username=remote_data[1])
                 srv.get(remote_wind_data_path + f"/{d}.npy", self.data_path + f"/{d}.npy")
