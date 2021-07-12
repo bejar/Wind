@@ -775,12 +775,18 @@ class Dataset:
 
 
         # Remove all sites that have a correlation outside a limit
+        dr = []
         if 'corr' in self.config:
             cmin,cmax = self.config['corr']
             for d in wind:
                 if d != datanames[0]:
                     if not (cmin < np.corrcoef(wind[d][:,0], wind[datanames[0]][:,0])[0,1]< cmax):
-                        del wind[d]
+                        dr.append(d)
+        for d in dr:
+            del wind[d]
+
+        for d in wind:
+            print(d)
 
         if (self.config['dataset'] == 0) or (self.config['dataset'] == 'onesiteonevar'):
             if not ensemble:
