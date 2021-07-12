@@ -22,18 +22,18 @@ import shutil
 from Wind.Architectures.Architecture import Architecture
 
 try:
-   from tf.keras.utils import plot_model
+   from tensorflow..keras.utils import plot_model
    import pydot
 except ImportError:
    _has_pydot = False
 else:
    _has_pydot = True
 
-from tf.keras.optimizers import RMSprop
-from tf.keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint, ReduceLROnPlateau
+from tensorflow.keras.optimizers import RMSprop
+from tensorflow.keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint, ReduceLROnPlateau
 
 try:
-    from tf.keras.utils import multi_gpu_model
+    from tensorflow.keras.utils import multi_gpu_model
 except ImportError:
     _has_multigpu = False
 else:
