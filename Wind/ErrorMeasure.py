@@ -149,13 +149,13 @@ class ErrorMeasure:
         if scaler is not None:
             for f in self.error_func:
                 lerr.append(
-                    f(scaler.inverse_transform(val_y.reshape(-1, 1)), scaler.inverse_transform(val_yp.reshape(-1, 1))))
-                lerr.append(f(scaler.inverse_transform(test_y.reshape(-1, 1)),
-                              scaler.inverse_transform(test_yp.reshape(-1, 1))))
+                    np.float64(f(scaler.inverse_transform(val_y.reshape(-1, 1))), np.float64(scaler.inverse_transform(val_yp.reshape(-1, 1)))))
+                lerr.append(np.float64(f(scaler.inverse_transform(test_y.reshape(-1, 1))),
+                              np.float64(scaler.inverse_transform(test_yp.reshape(-1, 1)))))
         else:
             for f in self.error_func:
-                lerr.append(f(val_y, val_yp))
-                lerr.append(f(test_y, test_yp))
+                lerr.append(np.float64(f(val_y, val_yp)))
+                lerr.append(np.float64(f(test_y, test_yp)))
 
         return lerr
 
