@@ -105,7 +105,6 @@ def saveconfig(config, lresults, proxy=False, mino=False, local=False):
             fconf.write(sconf + '\n')
             fconf.close()
         elif local:
-            print(lresults)
             config['status'] = 'done'
             config['result'] = lresults
             config['etime'] = strftime('%Y-%m-%d %H:%M:%S')
