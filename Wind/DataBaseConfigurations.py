@@ -117,7 +117,7 @@ def saveconfig(config, lresults, proxy=False, mino=False, local=False):
             db = client[mongoconnection.db]
             db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
             col = db[mongoconnection.col]
-
+            print(lresults)
             if lresults[0][1] > 0.0:
                 col.update({'_id': config['_id']}, {'$set': {'status': 'done'}})
                 col.update({'_id': config['_id']}, {'$set': {'result': lresults}})
