@@ -49,6 +49,7 @@ if __name__ == '__main__':
     parser.add_argument('--multi', type=int, default=1, help='multi GPU training')
     parser.add_argument('--gpulog', action='store_true', default=False, help='GPU logging')
     parser.add_argument('--mino', action='store_true', default=False, help='Running in minotauro')
+    parser.add_argument('--local', action='store_true', default=False, help='Running local jobs')
     parser.add_argument('--save', action='store_true', default=False, help='Save Model')
     parser.add_argument('--remote', action='store_true', default=False, help='Use remote data')
     parser.add_argument('--secpat', default=None, required=False, type=str,
@@ -70,6 +71,8 @@ if __name__ == '__main__':
         config = getconfig(proxy=args.proxy, mode=args.exp, secpat=args.secpat)
     elif args.mino:
         config = load_config_file(args.config, id=False, mino=True)
+    elif args.local:
+        config = load_config_file(args.config, id=False, local=True)
     else:
         config = load_config_file(args.config, id=True)
 
@@ -96,6 +99,8 @@ if __name__ == '__main__':
             saveconfig(config, lresults, proxy=args.proxy)
         elif args.mino:
             saveconfig(config, lresults, mino=True)
+        elif args.local:
+            saveconfig(config, lresults, local=True)
         # else:
         #     for res in lresults:
         #         print(res)

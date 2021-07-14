@@ -102,12 +102,14 @@ if __name__ == '__main__':
 
         # Creates a directory with Data/Jobs/Scripts in the current path
         if not args.bsc:
+
             nm = f"{strftime('%Y%m%d%H%M%S')}{nr:03d}"
-            spath = f"{os.getcwd()}/{nm}"
-            os.mkdir(spath)
-            os.mkdir(f"{spath}/Data")
-            os.mkdir(f"{spath}/Jobs")
-            os.mkdir(f"{spath}/Run")
+            spath = '/home/bejar/Wind/'
+            # spath = f"{os.getcwd()}/{nm}"
+            # os.mkdir(spath)
+            # os.mkdir(f"{spath}/Data")
+            # os.mkdir(f"{spath}/Jobs")
+            # os.mkdir(f"{spath}/Run")
         # Copies everything to the remotely mounted BSC dir
         else:
             nm = strftime('%Y%m%d%H%M%S')
@@ -137,6 +139,14 @@ export PYTHONPATH
 ulimit -s 10240
 """
 
+        elif args.machine == 'local':
+            jobcontent = f"""#!/bin/bash
+PYTHONPATH=/home/bejar/PycharmProjects/Wind
+export PYTHONPATH
+
+cd /home/bejar/PycharmProjects/Wind/Experiments
+"""
+
         else:
             jobcontent = f"""#!/bin/bash
 #SBATCH --job-name="{nm}{nr:03d}"
@@ -159,6 +169,9 @@ uname -a
 
         if args.machine == 'mino':
             batchjob = open(f"{spath}/Run/windjobmino{nm}{nr:03d}.cmd", 'w')
+            batchjob.write(jobcontent)
+        elif args.machine == 'local':
+            batchjob = open(f"/{spath}Run/windjob{nm}{nr:03d}.cmd", 'w')
             batchjob.write(jobcontent)
         else:
             batchjob = open(f"{spath}/Run/windjobpower{nm}{nr:03d}.cmd", 'w')

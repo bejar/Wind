@@ -23,7 +23,7 @@ from time import strftime
 import numpy as np
 import requests
 
-from Wind.Config.Paths import wind_res_path
+from Wind.Config.Paths import wind_res_path, wind_local_res_path
 
 try:
     from pymongo import MongoClient
@@ -87,7 +87,7 @@ def failconfig(config, proxy=False):
         col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
 
 
-def saveconfig(config, lresults, proxy=False, mino=False):
+def saveconfig(config, lresults, proxy=False, mino=False, local=False):
     """
     Saves a config in the database
     :param proxy:
@@ -95,7 +95,24 @@ def saveconfig(config, lresults, proxy=False, mino=False):
     """
 
     if not proxy:
-        if not mino:
+
+        if mino:
+            config['status'] = 'done'
+            config['result'] = lresults
+            config['etime'] = strftime('%Y-%m-%d %H:%M:%S')
+            sconf = json.dumps(config)
+            fconf = open(wind_res_path + '/res' + config['_id'] + '.json', 'w')
+            fconf.write(sconf + '\n')
+            fconf.close()
+        elif local:
+            config['status'] = 'done'
+            config['result'] = lresults
+            config['etime'] = strftime('%Y-%m-%d %H:%M:%S')
+            sconf = json.dumps(config)
+            fconf = open(wind_local_res_path + '/res' + config['_id'] + '.json', 'w')
+            fconf.write(sconf + '\n')
+            fconf.close()
+        else:
             client = MongoClient(mongoconnection.server)
             db = client[mongoconnection.db]
             db.authenticate(mongoconnection.user, password=mongoconnection.passwd)
@@ -107,14 +124,8 @@ def saveconfig(config, lresults, proxy=False, mino=False):
                 col.update({'_id': config['_id']}, {'$set': {'etime': strftime('%Y-%m-%d %H:%M:%S')}})
             else:
                 col.update({'_id': config['_id']}, {'$set': {'status': 'pending'}})
-        else:
-            config['status'] = 'done'
-            config['result'] = lresults
-            config['etime'] = strftime('%Y-%m-%d %H:%M:%S')
-            sconf = json.dumps(config)
-            fconf = open(wind_res_path + '/res' + config['_id'] + '.json', 'w')
-            fconf.write(sconf + '\n')
-            fconf.close()
+
+
 
 
     else:

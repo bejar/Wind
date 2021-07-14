@@ -23,7 +23,7 @@ from time import strftime
 import numpy as np
 from numpy import log, polyfit, sqrt, std, subtract
 
-from Wind.Config.Paths import wind_jobs_path
+from Wind.Config.Paths import wind_jobs_path, wind_local_jobs_path
 
 try:
     from pymongo import MongoClient
@@ -36,7 +36,7 @@ else:
 __author__ = 'bejar'
 
 
-def load_config_file(nfile, abspath=False, id=False, upload=False, mino=False):
+def load_config_file(nfile, abspath=False, id=False, upload=False, mino=False, local=False):
     """
     Reads a configuration from a json file
 
@@ -47,8 +47,10 @@ def load_config_file(nfile, abspath=False, id=False, upload=False, mino=False):
     ext = '.json' if 'json' not in nfile else ''
     if not mino:
         pre = '' if abspath else './'
-    else:
+    elif local:
         pre = wind_jobs_path
+    else:
+        pre = wind_local_jobs_path
     fp = open(pre + nfile + ext, 'r')
 
     s = ''
