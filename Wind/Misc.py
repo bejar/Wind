@@ -45,12 +45,12 @@ def load_config_file(nfile, abspath=False, id=False, upload=False, mino=False, l
     :return:
     """
     ext = '.json' if 'json' not in nfile else ''
-    if not mino:
-        pre = '' if abspath else './'
+    if mino:
+        pre = wind__jobs_path
     elif local:
-        pre = wind_jobs_path
-    else:
         pre = wind_local_jobs_path
+    else:
+        pre = '' if abspath else './'
     fp = open(pre + nfile + ext, 'r')
 
     s = ''

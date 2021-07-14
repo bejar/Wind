@@ -190,6 +190,9 @@ uname -a
                 if args.machine == 'mino':
                     batchjob.write(
                         f"python WindExperimentBatchTF1.py --best --early --gpu --mino --config {config['_id']}\n")
+                elif args.machine == 'local':
+                     batchjob.write(
+                        f"python WindExperimentBatchTF.py --best --early --gpu --local --config {config['_id']}\n")
                 else:
                     batchjob.write(
                         f"python3 WindExperimentBatch.py --best --early --gpu --mino --gpulog --config {config['_id']}\n")
