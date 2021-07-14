@@ -102,7 +102,6 @@ if __name__ == '__main__':
 
         # Creates a directory with Data/Jobs/Scripts in the current path
         if not args.bsc:
-
             nm = f"{strftime('%Y%m%d%H%M%S')}{nr:03d}"
             spath = '/home/bejar/Wind/'
             # spath = f"{os.getcwd()}/{nm}"
@@ -171,7 +170,7 @@ uname -a
             batchjob = open(f"{spath}/Run/windjobmino{nm}{nr:03d}.cmd", 'w')
             batchjob.write(jobcontent)
         elif args.machine == 'local':
-            batchjob = open(f"/{spath}Run/windjob{nm}{nr:03d}.cmd", 'w')
+            batchjob = open(f"/{spath}Run/windjoblocal{nm}{nr:03d}.cmd", 'w')
             batchjob.write(jobcontent)
         else:
             batchjob = open(f"{spath}/Run/windjobpower{nm}{nr:03d}.cmd", 'w')
@@ -192,7 +191,7 @@ uname -a
                         f"python WindExperimentBatchTF1.py --best --early --gpu --mino --config {config['_id']}\n")
                 elif args.machine == 'local':
                      batchjob.write(
-                        f"python WindExperimentBatchTF.py --best --early --gpu --local --config {config['_id']}\n")
+                        f"python WindExperimentBatch.py --best --early --gpu --local --config {config['_id']}\n")
                 else:
                     batchjob.write(
                         f"python3 WindExperimentBatch.py --best --early --gpu --mino --gpulog --config {config['_id']}\n")

@@ -46,7 +46,7 @@ def load_config_file(nfile, abspath=False, id=False, upload=False, mino=False, l
     """
     ext = '.json' if 'json' not in nfile else ''
     if mino:
-        pre = wind__jobs_path
+        pre = wind_jobs_path
     elif local:
         pre = wind_local_jobs_path
     else:
