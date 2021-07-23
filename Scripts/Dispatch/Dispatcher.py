@@ -98,7 +98,7 @@ if __name__ == '__main__':
                     col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
 
                 dworkers[worker][0] += dworkers[worker][1]
-                print(f'Worker {w.split("/")[-1]}: jobs assigned {dworkers[worker][0]} step {dworkers[worker][1]}')
+                print(f'Worker {w.split("/")[-1]}: A={dworkers[worker][0]} P={len(pending)} step={dworkers[worker][1]}')
         print(f'it {n} - sleep = {args.sleep + addsleep} -----------------------------------------------------------')
         n+=1
         sleep(max(20, args.sleep + addsleep))
