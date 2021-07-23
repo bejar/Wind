@@ -88,14 +88,14 @@ if __name__ == '__main__':
         if len(lfiles) == 0:
             sleep(30)
         else:
-            config = args.jobsdir+ '/' + lfiles[0].split('/')[-1].split('.')[0]
+            config =  lfiles[0].split('/')[-1].split('.')[0]
 
     if args.mino:
-        config = load_config_file(config, id=False, mino=True)
+        config = load_config_file(args.jobsdir+ '/' + config, id=False, mino=True)
     elif args.local:
-        config = load_config_file(config, id=False, local=True)
+        config = load_config_file(args.jobsdir+ '/'  +config, id=False, local=True)
     else:
-        config = load_config_file(config, id=True)
+        config = load_config_file(args.jobsdir+ '/' + config, id=True)
 
 
     run_config = RunConfig(impl, verbose, args.tboard, args.best, args.early, args.multi, args.proxy, args.save,
@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
         lresults = train_process(architecture, config, run_config)
 
-        if args.config is None:
+        if config is None:
             saveconfig(config, lresults, proxy=args.proxy)
         elif args.mino:
             saveconfig(config, lresults, mino=True)
