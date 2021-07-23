@@ -117,25 +117,19 @@ export PYTHONPATH
 ulimit -s 10240
 uname -a
 """
+
+        batchjob = open(f"{spath}/Run/windjobmino{nm}.cmd", 'w')
+        batchjob.write(jobcontent)
+        batchjob.write("for i in {1..1000}\n")
+        batchjob.write("    do\n")
+
         if args.machine == 'mino':
-            batchjob = open(f"{spath}/Run/windjobmino{nm}.cmd", 'w')
-            batchjob.write(jobcontent)
-            batchjob.write("for i in {1..1000}\n")
-            batchjob.write("    do\n")
             batchjob.write(
                 f"    python WindExperimentWorkerTF1.py --best --early --gpu --mino --jobsdir wk{nm}\n")
         elif args.machine == 'local':
-            batchjob = open(f"/{spath}Run/windjoblocal{nm}.cmd", 'w')
-            batchjob.write(jobcontent)
-            batchjob.write("for i in {1..1000}\n")
-            batchjob.write("    do\n")
             batchjob.write(
                 f"    python WindExperimentWorker.py --best --early --gpu --local  --jobsdir wk{nm}\n")
         else:
-            batchjob = open(f"{spath}/Run/windjobpower{nm}.cmd", 'w')
-            batchjob.write(jobcontent)
-            batchjob.write("for i in {1..1000}\n")
-            batchjob.write("    do\n")
             batchjob.write(
                 f"python3 WindExperimentWorker.py --best --early --gpu --mino --gpulog --jobsdir wk{nm}\n")
 

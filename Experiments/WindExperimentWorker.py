@@ -75,6 +75,9 @@ if __name__ == '__main__':
     elif local:
         pre = wind_local_jobs_path
 
+    if not os.path.exists(f'{pre}/{args.jobsdir}'):
+        os.mkdir(f'{pre}/{args.jobsdir}')
+
     config = None
     while config is None:
         lfiles = glob(f'{pre}/{args.jobsdir}/.end')
