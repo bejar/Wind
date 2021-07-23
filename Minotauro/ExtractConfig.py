@@ -177,7 +177,9 @@ uname -a
             batchjob.write(jobcontent)
 
         if len(lconfig) > 0:
+            n = 0
             for config in tqdm(lconfig):
+                n+=1
                 # print(config['_id'])
                 config['host'] = args.machine
                 sconf = json.dumps(config)
@@ -196,6 +198,7 @@ uname -a
                     batchjob.write(
                         f"python3 WindExperimentBatch.py --best --early --gpu --mino --gpulog --config {config['_id']}\n")
                         #f"mpirun python WindExperimentBatch.py --best --early --gpu --gpulog --mino --config {config['_id']}\n")
+                batchjob.write(f'echo "{n}/{len(lconfig)} ---------------------------------------"\n')
 
                 col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
             batchjob.close()
