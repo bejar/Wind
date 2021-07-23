@@ -81,12 +81,13 @@ if __name__ == '__main__':
 
     config = None
     while config is None:
-        lfiles = glob(f'{pre}/{args.jobsdir}/.end')
-        if len(lfiles) != 0:
-            sys.exit()
         lfiles = glob(f'{pre}/{args.jobsdir}/*.json')
         if len(lfiles) == 0:
-            sleep(30)
+            lend = glob(f'{pre}/{args.jobsdir}/.end')
+            if len(lend) != 0:
+                sys.exit()
+            else:
+                sleep(30)
         else:
             config =  lfiles[0].split('/')[-1].split('.')[0]
 
