@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
         for worker in lworkers:
             if worker not in dworkers:
-                dworkers[worker] = [0, args.jpw]
+                dworkers[worker] = [0, args.jpw, args.sleep]
 
         if len(lworkers) != 0:
             query = {'status': 'pending', 'experiment': args.exp}
@@ -78,17 +78,20 @@ if __name__ == '__main__':
                 sys.exit()
 
             np.random.shuffle(lsel)
+            addsleep = 0
             for w in dworkers:
                 pending = glob.glob(f'{w}/*.json')
                 if len(pending) == 0:
                     dworkers[worker][1] = dworkers[worker][1]+1
-                    addsleep = addsleep // 2
+                    dworkers[worker][2] = dworkers[worker][2] // 2
                 elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1]>1):
                     dworkers[worker][1] = dworkers[worker][1]-1
-                    addsleep += args.sleep
+                    dworkers[worker][2] =  dworkers[worker][2] + args.sleep
                 elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1]==1):
-                    if addsleep < (arg.sleep *10):
-                        addsleep += args.sleep
+                    if dworkers[worker][2] < (arg.sleep *10):
+                        dworkers[worker][2] = dworkers[worker][2] + args.sleep
+
+                addsleep += dworkers[worker][2]
 
                 for i in range(dworkers[worker][1]):
                     config = lsel.pop()
@@ -100,9 +103,9 @@ if __name__ == '__main__':
 
                 dworkers[worker][0] += dworkers[worker][1]
                 print(f'Worker {w.split("/")[-1]}: A={dworkers[worker][0]} P={len(pending)} step={dworkers[worker][1]}')
-        print(f'it {n} - sleep = {args.sleep + addsleep} -----------------------------------------------------------')
+        print(f'it {n} - sleep = {args.sleep + (addsleep // len(lworkers) ) } -----------------------------------------------------------')
         n+=1
-        sleep(max(20, args.sleep + addsleep))
+        sleep(max(20, args.sleep + (addsleep // len(lworkers)))
 
 
 
