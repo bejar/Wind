@@ -85,7 +85,7 @@ if __name__ == '__main__':
                     addsleep = addsleep // 2
                 elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1]>1):
                     dworkers[worker][1] = dworkers[worker][1]-1
-                    addsleep += 1
+                    addsleep += args.sleep
                 elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1]==1):
                     addsleep += args.sleep
 
