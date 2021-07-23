@@ -55,6 +55,7 @@ if __name__ == '__main__':
 
     dworkers = {}
     addsleep = 0
+    n = 0
     while True:
 
         if args.local:
@@ -96,7 +97,8 @@ if __name__ == '__main__':
 
                 dworkers[worker][0] += dworkers[worker][1]
                 print(f'Worker {w.split("/")[-1]}: jobs assigned {dworkers[worker][0]} step {dworkers[worker][1]}')
-        print('--------------------------------------------------------------------')
+        print(f f'it {n} - sleep = {args.sleep + addsleep} -----------------------------------------------------------')
+        n+=1
         sleep(max(20, args.sleep + addsleep))
 
 
