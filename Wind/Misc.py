@@ -19,6 +19,7 @@ Util
 
 import json
 from time import strftime
+import os
 
 import numpy as np
 from numpy import log, polyfit, sqrt, std, subtract
@@ -64,7 +65,7 @@ def load_config_file(nfile, abspath=False, id=False, upload=False, mino=False, l
 
     if not upload:
         config['btime'] = strftime('%Y-%m-%d %H:%M:%S')
-
+    os.rename(pre + nfile + ext, pre + nfile + '.done')
     return config
 
 
