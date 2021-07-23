@@ -82,7 +82,7 @@ if __name__ == '__main__':
                 pending = glob.glob(f'{w}/*.json')
                 if len(pending) == 0:
                     dworkers[worker][1] = dworkers[worker][1]+1
-                    addsleep -= 1
+                    addsleep = addsleep // 2
                 elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1]>1):
                     dworkers[worker][1] = dworkers[worker][1]-1
                     addsleep += 1
