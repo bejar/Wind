@@ -86,7 +86,7 @@ if __name__ == '__main__':
             sys.exit()
         lfiles = glob(f'{pre}/{args.jobsdir}/*.json')
         if len(lfiles) == 0:
-            time.sleep(30)
+            sleep(30)
         else:
             config = lfiles[0].split('/')[-1].split('.')[0]
 
