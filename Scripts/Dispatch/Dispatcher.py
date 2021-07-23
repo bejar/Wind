@@ -17,7 +17,6 @@ Dispatcher
 
 """
 
-
 import argparse
 import json
 import glob
@@ -59,17 +58,17 @@ if __name__ == '__main__':
     while True:
 
         if args.local:
-            lworkers = glob.glob(wind_local_jobs_path+'/wk*')
+            lworkers = glob.glob(wind_local_jobs_path + '/wk*')
         if args.bsc:
-            lworkers.extend(glob.glob(wind_jobs_path+'/wk*'))
+            lworkers.extend(glob.glob(wind_jobs_path + '/wk*'))
 
         for worker in lworkers:
             if worker not in dworkers:
-                dworkers[worker] = [0, args.jpw, args.sleep]
+                dworkers[worker] = [0, args.jpw, 0]
 
         if len(lworkers) != 0:
             query = {'status': 'pending', 'experiment': args.exp}
-            lsel = [c for c in col.find(query, limit=args.workers*args.jpw*5)]
+            lsel = [c for c in col.find(query, limit=args.workers * args.jpw * 5)]
             # No more pending configurations
             if len(lsel) == 0:
                 for w in dworkers:
@@ -82,13 +81,13 @@ if __name__ == '__main__':
             for w in dworkers:
                 pending = glob.glob(f'{w}/*.json')
                 if len(pending) == 0:
-                    dworkers[worker][1] = dworkers[worker][1]+1
+                    dworkers[worker][1] = dworkers[worker][1] + 1
                     dworkers[worker][2] = dworkers[worker][2] // 2
-                elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1]>1):
-                    dworkers[worker][1] = dworkers[worker][1]-1
-                    dworkers[worker][2] =  dworkers[worker][2] + args.sleep
-                elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1]==1):
-                    if dworkers[worker][2] < (arg.sleep *10):
+                elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1] > 1):
+                    dworkers[worker][1] = dworkers[worker][1] - 1
+                    dworkers[worker][2] = dworkers[worker][2] + args.sleep
+                elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1] == 1):
+                    if dworkers[worker][2] < (arg.sleep * 10):
                         dworkers[worker][2] = dworkers[worker][2] + args.sleep
 
                 addsleep += dworkers[worker][2]
@@ -103,16 +102,7 @@ if __name__ == '__main__':
 
                 dworkers[worker][0] += dworkers[worker][1]
                 print(f'Worker {w.split("/")[-1]}: A={dworkers[worker][0]} P={len(pending)} step={dworkers[worker][1]}')
-        print(f'it {n} - sleep = {args.sleep + (addsleep // len(lworkers) ) } -----------------------------------------------------------')
-        n+=1
-        sleep(max(20, args.sleep + (addsleep // len(lworkers)))
-
-
-
-
-
-
-
-
-
-
+        print(
+            f'it {n} - sleep = {args.sleep + (addsleep // len(lworkers))} -----------------------------------------------------------')
+        n += 1
+        sleep(max(20, args.sleep + (addsleep // len(lworkers))))
