@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
     if args.mino:
         pre = wind_jobs_path
-    elif local:
+    elif args.local:
         pre = wind_local_jobs_path
 
     if not os.path.exists(f'{pre}/{args.jobsdir}'):
