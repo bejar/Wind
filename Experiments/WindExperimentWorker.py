@@ -70,7 +70,7 @@ if __name__ == '__main__':
     verbose = 1 if args.verbose else 0
     impl = 2 if args.gpu else 1
 
-    if mino:
+    if args.mino:
         pre = wind_jobs_path
     elif local:
         pre = wind_local_jobs_path

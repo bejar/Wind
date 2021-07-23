@@ -62,7 +62,7 @@ if __name__ == '__main__':
             lworkers.extend(glob.glob(wind_jobs_path+'/wk*'))
 
         for worker in lworkers:
-            if worker not int dworkers:
+            if worker not in dworkers:
                 dworkers[worker] = [0, args.jpw]
 
         if len(lworkers) != 0:
