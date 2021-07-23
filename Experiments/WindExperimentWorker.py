@@ -23,6 +23,7 @@ from time import strftime, sleep
 from Wind.DataBaseConfigurations import getconfig, saveconfig
 from Wind.Misc import load_config_file
 from Wind.Train import TrainDispatch, RunConfig
+from Wind.Config.Paths import wind_jobs_path, wind_local_jobs_path
 import warnings
 import logging
 import glob
