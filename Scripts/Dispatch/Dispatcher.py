@@ -87,7 +87,8 @@ if __name__ == '__main__':
                     dworkers[worker][1] = dworkers[worker][1]-1
                     addsleep += args.sleep
                 elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1]==1):
-                    addsleep += args.sleep
+                    if addsleep < (arg.sleep *10):
+                        addsleep += args.sleep
 
                 for i in range(dworkers[worker][1]):
                     config = lsel.pop()
