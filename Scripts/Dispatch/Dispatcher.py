@@ -34,6 +34,7 @@ import numpy as np
 __author__ = 'bejar'
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
     parser.add_argument('--exp', default='convos2s', help='Type of configs')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     parser.add_argument('--local', action='store_true', default=False, help='local machine')
@@ -77,7 +78,7 @@ if __name__ == '__main__':
 
             np.random.shuffle(lsel)
             for w in dworkers:
-                pending = glob(f'{w}/*.json')
+                pending = glob.glob(f'{w}/*.json')
                 if len(pending) == 0:
                     dworkers[worker][1] = dworkers[worker][1]+1
                     addsleep -= 1
@@ -96,7 +97,7 @@ if __name__ == '__main__':
                 dworkers[worker][0] += dworkers[worker][1]
                 print(f'Worker {w.split("/")[-1]}: jobs assigned {dworkers[worker][0]} step {dworkers[worker][1]}')
         print('--------------------------------------------------------------------')
-        time.sleep(max(20, args.sleep + addsleep))
+        sleep(max(20, args.sleep + addsleep))
 
 
 

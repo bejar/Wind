@@ -88,7 +88,7 @@ if __name__ == '__main__':
         if len(lfiles) == 0:
             sleep(30)
         else:
-            config = lfiles[0].split('/')[-1].split('.')[0]
+            config = args.jobsdir+ '/' + lfiles[0].split('/')[-1].split('.')[0]
 
     if args.mino:
         config = load_config_file(config, id=False, mino=True)
