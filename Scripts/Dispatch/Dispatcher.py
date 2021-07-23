@@ -86,6 +86,8 @@ if __name__ == '__main__':
                 elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1]>1):
                     dworkers[worker][1] = dworkers[worker][1]-1
                     addsleep += 1
+                elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1]==1):
+                    addsleep += 1
 
                 for i in range(dworkers[worker][1]):
                     config = lsel.pop()
@@ -97,7 +99,7 @@ if __name__ == '__main__':
 
                 dworkers[worker][0] += dworkers[worker][1]
                 print(f'Worker {w.split("/")[-1]}: jobs assigned {dworkers[worker][0]} step {dworkers[worker][1]}')
-        print(f f'it {n} - sleep = {args.sleep + addsleep} -----------------------------------------------------------')
+        print(f'it {n} - sleep = {args.sleep + addsleep} -----------------------------------------------------------')
         n+=1
         sleep(max(20, args.sleep + addsleep))
 
