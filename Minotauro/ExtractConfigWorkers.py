@@ -65,7 +65,7 @@ if __name__ == '__main__':
         else:
             spath =  bsc_path
 
-        os.mkdir(f"{spath}/Jobs/wk{nm}")
+        # os.mkdir(f"{spath}/Jobs/wk{nm}")
             # os.mkdir(f"{spath}/Run")
 
         jobtime = args.hours
