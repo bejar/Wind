@@ -26,7 +26,7 @@ from Wind.Train import TrainDispatch, RunConfig
 from Wind.Config.Paths import wind_jobs_path, wind_local_jobs_path
 import warnings
 import logging
-import glob
+from glob import glob
 logging.getLogger('tensorflow').disabled = True
 #logging.getLogger("tensorflow").setLevel(logging.WARNING)
 warnings.filterwarnings('ignore')
