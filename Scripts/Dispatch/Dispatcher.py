@@ -109,7 +109,6 @@ if __name__ == '__main__':
 
                 done = glob.glob(f'{w}/*.done')
                 for d in done:
-                    print(d)
                     os.remove(f'{d}')
         print(f'it {n}  -----------------------------------------------------------')
         n += 1
