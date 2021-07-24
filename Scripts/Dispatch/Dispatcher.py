@@ -85,7 +85,7 @@ if __name__ == '__main__':
                 if diff > 0:
                     wdone = True
                     for i in range(diff):
-                        if len(lsel) >0:
+                        if len(lsel) > 0:
                             config = lsel.pop()
                         else:
                             break
@@ -106,7 +106,7 @@ if __name__ == '__main__':
         print(wdone)
         if wdone:
             if args.local:
-                lres.extend(glob.glob(wind_local_jobs_path + '/res*.json'))
+                lres.extend(glob.glob(wind_local_res_path + '/res*.json'))
             if args.bsc:
                 lres.extend(glob.glob(wind_res_path + '/res*.json'))
             print(lres)
