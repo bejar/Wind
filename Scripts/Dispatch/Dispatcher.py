@@ -111,7 +111,7 @@ if __name__ == '__main__':
                 lres.extend(glob.glob(wind_res_path + '/res*.json'))
             print(lres)
             for file in lres:
-                config = load_config_file(file, upload=True)
+                config = load_config_file(file, upload=True, abspath=True)
                 exists = col.find_one({'_id': config['_id']})
                 if exists:
                     col.update_one({'_id': config['_id']}, {'$set': {'status': 'done'}})
