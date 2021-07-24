@@ -103,13 +103,11 @@ if __name__ == '__main__':
 
         # Upload Results
         lres = []
-        print(wdone)
         if wdone:
             if args.local:
                 lres.extend(glob.glob(wind_local_res_path + '/res*.json'))
             if args.bsc:
                 lres.extend(glob.glob(wind_res_path + '/res*.json'))
-            print(lres)
             for file in lres:
                 config = load_config_file(file, upload=True, abspath=True)
                 exists = col.find_one({'_id': config['_id']})
@@ -125,6 +123,9 @@ if __name__ == '__main__':
                     else:
                         col.update_one({'_id': config['_id']}, {'$set': {'btime': config['etime']}})
                 os.rename(file, f'{file.replace(".json", ".done")}')
+
+        for d in done:
+            os.remove(f'{file.replace(".json", ".done")}')
 
         print(f'it {n}  uploaded = {len(lres)} ---------------------------------------------------------')
         n += 1
