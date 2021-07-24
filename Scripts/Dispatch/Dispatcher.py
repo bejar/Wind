@@ -23,10 +23,11 @@ import glob
 from Wind.Private.DBConfig import mongolocaltest, mongoconnection
 from pymongo import MongoClient
 from shutil import copy
-from Wind.Config import wind_data_path, bsc_path, jobs_code_path, jobs_root_path, wind_local_jobs_path, wind_jobs_path
+from Wind.Config import wind_data_path, jobs_root_path, wind_local_jobs_path, wind_jobs_path, wind_local_res_path, wind_res_path
 from time import strftime, sleep
 import os
 import sys
+from Wind.Misc import load_config_file
 from tqdm import tqdm
 import numpy as np
 
@@ -56,7 +57,7 @@ if __name__ == '__main__':
     addsleep = 0
     n = 0
     while True:
-
+        wdone = False
         if args.local:
             lworkers = glob.glob(wind_local_jobs_path + '/wk*')
         if args.bsc:
@@ -77,23 +78,12 @@ if __name__ == '__main__':
                 sys.exit()
 
             np.random.shuffle(lsel)
-            addsleep = 0
             for w in dworkers:
                 pending = glob.glob(f'{w}/*.json')
-                # if len(pending) == 0:
-                #     dworkers[worker][1] = dworkers[worker][1] + 1
-                #     dworkers[worker][2] = dworkers[worker][2] // 2
-                # elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1] > 1):
-                #     dworkers[worker][1] = dworkers[worker][1] - 1
-                #     dworkers[worker][2] = dworkers[worker][2] + args.sleep
-                # elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1] == 1):
-                #     if dworkers[worker][2] < (args.sleep * 10):
-                #         dworkers[worker][2] = dworkers[worker][2] + args.sleep
-
-                # addsleep += dworkers[worker][2]
 
                 diff = args.jpw - len(pending)
                 if diff > 0:
+                    wdone = True
                     for i in range(diff):
                         if len(lsel) >0:
                             config = lsel.pop()
@@ -110,6 +100,32 @@ if __name__ == '__main__':
                 done = glob.glob(f'{w}/*.done')
                 for d in done:
                     os.remove(f'{d}')
-        print(f'it {n}  -----------------------------------------------------------')
+
+        # Upload Results
+        lres = []
+        if wdone:
+            if args.local:
+                lres.extend(glob.glob(wind_local_jobs_path + '/res*.json'))
+            if args.bsc:
+                lres.extend(glob.glob(wind_res_path + '/res*.json'))
+
+            for file in lres:
+                config = load_config_file(file, upload=True)
+                exists = col.find_one({'_id': config['_id']})
+                if exists:
+                    col.update_one({'_id': config['_id']}, {'$set': {'status': 'done'}})
+                    if 'results' in config:
+                        col.update_one({'_id': config['_id']}, {'$set': {'result': config['results']}})
+                    elif 'result' in config:
+                        col.update_one({'_id': config['_id']}, {'$set': {'result': config['result']}})
+                    col.update_one({'_id': config['_id']}, {'$set': {'etime': config['etime']}})
+                    if 'btime' in config:
+                        col.update_one({'_id': config['_id']}, {'$set': {'btime': config['btime']}})
+                    else:
+                        col.update_one({'_id': config['_id']}, {'$set': {'btime': config['etime']}})
+                os.rename(file, f'{file.replace(".json", ".done")}')
+
+        print(f'it {n}  uploaded = {len(lres)} ---------------------------------------------------------')
         n += 1
-        sleep(max(20, args.sleep + (addsleep // len(lworkers))))
+
+        sleep(args.sleep)
