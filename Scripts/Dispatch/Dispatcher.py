@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
         for worker in lworkers:
             if worker not in dworkers:
-                dworkers[worker] = [0, args.jpw, 0]
+                dworkers[worker] = [0]
 
         if len(lworkers) != 0:
             query = {'status': 'pending', 'experiment': args.exp}
@@ -80,29 +80,32 @@ if __name__ == '__main__':
             addsleep = 0
             for w in dworkers:
                 pending = glob.glob(f'{w}/*.json')
-                if len(pending) == 0:
-                    dworkers[worker][1] = dworkers[worker][1] + 1
-                    dworkers[worker][2] = dworkers[worker][2] // 2
-                elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1] > 1):
-                    dworkers[worker][1] = dworkers[worker][1] - 1
-                    dworkers[worker][2] = dworkers[worker][2] + args.sleep
-                elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1] == 1):
-                    if dworkers[worker][2] < (args.sleep * 10):
-                        dworkers[worker][2] = dworkers[worker][2] + args.sleep
+                # if len(pending) == 0:
+                #     dworkers[worker][1] = dworkers[worker][1] + 1
+                #     dworkers[worker][2] = dworkers[worker][2] // 2
+                # elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1] > 1):
+                #     dworkers[worker][1] = dworkers[worker][1] - 1
+                #     dworkers[worker][2] = dworkers[worker][2] + args.sleep
+                # elif (len(pending) > dworkers[worker][1]) and (dworkers[worker][1] == 1):
+                #     if dworkers[worker][2] < (args.sleep * 10):
+                #         dworkers[worker][2] = dworkers[worker][2] + args.sleep
 
-                addsleep += dworkers[worker][2]
+                # addsleep += dworkers[worker][2]
 
-                for i in range(dworkers[worker][1]):
-                    config = lsel.pop()
+                diff = args.jpw - len(pending)
+                for i in range(diff):
+                    if len(lsel) >0:
+                        config = lsel.pop()
+                    else:
+                        break
                     sconf = json.dumps(config)
                     fconf = open(f"{w}/{config['_id']}.json", 'w')
                     fconf.write(sconf + '\n')
                     fconf.close()
                     col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
-
-                dworkers[worker][0] += dworkers[worker][1]
-                print(f'Worker {w.split("/")[-1]}: A={dworkers[worker][0]} P={len(pending)} step={dworkers[worker][1]}')
+                    dworkers[worker][0] += 1
+                print(f'Worker {w.split("/")[-1]}: A={dworkers[worker][0]} step={dworkers[worker][1]}')
         print(
-            f'it {n} - sleep = {args.sleep + (addsleep // len(lworkers))} -----------------------------------------------------------')
+            f'it {n}  -----------------------------------------------------------')
         n += 1
         sleep(max(20, args.sleep + (addsleep // len(lworkers))))
