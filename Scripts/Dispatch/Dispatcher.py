@@ -105,7 +105,6 @@ if __name__ == '__main__':
                     col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
                     dworkers[worker][0] += 1
                 print(f'Worker {w.split("/")[-1]}: A={dworkers[worker][0]} step={dworkers[worker][1]}')
-        print(
-            f'it {n}  -----------------------------------------------------------')
+        print(f'it {n}  -----------------------------------------------------------')
         n += 1
         sleep(max(20, args.sleep + (addsleep // len(lworkers))))
