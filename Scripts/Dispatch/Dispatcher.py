@@ -93,6 +93,7 @@ if __name__ == '__main__':
                 # addsleep += dworkers[worker][2]
 
                 diff = args.jpw - len(pending)
+                print(diff, len(pending))
                 if diff > 0:
                     for i in range(diff):
                         if len(lsel) >0:
