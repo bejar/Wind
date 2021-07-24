@@ -107,7 +107,10 @@ if __name__ == '__main__':
                         dworkers[worker][0] += 1
                 print(f'Worker {w.split("/")[-1]}: A={dworkers[worker][0]}')
 
-                os.remove(f'{w}/*.done')
+                done = glob.glob(f'{w}/*.done')
+                for d in done:
+                    print(d)
+                    os.remove(f'{d}')
         print(f'it {n}  -----------------------------------------------------------')
         n += 1
         sleep(max(20, args.sleep + (addsleep // len(lworkers))))
