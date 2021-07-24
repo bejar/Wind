@@ -125,6 +125,7 @@ if __name__ == '__main__':
                 os.rename(file, f'{file.replace(".json", ".done")}')
 
         for d in done:
+            print(f'{file.replace(".json", ".done")}')
             os.remove(f'{file.replace(".json", ".done")}')
 
         print(f'it {n}  uploaded = {len(lres)} ---------------------------------------------------------')
