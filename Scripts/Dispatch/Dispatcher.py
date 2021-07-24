@@ -124,8 +124,8 @@ if __name__ == '__main__':
                         col.update_one({'_id': config['_id']}, {'$set': {'btime': config['etime']}})
                 os.rename(file, f'{file.replace(".json", ".done")}')
 
-        for d in done:
-            os.remove(f'{file.replace(".json", ".done")}')
+            for file in lres:
+                os.remove(f'{file.replace(".json", ".done")}')
 
         print(f'it {n}  uploaded = {len(lres)} ---------------------------------------------------------')
         n += 1
