@@ -103,12 +103,13 @@ if __name__ == '__main__':
 
         # Upload Results
         lres = []
+        print(wdone)
         if wdone:
             if args.local:
                 lres.extend(glob.glob(wind_local_jobs_path + '/res*.json'))
             if args.bsc:
                 lres.extend(glob.glob(wind_res_path + '/res*.json'))
-
+            print(lres)
             for file in lres:
                 config = load_config_file(file, upload=True)
                 exists = col.find_one({'_id': config['_id']})
