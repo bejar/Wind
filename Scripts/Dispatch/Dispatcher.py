@@ -93,17 +93,18 @@ if __name__ == '__main__':
                 # addsleep += dworkers[worker][2]
 
                 diff = args.jpw - len(pending)
-                for i in range(diff):
-                    if len(lsel) >0:
-                        config = lsel.pop()
-                    else:
-                        break
-                    sconf = json.dumps(config)
-                    fconf = open(f"{w}/{config['_id']}.json", 'w')
-                    fconf.write(sconf + '\n')
-                    fconf.close()
-                    col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
-                    dworkers[worker][0] += 1
+                if diff > 0:
+                    for i in range(diff):
+                        if len(lsel) >0:
+                            config = lsel.pop()
+                        else:
+                            break
+                        sconf = json.dumps(config)
+                        fconf = open(f"{w}/{config['_id']}.json", 'w')
+                        fconf.write(sconf + '\n')
+                        fconf.close()
+                        col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
+                        dworkers[worker][0] += 1
                 print(f'Worker {w.split("/")[-1]}: A={dworkers[worker][0]}')
         print(f'it {n}  -----------------------------------------------------------')
         n += 1
