@@ -93,7 +93,6 @@ if __name__ == '__main__':
                 # addsleep += dworkers[worker][2]
 
                 diff = args.jpw - len(pending)
-                print(diff, len(pending))
                 if diff > 0:
                     for i in range(diff):
                         if len(lsel) >0:
@@ -107,6 +106,8 @@ if __name__ == '__main__':
                         col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
                         dworkers[worker][0] += 1
                 print(f'Worker {w.split("/")[-1]}: A={dworkers[worker][0]}')
+
+                os.remove(f'{w}/*.done')
         print(f'it {n}  -----------------------------------------------------------')
         n += 1
         sleep(max(20, args.sleep + (addsleep // len(lworkers))))
