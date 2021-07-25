@@ -24,11 +24,10 @@ from Wind.Private.DBConfig import mongolocaltest, mongoconnection
 from pymongo import MongoClient
 from shutil import copy
 from Wind.Config import wind_data_path, jobs_root_path, wind_local_jobs_path, wind_jobs_path, wind_local_res_path, wind_res_path
-from time import strftime, sleep
+from time import strftime, sleep, ctime
 import os
 import sys
 from Wind.Misc import load_config_file
-from tqdm import tqdm
 import numpy as np
 
 __author__ = 'bejar'
@@ -127,7 +126,7 @@ if __name__ == '__main__':
             for file in lres:
                 os.remove(f'{file.replace(".json", ".done")}')
 
-        print(f'it {n}  uploaded = {len(lres)} ---------------------------------------------------------')
+        print(f'it {n} - uploaded = {len(lres)} - {ctime()} --------------------------------')
         n += 1
 
         sleep(args.sleep)
