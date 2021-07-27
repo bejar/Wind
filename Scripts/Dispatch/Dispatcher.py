@@ -55,6 +55,7 @@ if __name__ == '__main__':
     dworkers = {}
     addsleep = 0
     n = 0
+    finish = False
     while True:
         wdone = False
         if args.local:
@@ -74,40 +75,45 @@ if __name__ == '__main__':
                 for w in dworkers:
                     fconf = open(f"{w}/.end", 'w')
                     fconf.close()
-                sys.exit()
-
-            np.random.shuffle(lsel)
-            for w in dworkers:
-                pending = glob.glob(f'{w}/*.json')
-
-                diff = args.jpw - len(pending)
-                if diff > 0:
+                    finish = True
                     wdone = True
-                    for i in range(diff):
-                        if len(lsel) > 0:
-                            config = lsel.pop()
-                        else:
-                            break
-                        sconf = json.dumps(config)
-                        fconf = open(f"{w}/{config['_id']}.json", 'w')
-                        fconf.write(sconf + '\n')
-                        fconf.close()
-                        col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
-                        dworkers[worker][0] += 1
-                print(f'Worker {w.split("/")[-1]}: A={dworkers[worker][0]}')
+                # sys.exit()
 
-                done = glob.glob(f'{w}/*.done')
-                for d in done:
-                    os.remove(f'{d}')
+            if not finish:
+                np.random.shuffle(lsel)
+                for w in dworkers:
+                    pending = glob.glob(f'{w}/*.json')
+
+                    diff = args.jpw - len(pending)
+                    if diff > 0:
+                        wdone = True
+                        for i in range(diff):
+                            if len(lsel) > 0:
+                                config = lsel.pop()
+                            else:
+                                break
+                            sconf = json.dumps(config)
+                            fconf = open(f"{w}/{config['_id']}.json", 'w')
+                            fconf.write(sconf + '\n')
+                            fconf.close()
+                            col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
+                            dworkers[worker][0] += 1
+                    print(f'Worker {w.split("/")[-1]}: A={dworkers[worker][0]}')
+
+                    done = glob.glob(f'{w}/*.done')
+                    for d in done:
+                        os.remove(f'{d}')
 
         # Upload Results
         lres = []
+        still = False
         if wdone and not args.noup:
             if args.local:
                 lres.extend(glob.glob(wind_local_res_path + '/res*.json'))
             if args.bsc:
                 lres.extend(glob.glob(wind_res_path + '/res*.json'))
             for file in lres:
+                still = True
                 config = load_config_file(file, upload=True, abspath=True)
                 exists = col.find_one({'_id': config['_id']})
                 if exists:
@@ -128,5 +134,8 @@ if __name__ == '__main__':
 
         print(f'it {n} - uploaded = {len(lres)} - {ctime()} --------------------------------', flush=True)
         n += 1
+
+        if finish and not still:
+            sys.exit()
 
         sleep(args.sleep)
