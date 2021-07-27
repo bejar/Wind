@@ -36,7 +36,7 @@ class CNNS2SSeparateArchitecture(NNS2SArchitecture):
 
     """
     modfile = None
-    modname = 'CNNS2S'
+    modname = 'CNNS2SSeparate'
     data_mode = ('3D', '2D')  # 'cnn'
 
     def generate_model(self):
