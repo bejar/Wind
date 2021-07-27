@@ -16,21 +16,21 @@ WindPrediction
 
 """
 import argparse
+import logging
 import os
 import sys
+import warnings
+from glob import glob
 from time import strftime, sleep
 
-from Wind.DataBaseConfigurations import getconfig, saveconfig
+from Wind.Config.Paths import wind_jobs_path, wind_local_jobs_path
+from Wind.DataBaseConfigurations import saveconfig
 from Wind.Misc import load_config_file
 from Wind.Train import TrainDispatch, RunConfig
-from Wind.Config.Paths import wind_jobs_path, wind_local_jobs_path
-import warnings
-import logging
-from glob import glob
-logging.getLogger('tensorflow').disabled = True
-#logging.getLogger("tensorflow").setLevel(logging.WARNING)
-warnings.filterwarnings('ignore')
 
+logging.getLogger('tensorflow').disabled = True
+# logging.getLogger("tensorflow").setLevel(logging.WARNING)
+warnings.filterwarnings('ignore')
 
 __TF2__ = True
 
@@ -59,6 +59,8 @@ if __name__ == '__main__':
     parser.add_argument('--secpat', default=None, required=False, type=str,
                         help='Sectiom regexp for retrieving configs')
     parser.add_argument('--dev', default=None, required=False, type=str, help='Select cuda device')
+    parser.add_argument('--nit', type=int, default=1, help='iterate n times')
+
     args = parser.parse_args()
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     if not args.gpulog:
@@ -79,53 +81,51 @@ if __name__ == '__main__':
     if not os.path.exists(f'{pre}/{args.jobsdir}'):
         os.mkdir(f'{pre}/{args.jobsdir}')
 
-    config = None
-    while config is None:
-        lfiles = glob(f'{pre}/{args.jobsdir}/*.json')
-        if len(lfiles) == 0:
-            lend = glob(f'{pre}/{args.jobsdir}/.end')
-            if len(lend) != 0:
-                sys.exit()
+    for i in range(args.nit):
+        config = None
+        while config is None:
+            lfiles = glob(f'{pre}/{args.jobsdir}/*.json')
+            if len(lfiles) == 0:
+                lend = glob(f'{pre}/{args.jobsdir}/.end')
+                if len(lend) != 0:
+                    os.remove(f'{pre}/{args.jobsdir}/.end')
+                    os.remove(f'{pre}/{args.jobsdir}')
+                    sys.exit()
+                else:
+                    sleep(30)
             else:
-                sleep(30)
-        else:
-            config =  lfiles[0].split('/')[-1].split('.')[0]
+                config = lfiles[0].split('/')[-1].split('.')[0]
 
-    if args.mino:
-        config = load_config_file(args.jobsdir+ '/' + config, id=False, mino=True)
-    elif args.local:
-        config = load_config_file(args.jobsdir+ '/'  +config, id=False, local=True)
-    else:
-        config = load_config_file(args.jobsdir+ '/' + config, id=True)
-
-
-    run_config = RunConfig(impl, verbose, args.tboard, args.best, args.early, args.multi, args.proxy, args.save,
-                           args.remote, args.info, args.log)
-
-    dispatch = TrainDispatch()
-
-    if config is not None:
-
-        ############################################
-        # Data
-
-        if not 'site' in config:
-            site = config['data']['datanames'][0].split('-')
-            config['site'] = f"{site[0]}-{site[1]}"
-        # try:
-        print(f"Running job {config['_id']} {config['site']} {config['arch']['mode']} {strftime('%Y-%m-%d %H:%M:%S')}")
-        train_process, architecture = dispatch.dispatch(config['arch']['mode'])
-
-        lresults = train_process(architecture, config, run_config)
-
-        if config is None:
-            saveconfig(config, lresults, proxy=args.proxy)
-        elif args.mino:
-            saveconfig(config, lresults, mino=True)
+        if args.mino:
+            config = load_config_file(args.jobsdir + '/' + config, id=False, mino=True)
         elif args.local:
-            saveconfig(config, lresults, local=True)
-        # else:
-        #     for res in lresults:
-        #         print(res)
-    # except Exception:
-    # failconfig(config)
+            config = load_config_file(args.jobsdir + '/' + config, id=False, local=True)
+        else:
+            config = load_config_file(args.jobsdir + '/' + config, id=True)
+
+        run_config = RunConfig(impl, verbose, args.tboard, args.best, args.early, args.multi, args.proxy, args.save,
+                               args.remote, args.info, args.log)
+
+        dispatch = TrainDispatch()
+
+        if config is not None:
+
+            ############################################
+            # Data
+
+            if not 'site' in config:
+                site = config['data']['datanames'][0].split('-')
+                config['site'] = f"{site[0]}-{site[1]}"
+
+            print(f"Running job {config['_id']} {config['site']} {config['arch']['mode']} {strftime('%Y-%m-%d %H:%M:%S')}")
+            train_process, architecture = dispatch.dispatch(config['arch']['mode'])
+
+            lresults = train_process(architecture, config, run_config)
+
+            if config is None:
+                saveconfig(config, lresults, proxy=args.proxy)
+            elif args.mino:
+                saveconfig(config, lresults, mino=True)
+            elif args.local:
+                saveconfig(config, lresults, local=True)
+

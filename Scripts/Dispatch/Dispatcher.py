@@ -38,8 +38,8 @@ if __name__ == '__main__':
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     parser.add_argument('--local', action='store_true', default=False, help='local machine')
     parser.add_argument('--bsc', action='store_true', default=False, help='bsc machines')
+    parser.add_argument('--noup', action='store_true', default=False, help='bsc machines')
     parser.add_argument('--jpw', type=int, default=5, help='jobs per worker')
-    parser.add_argument('--workers', type=int, default=5, help='number of bsc workers')
     parser.add_argument('--sleep', type=int, default=30, help='Sleep time between dispatches')
 
     args = parser.parse_args()
@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
         if len(lworkers) != 0:
             query = {'status': 'pending', 'experiment': args.exp}
-            lsel = [c for c in col.find(query, limit=args.workers * args.jpw * 5)]
+            lsel = [c for c in col.find(query, limit=args.jpw * 100)]
             # No more pending configurations
             if len(lsel) == 0:
                 for w in dworkers:
@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
         # Upload Results
         lres = []
-        if wdone:
+        if wdone and not args.noup:
             if args.local:
                 lres.extend(glob.glob(wind_local_res_path + '/res*.json'))
             if args.bsc:
