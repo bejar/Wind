@@ -126,7 +126,7 @@ if __name__ == '__main__':
             for file in lres:
                 os.remove(f'{file.replace(".json", ".done")}')
 
-        print(f'it {n} - uploaded = {len(lres)} - {ctime()} --------------------------------')
+        print(f'it {n} - uploaded = {len(lres)} - {ctime()} --------------------------------', flush=True)
         n += 1
 
         sleep(args.sleep)
