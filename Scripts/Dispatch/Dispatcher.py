@@ -23,7 +23,8 @@ import glob
 from Wind.Private.DBConfig import mongolocaltest, mongoconnection
 from pymongo import MongoClient
 from shutil import copy
-from Wind.Config import wind_data_path, jobs_root_path, wind_local_jobs_path, wind_jobs_path, wind_local_res_path, wind_res_path
+from Wind.Config import wind_data_path, jobs_root_path, wind_local_jobs_path, wind_jobs_path, wind_local_res_path, \
+    wind_res_path
 from time import strftime, sleep, ctime
 import os
 import sys
@@ -53,15 +54,27 @@ if __name__ == '__main__':
     col = db[mongoconnection.col]
 
     dworkers = {}
-    addsleep = 0
     n = 0
+    served = 0
     finish = False
+
+    if args.local:
+        lworkers = glob.glob(wind_local_jobs_path + '/wk*')
+
+    if args.bsc:
+        lworkers.extend(glob.glob('/home/bejar/bsc/Wind/Jobs/wk*'))
+
+    # for w in lworkers:
+    #    if os.path.exists(w+'/.end'):
+    #        os.remove(w+'/.end')  
+
     while True:
         wdone = False
         if args.local:
             lworkers = glob.glob(wind_local_jobs_path + '/wk*')
+
         if args.bsc:
-            lworkers.extend(glob.glob(wind_jobs_path + '/wk*'))
+            lworkers.extend(glob.glob('/home/bejar/bsc/Wind/Jobs/wk*'))
 
         for worker in lworkers:
             if worker not in dworkers:
@@ -77,7 +90,6 @@ if __name__ == '__main__':
                     fconf.close()
                     finish = True
                     wdone = True
-                # sys.exit()
 
             if not finish:
                 np.random.shuffle(lsel)
@@ -97,8 +109,9 @@ if __name__ == '__main__':
                             fconf.write(sconf + '\n')
                             fconf.close()
                             col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
-                            dworkers[worker][0] += 1
-                    print(f'Worker {w.split("/")[-1]}: A={dworkers[worker][0]}')
+                            dworkers[w][0] += 1
+                            served += 1
+                    print(f'Worker {w.split("/")[-1]}: A={dworkers[w][0]}')
 
                     done = glob.glob(f'{w}/*.done')
                     for d in done:
@@ -111,7 +124,7 @@ if __name__ == '__main__':
             if args.local:
                 lres.extend(glob.glob(wind_local_res_path + '/res*.json'))
             if args.bsc:
-                lres.extend(glob.glob(wind_res_path + '/res*.json'))
+                lres.extend(glob.glob('/home/bejar/bsc/Wind/Res/res*.json'))
             for file in lres:
                 still = True
                 config = load_config_file(file, upload=True, abspath=True)
@@ -132,7 +145,7 @@ if __name__ == '__main__':
             for file in lres:
                 os.remove(f'{file.replace(".json", ".done")}')
 
-        print(f'it {n} - uploaded = {len(lres)} - {ctime()} --------------------------------', flush=True)
+        print(f'it {n} - served= {served} uploaded = {len(lres)} - {ctime()} --------------------------', flush=True)
         n += 1
 
         if finish and not still:

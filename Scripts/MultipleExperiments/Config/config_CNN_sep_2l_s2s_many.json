@@ -4,15 +4,14 @@
   "data": {
     "datanames": ["11-5794-12"],
     "scaler": "standard",
-    "vars": "all",
-    "datasize": 526008,
-    "testsize":  210408,
+      "vars": "all",
     "dataset": 31,
     "radius": 0.5,
     "corr": [0.7, 0.9],
-    "lag": 144,
-    "ahead": [1,144],
-      "aggregate":{"what":["y"],"method":"average","step":12}
+    "datasize": 43834,
+    "testsize": 17534,
+    "lag": 12,
+    "ahead": [1,12]
   },
   "arch": {
       "filters": [32],
@@ -27,7 +26,7 @@
        "depth_multiplier2": 1,
        "activation2": "relu",
       "drop2": 0,
-  "dilation": false,
+  "dilated": false,
     "k_reg": "None",
       "k_regw": 0.1,
     "rec_reg": "None",
@@ -35,14 +34,15 @@
       "activation_full": "linear",
       "fulldrop": 0,
       "full": [16,8],
+      "padding": "same",
       "mode":"CNN_sep_2l_s2s"
   },
-  "training": {
-    "iter": 1,
-    "batch": 1024,
-      "epochs": 200,
+    "training": {
+    "iter":1,
+    "batch": 128,
+    "epochs": 200,
       "patience":10,
-      "optimizer": "adamax",
-    "lrate": 0.001
+    "optimizer": "adamax",
+      "RLROP":{"patience":5, "factor":0.5}
   }
 }

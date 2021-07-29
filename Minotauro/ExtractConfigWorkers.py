@@ -118,9 +118,9 @@ ulimit -s 10240
 uname -a
 """
 
-        batchjob = open(f"{spath}/Run/windjobmino{nm}.cmd", 'w')
+        batchjob = open(f"{spath}/Run/windjob{args.machine}{nm}.cmd", 'w')
         batchjob.write(jobcontent)
-        batchjob.write("for i in {1..1000}\n")
+        batchjob.write("for i in {1..5000}\n")
         batchjob.write("    do\n")
 
         if args.machine == 'mino':
