@@ -136,3 +136,4 @@ if __name__ == '__main__':
             elif args.local:
                 saveconfig(config, lresults, local=True)
 
+    sys.exit(0)

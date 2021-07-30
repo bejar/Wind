@@ -133,7 +133,7 @@ uname -a
             batchjob.write(
                 f"    python3 WindExperimentWorker.py --best --early --gpu --mino --gpulog --jobsdir wk{nm}\n")
 
-        # batchjob.write(f'    if [$? -eq 0]; then"\n')
+        # batchjob.write(f'    if [ $? -eq 0 ]; then"\n')
         # batchjob.write(f'        break"\n')
         # batchjob.write(f'    fi"\n')
 
