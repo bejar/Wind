@@ -40,6 +40,7 @@ if __name__ == '__main__':
     parser.add_argument('--local', action='store_true', default=False, help='local machine')
     parser.add_argument('--bsc', action='store_true', default=False, help='bsc machines')
     parser.add_argument('--noup', action='store_true', default=False, help='bsc machines')
+    parser.add_argument('--noend', action='store_true', default=False, help='bsc machines')
     parser.add_argument('--jpw', type=int, default=5, help='jobs per worker')
     parser.add_argument('--sleep', type=int, default=30, help='Sleep time between dispatches')
 
@@ -84,7 +85,7 @@ if __name__ == '__main__':
             query = {'status': 'pending', 'experiment': args.exp}
             lsel = [c for c in col.find(query, limit=args.jpw * 100)]
             # No more pending configurations
-            if len(lsel) == 0:
+            if len(lsel) == 0 and not args.noend:
                 for w in dworkers:
                     fconf = open(f"{w}/.end", 'w')
                     fconf.close()
