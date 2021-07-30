@@ -83,7 +83,7 @@ if __name__ == '__main__':
 
         if len(lworkers) != 0:
             query = {'status': 'pending', 'experiment': args.exp}
-            lsel = [c for c in col.find(query, limit=args.jpw * 100)]
+            lsel = [c for c in col.find(query, limit=args.jpw * len(lworkers) * 0)]
             # No more pending configurations
             if len(lsel) == 0 and not args.noend:
                 for w in dworkers:
