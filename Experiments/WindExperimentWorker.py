@@ -83,19 +83,23 @@ if __name__ == '__main__':
 
     for i in range(args.nit):
         config = None
+        nl = 0
         while config is None:
             lfiles = glob(f'{pre}/{args.jobsdir}/*.json')
             if len(lfiles) == 0:
                 lend = glob(f'{pre}/{args.jobsdir}/.end')
                 if len(lend) != 0:
-                    # os.remove(f'{pre}/{args.jobsdir}/.end')
+                    os.remove(f'{pre}/{args.jobsdir}/.end')
                     lend = glob(f'{pre}/{args.jobsdir}/*.done')
                     for fdone in lend:
                         os.remove(fdone)
-                    # os.rmdir(f'{pre}/{args.jobsdir}')
-                    sys.exit()
+                    os.rmdir(f'{pre}/{args.jobsdir}')
+                    sys.exit(1)
                 else:
                     sleep(30)
+                    if nl > 10:
+                        sys.exit(1)
+                    nl += 1
             else:
                 config = lfiles[0].split('/')[-1].split('.')[0]
 
