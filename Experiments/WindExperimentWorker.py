@@ -88,11 +88,11 @@ if __name__ == '__main__':
             if len(lfiles) == 0:
                 lend = glob(f'{pre}/{args.jobsdir}/.end')
                 if len(lend) != 0:
-                    os.remove(f'{pre}/{args.jobsdir}/.end')
+                    # os.remove(f'{pre}/{args.jobsdir}/.end')
                     lend = glob(f'{pre}/{args.jobsdir}/*.done')
                     for fdone in lend:
                         os.remove(fdone)
-                    os.rmdir(f'{pre}/{args.jobsdir}')
+                    # os.rmdir(f'{pre}/{args.jobsdir}')
                     sys.exit()
                 else:
                     sleep(30)
