@@ -78,13 +78,13 @@ def get_closest_k_neighbors(site, radius, k):
     agg = int(site.split('-')[2])
 
     lneighbor = tree.query_radius(coords[isite, :].reshape(1, -1), r=radius, sort_results=True, count_only=False, return_distance=True)[0][0]
-    print(lneighbor)
+    print(lneighbor[:k+1])
     print([f"{v//500}-{v}-{agg}" for v in lneighbor[:k+1]])
     return [f"{v//500}-{v}-{agg}" for v in lneighbor[:k+1]]
 
 def get_random_k_nonneighbors(site, radius, k):
     """
-    Generates a list of random sites outside a radious of a given site
+    Generates a list of random sites outside a radius of a given site
     """
     coords = np.load(wind_data_path + '/Coords.npy')
     tree = KDTree(coords, leaf_size=1)
