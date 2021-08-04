@@ -36,7 +36,7 @@ from Wind2.Architectures import PersistenceArchitecture, PersistenceMeanArchitec
 from Wind2.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2SArchitecture, RNNS2SArchitecture, \
      RNNEncoderDecoderS2SDepArchitecture
 from Wind2.Architectures import TimeInceptionArchitecture
-from Wind.Train.TrainingProcess import train_dirregression, train_sckit_dirregression, \
+from Wind2.Train.TrainingProcess import train_dirregression, train_sckit_dirregression, \
     train_sequence2sequence, train_sequence2sequence_tf, train_recursive_multi_sequence2sequence, \
     train_sckit_sequence2sequence, train_sjoint_sequence2sequence, train_gradient_boosting_sequence2sequence
 
