@@ -20,8 +20,8 @@ from time import strftime
 
 from Wind.DataBaseConfigurations import getconfig, saveconfig
 from Wind.Misc import load_config_file
-from Wind2.Train import TrainDispatch
-from Wind2.Train import RunConfig
+from Wind2.Train.TrainDispatch import TrainDispatch
+from Wind2.Train.RunConfig import RunConfig
 
 __author__ = 'bejar'
 
