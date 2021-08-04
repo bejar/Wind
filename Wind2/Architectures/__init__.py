@@ -18,7 +18,7 @@ __init__.py
 """
 
 from .Architecture import Architecture
-from Wind.Architectures.NNArchitecture import NNArchitecture
+from Wind2.Architectures.NNArchitecture import NNArchitecture
 from .NNS2SArchitecture import NNS2SArchitecture
 from .SCKArchitecture import SCKArchitecture
 from .SCKS2SArchitecture import SCKS2SArchitecture
