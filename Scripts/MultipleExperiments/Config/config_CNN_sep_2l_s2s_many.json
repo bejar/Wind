@@ -7,6 +7,7 @@
       "vars": "all",
     "dataset": 31,
     "radius": 0.5,
+    "nneighbors": [50],
     "corr": [0.7, 0.9],
     "datasize": 43834,
     "testsize": 17534,

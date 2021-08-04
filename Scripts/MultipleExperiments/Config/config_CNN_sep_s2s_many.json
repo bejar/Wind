@@ -11,6 +11,7 @@
     "datasize": 43834,
     "testsize": 17534,
     "lag": 12,
+    "nneighbors": [50],
     "ahead": [1,12]
   },
   "arch": {

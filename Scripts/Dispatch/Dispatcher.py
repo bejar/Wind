@@ -57,6 +57,7 @@ if __name__ == '__main__':
     dworkers = {}
     n = 0
     served = 0
+    uploaded = 0
     finish = False
 
     if args.local:
@@ -128,6 +129,7 @@ if __name__ == '__main__':
             if args.bsc:
                 lres.extend(glob.glob('/home/bejar/bsc/Wind/Res/res*.json'))
             for file in lres:
+                uploaded +=1
                 still = True
                 config = load_config_file(file, upload=True, abspath=True)
                 exists = col.find_one({'_id': config['_id']})
@@ -147,7 +149,7 @@ if __name__ == '__main__':
             for file in lres:
                 os.remove(f'{file.replace(".json", ".done")}')
 
-        print(f'it {n} - served= {served} uploaded = {len(lres)} - {ctime()} --------------------------', flush=True)
+        print(f'it {n} - served= {served} uploaded = {uploaded}  upnow = {len(lres)} - {ctime()} --------------------------', flush=True)
         n += 1
 
         if finish and not still:

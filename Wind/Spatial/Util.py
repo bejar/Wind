@@ -77,10 +77,9 @@ def get_closest_k_neighbors(site, radius, k):
     isite = int(site.split('-')[1])
     agg = int(site.split('-')[2])
 
-
     lneighbor = tree.query_radius(coords[isite, :].reshape(1, -1), r=radius, sort_results=True, count_only=False, return_distance=True)[0][0]
 
-    return ["%d-%d-%d" % (v // 500, v, agg) for v in lneighbor[:k+1]]
+    return [f"{v//500}-{v}-{agg}" for v in lneighbor[:k+1]]
 
 def get_random_k_nonneighbors(site, radius, k):
     """
