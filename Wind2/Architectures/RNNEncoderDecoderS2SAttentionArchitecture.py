@@ -16,12 +16,12 @@ RNNEncoderDecoderS2SArchitecture
 :Date:  13/07/2018
 """
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind2.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import load_model, Model
 from keras.layers import LSTM, GRU, Dense, TimeDistributed, Input
 from keras.layers import Activation, dot, concatenate
 import numpy as np
-from Wind.ErrorMeasure import ErrorMeasure
+from Wind2.ErrorMeasure import ErrorMeasure
 import h5py
 
 try:

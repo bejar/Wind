@@ -23,8 +23,8 @@ from keras.layers import Dense, Dropout, Conv2D, Flatten, Input
 from keras.models import Model
 from keras.regularizers import l1, l2
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from Wind.Train.Activations import generate_activation
+from Wind2.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind2.Train.Activations import generate_activation
 
 __author__ = 'bejar'
 

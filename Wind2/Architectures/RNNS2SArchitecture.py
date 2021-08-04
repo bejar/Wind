@@ -16,12 +16,12 @@ RNNS2SArchitecture
 :Date:  13/07/2018
 """
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind2.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
 from keras.layers import LSTM, GRU, Dense, Flatten, Dropout, Bidirectional, Input
 from sklearn.metrics import r2_score
-from Wind.Train.Activations import generate_activation
-from Wind.Train.Layers import generate_recurrent_layer
+from Wind2.Train.Activations import generate_activation
+from Wind2.Train.Layers import generate_recurrent_layer
 
 try:
     from keras.layers import CuDNNGRU, CuDNNLSTM

@@ -16,7 +16,7 @@ NNArchitecture
 :Date:  13/07/2018
 """
 
-from Wind.Architectures.Architecture import Architecture
+from Wind2.Architectures.Architecture import Architecture
 from keras.models import load_model
 import shutil
 

@@ -17,8 +17,8 @@ SCKArchitecture
 
 """
 
-from Wind.Architectures.Architecture import Architecture
-from Wind.ErrorMeasure import ErrorMeasure
+from Wind2.Architectures.Architecture import Architecture
+from Wind2.ErrorMeasure import ErrorMeasure
 import h5py
 
 __author__ = 'bejar'

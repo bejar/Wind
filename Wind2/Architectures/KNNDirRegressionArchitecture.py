@@ -17,7 +17,7 @@ KNNDirRegressionArchitecture
 
 """
 
-from Wind.Architectures.SCKArchitecture import SCKArchitecture
+from Wind2.Architectures.SCKArchitecture import SCKArchitecture
 from sklearn.neighbors import KNeighborsRegressor
 
 __author__ = 'bejar'

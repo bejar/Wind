@@ -17,10 +17,10 @@ MLPS2SRecursiveArchirecture
 
 """
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind2.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import load_model, Model
 from keras.layers import Dense, Dropout, Input, concatenate, Flatten
-from Wind.Train.Activations import generate_activation
+from Wind2.Train.Activations import generate_activation
 
 __author__ = 'bejar'
 

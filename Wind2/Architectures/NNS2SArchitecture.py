@@ -19,7 +19,7 @@ NNS2SArchitecture
 
 from keras.models import load_model
 
-from Wind.Architectures.NNArchitecture import NNArchitecture
+from Wind2.Architectures.NNArchitecture import NNArchitecture
 from Wind.ErrorMeasure import ErrorMeasure
 import h5py
 

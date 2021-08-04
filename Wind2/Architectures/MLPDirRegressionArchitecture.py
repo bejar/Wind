@@ -16,12 +16,12 @@ MLPDirRegressionArchitecture
 :Created on: 04/09/2018 7:58 
 
 """
-from Wind.Architectures.NNArchitecture import NNArchitecture
+from Wind2.Architectures.NNArchitecture import NNArchitecture
 
 from keras.models import Model, Sequential
 from keras.layers import Dense, Dropout
 from keras.layers import Flatten, Input
-from Wind.Train.Activations import generate_activation
+from Wind2.Train.Activations import generate_activation
 
 __author__ = 'bejar'
 

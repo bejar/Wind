@@ -17,7 +17,7 @@ KNNDirRegressionArchitecture
 
 """
 
-from Wind.Architectures.SCKS2SArchitecture import SCKS2SArchitecture
+from Wind2.Architectures.SCKS2SArchitecture import SCKS2SArchitecture
 from sklearn.linear_model import ElasticNet
 
 __author__ = 'bejar'

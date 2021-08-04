@@ -22,11 +22,11 @@ CNNS2SCrazyIvanArchitecture
 __author__ = 'bejar'
 
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind2.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Dropout, Conv1D, Flatten, Concatenate, Input
 from sklearn.metrics import r2_score
-from Wind.Train.Activations import generate_activation
+from Wind2.Train.Activations import generate_activation
 
 from keras.regularizers import l1, l2
 

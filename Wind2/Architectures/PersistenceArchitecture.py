@@ -16,8 +16,8 @@ PersistenceArchitecture
 :Date:  13/07/2018
 """
 
-from Wind.Architectures.Architecture import Architecture
-from Wind.ErrorMeasure import ErrorMeasure
+from Wind2.Architectures.Architecture import Architecture
+from Wind2.ErrorMeasure import ErrorMeasure
 
 __author__ = 'bejar'
 

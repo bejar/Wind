@@ -16,8 +16,8 @@ PersistenceArchitecture
 :Date:  13/07/2018
 """
 
-from Wind.Architectures.PersistenceArchitecture import PersistenceArchitecture
-from Wind.ErrorMeasure import ErrorMeasure
+from Wind2.Architectures.PersistenceArchitecture import PersistenceArchitecture
+from Wind2.ErrorMeasure import ErrorMeasure
 import numpy as np
 
 __author__ = 'bejar'

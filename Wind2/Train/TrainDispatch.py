@@ -19,24 +19,24 @@ Dispatch
 
 __author__ = 'bejar'
 
-from Wind.Architectures import CNNS2SArchitecture, CNNS2SCrazyIvanArchitecture, CNNS2SCrazyIvan2HArchitecture, \
+from Wind2.Architectures import CNNS2SArchitecture, CNNS2SCrazyIvanArchitecture, CNNS2SCrazyIvan2HArchitecture, \
     CNNS2SCrazyIvan3HArchitecture, CNNS2S2DArchitecture, \
     CNNS2SSkipArchitecture, CNNSeparableS2SArchitecture, CNNSeparable2LS2SArchitecture, CNNSeparable3LS2SArchitecture, \
     CNNSeparable4LS2SArchitecture, CNN2LS2SArchitecture, CNN3LS2SArchitecture, CNN4LS2SArchitecture, \
     CNNLoCoS2SArchitecture, CNNMIMOSkipArchitecture, \
     CNNMIMOResidualArchitecture
-from Wind.Architectures import KNNDirRegressionArchitecture, RandomForestDirRegressionArchitecture, \
+from Wind2.Architectures import KNNDirRegressionArchitecture, RandomForestDirRegressionArchitecture, \
     SVMDirRegressionArchitecture, \
     AdaBoostDirRegressionArchitecture, KNNS2SArchitecture, ElasticNetS2SArchitecture, XGBoostDirRegressionArchitecture, \
     RandomForestS2SArchitecture, ExtraTreesS2SArchitecture
-from Wind.Architectures import MLPDirRegressionArchitecture, MLPS2SArchitecture, MLPS2SFutureArchitecture, \
+from Wind2.Architectures import MLPDirRegressionArchitecture, MLPS2SArchitecture, MLPS2SFutureArchitecture, \
     MLPS2SRecursiveArchitecture, \
     MLPCascadeS2SArchitecture
-from Wind.Architectures import PersistenceArchitecture, PersistenceMeanArchitecture
-from Wind.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2SArchitecture, RNNS2SArchitecture, \
+from Wind2.Architectures import PersistenceArchitecture, PersistenceMeanArchitecture
+from Wind2.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2SArchitecture, RNNS2SArchitecture, \
     RNNEncoderDecoderS2SAttentionArchitecture, RNNS2SSelfAttentionArchitecture, RNNEncoderDecoderS2SDepArchitecture, \
     RNNEncoderDecoderAttentionArchitecture
-from Wind.Architectures import TimeInceptionArchitecture
+from Wind2.Architectures import TimeInceptionArchitecture
 from Wind.Train.TrainingProcess import train_dirregression, train_sckit_dirregression, \
     train_sequence2sequence, train_sequence2sequence_tf, train_recursive_multi_sequence2sequence, \
     train_sckit_sequence2sequence, train_sjoint_sequence2sequence, train_gradient_boosting_sequence2sequence

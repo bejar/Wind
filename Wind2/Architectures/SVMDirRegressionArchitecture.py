@@ -17,7 +17,7 @@ SVMDirRegressionArchitecture
 
 """
 
-from Wind.Architectures.SCKArchitecture import SCKArchitecture
+from Wind2.Architectures.SCKArchitecture import SCKArchitecture
 from sklearn.svm import SVR
 
 __author__ = 'bejar'

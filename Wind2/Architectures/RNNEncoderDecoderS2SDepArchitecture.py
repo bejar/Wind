@@ -16,8 +16,8 @@ RNNEncoderDecoderS2SArchitecture
 :Date:  13/07/2018
 """
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from Wind.Architectures.Util import recurrent_encoder_functional, recurrent_decoder_functional
+from Wind2.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind2.Architectures.Util import recurrent_encoder_functional, recurrent_decoder_functional
 from keras.models import load_model, Model
 from keras.layers import LSTM, GRU, Dense, TimeDistributed, RepeatVector, Input, concatenate
 from sklearn.metrics import r2_score

@@ -18,7 +18,7 @@ RandomForestDirRegressionArchitecture
 """
 
 
-from Wind.Architectures.SCKArchitecture import SCKArchitecture
+from Wind2.Architectures.SCKArchitecture import SCKArchitecture
 from sklearn.ensemble import AdaBoostRegressor
 from sklearn.tree import DecisionTreeRegressor
 

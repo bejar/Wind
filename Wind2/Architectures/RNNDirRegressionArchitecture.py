@@ -17,7 +17,7 @@ RNNDirRegressionArchitecture
 
 """
 
-from Wind.Architectures.NNArchitecture import NNArchitecture
+from Wind2.Architectures.NNArchitecture import NNArchitecture
 from keras.models import Sequential
 from keras.layers import LSTM, GRU, Bidirectional, Dense
 

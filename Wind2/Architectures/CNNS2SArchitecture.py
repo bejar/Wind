@@ -19,8 +19,8 @@ CNNS2SArchitecture
 
 """
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from Wind.Train.Activations import generate_activation
+from Wind2.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind2.Train.Activations import generate_activation
 from Wind.Train.Layers import squeeze_and_excitation
 
 from keras.models import Sequential, load_model, Model

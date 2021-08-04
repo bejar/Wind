@@ -17,7 +17,7 @@ KNNS2SArchitecture
 
 """
 
-from Wind.Architectures.SCKS2SArchitecture import SCKS2SArchitecture
+from Wind2.Architectures.SCKS2SArchitecture import SCKS2SArchitecture
 from sklearn.neighbors import KNeighborsRegressor
 
 __author__ = 'bejar'
