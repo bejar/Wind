@@ -19,7 +19,7 @@ RNNS2SArchitecture
 from Wind2.Architectures.NNS2SArchitecture import NNS2SArchitecture
 from keras.models import load_model, Model
 from keras.layers import LSTM, GRU, Dense,  Dropout, Input
-from Wind.Train.Activations import generate_activation
+from Wind2.Train.Activations import generate_activation
 
 from Wind.Util.SelfAttention import SelfAttention
 from Wind2.ErrorMeasure import ErrorMeasure

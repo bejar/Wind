@@ -34,8 +34,7 @@ from Wind2.Architectures import MLPDirRegressionArchitecture, MLPS2SArchitecture
     MLPCascadeS2SArchitecture
 from Wind2.Architectures import PersistenceArchitecture, PersistenceMeanArchitecture
 from Wind2.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2SArchitecture, RNNS2SArchitecture, \
-    RNNEncoderDecoderS2SAttentionArchitecture, RNNS2SSelfAttentionArchitecture, RNNEncoderDecoderS2SDepArchitecture, \
-    RNNEncoderDecoderAttentionArchitecture
+     RNNEncoderDecoderS2SDepArchitecture
 from Wind2.Architectures import TimeInceptionArchitecture
 from Wind.Train.TrainingProcess import train_dirregression, train_sckit_dirregression, \
     train_sequence2sequence, train_sequence2sequence_tf, train_recursive_multi_sequence2sequence, \
@@ -77,11 +76,11 @@ class TrainDispatch:
 
         self.model_dict['RNN_ED_s2s_dep'] = (train_sequence2sequence, RNNEncoderDecoderS2SDepArchitecture)
 
-        self.model_dict['RNN_ED_s2s_att'] = (train_sequence2sequence_tf, RNNEncoderDecoderS2SAttentionArchitecture)
+        # self.model_dict['RNN_ED_s2s_att'] = (train_sequence2sequence_tf, RNNEncoderDecoderS2SAttentionArchitecture)
 
         self.model_dict['RNN_s2s'] = (train_sequence2sequence, RNNS2SArchitecture)
-        self.model_dict['RNN_s2s_self_att'] = (train_sequence2sequence, RNNS2SSelfAttentionArchitecture)
-        self.model_dict['RNN_s2s_att'] = (train_sequence2sequence, RNNEncoderDecoderAttentionArchitecture)
+        # self.model_dict['RNN_s2s_self_att'] = (train_sequence2sequence, RNNS2SSelfAttentionArchitecture)
+        # self.model_dict['RNN_s2s_att'] = (train_sequence2sequence, RNNEncoderDecoderAttentionArchitecture)
 
         # MLP models
 

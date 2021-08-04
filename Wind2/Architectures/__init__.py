@@ -39,10 +39,10 @@ from .ElasticNetS2SArchitecture import ElasticNetS2SArchitecture
 from .RNNDirRegressionArchitecture import RNNDirRegressionArchitecture
 from .RNNEncoderDecoderS2SArchitecture import RNNEncoderDecoderS2SArchitecture
 from .RNNS2SArchitecture import RNNS2SArchitecture
-from .RNNS2SSelfAttentionArchitecture import RNNS2SSelfAttentionArchitecture
-from .RNNEncoderDecoderS2SAttentionArchitecture import RNNEncoderDecoderS2SAttentionArchitecture
+# from .RNNS2SSelfAttentionArchitecture import RNNS2SSelfAttentionArchitecture
+# from .RNNEncoderDecoderS2SAttentionArchitecture import RNNEncoderDecoderS2SAttentionArchitecture
 from .RNNEncoderDecoderS2SDepArchitecture import RNNEncoderDecoderS2SDepArchitecture
-from .RNNEncoderDecoderAttentionArchitecture import RNNEncoderDecoderAttentionArchitecture
+# from .RNNEncoderDecoderAttentionArchitecture import RNNEncoderDecoderAttentionArchitecture
 
 from .MLPS2SArchitecture import MLPS2SArchitecture
 from .MLPCascadeS2SArchitecture import MLPCascadeS2SArchitecture
@@ -87,9 +87,9 @@ __all__ = ['Architecture',
            'CNN4LS2SArchitecture',
            'CNNLoCoS2SArchitecture',
            'RNNS2SArchitecture',
-           'RNNS2SSelfAttentionArchitecture',
-           'RNNEncoderDecoderS2SAttentionArchitecture',
-           'RNNEncoderDecoderAttentionArchitecture',
+           # 'RNNS2SSelfAttentionArchitecture',
+           # 'RNNEncoderDecoderS2SAttentionArchitecture',
+           # 'RNNEncoderDecoderAttentionArchitecture',
            'MLPS2SRecursiveArchitecture',
            'RNNEncoderDecoderS2SDepArchitecture',
            'KNNDirRegressionArchitecture',
