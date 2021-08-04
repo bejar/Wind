@@ -42,8 +42,8 @@ from time import time
 import os
 import h5py
 
-from Wind.Train.Losses import regression_losses
-from Wind.ErrorMeasure import ErrorMeasure
+from Wind2.Train.Losses import regression_losses
+from Wind2.ErrorMeasure import ErrorMeasure
 
 __author__ = 'bejar'
 
