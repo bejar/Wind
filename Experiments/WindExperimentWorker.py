@@ -85,7 +85,7 @@ if __name__ == '__main__':
         config = None
         nl = 0
         while config is None:
-            lfiles = glob(f'{pre}/{args.jobsdir}/*.json')
+            lfiles = sorted(glob(f'{pre}/{args.jobsdir}/*.json'))
             if len(lfiles) == 0:
                 lend = glob(f'{pre}/{args.jobsdir}/.end')
                 if len(lend) != 0:
