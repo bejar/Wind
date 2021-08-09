@@ -136,4 +136,10 @@ if __name__ == '__main__':
             elif args.local:
                 saveconfig(config, lresults, local=True)
 
+            if args.mino:
+                pre = wind_jobs_path
+            elif args.local:
+                pre = wind_local_jobs_path
+            os.rename(pre + args.jobsdir + '/' + config + '.json', pre + args.jobsdir + '/' + config + '.done')
+
     sys.exit(0)

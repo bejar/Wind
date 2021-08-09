@@ -65,7 +65,7 @@ def load_config_file(nfile, abspath=False, id=False, upload=False, mino=False, l
 
     if not upload:
         config['btime'] = strftime('%Y-%m-%d %H:%M:%S')
-        os.rename(pre + nfile + ext, pre + nfile + '.done')
+        # os.rename(pre + nfile + ext, pre + nfile + '.done')
 
     return config
 
