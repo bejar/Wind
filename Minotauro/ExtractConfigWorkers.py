@@ -63,7 +63,7 @@ if __name__ == '__main__':
         if args.machine == 'local':
             spath = '/home/bejar/Wind/'
         else:
-            spath =  bsc_path
+            spath = bsc_path
 
         # os.mkdir(f"{spath}/Jobs/wk{nm}")
             # os.mkdir(f"{spath}/Run")
@@ -125,13 +125,13 @@ uname -a
 
         if args.machine == 'mino':
             batchjob.write(
-                f"    python WindExperimentWorkerTF1.py --best --early --gpu --mino --jobsdir wk{nm}\n")
+                f"    python WindExperimentWorkerTF1.py --best --early --gpu --mino --jobsdir wkM{nm}\n")
         elif args.machine == 'local':
             batchjob.write(
-                f"    python WindExperimentWorker.py --best --early --gpu --local  --jobsdir wk{nm}\n")
+                f"    python WindExperimentWorker.py --best --early --gpu --local  --jobsdir wkL{nm}\n")
         else:
             batchjob.write(
-                f"    python3 WindExperimentWorker.py --best --early --gpu --mino --gpulog --jobsdir wk{nm}\n")
+                f"    python3 WindExperimentWorker.py --best --early --gpu --mino --gpulog --jobsdir wkP{nm}\n")
 
         # batchjob.write(f'    if [ $? -eq 0 ]; then"\n')
         # batchjob.write(f'        break"\n')
