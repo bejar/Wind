@@ -14,6 +14,8 @@
   },
   "arch": {
     "drop": 0.3,
+    "dropf": 0.3,
+    "dropa": 0.3,
     "activation": ["leaky",0.2],
     "full": [512,256],
     "fulladd": [512,256],

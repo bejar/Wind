@@ -45,6 +45,8 @@ class MLPS2SSeparateArchitecture(NNS2SArchitecture):
 
         activation = self.config['arch']['activation']
         dropout = self.config['arch']['drop']
+        dropoutf = self.config['arch']['dropf']
+        dropouta = self.config['arch']['dropa']
         full_layers = self.config['arch']['full']
         fulladd_layers = self.config['arch']['fulladd']
 
