@@ -712,7 +712,7 @@ class Dataset:
             slice = ahead
 
         # Augment the dataset with the closest neighbors
-        if self.config['dataset'] == 5 or self.config['dataset'] == 31:
+        if self.config['dataset'] in [5,51,31]: #== 5 or self.config['dataset'] == 31:
             if 'radius' not in self.config:
                 raise NameError("Radius missing for neighbours augmented dataset")
             else:
