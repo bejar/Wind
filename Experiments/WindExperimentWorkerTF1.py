@@ -83,9 +83,9 @@ if __name__ == '__main__':
         os.mkdir(f'{pre}/{args.jobsdir}')
 
     for i in range(args.nit):
-        config = None
+        fconfig = None
         nl = 0
-        while config is None:
+        while fconfig is None:
             lfiles = glob(f'{pre}/{args.jobsdir}/*.json')
             if len(lfiles) == 0:
                 lend = glob(f'{pre}/{args.jobsdir}/.end')
@@ -102,14 +102,14 @@ if __name__ == '__main__':
                         sys.exit(1)
                     nl += 1
             else:
-                config = lfiles[0].split('/')[-1].split('.')[0]
+                fconfig = lfiles[0].split('/')[-1].split('.')[0]
 
         if args.mino:
-            config = load_config_file(args.jobsdir + '/' + config, id=False, mino=True)
+            config = load_config_file(args.jobsdir + '/' + fconfig, id=False, mino=True)
         elif args.local:
-            config = load_config_file(args.jobsdir + '/' + config, id=False, local=True)
+            config = load_config_file(args.jobsdir + '/' + fconfig, id=False, local=True)
         else:
-            config = load_config_file(args.jobsdir + '/' + config, id=True)
+            config = load_config_file(args.jobsdir + '/' + fconfig, id=True)
 
         run_config = RunConfig(impl, verbose, args.tboard, args.best, args.early, args.multi, args.proxy, args.save,
                                args.remote, args.info, args.log)
@@ -136,5 +136,6 @@ if __name__ == '__main__':
                 saveconfig(config, lresults, mino=True)
             elif args.local:
                 saveconfig(config, lresults, local=True)
+            os.rename(pre + args.jobsdir + '/' + fconfig + '.json', pre + args.jobsdir + '/' + fconfig + '.done')
 
     sys.exit(0)
