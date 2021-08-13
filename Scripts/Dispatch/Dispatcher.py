@@ -35,7 +35,7 @@ __author__ = 'bejar'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--exp', default='convos2s', help='Type of configs')
+    # parser.add_argument('--exp', default='convos2s', help='Type of configs')
     parser.add_argument('--testdb', action='store_true', default=False, help='Use test database')
     parser.add_argument('--local', action='store_true', default=False, help='local machine')
     parser.add_argument('--bsc', action='store_true', default=False, help='bsc machines')
@@ -83,7 +83,8 @@ if __name__ == '__main__':
                 dworkers[worker] = [0]
 
         if len(lworkers) != 0:
-            query = {'status': 'pending', 'experiment': args.exp}
+            # query = {'status': 'pending', 'experiment': args.exp}
+            query = {'status': 'pending'}
             lsel = [c for c in col.find(query, limit=args.jpw * len(lworkers) * 0)]
             # No more pending configurations
             if len(lsel) == 0 and not args.noend:
