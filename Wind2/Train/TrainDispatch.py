@@ -31,7 +31,7 @@ from Wind2.Architectures import KNNDirRegressionArchitecture, RandomForestDirReg
     RandomForestS2SArchitecture, ExtraTreesS2SArchitecture
 from Wind2.Architectures import MLPDirRegressionArchitecture, MLPS2SArchitecture, MLPS2SFutureArchitecture, \
     MLPS2SRecursiveArchitecture, \
-    MLPCascadeS2SArchitecture
+    MLPCascadeS2SArchitecture, MLPS2SSeparateArchitecture
 from Wind2.Architectures import PersistenceArchitecture, PersistenceMeanArchitecture
 from Wind2.Architectures import RNNDirRegressionArchitecture, RNNEncoderDecoderS2SArchitecture, RNNS2SArchitecture, \
      RNNEncoderDecoderS2SDepArchitecture
@@ -91,6 +91,7 @@ class TrainDispatch:
         self.model_dict['MLP_dir_reg'] = self.model_dict['mlpdir'] = (train_dirregression, MLPDirRegressionArchitecture)
         self.model_dict['MLP_s2s_rec'] = (train_recursive_multi_sequence2sequence, MLPS2SRecursiveArchitecture)
         self.model_dict['MLP_s2s_sjoint'] = (train_sjoint_sequence2sequence, MLPS2SArchitecture)
+        self.model_dict['MLP_s2s_sep'] = (train_sequence2sequence, MLPS2SSeparateArchitecture)
 
         self.model_dict['MLP_s2s_gb'] = (train_gradient_boosting_sequence2sequence, MLPS2SArchitecture)
 

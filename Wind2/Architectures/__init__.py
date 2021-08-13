@@ -49,6 +49,7 @@ from .MLPCascadeS2SArchitecture import MLPCascadeS2SArchitecture
 from .MLPDirRegressionArchitecture import MLPDirRegressionArchitecture
 from .MLPS2SRecursiveArchitecture import MLPS2SRecursiveArchitecture
 from .MLPS2SFutureArchitecture import MLPS2SFutureArchitecture
+from .MLPS2SSeparateArchitecture import MLPS2SSeparateArchitecture
 
 from .CNNS2SArchitecture import CNNS2SArchitecture
 from .CNN2LS2SArchitecture import CNN2LS2SArchitecture
@@ -91,6 +92,7 @@ __all__ = ['Architecture',
            # 'RNNEncoderDecoderS2SAttentionArchitecture',
            # 'RNNEncoderDecoderAttentionArchitecture',
            'MLPS2SRecursiveArchitecture',
+           'MLPS2SSeparateArchitecture',
            'RNNEncoderDecoderS2SDepArchitecture',
            'KNNDirRegressionArchitecture',
            'KNNS2SArchitecture',
