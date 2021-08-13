@@ -4,7 +4,7 @@
     "datanames": [ "11-5795-12"],
     "radius": 2,
     "nneighbors": 300,
-    "corr": [0.7, 0.9],
+    "corr": [0.7, 1],
     "scaler": "standard",
     "vars": "all",
     "datasize": 43834,
