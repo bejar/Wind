@@ -779,8 +779,12 @@ class Dataset:
             cmin,cmax = self.config['corr']
             for d in wind:
                 if d != datanames[0]:
-                    if not (cmin < np.corrcoef(wind[d][:,0], wind[datanames[0]][:,0])[0,1]< cmax):
+                    if not (cmin < np.corrcoef(wind[d][:, 0], wind[datanames[0]][:,0])[0,1] < cmax):
                         datanames.remove(d)
+            # If there is no sites within the correlation limits, then duplicate the targer sites so the
+            # architectures with two branches do not fail
+            if len(datanames) ==1:
+                datanames.append(datanames[1])
 
 
         if (self.config['dataset'] == 0) or (self.config['dataset'] == 'onesiteonevar'):

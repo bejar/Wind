@@ -68,7 +68,7 @@ def get_direct_neighbors(site, radius):
 
 def get_closest_k_neighbors(site, radius, k):
     """
-    return K closesr neighbors inside a radius
+    return K closest neighbors inside a radius
     :param site:
     :return:
     """
