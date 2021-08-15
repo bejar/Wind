@@ -951,7 +951,7 @@ class DBResults:
                 plt.savefig(f"{save}.pdf", format=saveformat)
 
         elif plot == 'regression':
-            sns.regplot('test', 'validation', data=data, truncate=True,
+            sns.regplot(x='test', y='validation', data=data, truncate=True,
                         line_kws={'color': 'red', 'linewidth': 2, 'linestyle': '--'})
             ax = fig.axes[0]
             ax.set_xlabel(r'$\sum_{i=1}^{12}R^2$ test')
