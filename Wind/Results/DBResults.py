@@ -783,9 +783,11 @@ class DBResults:
             if font is not None:
                 matplotlib.rcParams.update({'font.size': font})
             fig = plt.figure(figsize=figsize)
-            for v, l in zip(data, labels):
-                sns.histplot(v, label=l, kde=True, stat='density')
-                plt.legend(labels=labels, title=title)
+            # for v, l in zip(data, labels):
+            #     sns.histplot(v, label=l, kde=True, stat='density')
+            #     plt.legend(labels=labels, title=title)
+            sns.histplot(data, label=labels, kde=True, stat='density')
+            plt.legend(labels=labels, title=title)
 
             ax = fig.axes[0]
             ax.set_ylabel('Density')
@@ -895,7 +897,7 @@ class DBResults:
                 matplotlib.rcParams.update({'font.size': font})
             plt.figure(figsize=figsize)
             for v, l in zip(data, labels):
-                sns.distplot(v, label=l, kde=True, norm_hist=True)
+                sns.histplot(v, label=l, kde=True, stat='density')
                 plt.legend(labels=labels, title=title)
             if save is not None:
                 plt.savefig(f"{save}.{saveformat}", format=saveformat)
