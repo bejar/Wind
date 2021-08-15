@@ -896,9 +896,11 @@ class DBResults:
             if font is not None:
                 matplotlib.rcParams.update({'font.size': font})
             plt.figure(figsize=figsize)
-            for v, l in zip(data, labels):
-                sns.histplot(v, label=l, kde=True, stat='density')
-                plt.legend(labels=labels, title=title)
+            # for v, l in zip(data, labels):
+            #     sns.histplot(v, label=l, kde=True, stat='density',element='poly')
+            #     plt.legend(labels=labels, title=title)
+            sns.histplot(data, label=labels, kde=True, stat='density',element='poly')
+            plt.legend(labels=labels, title=title)
             if save is not None:
                 plt.savefig(f"{save}.{saveformat}", format=saveformat)
 
@@ -941,7 +943,7 @@ class DBResults:
             matplotlib.rcParams.update({'font.size': font})
         fig = plt.figure(figsize=figsize)
         if plot == 'kde':
-            sns.kdeplot(data['test'], data['validation'], shade=True, n_levels=10, cbar=True, shade_lowest=False)
+            sns.kdeplot(x=data['test'], y=data['validation'], shade=True, n_levels=10, cbar=True, shade_lowest=False)
             ax = fig.axes[0]
             ax.set_xlabel(r'$\sum_{i=1}^{12}R^2$ test')
             ax.set_ylabel(r'$\sum_{i=1}^{12}R^2$ validation')
