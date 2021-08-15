@@ -786,7 +786,7 @@ class DBResults:
             # for v, l in zip(data, labels):
             #     sns.histplot(v, label=l, kde=True, stat='density')
             #     plt.legend(labels=labels, title=title)
-            sns.histplot(data, label=labels, kde=True, stat='density',element='step')
+            sns.histplot(data, label=labels, kde=True, stat='density',element='poly')
             plt.legend(labels=labels, title=title)
 
             ax = fig.axes[0]
