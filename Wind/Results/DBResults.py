@@ -784,7 +784,7 @@ class DBResults:
                 matplotlib.rcParams.update({'font.size': font})
             fig = plt.figure(figsize=figsize)
             for v, l in zip(data, labels):
-                sns.distplot(v, label=l, kde=True, norm_hist=True)
+                sns.histplot(v, label=l, kde=True, stat='density')
                 plt.legend(labels=labels, title=title)
 
             ax = fig.axes[0]
