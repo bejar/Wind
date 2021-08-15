@@ -1009,8 +1009,8 @@ class DBResults:
 
         plt.figure(figsize=figsize)
         if plot == 'kde':
-            sns.kdeplot(data1['test'], data1['validation'], cmap="Reds", n_levels=10, cbar=True, shade_lowest=False)
-            sns.kdeplot(data2['test'], data2['validation'], cmap="Blues", n_levels=10, cbar=True, shade_lowest=False)
+            sns.kdeplot(x=data1['test'], y=data1['validation'], cmap="Reds", n_levels=10, cbar=True, shade_lowest=False)
+            sns.kdeplot(x=data2['test'], y=data2['validation'], cmap="Blues", n_levels=10, cbar=True, shade_lowest=False)
             if save is not None:
                 plt.savefig(f"{save}.pdf", format=saveformat)
 
@@ -1176,10 +1176,10 @@ class DBResults:
         f, axes = plt.subplots(1, 2, figsize=figsize, sharex=False, sharey=True)
 
         site_coords = list(self.exp_result['sites'][self.selection])
-        sns.kdeplot(self.coords[site_coords, 0], sumval,
+        sns.kdeplot(x=self.coords[site_coords, 0], y=sumval,
                     cmap="Reds", shade=True, shade_lowest=False, ax=axes.flat[0], cbar=True)
 
-        sns.kdeplot(self.coords[site_coords, 1], sumval,
+        sns.kdeplot(x=self.coords[site_coords, 1], y=sumval,
                     cmap="Reds", shade=True, shade_lowest=False, ax=axes.flat[1], cbar=True)
 
         plt.show()
