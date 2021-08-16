@@ -56,15 +56,18 @@ if __name__ == '__main__':
     else:
         count = {}
         configs = col.find({'status': args.status})
+        total = 0
         for conf in configs:
             if conf['experiment'] in count:
                 count[conf['experiment']] += 1
             else:
                 count[conf['experiment']] = 1
+            total += 1
 
         if len(count) != 0:
             for exp in count:
                 print(args.status, exp, count[exp])
         else:
             print('No more experiments')
+        print(f'Total: {total}')
 
