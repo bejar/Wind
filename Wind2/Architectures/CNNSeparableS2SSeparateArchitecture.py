@@ -72,7 +72,6 @@ class CNNSeparableS2SSeparateArchitecture(NNS2SArchitecture):
 
         dropa = self.config['arch']['dropa']
         filtersa = self.config['arch']['filtersa']
-        paddinga = self.config['arch']['paddinga']
         kernel_sizea = self.config['arch']['kernel_sizea']
         depth_multipliera = self.config['arch']['depth_multipliera']
 
@@ -149,7 +148,7 @@ class CNNSeparableS2SSeparateArchitecture(NNS2SArchitecture):
         # Additional branch
         inputa = Input(shape=(idimensions[1]))
         modela = SeparableConv1D(filters[0], input_shape=(idimensions[1]), kernel_size=kernel_sizea[0], strides=stridesa[0],
-                                padding=paddinga, dilation_rate=dilationa[0], depth_multiplier=depth_multipliera,
+                                padding=padding, dilation_rate=dilationa[0], depth_multiplier=depth_multipliera,
                                 kernel_regularizer=k_regularizer)(inputa)
         modela = generate_activation(activation)(modela)
         if bnorm:
@@ -160,7 +159,7 @@ class CNNSeparableS2SSeparateArchitecture(NNS2SArchitecture):
 
         for i in range(1, len(filtersa)):
             modela = SeparableConv1D(filtersa[i], kernel_size=kernel_sizea[i], strides=stridesa[i],
-                                    padding=paddinga, dilation_rate=dilationa[i], depth_multiplier=depth_multipliera,
+                                    padding=padding, dilation_rate=dilationa[i], depth_multiplier=depth_multipliera,
                                     kernel_regularizer=k_regularizer)(modela)
             modela = generate_activation(activation)(modela)
             if bnorm:
