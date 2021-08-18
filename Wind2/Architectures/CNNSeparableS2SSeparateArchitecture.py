@@ -70,7 +70,7 @@ class CNNSeparableS2SSeparateArchitecture(NNS2SArchitecture):
         kernel_size = self.config['arch']['kernel_size']
         depth_multiplier = self.config['arch']['depth_multiplier']
 
-        dropa = self.config['arch']['dropaa']
+        dropa = self.config['arch']['dropa']
         filtersa = self.config['arch']['filtersa']
         paddinga = self.config['arch']['paddinga']
         kernel_sizea = self.config['arch']['kernel_sizea']
