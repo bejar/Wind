@@ -19,18 +19,26 @@
       "strides": [3],
       "kernel_size": [9],
        "depth_multiplier": 5,
-   "dilated": false,
-    "k_reg": "None",
-      "k_regw": 0.1,
-    "rec_reg": "None",
-    "rec_regw": 0.1,
       "drop": 0.5,
+    "filtersa": [512],
+      "stridesa": [3],
+      "kernel_sizea": [9],
+       "depth_multipliera": 5,
+      "dropa": 0.3,
+     "fulladd": [512,256],
+    "funits": 1024,
+    "dropf": 0.3,
       "activation": ["elu", 0.4],
       "activation_full": ["leaky", 0.2],
       "fulldrop": 0.4,
       "full": [1024],
     "padding": "same",
-      "mode":"CNN_sep_s2s"
+   "dilated": false,
+    "k_reg": "None",
+      "k_regw": 0.1,
+    "rec_reg": "None",
+    "rec_regw": 0.1,
+    "mode":"CNN_sep_s2s_spr"
   },
   "training": {
     "iter":1,
@@ -39,6 +47,5 @@
       "patience":10,
     "optimizer": "adamax",
       "RLROP":{"patience":5, "factor":0.5}
-
   }
 }

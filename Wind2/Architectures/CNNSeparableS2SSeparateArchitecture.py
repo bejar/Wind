@@ -19,17 +19,17 @@ CNNS2SArchitecture
 
 """
 
-from tensorflow.keras.layers import Dense, Dropout, SeparableConv1D, Flatten, Input, BatchNormalization, concatenate
-from tensorflow.keras.models import Model
-from tensorflow.keras.regularizers import l1, l2
+from keras.layers import Dense, Dropout, SeparableConv1D, Flatten, Input, BatchNormalization, concatenate
+from keras.models import Model
+from keras.regularizers import l1, l2
 
-from Wind.Architectures.NNS2SArchitecture import NNS2SArchitecture
-from Wind.Train.Activations import generate_activation
+from Wind2.Architectures.NNS2SArchitecture import NNS2SArchitecture
+from Wind2.Train.Activations import generate_activation
 
 __author__ = 'bejar'
 
 
-class CNNSeparableS2SArchitecture(NNS2SArchitecture):
+class CNNSeparableS2SSeparateArchitecture(NNS2SArchitecture):
     """
     Class for separable convolutional sequence to sequence architecture
 
