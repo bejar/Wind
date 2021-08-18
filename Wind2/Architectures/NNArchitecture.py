@@ -165,8 +165,8 @@ class NNArchitecture(Architecture):
         """
         if not self.runconfig.save:# or not self.runconfig.best):
             try:
-                shutil.rmtree(self.modfile)
-                # os.remove(self.modfile)
+                # shutil.rmtree(self.modfile)
+                os.remove(self.modfile)
             except Exception:
                  pass
         else:
