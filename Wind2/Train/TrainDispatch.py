@@ -107,7 +107,7 @@ class TrainDispatch:
         self.model_dict['CNN_sep_2l_s2s'] = (train_sequence2sequence, CNNSeparable2LS2SArchitecture)
         self.model_dict['CNN_sep_3l_s2s'] = (train_sequence2sequence, CNNSeparable3LS2SArchitecture)
         self.model_dict['CNN_sep_4l_s2s'] = (train_sequence2sequence, CNNSeparable4LS2SArchitecture)
-        self.model_dict['CNN_sep_s2s_sep'] = (train_sequence2sequence, CNNSeparableS2SSeparateArchitecture)
+        self.model_dict['CNN_sep_s2s_spr'] = (train_sequence2sequence, CNNSeparableS2SSeparateArchitecture)
 
         self.model_dict['CNN_CI_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvanArchitecture)
         self.model_dict['CNN_CI_2H_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvan2HArchitecture)
