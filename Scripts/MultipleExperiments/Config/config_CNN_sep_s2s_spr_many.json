@@ -42,8 +42,8 @@
   },
   "training": {
     "iter":1,
-    "batch": 128,
-    "epochs": 200,
+    "batch": 64,
+    "epochs": 300,
       "patience":10,
     "optimizer": "adamax",
       "RLROP":{"patience":5, "factor":0.5}
