@@ -784,7 +784,7 @@ class Dataset:
             # If there is no sites within the correlation limits, then duplicate the targer sites so the
             # architectures with two branches do not fail
             if len(datanames) ==1:
-                datanames.append(datanames[1])
+                datanames.append(datanames[0])
 
 
         if (self.config['dataset'] == 0) or (self.config['dataset'] == 'onesiteonevar'):
