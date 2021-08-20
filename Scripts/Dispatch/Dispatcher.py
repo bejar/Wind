@@ -91,11 +91,13 @@ if __name__ == '__main__':
             # No more pending configurations
             if len(lsel) == 0 and not args.noend:
                 for w in dworkers:
-                    fconf = open(f"{w}/.end", 'w')
-                    fconf.close()
-                    finish = True
-                    wdone = True
-
+                    try:
+                        fconf = open(f"{w}/.end", 'w')
+                        fconf.close()
+                        finish = True
+                        wdone = True
+                    except Exception:
+                        pass
             if not finish:
                 np.random.shuffle(lsel)
 
