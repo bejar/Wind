@@ -100,29 +100,31 @@ if __name__ == '__main__':
                 np.random.shuffle(lsel)
 
             for w in dworkers:
-                pending = glob.glob(f'{w}/*.json')
+                try:
+                    pending = glob.glob(f'{w}/*.json')
 
-                diff = args.jpw - len(pending)
-                if diff > 0:
-                    wdone = True
-                    for i in range(diff):
-                        if len(lsel) > 0:
-                            config = lsel.pop()
-                        else:
-                            break
-                        sconf = json.dumps(config)
-                        fconf = open(f"{w}/{config['_id']}.json", 'w')
-                        fconf.write(sconf + '\n')
-                        fconf.close()
-                        col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
-                        dworkers[w][0] += 1
-                        served += 1
-                print(f'Worker {w.split("/")[-1]}: A={dworkers[w][0]}')
+                    diff = args.jpw - len(pending)
+                    if diff > 0:
+                        wdone = True
+                        for i in range(diff):
+                            if len(lsel) > 0:
+                                config = lsel.pop()
+                            else:
+                                break
+                            sconf = json.dumps(config)
+                            fconf = open(f"{w}/{config['_id']}.json", 'w')
+                            fconf.write(sconf + '\n')
+                            fconf.close()
+                            col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
+                            dworkers[w][0] += 1
+                            served += 1
+                    print(f'Worker {w.split("/")[-1]}: A={dworkers[w][0]}')
 
-                done = glob.glob(f'{w}/*.done')
-                for d in done:
-                    os.remove(f'{d}')
-
+                    done = glob.glob(f'{w}/*.done')
+                    for d in done:
+                        os.remove(f'{d}')
+                except Exception:
+                    pass
         # Upload Results
         lres = []
         still = False
