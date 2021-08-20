@@ -25,8 +25,6 @@
       "kernel_sizea": [9],
        "depth_multipliera": 5,
       "dropa": 0.3,
-     "fulladd": [512,256],
-    "funits": 1024,
     "dropf": 0.3,
       "activation": ["elu", 0.4],
       "activation_full": ["leaky", 0.2],

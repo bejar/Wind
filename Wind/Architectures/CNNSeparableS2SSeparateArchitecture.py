@@ -103,9 +103,6 @@ class CNNSeparableS2SSeparateArchitecture(NNS2SArchitecture):
         k_reg = self.config['arch']['k_reg']
         k_regw = self.config['arch']['k_regw']
 
-        fulladd_layers = self.config['arch']['fulladd']
-        fusion = self.config['arch']['funits']
-
         # Extra added from training function
         idimensions = self.config['idimensions']
         odimensions = self.config['odimensions']
