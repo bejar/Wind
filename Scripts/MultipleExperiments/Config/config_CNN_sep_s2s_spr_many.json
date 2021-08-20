@@ -6,12 +6,12 @@
     "scaler": "standard",
     "vars": "all",
     "dataset": 51,
-    "radius": 0.5,
-    "corr": [0.7, 0.9],
+    "radius": 2,
+    "nneighbors": 300,
+    "corr": [0.7, 1],
     "datasize": 43834,
     "testsize": 17534,
     "lag": 12,
-    "nneighbors": 50,
     "ahead": [1,12]
   },
   "arch": {
