@@ -1133,8 +1133,8 @@ class DBResults:
         df = pd.DataFrame({'hour': hour, 'acc': data, title: exp})
         plt.figure(figsize=figsize, dpi=100)
         sns.boxplot(x='hour', y='acc', hue=title, data=df)
-        ax = plt.axes()
-        ax.set_ylabel(r'$R^2$')
+        #ax = plt.axes()
+        #ax.set_ylabel(r'$R^2$')
 
         if save is not None:
             plt.savefig(f"{save}.{saveformat}", format=saveformat)
