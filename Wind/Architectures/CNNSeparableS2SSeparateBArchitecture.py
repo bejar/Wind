@@ -172,10 +172,16 @@ class CNNSeparableS2SSeparateBArchitecture(NNS2SArchitecture):
         funits1 = self.config['arch']['funits1']
         funits2 = self.config['arch']['funits2']
 
-        model = Dense(units=funits1)(model)
+        model = SeparableConv1D(funits1, kernel_size=1, strides=1)(model)
         model = generate_activation(activation)(model)
-        modela = Dense(units=funits2)(modela)
+        modela = SeparableConv1D(funits2, kernel_size=1, strides=1)(modela)
         modela = generate_activation(activation)(modela)
+
+
+        # model = Dense(units=funits1)(model)
+        # model = generate_activation(activation)(model)
+        # modela = Dense(units=funits2)(modela)
+        # modela = generate_activation(activation)(modela)
 
         modelf = concatenate([model, modela])
         for l in full_layers:
