@@ -166,8 +166,6 @@ class CNNSeparableS2SSeparateBArchitecture(NNS2SArchitecture):
                 modela = Dropout(rate=dropa)(modela)
 
         # Fusion
-        # model = Flatten()(model)
-        # modela = Flatten()(modela)
 
         funits1 = self.config['arch']['funits1']
         funits2 = self.config['arch']['funits2']
@@ -177,6 +175,8 @@ class CNNSeparableS2SSeparateBArchitecture(NNS2SArchitecture):
         modela = SeparableConv1D(funits2, kernel_size=1, strides=1)(modela)
         modela = generate_activation(activation)(modela)
 
+        model = Flatten()(model)
+        modela = Flatten()(modela)
 
         # model = Dense(units=funits1)(model)
         # model = generate_activation(activation)(model)
