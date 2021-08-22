@@ -116,10 +116,9 @@ if __name__ == '__main__':
         dispatch = TrainDispatch()
 
         if config is not None:
-
             ############################################
             # Data
-
+            os.rename(pre + args.jobsdir + '/' + fconfig + '.json', pre + args.jobsdir + '/' + fconfig + '.work')
             if not 'site' in config:
                 site = config['data']['datanames'][0].split('-')
                 config['site'] = f"{site[0]}-{site[1]}"
@@ -139,6 +138,6 @@ if __name__ == '__main__':
                 pre = wind_jobs_path
             elif args.local:
                 pre = wind_local_jobs_path
-            os.rename(pre + args.jobsdir + '/' + fconfig + '.json', pre + args.jobsdir + '/' + fconfig + '.done')
+            os.rename(pre + args.jobsdir + '/' + fconfig + '.work', pre + args.jobsdir + '/' + fconfig + '.done')
 
     sys.exit(0)

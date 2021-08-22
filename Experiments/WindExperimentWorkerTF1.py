@@ -120,6 +120,7 @@ if __name__ == '__main__':
 
             ############################################
             # Data
+            os.rename(pre + args.jobsdir + '/' + fconfig + '.json', pre + args.jobsdir + '/' + fconfig + '.work')
 
             if not 'site' in config:
                 site = config['data']['datanames'][0].split('-')
@@ -136,6 +137,6 @@ if __name__ == '__main__':
                 saveconfig(config, lresults, mino=True)
             elif args.local:
                 saveconfig(config, lresults, local=True)
-            os.rename(pre + args.jobsdir + '/' + fconfig + '.json', pre + args.jobsdir + '/' + fconfig + '.done')
+            os.rename(pre + args.jobsdir + '/' + fconfig + '.work', pre + args.jobsdir + '/' + fconfig + '.done')
 
     sys.exit(0)
