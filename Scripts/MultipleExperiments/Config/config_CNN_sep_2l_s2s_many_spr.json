@@ -54,7 +54,7 @@
     "iter":1,
     "batch": 64,
     "epochs": 200,
-      "patience":10,
+      "patience":8,
     "optimizer": "adamax",
       "RLROP":{"patience":5, "factor":0.5}
   }
