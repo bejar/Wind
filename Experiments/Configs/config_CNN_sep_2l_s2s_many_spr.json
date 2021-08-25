@@ -33,7 +33,7 @@
        "depth_multiplier2": 1,
        "activation2": "relu",
       "drop2": 0,
-        "filtersa2": [512],
+        "filtersa2": [256],
       "stridesa2": [3],
       "kernel_sizea2": [9],
        "depth_multipliera2": 5,
