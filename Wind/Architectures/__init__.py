@@ -37,6 +37,7 @@ from .CNNSeparable3LS2SArchitecture import CNNSeparable3LS2SArchitecture
 from .CNNSeparable4LS2SArchitecture import CNNSeparable4LS2SArchitecture
 from .CNNSeparableS2SArchitecture import CNNSeparableS2SArchitecture
 from .CNNSeparableS2SSeparateArchitecture import CNNSeparableS2SSeparateArchitecture
+from .CNNSeparable2LS2SSeparateArchitecture import CNNSeparable2LS2SSeparateArchitecture
 from .CNNSeparableS2SSeparateBArchitecture import CNNSeparableS2SSeparateBArchitecture
 from .ElasticNetS2SArchitecture import ElasticNetS2SArchitecture
 from .ExtraTreesS2SArchitecture import ExtraTreesS2SArchitecture
@@ -105,6 +106,7 @@ __all__ = ['Architecture',
            'CNNS2S2DArchitecture',
            'CNNSeparableS2SArchitecture',
            'CNNSeparableS2SSeparateArchitecture',
+           'CNNSeparable2LS2SSeparateArchitecture',
            'CNNSeparableS2SSeparateBArchitecture',
            'CNNSeparable2LS2SArchitecture',
            'CNNSeparable3LS2SArchitecture',

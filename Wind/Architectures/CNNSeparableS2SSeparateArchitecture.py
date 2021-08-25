@@ -132,9 +132,14 @@ class CNNSeparableS2SSeparateArchitecture(NNS2SArchitecture):
             model = Dropout(rate=drop)(model)
 
         for i in range(1, len(filters)):
-            model = SeparableConv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
-                                    padding=padding, dilation_rate=dilation[i], depth_multiplier=depth_multiplier,
-                                    kernel_regularizer=k_regularizer)(model)
+            if len(filters) > len(strides):
+                model = SeparableConv1D(filters[i], kernel_size=kernel_size[0], strides=strides[0],
+                                        padding=padding, dilation_rate=dilation[0], depth_multiplier=depth_multiplier,
+                                        kernel_regularizer=k_regularizer)(model)
+            else:
+                model = SeparableConv1D(filters[i], kernel_size=kernel_size[i], strides=strides[i],
+                                        padding=padding, dilation_rate=dilation[i], depth_multiplier=depth_multiplier,
+                                        kernel_regularizer=k_regularizer)(model)
             model = generate_activation(activation)(model)
             if bnorm:
                 model = BatchNormalization()(model)
@@ -155,9 +160,14 @@ class CNNSeparableS2SSeparateArchitecture(NNS2SArchitecture):
             modela = Dropout(rate=dropa)(modela)
 
         for i in range(1, len(filtersa)):
-            modela = SeparableConv1D(filtersa[i], kernel_size=kernel_sizea[i], strides=stridesa[i],
-                                    padding=padding, dilation_rate=dilationa[i], depth_multiplier=depth_multipliera,
-                                    kernel_regularizer=k_regularizer)(modela)
+            if len(filtersa) > len(stridesa):
+                modela = SeparableConv1D(filtersa[i], kernel_size=kernel_sizea[0], strides=stridesa[0],
+                                        padding=padding, dilation_rate=dilationa[0], depth_multiplier=depth_multipliera,
+                                        kernel_regularizer=k_regularizer)(modela)
+            else:
+                modela = SeparableConv1D(filtersa[i], kernel_size=kernel_sizea[i], strides=stridesa[i],
+                                        padding=padding, dilation_rate=dilationa[i], depth_multiplier=depth_multipliera,
+                                        kernel_regularizer=k_regularizer)(modela)
             modela = generate_activation(activation)(modela)
             if bnorm:
                 modela = BatchNormalization()(modela)
