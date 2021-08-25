@@ -6,7 +6,7 @@
     "scaler": "standard",
       "vars": "all",
     "dataset": 51,
-    "radius": 1,
+    "radius": 2,
     "nneighbors": 300,
     "corr": [0.7, 1],
     "datasize": 43834,
