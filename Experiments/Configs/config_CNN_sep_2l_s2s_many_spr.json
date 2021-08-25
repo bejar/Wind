@@ -46,7 +46,7 @@
     "rec_regw": 0.1,
       "activation_full": "linear",
       "fulldrop": 0,
-      "full": [1024],
+      "full": [512],
       "padding": "same",
       "mode":"CNN_sep_2l_s2s_spr"
   },
