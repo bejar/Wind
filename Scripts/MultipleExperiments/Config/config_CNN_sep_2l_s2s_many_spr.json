@@ -37,6 +37,7 @@
       "stridesa2": [3],
       "kernel_sizea2": [9],
        "depth_multipliera2": 5,
+       "activationa2": "relu",
       "dropa2": 0.3,
   "dilated": false,
     "k_reg": "None",
