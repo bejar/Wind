@@ -156,6 +156,7 @@ class CNNSeparable2LS2SSeparateArchitecture(NNS2SArchitecture):
             dilationa2 = [1] * len(stridesa2)
 
         depth_multipliera = self.config['arch']['depth_multipliera']
+        activationa = self.config['arch']['activationa']
         depth_multipliera2 = self.config['arch']['depth_multipliera2']
         activationa2 = self.config['arch']['activationa2']
 
@@ -169,7 +170,7 @@ class CNNSeparable2LS2SSeparateArchitecture(NNS2SArchitecture):
         modela = SeparableConv1D(filtersa[0], input_shape=(idimensions[1]), kernel_size=kernel_sizea[0], strides=stridesa[0],
                                 padding=padding, dilation_rate=dilationa[0], depth_multiplier=depth_multipliera,
                                 kernel_regularizer=k_regularizer)(inputa)
-        modela = generate_activation(activation)(modela)
+        modela = generate_activation(activationa)(modela)
 
         if drop != 0:
             modela = Dropout(rate=dropa)(modela)
@@ -177,7 +178,7 @@ class CNNSeparable2LS2SSeparateArchitecture(NNS2SArchitecture):
         modela = SeparableConv1D(filtersa2[0], kernel_size=kernel_sizea2[0], strides=stridesa2[0],
                                 padding=padding, dilation_rate=dilationa2[0], depth_multiplier=depth_multipliera2,
                                 kernel_regularizer=k_regularizer)(modela)
-        modela = generate_activation(activation2)(modela)
+        modela = generate_activation(activationa2)(modela)
         if drop != 0:
             modela = Dropout(rate=dropa2)(modela)
 
