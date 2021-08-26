@@ -52,7 +52,7 @@
   },
     "training": {
     "iter":1,
-    "batch": 64,
+    "batch": 32,
     "epochs": 200,
       "patience":10,
     "optimizer": "adamax",
