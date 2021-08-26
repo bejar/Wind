@@ -113,7 +113,7 @@ if __name__ == '__main__':
                                 config = lsel.pop()
                             else:
                                 break
-                            sconf = json.dumps(config)
+                            sconf = json.dumps(config, indent=4, sort_keys=True)
                             fconf = open(f"{w}/{config['_id']}.json", 'w')
                             fconf.write(sconf + '\n')
                             fconf.close()
