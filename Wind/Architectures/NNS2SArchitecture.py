@@ -48,8 +48,15 @@ class NNS2SArchitecture(NNArchitecture):
 
         if self.runconfig.best:
             self.model = load_model(self.modfile)
-        val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
-        test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
+
+        ev = False
+        while not ev:
+            try:
+                val_yp = self.model.predict(val_x, batch_size=batch_size, verbose=0)
+                test_yp = self.model.predict(test_x, batch_size=batch_size, verbose=0)
+                ev = True
+            except Exception:
+                batch_size = batch_size //2
 
         # Maintained to be compatible with old configuration files
         if type(self.config['data']['ahead'])==list:
