@@ -74,6 +74,8 @@ if __name__ == '__main__':
         wdone = False
         if args.local:
             lworkers = glob.glob(wind_local_jobs_path + '/wk*')
+        else:
+            lworkers = []
 
         if args.bsc:
             lworkers.extend(glob.glob('/home/bejar/bsc/Wind/Jobs/wk*'))
