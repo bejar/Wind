@@ -122,7 +122,7 @@ if __name__ == '__main__':
                             col.update_one({'_id': config['_id']}, {'$set': {'status': 'extract'}})
                             dworkers[w][0] += 1
                             served += 1
-                    print(f'Worker {w.split("/")[-1]}: A={dworkers[w][0]}')
+                    #print(f'Worker {w.split("/")[-1]}: A={dworkers[w][0]}')
 
                     done = glob.glob(f'{w}/*.done')
                     for d in done:
