@@ -694,6 +694,13 @@ class Dataset:
         testsize = self.config['testsize']
 
         lag = self.config['lag']
+
+        if type(lag) == list:
+            llag = lag
+            lag == max(lag)
+        else:
+            llag = None
+
         vars = self.config['vars']
         period = self.config['period'] if 'period' in self.config else None
         wind = {}
@@ -840,13 +847,19 @@ class Dataset:
                        datanames]
 
             # Training/validation/test has two sets of matrices, target site and near sites
-            self.train_x = [stacked[0][0], np.concatenate([x[0] for x in stacked[1:]], axis=1)]
-            self.train_y = stacked[0][1]
+            if llag is None:
+                self.train_x = [stacked[0][0], np.concatenate([x[0] for x in stacked[1:]], axis=1)]
+                self.val_x = [stacked[0][2], np.concatenate([x[2] for x in stacked[1:]], axis=1)]
+                self.test_x = [stacked[0][4], np.concatenate([x[4] for x in stacked[1:]], axis=1)]
+            else:
+                self.train_x = [stacked[0][0][:-llag[0]], np.concatenate([x[0][:-llag[1]] for x in stacked[1:]], axis=1)]
+                self.val_x = [stacked[0][2][:-llag[0]], np.concatenate([x[2][:-llag[1]] for x in stacked[1:]], axis=1)]
+                self.test_x = [stacked[0][4][:-llag[0]], np.concatenate([x[4][:-llag[1]] for x in stacked[1:]], axis=1)]
 
-            self.val_x = [stacked[0][2], np.concatenate([x[2] for x in stacked[1:]], axis=1)]
+            self.train_y = stacked[0][1]
             self.val_y = stacked[0][3]
-            self.test_x = [stacked[0][4], np.concatenate([x[4] for x in stacked[1:]], axis=1)]
             self.test_y = stacked[0][5]
+
         # Training augmenting the dataset with random sites outside a radius
         elif self.config['dataset'] == 6:
             stacked = [self._generate_dataset_multiple_var(wind[d], datasize, testsize,
