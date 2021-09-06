@@ -696,11 +696,9 @@ class Dataset:
         lag = self.config['lag']
         if type(lag) == list:
             llag = lag
-            lag == np.max(lag)
+            lag = np.max(lag)
         else:
             llag = None
-
-        print(lag, type(lag) == list, np.max(lag))
 
         vars = self.config['vars']
         period = self.config['period'] if 'period' in self.config else None
