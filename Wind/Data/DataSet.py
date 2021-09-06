@@ -855,6 +855,8 @@ class Dataset:
                 self.val_x = [stacked[0][2][:,-llag[0]], np.concatenate([x[2][:,-llag[1]] for x in stacked[1:]], axis=1)]
                 self.test_x = [stacked[0][4][:,-llag[0]], np.concatenate([x[4][:,-llag[1]] for x in stacked[1:]], axis=1)]
 
+            print(self.train_x[0].shape,self.train_x[1].shape )
+
             self.train_y = stacked[0][1]
             self.val_y = stacked[0][3]
             self.test_y = stacked[0][5]
