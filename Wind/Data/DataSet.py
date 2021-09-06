@@ -694,12 +694,13 @@ class Dataset:
         testsize = self.config['testsize']
 
         lag = self.config['lag']
-
         if type(lag) == list:
             llag = lag
-            lag == max(lag)
+            lag == np.max(lag)
         else:
             llag = None
+
+        print(lag)
 
         vars = self.config['vars']
         period = self.config['period'] if 'period' in self.config else None
