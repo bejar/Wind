@@ -700,7 +700,7 @@ class Dataset:
         else:
             llag = None
 
-        print(lag)
+        print(lag, type(lag) == list)
 
         vars = self.config['vars']
         period = self.config['period'] if 'period' in self.config else None
