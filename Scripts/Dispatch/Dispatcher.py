@@ -160,7 +160,8 @@ if __name__ == '__main__':
             for file in lres:
                 os.remove(f'{file.replace(".json", ".done")}')
         mres += len(lres)
-        print(f'it {n} - served= {served} uploaded = {uploaded}  upnow = {len(lres)} mean = {mres/(n+1):3.2f} - {ctime()} ---', flush=True)
+        perf = (3600/args.sleep)*((mres)/(n+1))
+        print(f'it {n} - served= {served} uploaded = {uploaded}  upnow = {len(lres)} cph = {int(perf)} - {ctime()} ---', flush=True)
         n += 1
 
         # if finish and not still:
