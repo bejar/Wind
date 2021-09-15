@@ -62,6 +62,8 @@ if __name__ == '__main__':
 
     if args.local:
         lworkers = glob.glob(wind_local_jobs_path + '/wk*')
+    else:
+        lworkers = []
 
     if args.bsc:
         lworkers.extend(glob.glob('/home/bejar/bsc/Wind/Jobs/wk*'))
@@ -69,7 +71,7 @@ if __name__ == '__main__':
     # for w in lworkers:
     #    if os.path.exists(w+'/.end'):
     #        os.remove(w+'/.end')  
-
+    mres = 0
     while True:
         wdone = False
         if args.local:
@@ -157,11 +159,11 @@ if __name__ == '__main__':
 
             for file in lres:
                 os.remove(f'{file.replace(".json", ".done")}')
-
-        print(f'it {n} - served= {served} uploaded = {uploaded}  upnow = {len(lres)} - {ctime()} --------------------------', flush=True)
+        mres += len(lres)
+        print(f'it {n} - served= {served} uploaded = {uploaded}  upnow = {len(lres)} mean = {int(mres)/n} - {ctime()} ---', flush=True)
         n += 1
 
-        if finish and not still:
-            sys.exit()
+        # if finish and not still:
+        #     sys.exit()
 
         sleep(args.sleep)
