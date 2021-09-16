@@ -72,6 +72,7 @@ if __name__ == '__main__':
     #    if os.path.exists(w+'/.end'):
     #        os.remove(w+'/.end')  
     mres = 0
+    mres = []
     while True:
         wdone = False
         if args.local:
@@ -159,8 +160,10 @@ if __name__ == '__main__':
 
             for file in lres:
                 os.remove(f'{file.replace(".json", ".done")}')
-        mres += len(lres)
-        perf = (3600/args.sleep)*((mres)/(n+1))
+        if len(mres)>10:
+            mres.pop()
+        mres.append(len(lres))
+        perf = (3600/args.sleep)*((np.sum(mres))/10)
         print(f'it {n} - served= {served} uploaded = {uploaded}  upnow = {len(lres)} cph = {int(perf)} - {ctime()} ---', flush=True)
         n += 1
 
