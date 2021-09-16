@@ -163,7 +163,7 @@ if __name__ == '__main__':
         if len(mres)>10:
             mres.pop()
         mres.append(len(lres))
-        perf = (3600/args.sleep)*((np.sum(mres))/10)
+        perf = (3600/args.sleep)*((np.mean(mres)))
         print(f'it {n} - served= {served} uploaded = {uploaded}  upnow = {len(lres)} cph = {int(perf)} - {ctime()} ---', flush=True)
         n += 1
 
