@@ -1,0 +1,2 @@
+ jupyter notebook --no-browser --ip '0.0.0.0' --NotebookApp.token='' --NotebookApp.password=''
+jupyter notebook --no-browser --ip '0.0.0.0' --NotebookApp.token='patata' --NotebookApp.password='192837' --port 9010

@@ -1,0 +1,2 @@
+python GenerateExpSample.py --testdb --sample sample2021 --nsamp 10000 --config Config/config_MLP_s2s.json --exp MLP_s2s_2021
+

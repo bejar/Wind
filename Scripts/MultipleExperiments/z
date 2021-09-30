@@ -1,0 +1,2 @@
+python3 GenerateExpConfPseudoSMAC.py --testdb --config Config/config_CNN_sep_2l_s2s_many_spr.json --pconfig Config/pconfig_CNN_sep_2l_s2s_many_spr.json --exp CNN_sep_2l_s2s_many_spr
+ python3 GenerateExpConfPseudoSMAC.py --testdb --config Config/config_CNN_sep_2l_s2s_many_spr_u.json --pconfig Config/pconfig_CNN_sep_2l_s2s_many_spr_u.json --exp CNN_sep_2l_s2s_many_spr_u 

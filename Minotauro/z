@@ -1,0 +1,2 @@
+ python ExtractConfigWorkers.py --mem 32000 --machine power --nrep 3 --hours 20
+
