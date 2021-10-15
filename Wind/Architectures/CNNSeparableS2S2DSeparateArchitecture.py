@@ -175,7 +175,7 @@ class CNNSeparableS2S2DSeparateArchitecture(NNS2SArchitecture):
             if drop != 0:
                 modela = Dropout(rate=dropa)(modela)
 
-            modela = SeparableConv1D(filtersa[i], kernel_size=(kernel_sizea[0],1), strides=(stridesa[0],1),
+            modela = Conv2D(filtersa[i], kernel_size=(kernel_sizea[0],1), strides=(stridesa[0],1),
                                     padding=padding, dilation_rate=dilationa[0], 
                                     kernel_regularizer=k_regularizer)(modela)
    
