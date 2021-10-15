@@ -845,22 +845,24 @@ class Dataset:
                                                            lag=lag, ahead=dahead, slice=slice, mode=mode) for d in
                        datanames]
 
-            print(stacked[1][0].shape)
+            print("---->", stacked[1][0].shape)
             # Training/validation/test has two sets of matrices, target site and near sites
             if llag is None:
-                neighm= [np.concatenate([x[0] for x in stacked[1:]], axis=1), 
-                        np.concatenate([x[2] for x in stacked[1:]], axis=1),
-                        np.concatenate([x[4] for x in stacked[1:]], axis=1)]
-
-                if self.config['dataset'] == 51:            
-                    self.train_x = [stacked[0][0], neighm[0]]
-                    self.val_x = [stacked[0][2], neighm[1]]
-                    self.test_x = [stacked[0][4], neighm[2]]
+                if self.config['dataset'] == 51: 
+                    neighm= [np.concatenate([x[0] for x in stacked[1:]], axis=1), 
+                            np.concatenate([x[2] for x in stacked[1:]], axis=1),
+                            np.concatenate([x[4] for x in stacked[1:]], axis=1)]
                 else:
-                    self.train_x = [stacked[0][0], neighm[0]]
-                    self.val_x = [stacked[0][2], neighm[1]]
-                    self.test_x = [stacked[0][4], neighm[2]]
-                     
+                    shp = stacked[1][0].shape 
+                    shp = (shp[0], 1, shp[1], shp[2])
+                    neighm= [np.concatenate([x[0].reshape(shp) for x in stacked[1:]], axis=1), 
+                            np.concatenate([x[2].reshape(shp) for x in stacked[1:]], axis=1),
+                            np.concatenate([x[4].reshape(shp) for x in stacked[1:]], axis=1)]
+                           
+                self.train_x = [stacked[0][0], neighm[0]]
+                self.val_x = [stacked[0][2], neighm[1]]
+                self.test_x = [stacked[0][4], neighm[2]]
+                
             else:
                 self.train_x = [stacked[0][0][:,-llag[0]:], np.concatenate([x[0][:,-llag[1]:] for x in stacked[1:]], axis=1)]
                 self.val_x = [stacked[0][2][:,-llag[0]:], np.concatenate([x[2][:,-llag[1]:] for x in stacked[1:]], axis=1)]
