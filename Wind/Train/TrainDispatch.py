@@ -24,7 +24,7 @@ from Wind.Architectures import CNNS2SArchitecture, CNNS2SCrazyIvanArchitecture, 
     CNNS2SSkipArchitecture, CNNSeparableS2SArchitecture, CNNSeparable2LS2SArchitecture, CNNSeparable3LS2SArchitecture, \
     CNNSeparable4LS2SArchitecture, CNN2LS2SArchitecture, CNN3LS2SArchitecture, CNN4LS2SArchitecture, \
     CNNLoCoS2SArchitecture, CNNMIMOSkipArchitecture, CNNSeparableS2SSeparateArchitecture, CNNSeparableS2SSeparateBArchitecture,\
-    CNNMIMOResidualArchitecture, CNNSeparable2LS2SSeparateArchitecture
+    CNNMIMOResidualArchitecture, CNNSeparable2LS2SSeparateArchitecture, CNNSeparableS2S2DSeparateArchitecture
 from Wind.Architectures import KNNDirRegressionArchitecture, RandomForestDirRegressionArchitecture, \
     SVMDirRegressionArchitecture, \
     AdaBoostDirRegressionArchitecture, KNNS2SArchitecture, ElasticNetS2SArchitecture, XGBoostDirRegressionArchitecture, \
@@ -115,6 +115,7 @@ class TrainDispatch:
         self.model_dict['CNN_sep_s2s_spr'] = (train_sequence2sequence, CNNSeparableS2SSeparateArchitecture)
         self.model_dict['CNN_sep_2l_s2s_spr'] = (train_sequence2sequence, CNNSeparable2LS2SSeparateArchitecture)
         self.model_dict['CNN_sep_s2s_spr_B'] = (train_sequence2sequence, CNNSeparableS2SSeparateBArchitecture)
+        self.model_dict['CNN_sep_s2s_2d_spr'] = (train_sequence2sequence, CNNSeparableS2S2DSeparateArchitecture)
 
         self.model_dict['CNN_CI_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvanArchitecture)
         self.model_dict['CNN_CI_2H_s2s'] =(train_sequence2sequence, CNNS2SCrazyIvan2HArchitecture)
