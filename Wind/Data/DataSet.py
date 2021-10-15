@@ -855,9 +855,11 @@ class Dataset:
                 else:
                     shp = stacked[1][0].shape 
                     shp = (shp[0], 1, shp[1], shp[2])
+                    print('-->',shp)
                     neighm= [np.concatenate([x[0].reshape(shp) for x in stacked[1:]], axis=1), 
                             np.concatenate([x[2].reshape(shp) for x in stacked[1:]], axis=1),
                             np.concatenate([x[4].reshape(shp) for x in stacked[1:]], axis=1)]
+                    print('--->',neighm[0].shape )
                            
                 self.train_x = [stacked[0][0], neighm[0]]
                 self.val_x = [stacked[0][2], neighm[1]]
