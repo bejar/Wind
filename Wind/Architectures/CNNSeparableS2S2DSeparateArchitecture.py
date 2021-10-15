@@ -180,7 +180,7 @@ class CNNSeparableS2S2DSeparateArchitecture(NNS2SArchitecture):
             modela = Dropout(rate=dropa)(modela)
 
         # First a 1x1 2D convolution to mix all the sites
-        modela =  Conv2D(filters[1], kernel_size=(1,1), strides=stridesa[0],
+        modela =  Conv2D(filtersa[1], kernel_size=(1,1), strides=stridesa[0],
             padding=padding, dilation_rate=dilationa[0], kernel_regularizer=k_regularizer)(modela)
         modela = generate_activation(activation)(modela)
         if bnorm:
