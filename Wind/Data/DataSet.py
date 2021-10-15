@@ -855,15 +855,15 @@ class Dataset:
                             np.concatenate([x[4] for x in stacked[1:]], axis=1)]
                 else:
                     shp1 = stacked[1][0].shape 
-                    shp1 = (shp1[0], 1, shp1[1], shp1[2])
+                    shp1 = (shp1[0], shp1[1], shp1[2], 1)
                     shp2 = stacked[1][2].shape 
-                    shp2 = (shp2[0], 1, shp2[1], shp2[2])
+                    shp2 = (shp2[0], shp2[1], shp2[2], 1)
                     shp3 = stacked[1][4].shape 
-                    shp3 = (shp3[0], 1, shp3[1], shp3[2])
+                    shp3 = (shp3[0], shp3[1], shp3[2], 1)
                     print('-->',shp1,shp2,shp3)
-                    neighm= [np.concatenate([x[0].reshape(shp1) for x in stacked[1:]], axis=1), 
-                            np.concatenate([x[2].reshape(shp2) for x in stacked[1:]], axis=1),
-                            np.concatenate([x[4].reshape(shp3) for x in stacked[1:]], axis=1)]
+                    neighm= [np.concatenate([x[0].reshape(shp1) for x in stacked[1:]], axis=3), 
+                            np.concatenate([x[2].reshape(shp2) for x in stacked[1:]], axis=3),
+                            np.concatenate([x[4].reshape(shp3) for x in stacked[1:]], axis=3)]
                     print('--->',neighm[0].shape )
                            
                 self.train_x = [stacked[0][0], neighm[0]]
