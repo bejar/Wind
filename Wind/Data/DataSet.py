@@ -845,8 +845,6 @@ class Dataset:
                                                            lag=lag, ahead=dahead, slice=slice, mode=mode) for d in
                        datanames]
 
-            print("---->", stacked[1][0].shape, stacked[1][2].shape, stacked[1][4].shape)
-            print("***", len(stacked), len(stacked[1]))
             # Training/validation/test has two sets of matrices, target site and near sites
             if llag is None:
                 if self.config['dataset'] == 51: 
@@ -860,11 +858,9 @@ class Dataset:
                     shp2 = (shp2[0], shp2[1], shp2[2], 1)
                     shp3 = stacked[1][4].shape 
                     shp3 = (shp3[0], shp3[1], shp3[2], 1)
-                    print('-->',shp1,shp2,shp3)
                     neighm= [np.concatenate([x[0].reshape(shp1) for x in stacked[1:]], axis=3), 
                             np.concatenate([x[2].reshape(shp2) for x in stacked[1:]], axis=3),
                             np.concatenate([x[4].reshape(shp3) for x in stacked[1:]], axis=3)]
-                    print('--->',neighm[0].shape )
                            
                 self.train_x = [stacked[0][0], neighm[0]]
                 self.val_x = [stacked[0][2], neighm[1]]
