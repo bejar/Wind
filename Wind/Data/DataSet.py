@@ -1098,19 +1098,21 @@ if __name__ == '__main__':
     #     "ahead": [1, 144]
     # }
     config = {
-        "datanames": ["11-5795-12"],
-        "scaler": "standard",
-        "vars": "all",
-        "period": 60,
-        "datasize": 43834,
-        "testsize": 17534,
-        "dataset": 51,
-        "lag": 12,
-        "ahead": [1, 12]
+    "datanames": ["11-5794-12"],
+    "scaler": "standard",
+      "vars": "all",
+    "dataset": 51,
+    "radius": 2,
+    "nneighbors": 300,
+    "corr": [0.7, 1],
+    "datasize": 43834,
+    "testsize": 17534,
+    "lag": [9,9],
+    "ahead": [1,12]
     }
 
     # print(config)
-    mode = ('2D', '2D')
+    mode = ('3D', '2D')
     dataset = Dataset(config=config, data_path=wind_data_path)
 
     # dataset.load_raw_data()
