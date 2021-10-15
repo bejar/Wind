@@ -169,7 +169,7 @@ class CNNSeparableS2S2DSeparateArchitecture(NNS2SArchitecture):
                                     padding=padding, dilation_rate=dilationa[0],depth_multiplier=depth_multipliera,
                                     kernel_regularizer=k_regularizer)(modela)
    
-            model = generate_activation(activation)(model)
+            modela = generate_activation(activation)(modela)
             if bnorm:
                 modela = BatchNormalization()(modela)
 
@@ -180,12 +180,13 @@ class CNNSeparableS2S2DSeparateArchitecture(NNS2SArchitecture):
                                     padding=padding, dilation_rate=dilationa[0], depth_multiplier=depth_multipliera,
                                     kernel_regularizer=k_regularizer)(modela)
    
-            model = generate_activation(activation)(model)
+            modela = generate_activation(activation)(modela)
             if bnorm:
                 modela = BatchNormalization()(modela)
 
             if drop != 0:
                 modela = Dropout(rate=dropa)(modela)
+
 
         # Fusion
         model = Flatten()(model)
