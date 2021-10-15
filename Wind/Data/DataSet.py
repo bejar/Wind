@@ -857,6 +857,8 @@ class Dataset:
                     shp = stacked[1][0].shape 
                     shp = (shp[0], 1, shp[1], shp[2])
                     print('-->',shp)
+                    for x in stacked[1:]:
+                        print(x[0].shape)
                     neighm= [np.concatenate([x[0].reshape(shp) for x in stacked[1:]], axis=1), 
                             np.concatenate([x[2].reshape(shp) for x in stacked[1:]], axis=1),
                             np.concatenate([x[4].reshape(shp) for x in stacked[1:]], axis=1)]
