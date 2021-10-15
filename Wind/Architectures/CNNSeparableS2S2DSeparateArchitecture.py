@@ -20,7 +20,7 @@ CNNS2SArchitecture
 
 """
 
-from tensorflow.keras.layers import Dense, Dropout, SeparableConv1D, Flatten, Conv2D
+from tensorflow.keras.layers import Dense, Dropout, SeparableConv1D, Flatten, Conv2D, SeparableConv2D
 from tensorflow.keras.layers import  Input, BatchNormalization, concatenate
 from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l1, l2
@@ -75,6 +75,7 @@ class CNNSeparableS2S2DSeparateArchitecture(NNS2SArchitecture):
         dropa = self.config['arch']['dropa']
         filtersa = self.config['arch']['filtersa']
         kernel_sizea = self.config['arch']['kernel_sizea']
+        depth_multipliera = self.config['arch']['depth_multipliera']
 
         # If there is a dilation field and it is true the strides field is the dilation rates
         # and the strides are all 1's
@@ -164,8 +165,8 @@ class CNNSeparableS2S2DSeparateArchitecture(NNS2SArchitecture):
         # We follow with 1xnvars convolutions and then convolutions in the temporal dimension
         vardim = idimensions[1][1]
         for i in range(1, len(filtersa)):
-            modela = Conv2D(filtersa[i], kernel_size=(1,vardim), strides=(1,1),
-                                    padding=padding, dilation_rate=dilationa[0],
+            modela = SeparableConv2D(filtersa[i], kernel_size=(1,vardim), strides=(1,1),
+                                    padding=padding, dilation_rate=dilationa[0],depth_multiplier=depth_multipliera,
                                     kernel_regularizer=k_regularizer)(modela)
    
             model = generate_activation(activation)(model)
@@ -175,8 +176,8 @@ class CNNSeparableS2S2DSeparateArchitecture(NNS2SArchitecture):
             if drop != 0:
                 modela = Dropout(rate=dropa)(modela)
 
-            modela = Conv2D(filtersa[i], kernel_size=(kernel_sizea[0],1), strides=(stridesa[0],1),
-                                    padding=padding, dilation_rate=dilationa[0], 
+            modela = SeparableConv2D(filtersa[i], kernel_size=(kernel_sizea[0],1), strides=(stridesa[0],1),
+                                    padding=padding, dilation_rate=dilationa[0], depth_multiplier=depth_multipliera,
                                     kernel_regularizer=k_regularizer)(modela)
    
             model = generate_activation(activation)(model)
