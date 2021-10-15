@@ -845,7 +845,8 @@ class Dataset:
                                                            lag=lag, ahead=dahead, slice=slice, mode=mode) for d in
                        datanames]
 
-            print("---->", stacked[1][0].shape)
+            print("---->", stacked[1][0].shape, stacked[1][2].shape, stacked[1][4].shape)
+            print("***", len(stacked), len(stacked[1]))
             # Training/validation/test has two sets of matrices, target site and near sites
             if llag is None:
                 if self.config['dataset'] == 51: 
