@@ -718,7 +718,7 @@ class Dataset:
             slice = ahead
 
         # Augment the dataset with the closest neighbors
-        if self.config['dataset'] in [5,51,31]: #== 5 or self.config['dataset'] == 31:
+        if self.config['dataset'] in [5,51,52,31]: #== 5 or self.config['dataset'] == 31:
             if 'radius' not in self.config:
                 raise NameError("Radius missing for neighbours augmented dataset")
             else:
@@ -840,16 +840,27 @@ class Dataset:
             self.test_y = stacked[0][5]
         # Adds several sites to the dataset but maintains on a la separate input, only for specific architectures that
         # process the site and rest of sites with different branches
-        elif self.config['dataset'] == 51:
+        elif self.config['dataset'] in [51,52]:
             stacked = [self._generate_dataset_multiple_var(wind[d], datasize, testsize,
                                                            lag=lag, ahead=dahead, slice=slice, mode=mode) for d in
                        datanames]
 
+            print(stacked[0].shape)
             # Training/validation/test has two sets of matrices, target site and near sites
             if llag is None:
-                self.train_x = [stacked[0][0], np.concatenate([x[0] for x in stacked[1:]], axis=1)]
-                self.val_x = [stacked[0][2], np.concatenate([x[2] for x in stacked[1:]], axis=1)]
-                self.test_x = [stacked[0][4], np.concatenate([x[4] for x in stacked[1:]], axis=1)]
+                neighm= [np.concatenate([x[0] for x in stacked[1:]], axis=1), 
+                        np.concatenate([x[2] for x in stacked[1:]], axis=1),
+                        np.concatenate([x[4] for x in stacked[1:]], axis=1)]
+
+                if self.config['dataset'] == 51:            
+                    self.train_x = [stacked[0][0], neighm[0]]
+                    self.val_x = [stacked[0][2], neighm[1]]
+                    self.test_x = [stacked[0][4], neighm[2]]
+                else:
+                    self.train_x = [stacked[0][0], neighm[0]]
+                    self.val_x = [stacked[0][2], neighm[1]]
+                    self.test_x = [stacked[0][4], neighm[2]]
+                     
             else:
                 self.train_x = [stacked[0][0][:,-llag[0]:], np.concatenate([x[0][:,-llag[1]:] for x in stacked[1:]], axis=1)]
                 self.val_x = [stacked[0][2][:,-llag[0]:], np.concatenate([x[2][:,-llag[1]:] for x in stacked[1:]], axis=1)]
