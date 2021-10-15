@@ -845,7 +845,7 @@ class Dataset:
                                                            lag=lag, ahead=dahead, slice=slice, mode=mode) for d in
                        datanames]
 
-            print(stacked[0].shape)
+            print(stacked[1][0].shape)
             # Training/validation/test has two sets of matrices, target site and near sites
             if llag is None:
                 neighm= [np.concatenate([x[0] for x in stacked[1:]], axis=1), 
