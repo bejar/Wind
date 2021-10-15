@@ -1122,7 +1122,7 @@ if __name__ == '__main__':
     "corr": [0.7, 1],
     "datasize": 43834,
     "testsize": 17534,
-    "lag": [9,9],
+    "lag": 9,
     "ahead": [1,12]
     }
 
