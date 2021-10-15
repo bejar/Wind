@@ -21,7 +21,7 @@
       "depth_multiplier": 6,
        "activation": ["elu", 0.4],
       "drop": 0.3,
-      "filtersa": [1024, 128],
+      "filtersa": [512, 128],
       "stridesa": [3],
       "kernel_sizea": [3],
       "dropa": 0.3,

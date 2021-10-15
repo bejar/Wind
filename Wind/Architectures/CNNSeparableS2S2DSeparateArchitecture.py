@@ -152,9 +152,15 @@ class CNNSeparableS2S2DSeparateArchitecture(NNS2SArchitecture):
         # Additional branch
         # The input is examples x lag x variables x sites
         inputa = Input(shape=(idimensions[1]))
-        # First a 1x1 2D convolution to mix all the sites
-        modela =  Conv2D(filters[0], input_shape=(idimensions[1]),kernel_size=(1,1), strides=stridesa[0],
-            padding=padding, dilation_rate=dilationa[0], kernel_regularizer=k_regularizer)(inputa)
+
+
+        # We follow with 1xnvars convolutions and then convolutions in the temporal dimension
+        vardim = idimensions[1][1]
+
+        modela = SeparableConv2D(filtersa[0], kernel_size=(1,vardim), strides=(1,1),
+                                padding=padding, dilation_rate=dilationa[0],depth_multiplier=depth_multipliera,
+                                kernel_regularizer=k_regularizer)(input)
+
         modela = generate_activation(activation)(modela)
         if bnorm:
             modela = BatchNormalization()(modela)
@@ -162,31 +168,26 @@ class CNNSeparableS2S2DSeparateArchitecture(NNS2SArchitecture):
         if drop != 0:
             modela = Dropout(rate=dropa)(modela)
 
-        # We follow with 1xnvars convolutions and then convolutions in the temporal dimension
-        vardim = idimensions[1][1]
-        for i in range(1, len(filtersa)):
-            modela = SeparableConv2D(filtersa[i], kernel_size=(1,vardim), strides=(1,1),
-                                    padding=padding, dilation_rate=dilationa[0],depth_multiplier=depth_multipliera,
-                                    kernel_regularizer=k_regularizer)(modela)
-   
-            modela = generate_activation(activation)(modela)
-            if bnorm:
-                modela = BatchNormalization()(modela)
+        modela = SeparableConv2D(filtersa[0], kernel_size=(kernel_sizea[0],1), strides=(stridesa[0],1),
+                                padding=padding, dilation_rate=dilationa[0], depth_multiplier=depth_multipliera,
+                                kernel_regularizer=k_regularizer)(modela)
 
-            if drop != 0:
-                modela = Dropout(rate=dropa)(modela)
+        modela = generate_activation(activation)(modela)
+        if bnorm:
+            modela = BatchNormalization()(modela)
 
-            modela = SeparableConv2D(filtersa[i], kernel_size=(kernel_sizea[0],1), strides=(stridesa[0],1),
-                                    padding=padding, dilation_rate=dilationa[0], depth_multiplier=depth_multipliera,
-                                    kernel_regularizer=k_regularizer)(modela)
-   
-            modela = generate_activation(activation)(modela)
-            if bnorm:
-                modela = BatchNormalization()(modela)
+        if drop != 0:
+            modela = Dropout(rate=dropa)(modela)
 
-            if drop != 0:
-                modela = Dropout(rate=dropa)(modela)
+        # First a 1x1 2D convolution to mix all the sites
+        modela =  Conv2D(filters[1], kernel_size=(1,1), strides=stridesa[0],
+            padding=padding, dilation_rate=dilationa[0], kernel_regularizer=k_regularizer)(modela)
+        modela = generate_activation(activation)(modela)
+        if bnorm:
+            modela = BatchNormalization()(modela)
 
+        if drop != 0:
+            modela = Dropout(rate=dropa)(modela)
 
         # Fusion
         model = Flatten()(model)
@@ -204,3 +205,43 @@ class CNNSeparableS2S2DSeparateArchitecture(NNS2SArchitecture):
         output = Dense(odimensions, activation='linear')(modelf)
 
         self.model = Model(inputs=[input,inputa], outputs=output)
+
+
+
+        # # Additional branch
+        # # The input is examples x lag x variables x sites
+        # inputa = Input(shape=(idimensions[1]))
+        # # First a 1x1 2D convolution to mix all the sites
+        # modela =  Conv2D(filters[0], input_shape=(idimensions[1]),kernel_size=(1,1), strides=stridesa[0],
+        #     padding=padding, dilation_rate=dilationa[0], kernel_regularizer=k_regularizer)(inputa)
+        # modela = generate_activation(activation)(modela)
+        # if bnorm:
+        #     modela = BatchNormalization()(modela)
+
+        # if drop != 0:
+        #     modela = Dropout(rate=dropa)(modela)
+
+        # # We follow with 1xnvars convolutions and then convolutions in the temporal dimension
+        # vardim = idimensions[1][1]
+        # for i in range(1, len(filtersa)):
+        #     modela = SeparableConv2D(filtersa[i], kernel_size=(1,vardim), strides=(1,1),
+        #                             padding=padding, dilation_rate=dilationa[0],depth_multiplier=depth_multipliera,
+        #                             kernel_regularizer=k_regularizer)(modela)
+   
+        #     modela = generate_activation(activation)(modela)
+        #     if bnorm:
+        #         modela = BatchNormalization()(modela)
+
+        #     if drop != 0:
+        #         modela = Dropout(rate=dropa)(modela)
+
+        #     modela = SeparableConv2D(filtersa[i], kernel_size=(kernel_sizea[0],1), strides=(stridesa[0],1),
+        #                             padding=padding, dilation_rate=dilationa[0], depth_multiplier=depth_multipliera,
+        #                             kernel_regularizer=k_regularizer)(modela)
+   
+        #     modela = generate_activation(activation)(modela)
+        #     if bnorm:
+        #         modela = BatchNormalization()(modela)
+
+        #     if drop != 0:
+        #         modela = Dropout(rate=dropa)(modela)
