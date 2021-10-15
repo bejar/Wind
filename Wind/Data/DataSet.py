@@ -1114,7 +1114,7 @@ if __name__ == '__main__':
     "datanames": ["11-5794-12"],
     "scaler": "standard",
       "vars": "all",
-    "dataset": 51,
+    "dataset": 52,
     "radius": 2,
     "nneighbors": 300,
     "corr": [0.7, 1],
