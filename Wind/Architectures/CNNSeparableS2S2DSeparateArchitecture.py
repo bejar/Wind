@@ -179,15 +179,15 @@ class CNNSeparableS2S2DSeparateArchitecture(NNS2SArchitecture):
         if drop != 0:
             modela = Dropout(rate=dropa)(modela)
 
-        # # First a 1x1 2D convolution to mix all the sites
-        # modela =  SeparableConv2D(filtersa[1], kernel_size=(1,1), strides=stridesa[0], depth_multiplier=depth_multipliera,
-        #     padding=padding, dilation_rate=dilationa[0], kernel_regularizer=k_regularizer)(modela)
-        # modela = generate_activation(activation)(modela)
-        # if bnorm:
-        #     modela = BatchNormalization()(modela)
+        # First a 1x1 2D convolution to mix all the sites
+        modela =  SeparableConv2D(filtersa[1], kernel_size=(1,1), strides=stridesa[0], depth_multiplier=depth_multipliera,
+            padding=padding, dilation_rate=dilationa[0], kernel_regularizer=k_regularizer)(modela)
+        modela = generate_activation(activation)(modela)
+        if bnorm:
+            modela = BatchNormalization()(modela)
 
-        # if drop != 0:
-        #     modela = Dropout(rate=dropa)(modela)
+        if drop != 0:
+            modela = Dropout(rate=dropa)(modela)
 
         # Fusion
         model = Flatten()(model)
